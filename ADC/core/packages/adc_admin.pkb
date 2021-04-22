@@ -11,6 +11,7 @@ as
   C_CR constant char(1 byte) := chr(10);
   C_APOS constant char(1 byte) := chr(39);
   C_PIPE constant char(1 byte) := '|';
+  
 
   /* Globale Variablen */
   g_offset binary_integer;
