@@ -1,0 +1,22 @@
+create table adc_action_item_focus(
+  cif_id varchar2(50 char),
+  cif_pti_id varchar2(50 char) constraint nn_cif_pti_id not null,
+  cif_pmg_name varchar2(3 byte) default 'ADC' constraint chk_cif_pmg_name check(cif_pmg_name = 'ADC'),
+  cif_actual_page_only &FLAG_TYPE. default &C_TRUE. constraint chk_cif_actual_page_only check(cif_actual_page_only in (&C_TRUE., &C_FALSE.)),
+  cif_item_types varchar2(100 byte), 
+  cif_active &FLAG_TYPE. default &C_TRUE. constraint chk_cif_active check(cif_active in (&C_TRUE., &C_FALSE.)),
+  constraint pk_adc_action_item_focus primary key(cif_id),
+  constraint fk_cif_pti_id foreign key(cif_pti_id, cif_pmg_name)
+    references &PIT_OWNER..pit_translatable_item(pti_uid, pti_upmg) on delete cascade
+) 
+organization index;
+
+create unique index idx_cif_pti_pmg_name on adc_action_item_focus(cif_pti_id, cif_pmg_name);
+
+comment on table adc_action_item_focus is 'Table to store ADC Action Item focus, used to define the kind of ITEMS that may be referenced by the action. Not maintained by the UI, as entries require Views or logic to populate them.';
+comment on column adc_action_item_focus.cif_id is 'PK, technical key';
+comment on column adc_action_item_focus.cif_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
+comment on column adc_action_item_focus.cif_pmg_name is 'Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC';
+comment on column adc_action_item_focus.cif_actual_page_only is 'Flag to indicate whether only items of the actual page should be shown';
+comment on column adc_action_item_focus.cif_item_types is 'Colon separated list of item types to show';
+comment on column adc_action_item_focus.cif_active is 'Flag to indicate whether rule group is in use';

@@ -1,0 +1,26 @@
+create or replace editionable view adc_bl_cat_help
+as 
+  with params as(
+       select uttm_mode, uttm_text template
+         from utl_text_templates
+        where uttm_type = 'ADC'
+          and uttm_name = 'ACTION_TYPE_HELP')
+select cat_id,
+       utl_text.generate_text(cursor(
+         select template,
+                cat_name, cat_description,
+                utl_text.generate_text(cursor(
+                  select template,
+                         cap_sort_seq, coalesce(cap_display_name, cpt_name) cpt_name, cap_description, cpt_description
+                    from adc_action_parameters_v p
+                    join adc_action_param_types_v
+                      on cap_cpt_id = cpt_id
+                   cross join params
+                   where p.cap_cat_id = s.cat_id
+                     and uttm_mode = 'PARAMETERS'
+                   order by cat_id, cap_sort_seq)) parameters
+           from adc_action_types_v s
+          cross join params
+          where s.cat_id = sat.cat_id
+            and uttm_mode = 'FRAME')) help_text
+  from adc_action_types_v sat;

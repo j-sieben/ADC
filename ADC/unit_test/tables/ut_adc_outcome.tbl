@@ -1,0 +1,71 @@
+create table ut_adc_outcome(
+  test_name varchar2(255 char), 
+	sort_seq number, 
+	cru_id number, 
+	cru_sort_seq number, 
+	cru_name varchar2(50 byte), 
+	cru_firing_items varchar2(200 byte), 
+	cru_fire_on_page_load &FLAG_TYPE., 
+	item varchar2(128 byte), 
+	pl_sql varchar2(4000 byte), 
+	js varchar2(4000 byte),
+  cra_sort_seq number,
+	cra_param_1 varchar2(4000 byte), 
+	cra_param_2 varchar2(4000 byte), 
+	cra_param_3 varchar2(4000 byte), 
+	cra_on_error &FLAG_TYPE., 
+	cru_on_error &FLAG_TYPE., 
+	is_first_row &FLAG_TYPE., 
+	id number, 
+	cgr_id number, 
+	firing_item varchar2(128 byte), 
+	firing_event varchar2(128 byte), 
+	error_dependent_items varchar2(2000 byte), 
+	bind_items varchar2(4000 byte), 
+	page_items varchar2(4000 byte), 
+	firing_items varchar2(4000 byte), 
+	error_stack varchar2(4000 byte), 
+	recursive_stack varchar2(4000 byte), 
+	js_action_stack varchar2(4000 byte), 
+	is_recursive varchar2(128 byte), 
+	level_length varchar2(4000 byte), 
+	allow_recursion &FLAG_TYPE., 
+	notification_stack varchar2(4000 byte), 
+	stop_flag &FLAG_TYPE., 
+	now number
+);
+
+
+comment on table ut_adc_outcome is 'Table to store outcome of ADC operations during tests';
+comment on column ut_adc_outcome.test_name is 'Name of the test executed';
+comment on column ut_adc_outcome.sort_seq is 'Sort criteria, deducted from the number of test and within the number of execution step';
+comment on column ut_adc_outcome.cru_id is 'Reference to ADC_RULE, ID of the rule executed';
+comment on column ut_adc_outcome.cru_sort_seq is 'Sort criteria of the rule executed. Is used to check whether the expected rule was executed';
+comment on column ut_adc_outcome.cru_name is 'Name of the rule executed';
+comment on column ut_adc_outcome.cru_firing_items is 'List of page items ADC sees as firing, if no item is known, DOCUMENT is assumed';
+comment on column ut_adc_outcome.cru_fire_on_page_load is 'Flag to indicate whether this rule fires additionally ot other page initialization rules';
+comment on column ut_adc_outcome.item is 'Name of the page item an action refers to';
+comment on column ut_adc_outcome.pl_sql is 'PL/SQL pattern that is to be executed as part of the action';
+comment on column ut_adc_outcome.js is 'Javascript pattern that is to be executed as part of the action';
+comment on column ut_adc_outcome.cra_sort_seq is 'Sort criteria of the action executed';
+comment on column ut_adc_outcome.cra_param_1 is 'Optional first parameter for the action';
+comment on column ut_adc_outcome.cra_param_2 is 'Optional second parameter for the action';
+comment on column ut_adc_outcome.cra_param_3 is 'Optional third parameter for the action';
+comment on column ut_adc_outcome.cra_on_error is 'Flag to indicate whether the executed action is an exception handler';
+comment on column ut_adc_outcome.cru_on_error is 'Flag to indicate whether the executed rule has an error';
+comment on column ut_adc_outcome.is_first_row is 'Flag to indicate the first output row of a test';
+comment on column ut_adc_outcome.id is 'Name of the test executed';
+comment on column ut_adc_outcome.cgr_id is 'Rule Group ID';
+comment on column ut_adc_outcome.firing_item is 'Page item that actually caused the ADC activity';
+comment on column ut_adc_outcome.firing_event is 'Event that actually caused the ADC activity';
+comment on column ut_adc_outcome.error_dependent_items is 'List of page items to disable if at least one error was registered';
+comment on column ut_adc_outcome.bind_items is 'List of page items to bind event handlers to';
+comment on column ut_adc_outcome.firing_items is 'List of items that got changed during the execution of the rule';
+comment on column ut_adc_outcome.error_stack is 'JSON instance of all exceptions that occurred during execution of the rule';
+comment on column ut_adc_outcome.recursive_stack is 'List of recursively called rules';
+comment on column ut_adc_outcome.js_action_stack is 'Script with all javascript actions that are to be executed in response to ADC activity';
+comment on column ut_adc_outcome.is_recursive is 'Flag to indicate whether a rule is recursive';
+comment on column ut_adc_outcome.level_length is 'Name of the test executed';
+comment on column ut_adc_outcome.allow_recursion is 'Flag that allows or disallows recursive execution of an action or rule';
+comment on column ut_adc_outcome.notification_stack is 'Additional comments on the execution of a rule';
+comment on column ut_adc_outcome.stop_flag is 'Flag that indicates that a rule executioin was stopped due to an error';

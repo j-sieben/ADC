@@ -1,0 +1,17 @@
+create or replace force view adc_ui_list_action_type
+as
+with params as(
+       select utl_apex.get_number('CRA_CGR_ID') c_cgr_id
+         from dual)
+select cat_name || case cat_active when adc_util.C_FALSE then ' (deprecated)' end d, cat_id r, ctg_description grp
+  from adc_action_types_v
+  join adc_action_type_groups_v
+    on cat_ctg_id = ctg_id
+ where exists(
+       select /*+ no_merge(p) */ null
+         from adc_action_item_focus
+         join adc_page_items
+           on instr(cif_item_types, cpi_cit_id) > 0
+         join params p
+           on cpi_cgr_id = c_cgr_id
+        where cif_id = cat_cif_id);

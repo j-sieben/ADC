@@ -1,0 +1,30 @@
+create table adc_rules(
+  cru_id number default on null adc_seq.nextval constraint nn_cru_id not null, 
+	cru_cgr_id number, 
+	cru_name varchar2(200 byte), 
+	cru_condition varchar2(4000 byte), 
+	cru_sort_seq number, 
+	cru_firing_items varchar2(300 byte), 
+	cru_active &FLAG_TYPE. default &C_TRUE., 
+	cru_fire_on_page_load &FLAG_TYPE. default &C_FALSE., 
+	cru_has_error &FLAG_TYPE. default &C_FALSE.,
+  constraint pk_adc_ruless primary key (cru_id),
+  constraint fk_cru_cgr_id foreign key (cru_cgr_id)
+	  references adc_rule_groups (cgr_id) on delete cascade,
+  constraint chk_cru_active check (cru_active in (&C_TRUE., &C_FALSE.)),
+  constraint chk_cru_has_error check (cru_has_error in (&C_TRUE., &C_FALSE.)),
+  constraint chk_cru_fire_on_page_load check (cru_fire_on_page_load in (&C_TRUE., &C_FALSE.))  
+);
+create index idx_r_cru_cgr_id on adc_rules (cru_cgr_id, cru_id);
+
+comment on table adc_rules  is 'Table to store a single rule';
+comment on column adc_rules.cru_id is 'PK, technical key';
+comment on column adc_rules.cru_cgr_id is 'FK, reference to ADC_GROUP';
+comment on column adc_rules.cru_name is 'Descriptive Name';
+comment on column adc_rules.cru_condition is 'Condition, syntactically in the form of a partial where-clause';
+comment on column adc_rules.cru_sort_seq is 'Sortierkriterium, definiert Ausführungsreihenfolge';
+comment on column adc_rules.cru_firing_items is 'List of page items that are referenced within cru_condition';
+comment on column adc_rules.cru_active is 'Flag, das anzeigt, ob die Regel aktuell verwendet werden soll';
+comment on column adc_rules.cru_fire_on_page_load is 'Flag, das anzeigt, ob diese Regel beim Initialisiern der Seite gefeuert werden soll';
+comment on column adc_rules.cru_has_error is 'Flag, das anzeigt, ob diese Regel einen Fehler enthaelt oder nicht';
+

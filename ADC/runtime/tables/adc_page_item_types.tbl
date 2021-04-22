@@ -1,0 +1,24 @@
+create table adc_page_item_types(
+  cit_id varchar2(50 char), 
+  cit_pti_id varchar2(50 char) constraint nn_cit_pti_id not null,
+  cit_pmg_name varchar2(3 byte) default 'ADC' constraint chk_cit_pmg_name check(cit_pmg_name = 'ADC'),
+	cit_has_value &FLAG_TYPE. default &C_TRUE., 
+	cit_include_in_view &FLAG_TYPE. default &C_FALSE., 
+	cit_event varchar2(30 byte), 
+	cit_col_template varchar2(100 char), 
+	cit_init_template varchar2(100 char), 
+  constraint pk_adc_page_item_types primary key (cit_id),
+  constraint fk_cit_pti_id foreign key(cit_pti_id, cit_pmg_name)
+    references &PIT_OWNER..pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
+  constraint chk_cit_has_value check (cit_has_value in (&C_TRUE., &C_FALSE.)),
+  constraint chk_cit_include_in_view check (cit_include_in_view in (&C_TRUE., &C_FALSE.))
+) organization index;
+
+comment on table adc_page_item_types  is 'Table to store page item types which are supported by ADC.';
+comment on column adc_page_item_types.cit_id is 'PK, alphanumerical key';
+comment on column adc_page_item_types.cit_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
+comment on column adc_page_item_types.cit_pmg_name is 'Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC';
+comment on column adc_page_item_types.cit_has_value is 'Flag to indicate whether element is included into the rule view automatically';
+comment on column adc_page_item_types.cit_event is 'JavaScript event to be bound to this element type by the plugin. If null, ADC won''t react on changes.';
+comment on column adc_page_item_types.cit_col_template is 'Template zur Erzeugung einer Spalte in der Regel-View.';
+comment on column adc_page_item_types.cit_init_template is 'Template zur Erzeugung des Initialisierungscodes';

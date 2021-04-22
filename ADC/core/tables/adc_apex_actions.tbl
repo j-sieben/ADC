@@ -1,0 +1,60 @@
+create table adc_apex_actions(
+  caa_id number default on null adc_seq.nextval constraint nn_caa_id not null, 
+	caa_cgr_id number, 
+	caa_cty_id varchar2(11 char), 
+	caa_name varchar2(50 char), 
+	caa_pti_id varchar2(128 byte), 
+	caa_pmg_name varchar2(128 byte), 
+	caa_icon varchar2(50 char), 
+	caa_icon_type varchar2(50 char) default 'fa', 
+	caa_shortcut varchar2(50 char), 
+	caa_initially_disabled &FLAG_TYPE. default &C_FALSE., 
+	caa_initially_hidden &FLAG_TYPE. default &C_FALSE., 
+	caa_href varchar2(200 char), 
+	caa_action varchar2(200 char), 
+	caa_on_label varchar2(50 char), 
+	caa_off_label varchar2(50 char), 
+	caa_get varchar2(50 char), 
+	caa_set varchar2(50 char), 
+	caa_choices varchar2(1000 char), 
+	caa_label_classes varchar2(50 char), 
+	caa_label_start_classes varchar2(50 char), 
+	caa_label_end_classes varchar2(50 char), 
+	caa_item_wrap_class varchar2(50 char),
+  constraint pk_adc_apex_actions primary key (caa_id),
+  constraint fk_caa_cgr_id foreign key (caa_cgr_id)
+	  references adc_rule_groups (cgr_id) on delete cascade,
+  constraint fk_caa_cty_id foreign key (caa_cty_id)
+	  references adc_apex_action_types (cty_id) on delete cascade,
+  constraint fk_caa_pti_id foreign key (caa_pti_id, caa_pmg_name)
+	  references &PIT_OWNER..pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
+  constraint chk_caa_initially_disabled check (caa_initially_disabled in (&C_TRUE., &C_FALSE.)),
+  constraint chk_caa_initially_hidden check (caa_initially_hidden in (&C_TRUE., &C_FALSE.))
+);
+
+create unique index idx_caa_cgr_name on adc_apex_actions (caa_cgr_id, caa_name);
+create index idx_fk_caa_cgr_id on adc_apex_actions (caa_cgr_id);
+create index idx_fk_caa_cty_id on adc_apex_actions (caa_cty_id);
+create index idx_fk_caa_pti_id on adc_apex_actions (caa_pti_id, caa_pmg_name);
+
+comment on table adc_apex_actions  is 'Table to store apex actions to be maintained by ADC';
+
+comment on column adc_apex_actions.caa_cgr_id is 'Part of Unique, Reference to ADC_RULE_GROUP';
+comment on column adc_apex_actions.caa_cty_id is 'Type of the action. Reference to adc_apex_actions_TYPE';
+comment on column adc_apex_actions.caa_name is 'Part of Unique, a unique name for the action within that ADC_RULE_GROPU. By convention the style of names uses a dash to separate words as in clear-log. Name must not contain spaces, >, :, quote, or double quote, or non-printing characters.';
+comment on column adc_apex_actions.caa_icon is 'The icon for action may be used in buttons and menus';
+comment on column adc_apex_actions.caa_icon_type is 'The icon type. Defaults to fa (FontApex). Updates to the iconType may not be supported by all control types that can be associated with actions.';
+comment on column adc_apex_actions.caa_shortcut is 'The keyboard shortcut to invoke action (not allowed for radio group actions).';
+comment on column adc_apex_actions.caa_initially_disabled is 'Flag to indicate whether this action is initially disabled. Default 0 = initially enabled';
+comment on column adc_apex_actions.caa_initially_hidden is 'Flag to indicate whether this action is initially hidded. Default 0 = initially visible';
+comment on column adc_apex_actions.caa_href is 'For actions that navigate set href to the URL to navigate to and don''t set an action function. An action of type action must have an href or action property set.';
+comment on column adc_apex_actions.caa_action is 'function(event, focusElement):boolean The function that is called when the action is invoked with actions#invoke. The action must return true if it sets focus. An action of type action must have an href or action property set.';
+comment on column adc_apex_actions.caa_on_label is 'Only for dynamic antonyms toggle actions. This is the label when the value is true.';
+comment on column adc_apex_actions.caa_off_label is 'Only for dynamic antonyms toggle actions. This is the label when the value is false.';
+comment on column adc_apex_actions.caa_get is 'For toggle actions this function should return true or false. For radio group actions this should return the current value.';
+comment on column adc_apex_actions.caa_set is 'For toggle actions this receives a boolean value. For radio group actions this function receives the new value.';
+comment on column adc_apex_actions.caa_choices is 'This is only for radio group actions. SQL statement that creates a list of objects. Each object has properties: label, value, icon, iconType, shortcut, disabled, group (for select lists only)';
+comment on column adc_apex_actions.caa_label_classes is 'This is only for radio group actions. Classes to add to all radio labels. This and the next two label properties are only used when rendering radio group choices.';
+comment on column adc_apex_actions.caa_label_start_classes is 'Only for radio group actions. Classes to add to last radio label';
+comment on column adc_apex_actions.caa_label_end_classes is 'Only for radio group actions. Classes to add to last radio label';
+comment on column adc_apex_actions.caa_item_wrap_class is 'Only for radio group actions. Classes to add to a span wrapper element. Or to change the span use one of these prefixes: p:, li:, div:, span: For example li:myRadio';

@@ -1,0 +1,52 @@
+create table adc_rule_actions(
+  cra_id number default on null adc_seq.nextval constraint nn_cra_id not null, 
+	cra_cgr_id number, 
+	cra_cru_id number, 
+	cra_cpi_id varchar2(50 char), 
+	cra_cat_id varchar2(50 char), 
+	cra_on_error &FLAG_TYPE. default &C_FALSE., 
+	cra_param_1 varchar2(4000 byte), 
+	cra_param_2 varchar2(4000 byte), 
+	cra_param_3 varchar2(4000 byte), 
+	cra_comment varchar2(200 char), 
+	cra_raise_recursive &FLAG_TYPE. default &C_TRUE., 
+	cra_raise_on_validation &FLAG_TYPE. default &C_TRUE., 
+	cra_sort_seq number, 
+	cra_active &FLAG_TYPE. default &C_TRUE., 
+	cra_has_error &FLAG_TYPE. default &C_FALSE.,
+  constraint pk_adc_rule_actions primary key (cra_id),
+  constraint fk_cra_cat_id foreign key (cra_cat_id)
+	  references adc_action_types (cat_id) on delete cascade,
+  constraint fk_cra_cpi_id foreign key (cra_cgr_id, cra_cpi_id)
+	  references adc_page_items (cpi_cgr_id, cpi_id) on delete cascade,
+  constraint fk_cra_cru_id foreign key (cra_cru_id)
+	  references adc_rules (cru_id) on delete cascade,
+  constraint chk_cra_active check (cra_active in (&C_TRUE., &C_FALSE.)),
+  constraint chk_cra_has_error check (cra_has_error in (&C_TRUE., &C_FALSE.)),
+  constraint chk_cra_raise_recursive check (cra_raise_recursive in (&C_TRUE., &C_FALSE.)),
+  constraint chk_cra_on_error check (cra_on_error in (&C_TRUE., &C_FALSE.))
+);
+
+create unique index idx_cra_cgr_cru_cpi_cat_err on adc_rule_actions (cra_cgr_id, cra_cru_id, cra_cpi_id, cra_cat_id, cra_on_error);
+create index idx_cra_cpi_id on adc_rule_actions (cra_cpi_id);
+create index idx_cra_cat_id on adc_rule_actions (cra_cat_id);
+create index idx_cra_cru_id on adc_rule_actions (cra_cru_id);
+
+
+comment on table adc_rule_actions  is 'Table to store activities per rule';
+comment on column adc_rule_actions.cra_id is 'PK';
+comment on column adc_rule_actions.cra_cgr_id is 'Unique, references ADC_RULE';
+comment on column adc_rule_actions.cra_cru_id is 'Unique, references ADC_RULE';
+comment on column adc_rule_actions.cra_cpi_id is 'Unique, references ADC_PAGE_ITEM';
+comment on column adc_rule_actions.cra_cat_id is 'Unique, references ADC_ACTION_TYPE';
+comment on column adc_rule_actions.cra_on_error is 'Unique Flag to indicate whether RULE_ACTION shall be executed only in case of PL/SQL error';
+comment on column adc_rule_actions.cra_param_1 is 'Optional first parameter, passed to ACTION_TYPE';
+comment on column adc_rule_actions.cra_param_2 is 'Optional second parameter, passed to ACTION_TYPE';
+comment on column adc_rule_actions.cra_param_3 is 'Optional third parameter, passed to ACTION_TYPE';
+comment on column adc_rule_actions.cra_comment is 'Optional comment to describe the action. Used if something unusual happens.';
+comment on column adc_rule_actions.cra_raise_recursive is 'Flag to indicate whether RULE_ACTION triggers recursive rul execution';
+comment on column adc_rule_actions.cra_raise_recursive is 'Flag to indicate whether this action is executed when validating a page';
+comment on column adc_rule_actions.cra_sort_seq is 'Sorting criteria to control execution flow';
+comment on column adc_rule_actions.cra_active is 'Flag to indicate whether RULE_ACTION is in use actually';
+comment on column adc_rule_actions.cra_has_error is 'Flag to indicate whether RULE_ACTION has got an error';
+
