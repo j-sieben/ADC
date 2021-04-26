@@ -23,7 +23,7 @@ as
   
   /** method to retrive a new primar key if not present
    * @param  p_key  Key to set
-   * @usage  If P_KEY is MNULL, a new sequence key is provided.
+   * @usage  If P_KEY is NULL, a new sequence key is provided.
    */
   procedure get_key(
     p_key in out nocopy binary_integer)
