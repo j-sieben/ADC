@@ -62,15 +62,15 @@ as
 
 
   /** Hides the referenced page element
-   * %param [p_cpi_id]     Element to be hidden (default DOCUMENT, if P_JQUERY_SEL filled)
-   * %param [p_whole_row]  display the complete row, e.g. if several elements are in one column and should be displayed at different times 
-   *                       (Default NULL, if effect on whole row, 'N', if effect only on the element)
-   * %param [p_jquery_sel] jQuery expression to edit multiple elements. (Default NULL, if p_cpi_id filled)
+   * %param [p_cpi_id]          Element to be hidden (default DOCUMENT, if p_jquery_selector filled)
+   * %param [p_whole_row]       display the complete row, e.g. if several elements are in one column and should be displayed at different times 
+   *                            (Default NULL, if effect on whole row, 'N', if effect only on the element)
+   * %param [p_jquery_selector] jQuery expression to edit multiple elements. (Default NULL, if p_cpi_id filled)
    */
   procedure hide_item(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
     p_whole_row in adc_util.flag_type default null,
-    p_jquery_sel in varchar2 default null);
+    p_jquery_selector in varchar2 default null);
 
 
   /** Method to assure that at least on page item of a list of page items contains a value
@@ -151,27 +151,27 @@ as
 
 
   /** Sets the referenced page element to the value passed as parameter
-   * %param [p_cpi_id]      Element to be set (default DOCUMENT, if P_JQUERY_SEL filled)
-   * %param  p_item_value   Value of the element in quotation marks or function that returns value.
-   * %param [p_jquery_sel]  jQuery expression to edit multiple elements. (Default NULL, if p_spi_id filled)
-   * %param [p_raise_event] Flag indicating whether a Change Event should be triggered. (Default TRUE, event is triggered)
+   * %param [p_cpi_id]         Element to be set (default DOCUMENT, if p_jquery_selector filled)
+   * %param  p_item_value      Value of the element in quotation marks or function that returns value.
+   * %param [p_jquery_seletor] jQuery expression to edit multiple elements. (Default NULL, if p_spi_id filled)
+   * %param [p_raise_event]    Flag indicating whether a Change Event should be triggered. (Default TRUE, event is triggered)
    */
   procedure set_item(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
     p_item_value in varchar2,
-    p_jquery_sel in varchar2 default null,
+    p_jquery_selector in varchar2 default null,
     p_raise_event in boolean default true);
 
 
   /** Sets a field label to the transferred value
-   * %param [p_cpi_id]      Element to be set (default DOCUMENT, if P_JQUERY_SEL filled)
-   * %param  p_item_label   Label of the element in quotation marks or function that returns value.
-   * %param [p_jquery_sel]  jQuery expression to edit multiple elements. (Default NULL, if p_spi_id filled)
+   * %param [p_cpi_id]          Element to be set (default DOCUMENT, if p_jquery_selector filled)
+   * %param  p_item_label       Label of the element in quotation marks or function that returns value.
+   * %param [p_jquery_selector] jQuery expression to edit multiple elements. (Default NULL, if p_spi_id filled)
    */
   procedure set_item_label(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
     p_item_label in varchar2,
-    p_jquery_sel in varchar2 default null);
+    p_jquery_selector in varchar2 default null);
 
 
   /** Procedure to set the session state, based on an SQL statement.
@@ -192,23 +192,23 @@ as
 
 
   /** Makes a page element a mandatory element and activates mandatory field validation.
-   * %param [p_cpi_id]     Mandatory element (Default DOCUMENT, if p_jquery_sel filled)
-   * %param [p_msg_text]   Message text in quotation marks or function that returns a value (default NULL, then standard text)
-   * %param [p_jquery_sel] jQuery expression to edit multiple elements. (Default NULL, if p_cpi_id filled)
+   * %param [p_cpi_id]          Mandatory element (Default DOCUMENT, if p_jquery_selector filled)
+   * %param [p_msg_text]        Message text in quotation marks or function that returns a value (default NULL, then standard text)
+   * %param [p_jquery_selector] jQuery expression to edit multiple elements. (Default NULL, if p_cpi_id filled)
    */
   procedure set_mandatory(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
     p_msg_text in varchar2 default null,
-    p_jquery_sel in varchar2 default null);
+    p_jquery_selector in varchar2 default null);
 
 
   /** Makes a page element an optional element and suspends mandatory field validation.
-   * %param [p_cpi_id]     optional element (default DOCUMENT, if P_JQUERY_SEL filled)
-   * %param [p_jquery_sel] jQuery expression to edit multiple elements. (Default NULL, if p_cpi_id filled)
+   * %param [p_cpi_id]          optional element (default DOCUMENT, if p_jquery_selector filled)
+   * %param [p_jquery_selector] jQuery expression to edit multiple elements. (Default NULL, if p_cpi_id filled)
    */
   procedure set_optional(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
-    p_jquery_sel in varchar2 default null);
+    p_jquery_selector in varchar2 default null);
 
 
   /** Hides the element from P_JQUERY_SEL_SHOW on the page and the elements from P_JQUERY_SEL_HIDE
@@ -221,15 +221,15 @@ as
 
 
   /** Displays the referenced page element
-   * %param [p_spi_id]     Element to be displayed (default DOCUMENT, if P_JQUERY_SEL filled)
-   * %param [p_whole_row]  display the complete row, e.g. if several elements are in one column and should be displayed at different times 
-   *                       (Default NULL, if effect on whole row, 'N', if effect only on the element)
-   * %param [p_jquery_sel] jQuery expression to edit multiple elements. (Default NULL, if p_spi_id filled)
+   * %param [p_spi_id]          Element to be displayed (default DOCUMENT, if p_jquery_selector filled)
+   * %param [p_whole_row]       display the complete row, e.g. if several elements are in one column and should be displayed at different times 
+   *                            (Default NULL, if effect on whole row, 'N', if effect only on the element)
+   * %param [p_jquery_selector] jQuery expression to edit multiple elements. (Default NULL, if p_spi_id filled)
    */
   procedure show_item(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
     p_whole_row in adc_util.flag_type default adc_util.C_TRUE,
-    p_jquery_sel in varchar2 default null);
+    p_jquery_selector in varchar2 default null);
     
     
   /** Method to submit the actual page

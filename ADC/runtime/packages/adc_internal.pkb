@@ -59,7 +59,6 @@ as
     js_action_stack js_list,                         -- JavaScript action stack, rule outcome of the rules executed so far
     level_length level_length_t,                     -- cumulated length of the strings on the respective severity levels
     recursive_level binary_integer,                  -- actual recursive level
-    allow_recursion boolean,                         -- Flag to indicate whether recursive calls are allowed for the active rule
     notification_stack adc_util.max_char,            -- List of notifications to be shown in the browser console
     stop_flag boolean,                               -- Flag to indicate that all rule execution has to be stopped
     now binary_integer,                              -- timestamp, used to calculate the execution duration
@@ -1498,7 +1497,6 @@ as
     p_firing_item in varchar2,
     p_event in varchar2)
   as
-    l_allow_recursion adc_util.flag_type;
     l_rule_group_row adc_rule_groups%rowtype;
     l_rule_row adc_rules%rowtype;
   begin
@@ -1511,14 +1509,11 @@ as
     l_rule_group_row.cgr_page_id := utl_apex.get_page_id;
     
     -- Read rule group
-    select cgr_id, coalesce(cgr_with_recursion, adc_util.C_TRUE)
-      into g_param.cgr_id, l_allow_recursion
+    select cgr_id
+      into g_param.cgr_id
       from adc_rule_groups
      where cgr_app_id = l_rule_group_row.cgr_app_id
        and cgr_page_id = l_rule_group_row.cgr_page_id;
-    
-    -- set recursion flag
-    g_param.allow_recursion := l_allow_recursion = adc_util.C_TRUE;
         
     -- Initialize collections
     g_param.bind_items.delete;

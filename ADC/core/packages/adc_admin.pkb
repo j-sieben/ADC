@@ -1827,6 +1827,7 @@ as
     p_cat_ctg_id in adc_action_type_groups.ctg_id%type,
     p_cat_cif_id in adc_action_item_focus.cif_id%type,
     p_cat_name in pit_translatable_item.pti_name%type,
+    p_cat_display_name in pit_translatable_item.pti_display_name%type,
     p_cat_description in pit_translatable_item.pti_description%type default null,
     p_cat_pl_sql in adc_action_types.cat_pl_sql%type,
     p_cat_js in adc_action_types.cat_js%type,
@@ -1842,6 +1843,7 @@ as
                     msg_param('p_cat_ctg_id', p_cat_ctg_id),
                     msg_param('p_cat_cif_id', p_cat_cif_id),
                     msg_param('p_cat_name', p_cat_name),
+                    msg_param('p_cat_display_name', p_cat_display_name),
                     msg_param('p_cat_description', p_cat_description),
                     msg_param('p_cat_pl_sql', p_cat_pl_sql),
                     msg_param('p_cat_js', p_cat_js),
@@ -1853,6 +1855,7 @@ as
     l_row.cat_ctg_id := p_cat_ctg_id;
     l_row.cat_cif_id := p_cat_cif_id;
     l_row.cat_name := p_cat_name;
+    l_row.cat_display_name := p_cat_display_name;
     l_row.cat_description := utl_text.unwrap_string(p_cat_description);
     l_row.cat_pl_sql := utl_text.unwrap_string(p_cat_pl_sql);
     l_row.cat_js := utl_text.unwrap_string(p_cat_js);
@@ -1882,6 +1885,7 @@ as
       p_pti_pml_name => null,
       p_pti_pmg_name => C_ADC,
       p_pti_name => p_row.cat_name,
+      p_pti_display_name => p_row.cat_display_name,
       p_pti_description => p_row.cat_description);
 
     -- store local data

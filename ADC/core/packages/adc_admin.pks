@@ -423,6 +423,7 @@ as
    * %param  p_cat_ctg_id           Reference to adc_action_type_groups
    * %param  p_cat_cif_id           Reference to ADC_ACTION_ITEM_FOCUS
    * %param  p_cat_name             Name of the action type
+   * %param  p_cat_display_name     Verbose name of the action type
    * %param  p_cat_description      Optional description
    * %param  p_cat_pl_sql           PL/SQL code that is to be executed
    * %param  p_cat_js               JavaScript code that is to be executed
@@ -435,6 +436,7 @@ as
     p_cat_ctg_id in adc_action_type_groups.ctg_id%type,
     p_cat_cif_id in adc_action_item_focus.cif_id%type,
     p_cat_name in pit_translatable_item.pti_name%type,
+    p_cat_display_name in pit_translatable_item.pti_display_name%type,
     p_cat_description in pit_translatable_item.pti_description%type default null,
     p_cat_pl_sql in adc_action_types.cat_pl_sql%type,
     p_cat_js in adc_action_types.cat_js%type,

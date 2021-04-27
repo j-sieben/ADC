@@ -1,6 +1,6 @@
 create or replace editionable view adc_ui_edit_cat
 as 
-select cat_id, cat_ctg_id, cat_cif_id, cat_name, cat_description, cat_pl_sql, cat_js, cat_is_editable, cat_raise_recursive, cat_active,
+select cat_id, cat_ctg_id, cat_cif_id, cat_name, cat_display_name, cat_description, cat_pl_sql, cat_js, cat_is_editable, cat_raise_recursive, cat_active,
        cap_cpt_id_1, cap_display_name_1, cap_description_1, cap_default_1, cap_mandatory_1, cap_active_1,
        cap_cpt_id_2, cap_display_name_2, cap_description_2, cap_default_2, cap_mandatory_2, cap_active_2,
        cap_cpt_id_3, cap_display_name_3, cap_description_3, cap_default_3, cap_mandatory_3, cap_active_3

@@ -158,6 +158,7 @@ as
     g_edit_cat_row.cat_ctg_id := adc_util.clean_adc_name(utl_apex.get(g_page_values, 'CAT_CTG_ID'));
     g_edit_cat_row.cat_cif_id := adc_util.clean_adc_name(utl_apex.get(g_page_values, 'CAT_CIF_ID'));
     g_edit_cat_row.cat_name := utl_apex.get(g_page_values, 'CAT_NAME');
+    g_edit_cat_row.cat_display_name := utl_apex.get(g_page_values, 'CAT_DISPLAY_NAME');
     g_edit_cat_row.cat_description := utl_apex.get(g_page_values, 'CAT_DESCRIPTION');
     g_edit_cat_row.cat_pl_sql := utl_apex.get(g_page_values, 'CAT_PL_SQL');
     g_edit_cat_row.cat_js := utl_apex.get(g_page_values, 'CAT_JS');
@@ -309,6 +310,7 @@ as
     p_rec.cat_ctg_id := p_row.cat_ctg_id;
     p_rec.cat_cif_id := p_row.cat_cif_id;
     p_rec.cat_name := p_row.cat_name;
+    p_rec.cat_display_name := p_row.cat_display_name;
     p_rec.cat_description := p_row.cat_description;
     p_rec.cat_pl_sql := p_row.cat_pl_sql;
     p_rec.cat_js := p_row.cat_js;
@@ -895,7 +897,7 @@ as
     -- Initialize
     l_cat_id := utl_apex.get_string('CRA_CAT_ID');  
     l_mandatory_message := pit.get_message_text(msg.ADC_ITEM_IS_MANDATORY);
-    adc.hide_item(p_jquery_sel => C_PARAM_SELECTOR);
+    adc.hide_item(p_jquery_selector => C_PARAM_SELECTOR);
     adc.set_optional(C_PARAM_SELECTOR);
     
     -- Set list of page items

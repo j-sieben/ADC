@@ -3,6 +3,14 @@ as
 
   C_BUTTON constant adc_page_item_types.cit_id%type := 'BUTTON';
   
+  function check_text(
+    p_value in varchar2)
+    return varchar2
+  as
+    C_APOS constant varchar2(1 byte) := '''';
+  begin
+      return trim(c_apos from apex_escape.js_literal(p_value));
+  end check_text;
   
   
   /* ADDITIONAL ADC FUNCTIONALITY */
@@ -109,7 +117,7 @@ as
   procedure hide_item(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
     p_whole_row in adc_util.flag_type default null,
-    p_jquery_sel in varchar2 default null)
+    p_jquery_selector in varchar2 default null)
   as
   begin
     pit.enter_optional;
@@ -117,7 +125,7 @@ as
       p_cat_id => 'HIDE_ITEM',
       p_cpi_id => p_cpi_id,
       p_param_1 => p_whole_row,
-      p_param_2 => p_jquery_sel);
+      p_param_2 => p_jquery_selector);
     pit.leave_optional;
   end hide_item;
 
@@ -245,27 +253,21 @@ as
   procedure set_item(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
     p_item_value in varchar2,
-    p_jquery_sel in varchar2 default null,
+    p_jquery_selector in varchar2 default null,
     p_raise_event in boolean default true)
   as
-    C_APOS constant varchar2(1 byte) := '''';
     l_item_value utl_apex.max_char;
   begin
     pit.enter_optional;
     
-    l_item_value := apex_escape.js_literal(p_item_value);
-    if p_raise_event then
-      adc_api.set_session_state(
-        p_cpi_id => p_cpi_id, 
-        p_value => l_item_value);
-    else
-      --l_item_value := trim(c_apos from l_item_value);
-      adc_api.execute_action(
-        p_cat_id => 'SET_VALUE_ONLY',
-        p_cpi_id => p_cpi_id,
-        p_param_1 => l_item_value,
-        p_param_2 => p_jquery_sel);
-    end if;
+    l_item_value := check_text(p_item_value);
+    
+    adc_api.set_session_state(
+      p_cpi_id => p_cpi_id,
+      p_value => l_item_value,
+      p_allow_recursion => adc_util.bool_to_flag(p_raise_event),
+      p_jquery_selector => p_jquery_selector);
+      
     pit.leave_optional;
   end set_item;
   
@@ -273,15 +275,15 @@ as
   procedure set_item_label(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
     p_item_label in varchar2,
-    p_jquery_sel in varchar2 default null)
+    p_jquery_selector in varchar2 default null)
   as
   begin
     pit.enter_optional;
     adc_api.execute_action(
       p_cat_id => 'SET_ITEM_LABEL',
       p_cpi_id => p_cpi_id,
-      p_param_1 => trim('''' from apex_escape.js_literal(p_item_label)),
-      p_param_2 => p_jquery_sel);
+      p_param_1 => check_text(p_item_label),
+      p_param_2 => p_jquery_selector);
     pit.leave_optional;
   end set_item_label;
 
@@ -307,7 +309,7 @@ as
   procedure set_mandatory(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
     p_msg_text in varchar2 default null,
-    p_jquery_sel in varchar2 default null)
+    p_jquery_selector in varchar2 default null)
   as
   begin
     pit.enter_optional;
@@ -315,21 +317,21 @@ as
       p_cat_id => 'IS_MANDATORY',
       p_cpi_id => p_cpi_id,
       p_param_1 => p_msg_text,
-      p_param_2 => p_jquery_sel);
+      p_param_2 => p_jquery_selector);
     pit.leave_optional;
   end set_mandatory;
   
   
   procedure set_optional(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
-    p_jquery_sel in varchar2 default null)
+    p_jquery_selector in varchar2 default null)
   as
   begin
     pit.enter_optional;
     adc_api.execute_action(
       p_cat_id => 'IS_OPTIONAL',
       p_cpi_id => p_cpi_id,
-      p_param_2 => p_jquery_sel);
+      p_param_2 => p_jquery_selector);
     pit.leave_optional;
   end set_optional;
   
@@ -352,7 +354,7 @@ as
   procedure show_item(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
     p_whole_row in adc_util.flag_type default adc_util.C_TRUE,
-    p_jquery_sel in varchar2 default null)
+    p_jquery_selector in varchar2 default null)
   as
   begin
     pit.enter_optional;
@@ -360,7 +362,7 @@ as
       p_cat_id => 'SHOW_ITEM',
       p_cpi_id => p_cpi_id,
       p_param_1 => p_whole_row,
-      p_param_2 => p_jquery_sel);
+      p_param_2 => p_jquery_selector);
     pit.leave_optional;
   end show_item;
 
