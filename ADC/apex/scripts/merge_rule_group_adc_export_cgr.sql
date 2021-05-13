@@ -24,7 +24,7 @@ begin
   adc_admin.merge_rule(
     p_cru_id => adc_admin.map_id(622),
     p_cru_cgr_id => adc_admin.map_id(620),
-    p_cru_name => 'Initialisierung',
+    p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = 1|',
     p_cru_sort_seq => 10,
     p_cru_fire_on_page_load => adc_util.C_FALSE,
@@ -46,7 +46,7 @@ begin
   adc_admin.merge_rule(
     p_cru_id => adc_admin.map_id(626),
     p_cru_cgr_id => adc_admin.map_id(620),
-    p_cru_name => 'Einstellungen geÃ¤ndert',
+    p_cru_name => 'die Exporteinstellung ändert',
     p_cru_condition => q'|firing_item in ('P8_EXPORT_TYPE', 'P8_CGR_APP_ID', 'P8_CGR_PAGE_ID', 'P8_CGR_ID')|',
     p_cru_sort_seq => 20,
     p_cru_fire_on_page_load => adc_util.C_FALSE,

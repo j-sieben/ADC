@@ -26,7 +26,8 @@ as
     -- Initialize
     adc_internal.read_settings(
       p_firing_item => apex_application.g_x01,
-      p_event => apex_application.g_x02);
+      p_event => apex_application.g_x02,
+      p_event_data => apex_application.g_x03);
     
     -- Initialize session status with page item default values
     adc_internal.process_initialization_code;
@@ -71,13 +72,14 @@ as
     -- Initialize
     adc_internal.read_settings(
       p_firing_item => apex_application.g_x01,
-      p_event => apex_application.g_x02);
+      p_event => apex_application.g_x02,
+      p_event_data => apex_application.g_x03);
     
     -- Process best matching rule of ADC for the actual page state. Response is a JavaScript that is executed on the page
     l_java_script := adc_internal.process_request;
     
     -- Return response
-    htp.p(l_java_script);
+    htp.prn(l_java_script);
     
     pit.leave_mandatory;
     return l_result;

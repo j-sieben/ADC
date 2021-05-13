@@ -16,7 +16,7 @@ select /*+ NO_MERGE (p) */
        a.cat_description,
        case 
          when is_adc_admin = c_false and a.cat_is_editable = c_false then 'fa-lock'
-         else 'fa-pencil'
+         else 'fa-edit'
        end link_icon,
        case 
          when is_adc_admin = c_false and a.cat_is_editable = c_false then '#'

@@ -74,14 +74,16 @@ as
     
     
   /** Helper to copy plugin settings to an internal record G_PARAM
-   * %param  p_firing_item           Firing item
-   * %param  p_event                 Firing event
+   * %param  p_firing_item  Firing item
+   * %param  p_event        Firing event
+   * %param  p_event_data   Additional event information
    * %usage  Is called before the actual rule action takes place (at the beginning of render and AJAX methods)
    *         to copy the status to a package record. Made public to allow the plugin to pass in firing item and event information
    */
   procedure read_settings(
     p_firing_item in varchar2,
-    p_event in varchar2);
+    p_event in varchar2,
+    p_event_data in varchar2);
   
   
   /** ADC_API IMPLEMENTATION */

@@ -25,6 +25,12 @@ as
   function get_help_websheet_id
     return pls_integer;
     
+    
+  /** Toggle active flag from rule group
+   * %usage  Is called to activate or deactivate a rule group
+   */
+  procedure toggle_cgr_active;
+    
 
   /** Method to download one or many rule groups as a zip file
    */
@@ -43,28 +49,11 @@ as
     return varchar2;
 
 
-  /* Methode zum Validieren der Seite EDIT_GROUP
-   */
-  function validate_edit_cgr
-    return boolean;
-
-  /** Method to process user data from page EDIT_CGR
-   */
-  procedure process_edit_cgr;
-
-
   /** Method toi initialize an APEX collection for SRA (ADC Rule Actions)
    * %usage  Is called upon initialization of page EDIT_CRU to copy existing rule actions to an APEX collection.
    *         Required to capture new rule actions without  saving them to the target table directly
    */
   procedure initialize_cra_collection;
-
-
-  /** Method to initialize an APEX collection for CAA (ADC APEX Action)
-   * %usage  Is called upon initialization of page EDIT_CGR to copy existing rule actions to an APEX collection.
-   *         Required to capture new rule actions without  saving them to the target table directly
-   */
-  procedure initialize_caa_collection;
 
 
   /** Method to validate page EDIT_CRU

@@ -24,7 +24,7 @@ begin
   adc_admin.merge_rule(
     p_cru_id => adc_admin.map_id(637),
     p_cru_cgr_id => adc_admin.map_id(635),
-    p_cru_name => 'Initialisierung',
+    p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = 1|',
     p_cru_sort_seq => 10,
     p_cru_fire_on_page_load => adc_util.C_FALSE,
@@ -59,7 +59,7 @@ begin
   adc_admin.merge_rule(
     p_cru_id => adc_admin.map_id(643),
     p_cru_cgr_id => adc_admin.map_id(635),
-    p_cru_name => 'Aktionstyp ACTION gewählt',
+    p_cru_name => 'den Aktionstyp "ACTION" wählt',
     p_cru_condition => q'|P9_CAA_CTY_ID = 'ACTION'|',
     p_cru_sort_seq => 20,
     p_cru_fire_on_page_load => adc_util.C_FALSE,
@@ -107,7 +107,7 @@ begin
   adc_admin.merge_rule(
     p_cru_id => adc_admin.map_id(651),
     p_cru_cgr_id => adc_admin.map_id(635),
-    p_cru_name => 'Aktionstyp TOGGLE gewählt',
+    p_cru_name => 'den Aktionstyp "TOGGLE" wählt',
     p_cru_condition => q'|P9_CAA_CTY_ID = 'TOGGLE'|',
     p_cru_sort_seq => 30,
     p_cru_fire_on_page_load => adc_util.C_FALSE,
@@ -142,7 +142,7 @@ begin
   adc_admin.merge_rule(
     p_cru_id => adc_admin.map_id(657),
     p_cru_cgr_id => adc_admin.map_id(635),
-    p_cru_name => 'Aktionstyp RADIO_GROUP gewählt',
+    p_cru_name => 'den Aktionstyp "RADIO_GROUP" wählt',
     p_cru_condition => q'|P9_CAA_CTY_ID = 'RADIO_GROUP'|',
     p_cru_sort_seq => 40,
     p_cru_fire_on_page_load => adc_util.C_FALSE,

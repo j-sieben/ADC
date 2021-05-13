@@ -5,12 +5,13 @@ as
   C_CAA_COLLECTION constant adc_util.ora_name_type := 'ADC_UI_EDIT_CAA';
   
   C_PAGE_ADMIN_CGR constant binary_integer := 1;
-  C_PAGE_EDIT_CGR constant binary_integer := 6;
   C_PAGE_EDIT_CRU constant binary_integer := 5;
+  C_PAGE_EDIT_CGR constant binary_integer := 6;
+  C_PAGE_EDIT_CAA constant binary_integer := 9;
 
   g_page_values utl_apex.page_value_t;
   g_collection_seq_id binary_integer;
-  g_edit_caa_row adc_ui_edit_caa%rowtype;
+  g_edit_caa_row adc_apex_actions_v%rowtype;
   g_edit_cat_row adc_ui_edit_cat%rowtype;
   g_edit_cgr_row adc_rule_groups%rowtype;
   g_edit_cif_row adc_action_item_focus_v%rowtype;
@@ -18,6 +19,7 @@ as
   g_edit_cru_row adc_rules%rowtype;
   g_edit_ctg_row adc_action_type_groups_v%rowtype;
 
+  g_cai_list char_table;
 
   /** Helper to copy APEX session state values into type safe record structures
    * @usage  Is called to copy the actual session state values entered into a type safe record structure.
@@ -118,7 +120,6 @@ as
     pit.enter_detailed('copy_edit_caa');
     
     g_page_values := utl_apex.get_page_values('EDIT_CAA_FORM');
-    g_edit_caa_row.seq_id := to_number(utl_apex.get(g_page_values, 'SEQ_ID'), 'fm9999999999999990d999999999');
     g_edit_caa_row.caa_id := to_number(utl_apex.get(g_page_values, 'CAA_ID'), 'fm9999999999990d99999999');
     g_edit_caa_row.caa_cgr_id := to_number(utl_apex.get(g_page_values, 'CAA_CGR_ID'), 'fm9999999999990d99999999');
     g_edit_caa_row.caa_cty_id := utl_apex.get(g_page_values, 'CAA_CTY_ID');
@@ -142,7 +143,8 @@ as
     g_edit_caa_row.caa_label_start_classes := utl_apex.get(g_page_values, 'CAA_LABEL_START_CLASSES');
     g_edit_caa_row.caa_label_end_classes := utl_apex.get(g_page_values, 'CAA_LABEL_END_CLASSES');
     g_edit_caa_row.caa_item_wrap_class := utl_apex.get(g_page_values, 'CAA_ITEM_WRAP_CLASS');
-    g_edit_caa_row.caa_cai_list := utl_apex.get(g_page_values, 'CAA_CAI_LIST');
+    
+    utl_text.string_to_table(utl_apex.get(g_page_values, 'CAA_CAI_LIST'), g_cai_list);
     
     pit.leave_detailed;
   end copy_edit_caa;
@@ -218,50 +220,6 @@ as
   
     pit.leave_detailed;
   end copy_edit_ctg;
-
-
-  /** Helper method to cast the collection type of the CAA collection to a record
-   *  of type adc_apex_actions_v%ROWTYPE
-   * %param  p_row  Instance of the collection
-   * %param  p_rec  output record
-   */
-  procedure copy_row_to_caa_record(
-    p_row in adc_ui_edit_caa%rowtype,
-    p_rec out nocopy adc_apex_actions_v%rowtype)
-  as
-  begin
-    pit.enter_detailed('copy_row_to_caa_record');
-    
-    p_rec.caa_id := p_row.caa_id;
-    p_rec.caa_cgr_id := p_row.caa_cgr_id;
-    p_rec.caa_cty_id := p_row.caa_cty_id;
-    p_rec.caa_name := p_row.caa_name;
-    p_rec.caa_label := p_row.caa_label;
-    p_rec.caa_context_label := p_row.caa_context_label;
-    p_rec.caa_icon := p_row.caa_icon;
-    p_rec.caa_icon_type := p_row.caa_icon_type;
-    p_rec.caa_title := p_row.caa_title;
-    p_rec.caa_shortcut := p_row.caa_shortcut;
-    p_rec.caa_initially_disabled := p_row.caa_initially_disabled;
-    p_rec.caa_initially_hidden := p_row.caa_initially_hidden;
-    -- ACTION
-    p_rec.caa_href := p_row.caa_href;
-    p_rec.caa_action := p_row.caa_action;
-    -- TOGGLE
-    p_rec.caa_on_label := p_row.caa_on_label;
-    p_rec.caa_off_label := p_row.caa_off_label;
-    -- TOGGLE | RADIO_GROUP
-    p_rec.caa_get := p_row.caa_get;
-    p_rec.caa_set := p_row.caa_set;
-    -- RADIO_GROUP
-    p_rec.caa_choices := p_row.caa_choices;
-    p_rec.caa_label_classes := p_row.caa_label_classes;
-    p_rec.caa_label_start_classes := p_row.caa_label_start_classes;
-    p_rec.caa_label_end_classes := p_row.caa_label_end_classes;
-    p_rec.caa_item_wrap_class := p_row.caa_item_wrap_class;
-    
-    pit.leave_detailed;
-  end copy_row_to_caa_record;
 
 
   /** Helper method to cast the collection type of the SRA collection to a record
@@ -391,6 +349,24 @@ as
   begin
     return utl_apex.get_help_websheet_id;
   end get_help_websheet_id;
+  
+  
+  procedure toggle_cgr_active
+  as
+    l_cgr_id adc_rule_groups.cgr_id%type;
+  begin
+    pit.enter_mandatory;
+    
+    l_cgr_id := utl_apex.get_number('CGR_ID');
+    
+    update adc_rule_groups
+       set cgr_active = case cgr_active when adc_util.c_true then adc_util.c_false else adc_util.c_true end
+     where cgr_id = l_cgr_id;
+     
+    commit;
+    
+    pit.leave_mandatory;
+  end toggle_cgr_active;
   
   
   procedure process_export_cat
@@ -534,178 +510,6 @@ as
 
     pit.leave_optional;
   end initialize_cra_collection;
-
-
-  procedure initialize_caa_collection
-  as
-    cursor caa_cur(p_cgr_id in adc_rule_groups.cgr_id%type) is
-      select saa.*, sai.caa_cai_list
-        from adc_apex_actions_v saa
-        left join (
-             select cai_caa_id, listagg(cai_cpi_id, ':') within group (order by cai_cpi_id) caa_cai_list
-               from adc_apex_action_items
-              group by cai_caa_id) sai
-          on caa_id = cai_caa_id
-       where caa_cgr_id = p_cgr_id;
-    l_cgr_id adc_rule_groups.cgr_id%type;
-  begin
-    pit.enter_optional;
-    
-    -- Initialization
-    l_cgr_id := utl_apex.get_number('CGR_ID');
-    apex_collection.create_or_truncate_collection(C_CAA_COLLECTION);
-    
-    for saa in caa_cur(l_cgr_id) loop
-      apex_collection.add_member(
-        p_collection_name => C_CAA_COLLECTION,
-        p_n001 => saa.caa_id,
-        p_n002 => saa.caa_cgr_id,
-        p_c001 => saa.caa_cty_id,
-        p_c002 => saa.caa_name,
-        p_c003 => saa.caa_label,
-        p_c004 => saa.caa_context_label,
-        p_c005 => saa.caa_icon,
-        p_c006 => saa.caa_icon_type,
-        p_c007 => saa.caa_title,
-        p_c008 => saa.caa_shortcut,
-        p_c009 => saa.caa_initially_disabled,
-        p_c010 => saa.caa_initially_hidden,
-        p_c011 => saa.caa_href,
-        p_c012 => saa.caa_action,
-        p_c013 => saa.caa_on_label,
-        p_c014 => saa.caa_off_label,
-        p_c015 => saa.caa_get,
-        p_c016 => saa.caa_set,
-        p_c017 => saa.caa_choices,
-        p_c018 => saa.caa_label_classes,
-        p_c019 => saa.caa_label_start_classes,
-        p_c020 => saa.caa_label_end_classes,
-        p_c021 => saa.caa_item_wrap_class,
-        p_c022 => saa.caa_cai_list,
-        p_generate_md5 => C_FALSE);
-    end loop;
-
-    pit.leave_optional;
-  end initialize_caa_collection;
-
-
-  /* Methods to maintain user entries on APEX pages */
-  function validate_edit_cgr
-    return boolean
-  as
-    l_exists binary_integer;
-  begin
-    pit.enter_mandatory;
-    
-    copy_edit_cgr;
-
-    pit.start_message_collection;
-    adc_admin.validate_rule_group(g_edit_cgr_row);
-    pit.stop_message_collection;
-    
-    pit.leave_mandatory;
-    return true;
-  exception
-    when msg.PIT_BULK_ERROR_ERR then
-      utl_apex.handle_bulk_errors(char_table(
-        'CGR_APP_ID_MISSING', 'CGR_APP_ID',
-        'CGR_PAGE_ID_MISSING', 'CGR_PAGE_ID',
-        'ADC_CGR_MUST_BE_UNIQUE', 'CGR_PAGE_ID'));
-        
-    pit.leave_mandatory;
-    return true;
-  end validate_edit_cgr;
-  
-  
-  /** Helper to extract apex actions maintenace from PROCESS_EDIT_CGR
-   * %usage  APEX Actions are maintained using the collection API to allow for
-   *         creation of APEX actions while the rule group does not yet exist (is created)
-   *         This method harmonizes the entered APEX actions with the underlying table
-   */
-  procedure maintain_apex_actions
-  as
-    cursor missing_caa_cur (p_cgr_id in adc_rule_groups.cgr_id%TYPE) is
-      select caa_id
-        from adc_apex_actions
-       where caa_cgr_id = p_cgr_id
-         and caa_id not in (
-             select caa_id
-               from adc_ui_edit_caa);
-               
-    cursor caa_cur is
-      select *
-        from adc_ui_edit_caa;
-        
-    cursor existing_cai_cur(p_caa_id in adc_ui_edit_caa.caa_id%type) is
-      select cai_caa_id
-        from adc_apex_action_items
-       where cai_caa_id = p_caa_id;
-                
-    cursor cai_cur (
-      p_caa_id in adc_ui_edit_caa.caa_id%type,
-      p_caa_cai_list in varchar2) 
-    is
-      select caa_id cai_caa_id, caa_cgr_id cai_cpi_cgr_id, column_value cai_cpi_id
-        from adc_ui_edit_caa saa
-       cross join table(utl_text.string_to_table(p_caa_cai_list))
-       where caa_id = p_caa_id;
-    l_caa_rec adc_apex_actions_v%rowtype;
-    l_cai_rec adc_apex_action_items%rowtype;
-  begin
-    pit.enter_mandatory;
-    
-    -- Remove deleted apex actions
-    for saa in missing_caa_cur(g_edit_cgr_row.cgr_id) loop
-      adc_admin.delete_apex_action(saa.caa_id);
-    end loop;
-    
-    -- Add list of apex actions
-    for saa in caa_cur loop
-      copy_row_to_caa_record(saa, l_caa_rec);
-      adc_admin.merge_apex_action(l_caa_rec);
-
-      -- Copy data from Collection and merge into ADC_APEX_ACTION_ITEM
-      for sai in existing_cai_cur(saa.caa_id) loop
-        adc_admin.delete_apex_action_item(sai.cai_caa_id);
-      end loop;
-      
-      for sai in cai_cur(saa.caa_id, saa.caa_cai_list) loop
-        -- Copy row to record locally
-        l_cai_rec.cai_caa_id := sai.cai_caa_id;
-        l_cai_rec.cai_cpi_cgr_id := sai.cai_cpi_cgr_id;
-        l_cai_rec.cai_cpi_id := sai.cai_cpi_id;
-        
-        adc_admin.merge_apex_action_item(l_cai_rec);
-      end loop;
-    end loop;
-    
-    pit.leave_mandatory;
-  end maintain_apex_actions;
-
-
-  procedure process_edit_cgr
-  as
-  begin
-    pit.enter_mandatory;
-    
-    copy_edit_cgr;
-
-    case when utl_apex.inserting then
-      adc_admin.merge_rule_group(g_edit_cgr_row);
-    when utl_apex.updating then
-      adc_admin.merge_rule_group(g_edit_cgr_row);
-      -- APEX actions can be created after creation of the rule group only
-      maintain_apex_actions;
-    when utl_apex.deleting then
-      adc_admin.delete_rule_group(g_edit_cgr_row);
-    else
-      pit.error(msg.UTL_INVALID_REQUEST, msg_args(utl_apex.get_request));
-    end case;
-    
-    adc_admin.propagate_rule_change(g_edit_cgr_row.cgr_id);
-
-    pit.leave_mandatory;
-  end process_edit_cgr;
   
   
   function validate_edit_cif
@@ -1125,19 +929,14 @@ as
   function validate_edit_caa
     return boolean
   as
-    l_caa_rec adc_apex_actions_v%rowtype;
   begin
     pit.enter_mandatory;
     
     copy_edit_caa;
     
-    copy_row_to_caa_record(g_edit_caa_row, l_caa_rec);
-    
     pit.start_message_collection;
-    adc_admin.validate_apex_action(l_caa_rec);
+    adc_admin.validate_apex_action(g_edit_caa_row);
     pit.stop_message_collection;
-    
-    pit.leave_mandatory;
     
     pit.leave_mandatory;
     return true;
@@ -1154,78 +953,17 @@ as
 
   procedure process_edit_caa
   as
-    l_caa_rec adc_apex_actions_v%rowtype;
-    l_caa_cai_list char_table;
   begin
     pit.enter_mandatory;
     
     copy_edit_caa;
-    copy_row_to_caa_record(g_edit_caa_row, l_caa_rec);
-    -- cast item list to CHAR_TABLE
-    utl_text.string_to_table(g_edit_caa_row.caa_cai_list, l_caa_cai_list);
     
     case
-    when utl_apex.inserting then
+    when utl_apex.inserting or utl_apex.updating then
       g_edit_caa_row.caa_id := coalesce(g_edit_caa_row.caa_id, adc_seq.nextval);
-      apex_collection.add_member(
-        p_collection_name => C_CAA_COLLECTION,
-        p_n001 => g_edit_caa_row.caa_id,
-        p_n002 => g_edit_caa_row.caa_cgr_id,
-        p_c001 => g_edit_caa_row.caa_cty_id,
-        p_c002 => g_edit_caa_row.caa_name,
-        p_c003 => g_edit_caa_row.caa_label,
-        p_c004 => g_edit_caa_row.caa_context_label,
-        p_c005 => g_edit_caa_row.caa_icon,
-        p_c006 => g_edit_caa_row.caa_icon_type,
-        p_c007 => g_edit_caa_row.caa_title,
-        p_c008 => g_edit_caa_row.caa_shortcut,
-        p_c009 => g_edit_caa_row.caa_initially_disabled,
-        p_c010 => g_edit_caa_row.caa_initially_hidden,
-        p_c011 => g_edit_caa_row.caa_href,
-        p_c012 => g_edit_caa_row.caa_action,
-        p_c013 => g_edit_caa_row.caa_on_label,
-        p_c014 => g_edit_caa_row.caa_off_label,
-        p_c015 => g_edit_caa_row.caa_get,
-        p_c016 => g_edit_caa_row.caa_set,
-        p_c017 => g_edit_caa_row.caa_choices,
-        p_c018 => g_edit_caa_row.caa_label_classes,
-        p_c019 => g_edit_caa_row.caa_label_start_classes,
-        p_c020 => g_edit_caa_row.caa_label_end_classes,
-        p_c021 => g_edit_caa_row.caa_item_wrap_class,
-        p_c022 => g_edit_caa_row.caa_cai_list,
-        p_generate_md5 => C_FALSE);
-    when utl_apex.updating then
-      apex_collection.update_member(
-        p_seq => g_edit_caa_row.seq_id,
-        p_collection_name => C_CAA_COLLECTION,
-        p_n001 => g_edit_caa_row.caa_id,
-        p_n002 => g_edit_caa_row.caa_cgr_id,
-        p_c001 => g_edit_caa_row.caa_cty_id,
-        p_c002 => g_edit_caa_row.caa_name,
-        p_c003 => g_edit_caa_row.caa_label,
-        p_c004 => g_edit_caa_row.caa_context_label,
-        p_c005 => g_edit_caa_row.caa_icon,
-        p_c006 => g_edit_caa_row.caa_icon_type,
-        p_c007 => g_edit_caa_row.caa_title,
-        p_c008 => g_edit_caa_row.caa_shortcut,
-        p_c009 => g_edit_caa_row.caa_initially_disabled,
-        p_c010 => g_edit_caa_row.caa_initially_hidden,
-        p_c011 => g_edit_caa_row.caa_href,
-        p_c012 => g_edit_caa_row.caa_action,
-        p_c013 => g_edit_caa_row.caa_on_label,
-        p_c014 => g_edit_caa_row.caa_off_label,
-        p_c015 => g_edit_caa_row.caa_get,
-        p_c016 => g_edit_caa_row.caa_set,
-        p_c017 => g_edit_caa_row.caa_choices,
-        p_c018 => g_edit_caa_row.caa_label_classes,
-        p_c019 => g_edit_caa_row.caa_label_start_classes,
-        p_c020 => g_edit_caa_row.caa_label_end_classes,
-        p_c021 => g_edit_caa_row.caa_item_wrap_class,
-        p_c022 => g_edit_caa_row.caa_cai_list);
+      adc_admin.merge_apex_action(g_edit_caa_row, g_cai_list);
     when utl_apex.deleting then
-      apex_collection.delete_member(
-        p_seq => g_edit_caa_row.seq_id,
-        p_collection_name => C_CAA_COLLECTION);
+      adc_admin.delete_apex_action(g_edit_caa_row);
     else
       null;
     end case;
@@ -1388,23 +1126,30 @@ as
     l_cgr_page_id := utl_apex.get_number('CGR_PAGE_ID');
     l_cgr_id := utl_apex.get_number('CGR_ID');
     
-    -- Action CREATE_RULE_GROUP
-    adc_apex_action.action_init('create-rulegroup');
-    l_javascript := utl_apex.get_page_url(
-                      p_page => 'EDIT_CGR',
-                      p_param_items => 'P6_CGR_APP_ID:P6_CGR_PAGE_ID',
-                      p_value_items => 'P1_CGR_APP_ID:P1_CGR_PAGE_ID',
-                      p_triggering_element => 'R1_RULE_GROUP',
-                      p_clear_cache => C_PAGE_EDIT_CGR);
-    adc_apex_action.set_action(l_javascript);
-    adc.add_javascript(adc_apex_action.get_action_script);
+    -- Action CREATE_CAA
+    adc_apex_action.action_init('create-apex-action');
+    
+    if l_cgr_id is not null then
+      l_javascript := utl_apex.get_page_url(
+                        p_page => 'EDIT_CAA',
+                        p_param_items => 'P9_CAA_CGR_ID',
+                        p_value_items => 'P1_CGR_ID',
+                        p_triggering_element => 'R1_PAGE_COMMAND',
+                        p_clear_cache => C_PAGE_EDIT_CAA);
+      adc_apex_action.set_href(l_javascript);
+      adc_apex_action.set_disabled(false);
+    else
+      adc_apex_action.set_disabled(true);
+    end if;
 
+    adc.add_javascript(adc_apex_action.get_action_script);
+    
     -- Action CREATE_RULE
     adc_apex_action.action_init('create-rule');
     
     if l_cgr_id is not null then
       l_javascript := utl_apex.get_page_url(
-                        p_page => 'EDIT_SRU',
+                        p_page => 'EDIT_CRU',
                         p_param_items => 'P5_CRU_CGR_ID',
                         p_value_items => 'P1_CGR_ID',
                         p_triggering_element => 'R1_RULE_OVERVIEW',
@@ -1420,7 +1165,7 @@ as
     -- Action EXPORT_RULEGROUP
     adc_apex_action.action_init('export-rulegroup');
     
-    -- It is possible that an SGR was selected without defining the application page.
+    -- It is possible that an cgr was selected without defining the application page.
     -- In this case, determine the PAGE_ID before exporting, so that the export dialog works correctly.
     if l_cgr_id is not null and l_cgr_page_id is null then
       select cgr_page_id
@@ -1475,7 +1220,7 @@ as
     -- If select list values change, set dependent select lists to null and refresh
     case adc_api.get_firing_item
       when l_cgr_app_id.item_name then 
-        -- application Id changed, reset and refresh page and sgr select lists
+        -- application Id changed, reset and refresh page and cgr select lists
         l_cgr_page_id.item_value := null;
         adc.set_item(l_cgr_page_id.item_name, null);
         adc.refresh_item(l_cgr_page_id.item_name);
@@ -1484,7 +1229,7 @@ as
         adc.set_item(l_cgr_id.item_name, null);
         adc.refresh_item(l_cgr_id.item_name);   
       when l_cgr_page_id.item_name then
-        -- page id changed, only reset and refresh sgr select list
+        -- page id changed, only reset and refresh cgr select list
         l_cgr_id.item_value := null;
         adc.set_item(l_cgr_id.item_name, null); 
         adc.refresh_item(l_cgr_id.item_name);

@@ -1,6 +1,6 @@
 create or replace editionable view adc_ui_lov_apex_action_items
 as 
-select cit_name || ' »' || cpi_label || '«' d, cpi_id r, cgr_id, cpi_cty_id
+select cpi_id || ' (' || cpi_label || ')' d, cpi_id r, cgr_id, cpi_cty_id
   from adc_page_items spi
   join adc_rule_groups sgr
     on cpi_cgr_id = cgr_id

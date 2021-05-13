@@ -1,43 +1,59 @@
 create or replace view adc_ui_edit_cru_action
-as 
+as
 with params as(
        select v('P5_CRU_ID') cru_id,
-              v('P5_CRU_CGR_ID') cru_cgr_id,
-              'fa-check' flg_yes,
-              'fa-times' flg_no,
-              utl_apex.c_true c_true,
-              utl_apex.c_false c_false
+              v('P5_CRU_CGR_ID') cgr_id,
+              'fa-check' c_yes,
+              'fa-times' c_no,
+             '- ' cgr_page_prefix,
+             ',' delimiter,
+             '<span class="adc-error" title="Element existiert nicht.">' span_error,
+             '<span class="adc-on-error">' span_on_error,
+             '<span class="adc-disabled">' span_disabled,
+             '</i><span class="adc-deprecated">(deprecated) ' span_deprecated,
+             '</span>' close_span,
+             '' br,
+             adc_util.c_true c_true,
+             adc_util.c_false c_false
          from dual)
-select /*+ no_merge(p) */
-       max(cra_id) over () + 1 seq_id,
-       cra_id,
-       cra_cgr_id,
-       cra_cru_id,
-       cra_cat_id,
-       cra_cpi_id,
-       coalesce(item_name, 'Dokument') item_name,
-       cat_name,
-       cra_sort_seq,
-       cra_param_1,
-       cra_param_2,
-       cra_param_3,
-       cra_comment,
-       case cra_on_error when p.c_true then flg_yes else flg_no end cra_on_error,
-       case cra_raise_recursive when p.c_true then flg_yes else flg_no end cra_raise_recursive,
-       case cra_active when p.c_true then flg_yes else flg_no end cra_active,
-       -- Change logic to allow for "is_valid" flag
-       case cra_has_error when p.c_true then flg_no else flg_yes end cra_has_error
-  from adc_ui_edit_cra
-  join adc_action_types_v
-    on cra_cat_id = cat_id
-  join adc_rule_groups
-    on cra_cgr_id = cgr_id
-  left join adc_bl_page_items
-    on cgr_app_id = app_id
-   and cgr_page_id = page_id
-   and cra_cpi_id = item_id
-  join params p
-    on cra_cgr_id = cru_cgr_id
-   and (cra_cru_id = cru_id or cra_cru_id is null);
+      select /*+ no_merge (p) */
+             cru.cru_id, cru.cru_cgr_id, cra_id, cra_sort_seq, cat_id,
+             case
+               when cpi.cpi_has_error = p.c_true then p.span_error || cat_name || p.close_span
+               when cra_on_error = p.c_true then p.span_on_error || cat_name || p.close_span
+               when cra_active = p.c_false then p.span_disabled || cat_name || p.close_span
+               when cat_active = p.c_false then p.span_deprecated || cat_name || p.close_span
+               else cat_name
+             end cra_name,
+             case when cra_raise_recursive = c_true then c_yes else c_no end cra_raise_recursive
+        from params p
+        join adc_rules cru
+          on p.cgr_id = cru.cru_cgr_id
+         and p.cru_id = cru.cru_id
+        left join adc_page_items cpi
+          on cru.cru_cgr_id = cpi.cpi_cgr_id
+         and instr(p.delimiter || cru_firing_items || p.delimiter, p.delimiter || cpi.cpi_id || p.delimiter) > 0
+         and cpi.cpi_has_error = p.c_true
+        left join (
+             select cra_id, cra_cgr_id, cat_id,
+                    case when cat_display_name is not null then
+                      to_char(utl_text.bulk_replace(cat_display_name, char_table(
+                        'ITEM', case when cra_cpi_id = 'DOCUMENT' and to_char(cra_param_2) is not null then to_char(cra_param_2) else cra_cpi_id end,
+                        'PARAM_1', cra_param_1,
+                        'PARAM_2', cra_param_2,
+                        'PARAM_3', cra_param_3),
+                        'p>', 'span>'))
+                    else cat_name
+                    end cat_name,
+                    cat_active,
+                    cra_cru_id, cra_cat_id, cra_sort_seq, cra_active, cpi.cpi_has_error, cra_on_error, cra_raise_recursive
+               from adc_rule_actions cra
+               join adc_page_items cpi
+                 on cra_cgr_id = cpi.cpi_cgr_id
+                and cra_cpi_id = cpi.cpi_id
+               left join adc_action_types_v cat
+                 on cra_cat_id = cat_id) cra
+          on cru.cru_id = cra_cru_id;
+          
 
 comment on table adc_ui_edit_cru_action is 'UI-View for page ADC_UI_EDIT_CRU, report ACTION';

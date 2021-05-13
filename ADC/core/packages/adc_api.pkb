@@ -279,24 +279,6 @@ as
   end register_error;
   
   
-  procedure register_item(
-    p_cpi_id in varchar2,
-    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE)
-  as
-  begin
-    pit.enter_mandatory(
-      p_params => msg_params(
-                    msg_param('p_cpi_id', p_cpi_id),
-                    msg_param('p_allow_recursion', p_allow_recursion)));
-                    
-    adc_internal.register_item(
-      p_cpi_id => p_cpi_id,
-      p_allow_recursion => p_allow_recursion);
-      
-    pit.leave_mandatory;
-  end register_item;
-  
-  
   procedure register_error(
     p_cpi_id in varchar2,
     p_message_name in varchar2,
@@ -315,6 +297,23 @@ as
       
     pit.leave_mandatory;
   end register_error;
+  
+  
+  procedure register_item(
+    p_cpi_id in varchar2,
+    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE)
+  as
+  begin
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_cpi_id', p_cpi_id)));
+                    
+    adc_internal.register_item(
+      p_cpi_id => p_cpi_id,
+      p_allow_recursion => p_allow_recursion);
+      
+    pit.leave_mandatory;
+  end register_item;
   
   
   procedure register_mandatory(

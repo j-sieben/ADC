@@ -24,7 +24,7 @@ begin
   adc_admin.merge_rule(
     p_cru_id => adc_admin.map_id(606),
     p_cru_cgr_id => adc_admin.map_id(604),
-    p_cru_name => 'Initialisierung',
+    p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = 1|',
     p_cru_sort_seq => 10,
     p_cru_fire_on_page_load => adc_util.C_FALSE,
@@ -59,7 +59,7 @@ begin
   adc_admin.merge_rule(
     p_cru_id => adc_admin.map_id(612),
     p_cru_cgr_id => adc_admin.map_id(604),
-    p_cru_name => 'Keine Auswahl getroffen',
+    p_cru_name => 'keine Exportoption wählt',
     p_cru_condition => q'|P12_EXPORT_TYPE is null|',
     p_cru_sort_seq => 20,
     p_cru_fire_on_page_load => adc_util.C_FALSE,
@@ -81,7 +81,7 @@ begin
   adc_admin.merge_rule(
     p_cru_id => adc_admin.map_id(616),
     p_cru_cgr_id => adc_admin.map_id(604),
-    p_cru_name => 'Auswahl getroffen',
+    p_cru_name => 'eine Exportauswahl trifft',
     p_cru_condition => q'|P12_EXPORT_TYPE is not null|',
     p_cru_sort_seq => 30,
     p_cru_fire_on_page_load => adc_util.C_FALSE,

@@ -101,10 +101,11 @@ as
     
     
   /** Method to retrieve additional event data
-   * %param  p_key  If the event data is a structured JSON, P_KEY is used to extract specific information
-   *                IF P_KEY is NULL, the complete answer is returned
+   * %param  p_key  Optional key to filter event data
    * %return Event data
    * %usage  Is called to retrieve additional event data information such as returned data from a modal dialog
+   *         If the event data is a structured JSON, P_KEY is used to extract specific information
+   *         IF P_KEY is NULL, the complete answer is returned
    */
   function get_event_data(
      p_key in varchar2)
@@ -129,7 +130,7 @@ as
   /** Method executes any initialization code of the rule group
    * %usage Is called during initialization of ADC for the page. ADC requires the initial values of the page items and
    *        needs to compute them, as APEX does not store them during initialization in an accessible manner.
-   *        To allow for this, ADC re-executes any page computation and row fetch process as far as possible
+   *        To allow for this, ADC re-executes any page computation and row fetch process as far as possible.
    */
   procedure process_initialization_code;
 
@@ -137,6 +138,14 @@ as
   /** Method to process a ADC request
    * %return JavaScript code in response to the request
    * %usage  Is used to calculate the new status of the page based on the session state values and the underlying ADC rules.
+   *         Flow: 
+   *         - Query decision table (ADC_RULE_GROUPS.CGR_DECISION_TABLE) against actual session state
+   *         - If a rule has to be executed, perform all assigned actions:
+   *           - execute actions PL/SQL code immediately and 
+   *           - collect all JavaScript
+   *         - If a PL/SQL code changes session state, recursively check rules to determine whether further 
+   *           rules have to be processed
+   *         - If no further rule has to be processed, return all collected JavaScript
    */
   function process_request
     return clob;
@@ -144,37 +153,24 @@ as
 
   /** Method pushes a page item onto the error stack.
    * %param  p_error  APEX error of type APEX_ERROR.T_ERROR to push onto the stack
-   * %usage  Is called during execution of a rule, if an error is registered or if the page is to be
-   *         submitted. The stack collects any items that were "touched" by the rule(s) executed during
-   *         this processing step.
+   * %usage  Is called during execution of a rule, if an error is registered.
+   *         All errors are collected on an error stack and sent to the page as part of the answer.
    */
   procedure push_error(
     p_error in apex_error.t_error);
     
-
-  /** Method pushes a page item onto the firing item stack.
-   * %param  p_cpi_id  ID of the page item to push onto the stack
-   * %usage  ADC maintains a list of all items that fired events.
-   */
-  procedure push_firing_item(
-    p_cpi_id in varchar2);
-    
-  
-  /* @see adc_api.register_item */
-  procedure register_item(
-    p_cpi_id in varchar2,
-    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE);
-    
     
   /** Helper to copy plugin settings to an internal record G_PARAM
-   * %param  p_firing_item           Firing item
-   * %param  p_event                 Firing event
+   * %param  p_firing_item  Firing item
+   * %param  p_event        Firing event
+   * %param  p_event_data   Additional event information
    * %usage  Is called before the actual rule action takes place (at the beginning of render and AJAX methods)
    *         to copy the status to a package record.
    */
   procedure read_settings(
     p_firing_item in varchar2,
-    p_event in varchar2);
+    p_event in varchar2,
+    p_event_data in varchar2);
 
 
   /* Methods to implement the ADC specific functionality */
@@ -226,6 +222,12 @@ as
     p_cpi_id in varchar2,
     p_message_name in varchar2,
     p_msg_args in msg_args default null);
+
+
+  /* @see adc_api.register_error */
+  procedure register_item(
+    p_cpi_id in varchar2,
+    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE);
 
 
   /* @see adc_api.register_mandatory */

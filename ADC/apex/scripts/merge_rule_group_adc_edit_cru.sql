@@ -24,7 +24,7 @@ begin
   adc_admin.merge_rule(
     p_cru_id => adc_admin.map_id(584),
     p_cru_cgr_id => adc_admin.map_id(582),
-    p_cru_name => 'Initialisierung',
+    p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = 1|',
     p_cru_sort_seq => 10,
     p_cru_fire_on_page_load => adc_util.C_FALSE,
@@ -59,7 +59,7 @@ begin
   adc_admin.merge_rule(
     p_cru_id => adc_admin.map_id(590),
     p_cru_cgr_id => adc_admin.map_id(582),
-    p_cru_name => 'Aktion editiert',
+    p_cru_name => 'eine Aktion editiert hat',
     p_cru_condition => q'|dialog_closed = 'R5_ACTION'|',
     p_cru_sort_seq => 30,
     p_cru_fire_on_page_load => adc_util.C_FALSE,
@@ -81,7 +81,7 @@ begin
   adc_admin.merge_rule(
     p_cru_id => adc_admin.map_id(594),
     p_cru_cgr_id => adc_admin.map_id(582),
-    p_cru_name => 'Inititialisierung, neue Regel',
+    p_cru_name => 'einen neuen Anwendungsfall erstellt',
     p_cru_condition => q'|P5_CRU_ID is null and initializing = 1|',
     p_cru_sort_seq => 20,
     p_cru_fire_on_page_load => adc_util.C_TRUE,
@@ -116,7 +116,7 @@ begin
   adc_admin.merge_rule(
     p_cru_id => adc_admin.map_id(600),
     p_cru_cgr_id => adc_admin.map_id(582),
-    p_cru_name => 'Regelbedingung geÃ¤ndert',
+    p_cru_name => 'die technische Bedingung ändert',
     p_cru_condition => q'|P5_CRU_CONDITION is not null|',
     p_cru_sort_seq => 40,
     p_cru_fire_on_page_load => adc_util.C_FALSE,

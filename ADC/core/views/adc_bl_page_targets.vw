@@ -2,7 +2,11 @@ create or replace editionable view adc_bl_page_targets
 as 
 select cgr_id cpi_cgr_id,
        item_name cpi_id,
-       case when regexp_like(format_mask, '(^|(FM))[09DGL\.\,]+$', 'i') then 'NUMBER_ITEM'
+       case 
+       -- priorize data type detection
+       when item_source_data_type = 'NUMBER' then 'NUMBER_ITEM'
+       when item_source_data_type in ('DATE', 'TIMESTAMP') then 'DATE_ITEM'
+       when regexp_like(format_mask, '(^|(FM))[09DGL\.\,]+$', 'i') then 'NUMBER_ITEM'
        when format_mask is not null then 'DATE_ITEM'
        else 'ITEM' end cpi_cit_id,
        case replace(display_as_code, 'NATIVE_')
@@ -19,7 +23,7 @@ select cgr_id cpi_cgr_id,
        case when instr(upper(item_label_template), 'REQUIRED') > 0 then adc_util.C_TRUE else adc_util.C_FALSE end cpi_is_mandatory,
        -- default required items
        case
-         when format_mask is not null or instr(upper(item_label_template), 'REQUIRED') > 0 then adc_util.C_TRUE 
+         when item_source_data_type in ('NUMBER', 'DATE', 'TIMESTAMP') or format_mask is not null or instr(upper(item_label_template), 'REQUIRED') > 0 then adc_util.C_TRUE 
          else adc_util.C_FALSE end  cpi_is_required
   from apex_application_page_items aai
   join adc_rule_groups sgr
@@ -45,6 +49,9 @@ select cgr_id, static_id, 'REGION', null, region_name, null, null, null, adc_uti
  where static_id is not null
  union all
 select cgr_id, 'DOCUMENT', 'DOCUMENT', null, null, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
+  from adc_rule_groups
+ union all
+select cgr_id, 'COMMAND', 'COMMAND', null, null, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
   from adc_rule_groups
  union all
 select cgr_id, 'ALL', 'ALL', null, null, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE

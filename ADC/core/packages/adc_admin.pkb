@@ -76,19 +76,19 @@ as
                          and p.uttm_name = 'INITIALIZE_COLUMN'), ',' || adc_util.C_CR) sql_stmt,
                     -- generate adc_util.set_session_state calls for any page element
                     utl_text.generate_text(cursor(
-                      select p.template, sit.cit_init_template, spi.cpi_conversion,
+                      select p.template, sit.cit_init_template, cpi.cpi_conversion,
                              api.item_name, api.item_source
                         from params p
                         join apex_application_page_items api
                           on p.application_id = api.application_id
                          and p.page_id = api.page_id
-                        join adc_page_items spi
-                          on p.cgr_id = spi.cpi_cgr_id
-                         and api.item_name = spi.cpi_id
+                        join adc_page_items cpi
+                          on p.cgr_id = cpi.cpi_cgr_id
+                         and api.item_name = cpi.cpi_id
                         join adc_page_item_types sit
-                          on spi.cpi_cit_id = sit.cit_id
+                          on cpi.cpi_cit_id = sit.cit_id
                        where api.item_source_type = 'Database Column'
-                         and spi.cpi_is_required = adc_util.C_TRUE
+                         and cpi.cpi_is_required = adc_util.C_TRUE
                          and p.uttm_name = 'INITIALIZE_COL_VAL'), adc_util.C_CR) item_stmt
                from dual)) resultat
       into l_initialization_code
@@ -150,7 +150,8 @@ as
                     cpi_is_required,
                     cpi_is_mandatory
                from adc_bl_page_targets
-              where cpi_cgr_id = p_cgr_id) s
+              where cpi_cgr_id = p_cgr_id
+                and cpi_id is not null) s
          on (t.cpi_id = s.cpi_id and t.cpi_cgr_id = s.cpi_cgr_id)
        when matched then update set
             t.cpi_cit_id = s.cpi_cit_id,
@@ -167,21 +168,21 @@ as
 
       pit.verbose(msg.PIT_PASS_MESSAGE, msg_args('APEX items merged into ADC_PAGE_ITEMS'));
 
-      -- Step 3: mark page items referenced in a single rule as relevant
+      -- Step 3: mark page items referenced in a technical condition as relevant
       merge into adc_page_items t
       using (select distinct cpi_cgr_id, cpi_id
                from (select sgr.cgr_id cpi_cgr_id, i.column_value cpi_id
-                       from adc_rules sru
+                       from adc_rules cru
                        join adc_rule_groups sgr
-                         on sru.cru_cgr_id = sgr.cgr_id
-                      cross join table(utl_text.string_to_table(sru.cru_firing_items, ',')) i
+                         on cru.cru_cgr_id = sgr.cgr_id
+                      cross join table(utl_text.string_to_table(cru.cru_firing_items, ',')) i
                       where cgr_id = p_cgr_id
                       union all
                      -- Match newly created condition against adc_page_items to find new firing items
                      select cpi_cgr_id, cpi_id
-                       from adc_page_items spi
-                      where (regexp_instr(upper(p_new_condition), replace(C_REGEX_ITEM, '#ITEM#', spi.cpi_id)) > 0
-                         or instr(spi.cpi_css, replace(regexp_substr(p_new_condition, C_REGEX_CSS), C_APOS, C_PIPE)) > 0)
+                       from adc_page_items cpi
+                      where (regexp_instr(upper(p_new_condition), replace(C_REGEX_ITEM, '#ITEM#', cpi.cpi_id)) > 0
+                         or instr(cpi.cpi_css, replace(regexp_substr(p_new_condition, C_REGEX_CSS), C_APOS, C_PIPE)) > 0)
                         and cpi_cgr_id = p_cgr_id)) s
          on (t.cpi_id = s.cpi_id
          and t.cpi_cgr_id = s.cpi_cgr_id)
@@ -213,9 +214,9 @@ as
 
       -- Mark rules that reference items with error flag
       merge into adc_rules t
-      using (select distinct sru.cru_id
-               from adc_page_items spi
-               join adc_rules sru
+      using (select distinct cru.cru_id
+               from adc_page_items cpi
+               join adc_rules cru
                  on utl_text.contains(cru_firing_items, cpi_id) = l_is_true
               where cpi_cgr_id = p_cgr_id
                 and cpi_has_error = adc_util.C_TRUE) s
@@ -271,16 +272,16 @@ as
                     msg_param('p_cgr_id', p_cgr_id)));
 
     merge into adc_rules t
-    using (select sru.cru_id,
-                  listagg(spi.cpi_id, ',') within group (order by spi.cpi_id) cru_firing_items
-             from adc_page_items spi
-             join adc_rules sru
-               on spi.cpi_cgr_id = sru.cru_cgr_id
-              and (regexp_instr(upper(sru.cru_condition), replace(C_REGEX_ITEM, '#ITEM#', spi.cpi_id)) > 0
-               or instr(spi.cpi_css, replace(regexp_substr(sru.cru_condition, C_REGEX_CSS), C_APOS, C_PIPE)) > 0)
-            where spi.cpi_cgr_id = p_cgr_id
-              and sru.cru_active = adc_util.C_TRUE
-            group by sru.cru_id) s
+    using (select cru.cru_id,
+                  listagg(cpi.cpi_id, ',') within group (order by cpi.cpi_id) cru_firing_items
+             from adc_page_items cpi
+             join adc_rules cru
+               on cpi.cpi_cgr_id = cru.cru_cgr_id
+              and (regexp_instr(upper(cru.cru_condition), replace(C_REGEX_ITEM, '#ITEM#', cpi.cpi_id)) > 0
+               or instr(cpi.cpi_css, replace(regexp_substr(cru.cru_condition, C_REGEX_CSS), C_APOS, C_PIPE)) > 0)
+            where cpi.cpi_cgr_id = p_cgr_id
+              and cru.cru_active = adc_util.C_TRUE
+            group by cru.cru_id) s
        on (t.cru_id = s.cru_id)
      when matched then update set
           t.cru_firing_items = s.cru_firing_items;
@@ -293,13 +294,13 @@ as
    * @param  p_cgr_id  Rule group ID
    * @usage  Creates a rule group view
    */
-  procedure create_rule_view(
+  procedure create_decision_table(
     p_cgr_id in adc_rule_groups.cgr_id%type)
   as
     C_UTTM_NAME constant utl_text_templates.uttm_name%type := 'RULE_VIEW';
     l_stmt clob;
   begin
-    pit.enter_optional('create_rule_view', 
+    pit.enter_optional('create_decision_table', 
       p_params => msg_params(msg_param('p_cgr_id', p_cgr_id)));
 
     -- generate view SQL
@@ -324,8 +325,8 @@ as
                         left join (
                                select *
                                  from adc_page_items
-                                where cpi_cgr_id = g_cgr_id) spi
-                          on sit.cit_id = spi.cpi_cit_id
+                                where cpi_cgr_id = g_cgr_id) cpi
+                          on sit.cit_id = cpi.cpi_cit_id
                         join params p
                           on C_TRUE in (cpi_is_required, cit_include_in_view)
                        where cit_col_template is not null
@@ -357,7 +358,7 @@ as
   exception
     when others then
       pit.stop(msg.ADC_VIEW_CREATION, msg_args(sqlerrm, l_stmt));
-  end create_rule_view;
+  end create_decision_table;
 
 
   /** Helper to resequence rules and rule actions
@@ -604,13 +605,13 @@ as
     select utl_text.generate_text(cursor(
              select template, 
                     utl_text.generate_text(cursor(
-                      select p.template, p.cgr_app_id, spi.cpi_id
-                        from adc_page_items spi
+                      select p.template, p.cgr_app_id, cpi.cpi_id
+                        from adc_page_items cpi
                         join adc_page_item_types sit
-                          on spi.cpi_cit_id = sit.cit_id
+                          on cpi.cpi_cit_id = sit.cit_id
                         join params p
-                          on spi.cpi_cgr_id = p.cgr_id
-                       where spi.cpi_has_error = adc_util.C_TRUE
+                          on cpi.cpi_cgr_id = p.cgr_id
+                       where cpi.cpi_has_error = adc_util.C_TRUE
                     )) error_list
                from dual
            )) resultat
@@ -633,7 +634,7 @@ as
 
     harmonize_firing_items(p_cgr_id);
     harmonize_adc_page_item(p_cgr_id);
-    create_rule_view(p_cgr_id);
+    create_decision_table(p_cgr_id);
     resequence_rule_group(p_cgr_id);
 
     pit.leave_mandatory;
@@ -1143,7 +1144,11 @@ as
             s.caa_get, s.caa_set, s.caa_on_label, s.caa_off_label, s.caa_choices, s.caa_label_classes, s.caa_label_start_classes,
             s.caa_label_end_classes, s.caa_item_wrap_class);
     
-    -- Register connected items
+    -- Register connected items by deleting and re-assigning them
+    delete from adc_apex_action_items
+     where cai_caa_id = p_row.caa_id
+       and cai_cpi_cgr_id = p_row.caa_cgr_id;
+       
     if p_caa_cai_list is not null then
       for i in 1 .. p_caa_cai_list.count loop
         merge_apex_action_item(
@@ -1428,8 +1433,8 @@ as
                         left join (
                                select *
                                  from adc_page_items
-                                where cpi_cgr_id = p_row.cru_cgr_id) spi
-                          on sit.cit_id = spi.cpi_cit_id
+                                where cpi_cgr_id = p_row.cru_cgr_id) cpi
+                          on sit.cit_id = cpi.cpi_cit_id
                        where adc_util.C_TRUE in (cpi_is_required, cit_include_in_view)
                          and cit_col_template is not null
                       order by cit_include_in_view desc, cpi_id), ',' || adc_util.C_CR, 14) column_list

@@ -28,7 +28,7 @@ begin
     p_cru_condition => q'|initializing = 1|',
     p_cru_sort_seq => 10,
     p_cru_fire_on_page_load => adc_util.C_FALSE,
-    p_cru_active => adc_util.C_FALSE);
+    p_cru_active => adc_util.C_TRUE);
   
   
 

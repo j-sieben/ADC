@@ -45,7 +45,10 @@ as
    * %param [p_param_1]  Optional first parameter value of the action
    * %param [p_param_2]  Optional second parameter value of the action
    * %param [p_param_3]  Optional third parameter value of the action
-   * %usage  Is used allow PL/SQL code to execute predefined action types. This forms an API to the action types to be used from within PL/SQL.
+   * %usage  Is used allow PL/SQL code to execute predefined action types. 
+   *         This forms an API to the action types to be used from within PL/SQL.
+   *         Don't use this method directly, but wrap the action type in package ADC to 
+   *         allow for action type specific parameter naming.
    */
   procedure execute_action(
     p_cat_id in adc_action_types.cat_id%type,
@@ -76,7 +79,7 @@ as
   /** Method to assure that exactly one or at most one page item of a selection of page items contains a value
    * %param  p_value_list  colon-separated list of page item IDs to check
    * %return - adc_util.C_TRUE if rule is satisfied
-   *         - adc_util.C_F if rule is not satisfied
+   *         - adc_util.C_FALSE if rule is not satisfied
    *         - NULL if all page item values are null
    * %usage  Is used to be able to utilize EXCLUSIVE_OR within an ADC rule condition (used in SQL)
    */
@@ -90,11 +93,11 @@ as
    * %param [p_format_mask] Format mask that is used to convert the string representation within the session state.
    *                        If NULL, ADC tries to get the format mask from the meta data
    * %param [p_throw_error] Flag to indicate whether a non successful conversion is treated as an error. Defaults to C_TRUE.
-   *                        - C_TRUE: an error is registered and thrown
-   *                        - C_FALSE: an error is registered but not thrown
+   *                        - adc_util.C_TRUE: an error is registered and thrown
+   *                        - adc_util.C_FALSE: an error is registered but not thrown
    * %return DATE value
    * %usage  Is used to convert a session state string value into date
-   *         Depending on parameter P_THROW_ERROR an error is not only register upon unsuccessful conversion but thrown as well.
+   *         Depending on parameter P_THROW_ERROR an error is not only registered upon unsuccessful conversion but thrown as well.
    *         This is useful if a rule cannot be processed any further if the conversion is not successful.
    *         If the element is mandatory and NULL, a default value is returned as defined in the APEX metadata
    */
@@ -142,7 +145,7 @@ as
    *                        - C_TRUE: an error is registered and thrown
    *                        - C_FALSE: an error is registered but not thrown
    * %return NUMBER value
-   * %usage  Is used to convert a session state string value into date
+   * %usage  Is used to convert a session state string value into number
    *         Depending on parameter P_THROW_ERROR an error is not only register upon unsuccessful conversion but thrown as well.
    *         This is useful if a rule cannot be processed any further if the conversion is not successful.
    *         If the element is mandatory and NULL, a default value is returned as defined in the APEX metadata
@@ -231,14 +234,11 @@ as
     p_message_name in varchar2,
     p_msg_args in msg_args default null);
     
-  
-  /** Method to register items which have changed their value in the session state. If recursion is set to true, those elements
-   *  will cause ADC to evaluate rules for that element by imitating that an event has thrown on that element.
-   * %param  p_cpi_id             ID of the page item to register
-   * %param [p_allow_recursion] Flag to indicate whether this element is allowed to cause a recursive ADC rule call
-   * %usage  Is used to register page items that changed their value because of code executed in ADC. Two things have to happen:
-   *         - Return the changed value to the browser to harmonize the UI with the session state
-   *         - Have ADC evaluate any rules that fire based on the new value. This is true only if P_ALLOW_RECURSION is true.
+    
+  /** Method to register an error with ADC
+   * %param  p_cpi_id           page item to register
+   * %param  p_allow_recursion  page item to set mandatory or optional
+   * %usage  Is used to additionally register a page item with ADC
    */
   procedure register_item(
     p_cpi_id in varchar2,
@@ -250,7 +250,8 @@ as
    * %param  p_is_mandatory           Flag that indicates whether a page item is mandatory (adc_util.C_TRUE) or not (adc_util.C_FALSE)
    * %param  p_cpi_mandatory_message  optional message that is shown if a mandatory page item is null
    * %param  p_jquery_selector        Optional selector to set the mandatory status of many items at once
-   * %usage  Is used to change the mandatory status of one or many page items dynamically
+   * %usage  Is used to change the mandatory status of one or many page items dynamically.
+   *         ADC maintains APEX collections with all mandatory items per ADC rule group. This way, mandatory items can differ between sessions.
    */
   procedure register_mandatory(
     p_cpi_id in adc_page_items.cpi_id%type,

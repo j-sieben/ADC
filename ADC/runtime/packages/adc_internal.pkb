@@ -501,9 +501,10 @@ as
   as
     l_actions_js adc_util.max_char;
     l_has_actions binary_integer;
+    C_DEFAULT_ACTION constant adc_apex_actions.caa_action%type := q'^function(){de.condes.plugin.adc.executeCommand('#CAA_NAME#');}^';
   begin
     pit.enter_optional('get_apex_actions');
-    
+  
     -- excute only on initialization
     pit.assert(g_param.firing_event = C_EVENT_INITIALIZE);
     
@@ -553,7 +554,8 @@ as
                              caa_shortcut,
                              case caa_initially_disabled when adc_util.c_true then 'true' else 'false' end caa_initially_disabled,
                              case caa_initially_hidden when adc_util.c_true then 'true' else 'false' end caa_initially_hidden,
-                             caa_href, caa_action
+                             caa_href, 
+                             coalesce(caa_action, C_DEFAULT_ACTION) caa_action
                         from adc_apex_actions_v saa
                         join adc_rule_groups cgr
                           on saa.caa_cgr_id = cgr.cgr_id
@@ -569,7 +571,7 @@ as
       from dual;
     end if; 
 
-    pit.leave_optional(msg_params(msg_param('APEX_ACTIONS', limit_string(l_actions_js))));
+    pit.leave_optional; --(msg_params(msg_param('APEX_ACTIONS', l_actions_js)));
     return l_actions_js;
   exception
     when msg.ASSERT_TRUE_ERR then
@@ -700,7 +702,8 @@ as
    * @return JSON instance for all page items referenced by the rule executed.
    *         Structure: [{"id":"#ID#","value":"#VALUE#"}, ...]
    */
-  function get_items_as_json
+  function get_items_as_json(
+    p_item_list item_stack_t)
     return varchar2
   as
     l_json adc_util.max_char;
@@ -708,15 +711,15 @@ as
   begin
     pit.enter_optional('get_items_as_json');
     
-    l_item := g_param.page_items.first;
+    l_item := p_item_list.first;
     while l_item is not null loop
       utl_text.append(
         l_json,
-        utl_text.bulk_replace(c_page_json_element, char_table(
+        utl_text.bulk_replace(C_PAGE_JSON_ELEMENT, char_table(
           'ID', l_item,
           'VALUE', htf.escape_sc(get_string(l_item)))),
         C_DELIMITER, true);
-      l_item := g_param.page_items.next(l_item);
+      l_item := p_item_list.next(l_item);
     end loop;
     
     l_json := replace(C_BIND_JSON_TEMPLATE, '#JSON#', l_json);
@@ -816,17 +819,18 @@ as
     end if;
     
     -- wrap JavaScript in <script> tag and add item value and error scripts
-    l_js := utl_text.bulk_replace(C_JS_SCRIPT_FRAME, char_table(
+    -- First, replace script to circumvent limitation of CHAR_TABLE
+    l_js := replace(C_JS_SCRIPT_FRAME, '#SCRIPT#', l_js);
+    l_js := utl_text.bulk_replace(l_js, char_table(
               'ID', 'S_' || trunc(dbms_random.value * 10000000),
-              'SCRIPT', l_js,
               'CR', adc_util.C_CR,
-              'ITEM_JSON', get_items_as_json,
+              'ITEM_JSON', get_items_as_json(g_param.page_items),
               'ERROR_JSON',  get_errors_as_json,
-              'FIRING_ITEMS', join_list(g_param.firing_items),
+              'FIRING_ITEMS', get_items_as_json(g_param.firing_items),
               'JS_FILE', C_JS_NAMESPACE,
               'DURATION', to_char(dbms_utility.get_time - g_param.now)));
     
-    pit.leave_optional(msg_params(msg_param('JavaScript', substr(l_js, 1, 3000))));
+    pit.leave_optional(msg_params(msg_param('JavaScript', l_js)));
     return l_js;
   end get_java_script;
   
@@ -1495,7 +1499,8 @@ as
 
   procedure read_settings(
     p_firing_item in varchar2,
-    p_event in varchar2)
+    p_event in varchar2,
+    p_event_data in varchar2)
   as
     l_rule_group_row adc_rule_groups%rowtype;
     l_rule_row adc_rules%rowtype;
@@ -1503,7 +1508,8 @@ as
     pit.enter_optional(
       p_params => msg_params(
                     msg_param('p_firing_item', p_firing_item),
-                    msg_param('p_event', p_event)));
+                    msg_param('p_event', p_event),
+                    msg_param('p_event_data', p_event_data)));
                     
     l_rule_group_row.cgr_app_id := utl_apex.get_application_id;
     l_rule_group_row.cgr_page_id := utl_apex.get_page_id;
@@ -1527,6 +1533,7 @@ as
     g_param.level_length(C_JS_COMMENT) := 0;
     g_param.firing_item := coalesce(p_firing_item, adc_util.C_NO_FIRING_ITEM);
     g_param.firing_event := coalesce(p_event, adc_util.C_INITIALIZE_EVENT);
+    g_param.event_data := p_event_data;
     g_param.recursive_level := 1;
     g_param.now := dbms_utility.get_time;
     g_param.stop_flag := false;
@@ -1551,7 +1558,7 @@ as
       l_rule_row.cru_condition := 'initializing = 1';
       l_rule_row.cru_sort_seq := 10;
       adc_admin.merge_rule(l_rule_row);
-      read_settings(p_firing_item, p_event);
+      read_settings(p_firing_item, p_event, p_event_data);
   end read_settings;
   
   

@@ -11,6 +11,7 @@ with session_state as (
              '<span class="adc-error" title="Element existiert nicht.">' span_error,
              '<span class="adc-on-error">' span_on_error,
              '<span class="adc-disabled">' span_disabled,
+             '</i><span class="adc-deprecated">(deprecated) ' span_deprecated,
              '</span>' close_span,
              '' br,
              'fa-check' c_yes,
@@ -47,6 +48,7 @@ with session_state as (
                when cpi.cpi_has_error = p.c_true then p.span_error || cat_name || p.close_span
                when cra_on_error = p.c_true then p.span_on_error || cat_name || p.close_span
                when cra_active = p.c_false then p.span_disabled || cat_name || p.close_span
+               when cat_active = p.c_false then p.span_deprecated || cat_name || p.close_span
                else cat_name
              end cra_name
         from params p
@@ -59,13 +61,14 @@ with session_state as (
         left join (
              select cra_id, cra_cgr_id,
                     case when cat_display_name is not null then
-                      to_char(utl_text.bulk_replace(cat_display_name, char_table(
+                      to_char(utl_text.bulk_replace(replace(replace(cat_display_name, '<p>'), '</p>', '<br>'), char_table(
                         'ITEM', cra_cpi_id,
                         'PARAM_1', cra_param_1,
                         'PARAM_2', cra_param_2,
                         'PARAM_3', cra_param_3)))
                     else cat_name
                     end cat_name,
+                    cat_active,
                     case when cra_cpi_id = 'DOCUMENT' and to_char(cra_param_2) is not null then to_char(cra_param_2) else cra_cpi_id end cra_cpi_id,
                     cra_cru_id, cra_cat_id, cra_sort_seq, cra_active, cpi.cpi_has_error, cra_on_error
                from adc_rule_actions cra
@@ -87,4 +90,5 @@ select app.application_name || ' (' || app.application_id || ')' application_nam
   and cgr_page_id = pag.page_id
 group by cgr_app_id, app.application_name || ' (' || app.application_id || ')',
       pag.page_id, pag.page_name || ' (' || pag.page_id || ')',
-      cru_id, cru_cgr_id, cru_name, cru_condition, cru_firing_items, cru_sort_seq, cru_fire_on_page_load, cru_active
+      cru_id, cru_cgr_id, cru_name, cru_condition, cru_firing_items, cru_sort_seq, cru_fire_on_page_load, cru_active;
+

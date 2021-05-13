@@ -24,7 +24,7 @@ begin
   adc_admin.merge_rule(
     p_cru_id => adc_admin.map_id(568),
     p_cru_cgr_id => adc_admin.map_id(566),
-    p_cru_name => 'Initialisierung bei Neuanlage',
+    p_cru_name => 'eine neue Aktion erfasst',
     p_cru_condition => q'|initializing = 1 and P11_CRA_ID is null|',
     p_cru_sort_seq => 10,
     p_cru_fire_on_page_load => adc_util.C_FALSE,
@@ -85,7 +85,7 @@ begin
   adc_admin.merge_rule(
     p_cru_id => adc_admin.map_id(578),
     p_cru_cgr_id => adc_admin.map_id(566),
-    p_cru_name => 'Aktionstyp geÃ¤ndert',
+    p_cru_name => 'den Aktionstyp ändert',
     p_cru_condition => q'|P11_CRA_CAT_ID is not null|',
     p_cru_sort_seq => 20,
     p_cru_fire_on_page_load => adc_util.C_TRUE,

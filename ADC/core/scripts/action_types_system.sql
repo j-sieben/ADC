@@ -229,6 +229,14 @@ begin
     p_cit_event => '',
     p_cit_col_template => q'{null #ITEM#}',
     p_cit_init_template => q'{}');
+  adc_admin.merge_page_item_type(
+    p_cit_id => 'COMMAND',
+    p_cit_name => 'Seitenkommando',
+    p_cit_has_value => adc_util.C_FALSE,
+    p_cit_include_in_view => adc_util.C_TRUE,
+    p_cit_event => 'command',
+    p_cit_col_template => q'{case adc.get_event when 'command' then adc.get_event_data end command}',
+    p_cit_init_template => q'{}');
 
 
   -- ACTION_ITEM_FOCUS
