@@ -6,7 +6,7 @@ with params as (
          from dual)
 select item_name d, item_id r
   from adc_bl_page_items
-  join adc_rule_group
+  join adc_rule_groups
     on app_id = cgr_app_id
    and page_id = cgr_page_id
   join adc_action_item_focus

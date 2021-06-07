@@ -47,9 +47,6 @@ prompt &s1.Create view ADC_UI_LOV_CGR_APP_PAGES
 prompt &s1.Create view ADC_UI_LOV_CGR_PAGE_ITEMS
 @&view_dir.adc_ui_lov_cgr_page_items.vw
 
-prompt &s1.Create view ADC_UI_LOV_CGR
-@&view_dir.adc_ui_lov_cgr.vw
-
 prompt &s1.Create view ADC_UI_LOV_EXPORT_CAT
 @&view_dir.adc_ui_lov_export_cat.vw
 
@@ -150,14 +147,3 @@ prompt &h2.Version specific installation
 prompt &h3.Install ADC rules
 prompt &s1.Create action types
 --@&script_dir.action_types_system.sql
-
-prompt &s1.Create page rules
-@&script_dir.merge_rule_group_adc_admin_cgr.sql
-@&script_dir.merge_rule_group_adc_edit_caa.sql
-@&script_dir.merge_rule_group_adc_edit_cat.sql
-@&script_dir.merge_rule_group_adc_edit_cra.sql
-@&script_dir.merge_rule_group_adc_edit_cru.sql
-@&script_dir.merge_rule_group_adc_edit_ctg.sql
-@&script_dir.merge_rule_group_adc_export_cat.sql
-@&script_dir.merge_rule_group_adc_export_cgr.sql
-

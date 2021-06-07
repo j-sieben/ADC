@@ -17,7 +17,7 @@ with params as(
              adc_util.c_false c_false
          from dual)
       select /*+ no_merge (p) */
-             cru.cru_id, cru.cru_cgr_id, cra_id, cra_sort_seq, cat_id,
+             cru.cru_id, cru.cru_cgr_id, seq_id, cra_id, cra_sort_seq, cat_id,
              case
                when cpi.cpi_has_error = p.c_true then p.span_error || cat_name || p.close_span
                when cra_on_error = p.c_true then p.span_on_error || cat_name || p.close_span
@@ -35,19 +35,19 @@ with params as(
          and instr(p.delimiter || cru_firing_items || p.delimiter, p.delimiter || cpi.cpi_id || p.delimiter) > 0
          and cpi.cpi_has_error = p.c_true
         left join (
-             select cra_id, cra_cgr_id, cat_id,
+             select seq_id, cra_id, cra_cgr_id, cat_id,
                     case when cat_display_name is not null then
                       to_char(utl_text.bulk_replace(cat_display_name, char_table(
-                        'ITEM', case when cra_cpi_id = 'DOCUMENT' and to_char(cra_param_2) is not null then to_char(cra_param_2) else cra_cpi_id end,
+                        'ITEM', case when cra_cpi_id = 'DOCUMENT' and cra_param_2 is not null then cra_param_2 else cra_cpi_id end,
                         'PARAM_1', cra_param_1,
                         'PARAM_2', cra_param_2,
-                        'PARAM_3', cra_param_3),
-                        'p>', 'span>'))
+                        'PARAM_3', cra_param_3,
+                        'p>', 'span>')))
                     else cat_name
                     end cat_name,
                     cat_active,
                     cra_cru_id, cra_cat_id, cra_sort_seq, cra_active, cpi.cpi_has_error, cra_on_error, cra_raise_recursive
-               from adc_rule_actions cra
+               from adc_ui_edit_cra cra
                join adc_page_items cpi
                  on cra_cgr_id = cpi.cpi_cgr_id
                 and cra_cpi_id = cpi.cpi_id

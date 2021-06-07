@@ -8,6 +8,7 @@ as
   C_PAGE_EDIT_CRU constant binary_integer := 5;
   C_PAGE_EDIT_CGR constant binary_integer := 6;
   C_PAGE_EDIT_CAA constant binary_integer := 9;
+  C_PAGE_EDIT_CRA constant binary_integer := 11;
 
   g_page_values utl_apex.page_value_t;
   g_collection_seq_id binary_integer;
@@ -426,7 +427,7 @@ as
 
     -- map request to export mode and set zip file name accordingly
     case when utl_apex.request_is('EXPORT_PAGE') then
-      l_mode := adc_admin.C_PAGE_GROUPS;
+      l_mode := adc_admin.C_PAGE_GROUP;
       l_zip_file_name := replace(C_ZIP_PAGE_RULES_NAME, '#APP_ID#', l_cgr_app_id);
       l_zip_file_name := replace(C_ZIP_PAGE_RULES_NAME, '#PAGE_ID#', l_cgr_page_id);
     when utl_apex.request_is('EXPORT_APP') then
@@ -548,7 +549,30 @@ as
     
     pit.leave_mandatory;
   end process_edit_cif;
-
+  
+  
+  procedure get_url_edit_cra
+  as
+    l_javascript utl_apex.max_sql_char;
+  begin
+    pit.enter_mandatory;
+    
+    -- maintain apex action create_action
+    adc_apex_action.action_init('create-action');
+    
+    l_javascript := utl_apex.get_page_url(
+                      p_page => 'EDIT_CRA',
+                      p_param_items => 'P11_CRA_CGR_ID,P11_CRA_CRU_ID',
+                      p_value_items => 'P5_CRU_CGR_ID:P5_CRU_ID',
+                      p_triggering_element => 'R5_ACTION',
+                      p_clear_cache => C_PAGE_EDIT_CRA);
+    adc_apex_action.set_href(l_javascript);
+      
+    adc.add_javascript(adc_apex_action.get_action_script);
+    
+    pit.leave_mandatory;
+  end get_url_edit_cra;
+  
 
   function validate_edit_cru
     return boolean
@@ -660,6 +684,7 @@ as
   procedure configure_edit_cra
   as
     C_SET_CAT_HELP constant varchar2(100) := q'^$('^R11_CAT_HELP .t-Region-body').html('#HELP_TEXT#');^';
+    C_PARAM_SELECTOR varchar2(100 byte) := '.adc-hide';
     
     cursor action_type_cur(p_cat_id in adc_action_types.cat_id%type) is
       with params as(
@@ -694,7 +719,6 @@ as
     l_cat_id adc_action_types.cat_id%type;
     l_mandatory_message adc_util.max_char;
     
-    C_PARAM_SELECTOR varchar2(100 byte) := '.adc-hide';
   begin
     pit.enter_mandatory;
     
@@ -1222,16 +1246,16 @@ as
       when l_cgr_app_id.item_name then 
         -- application Id changed, reset and refresh page and cgr select lists
         l_cgr_page_id.item_value := null;
-        adc.set_item(l_cgr_page_id.item_name, null);
+        adc.set_item(l_cgr_page_id.item_name, to_char(null));
         adc.refresh_item(l_cgr_page_id.item_name);
         
         l_cgr_id.item_value := null;
-        adc.set_item(l_cgr_id.item_name, null);
+        adc.set_item(l_cgr_id.item_name, to_char(null));
         adc.refresh_item(l_cgr_id.item_name);   
       when l_cgr_page_id.item_name then
         -- page id changed, only reset and refresh cgr select list
         l_cgr_id.item_value := null;
-        adc.set_item(l_cgr_id.item_name, null); 
+        adc.set_item(l_cgr_id.item_name, to_char(null)); 
         adc.refresh_item(l_cgr_id.item_name);
       else
         null;

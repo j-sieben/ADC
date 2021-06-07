@@ -1,6 +1,6 @@
 -- Parameters:
 -- 1: Owner of ADC, schema into which ADC will be installed
--- 5: Default language of the messages
+-- 2: Default language of the messages
 define tool_dir=tools/
 
 @&tool_dir.init.sql &1. &2.

@@ -25,13 +25,21 @@ as
   C_ADC constant ora_name_type := 'ADC';
   C_CR constant varchar2(2 byte) := chr(10);
   
-  /* Methode zur Ermittlung von Wahrheitswerten
+  /** Method for determining truth values
    */
   function C_TRUE
     return flag_type;
     
   function C_FALSE
     return flag_type;
+    
+  
+  /** Method to retrieve a replacement char for # character
+   * %usage  Used to mask the # character to avoid page effects in UTL_TEXT.
+   *         When delivering the JavaScript code, the character will be replaced by the # character again
+   */
+  function C_HASH
+    return varchar2;
   
   /* Helper to map different boolean values to TRUE or FALSE 
    * %param  p_bool  Boolean value that is to be converted

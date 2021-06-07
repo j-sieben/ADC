@@ -3,10 +3,97 @@ set sqlprefix off
 
 begin
   utl_text.merge_template(
+    p_uttm_name => 'EXPORT_RULE_GROUP',
+    p_uttm_type => 'ADC',
+    p_uttm_mode => 'DEFAULT_APP',
+    p_uttm_text => q'{\CR\}' || 
+q'{declare\CR\}' || 
+q'{  l_foo number;\CR\}' || 
+q'{  l_app_id number;\CR\}' || 
+q'{begin\CR\}' || 
+q'{  l_foo := adc_admin.map_id;\CR\}' || 
+q'{  l_app_id := coalesce(apex_application_install.get_application_id, #APP_ID.);\CR\}' || 
+q'{\CR\}' || 
+q'{  dbms_output.put_line('kjhRulegroup page #CGR_PAGE_ID#');\CR\}' || 
+q'{\CR\}' || 
+q'{  adc_admin.prepare_rule_group_import(\CR\}' || 
+q'{    p_cgr_app_id => l_app_id,\CR\}' || 
+q'{    p_cgr_page_id => #CGR_PAGE_ID#,\CR\}' || 
+q'{    p_cgr_name => '#CGR_NAME#');\CR\}' || 
+q'{\CR\}' || 
+q'{  adc_admin.merge_rule_group(\CR\}' || 
+q'{    p_cgr_id => adc_admin.map_id(#CGR_ID#),\CR\}' || 
+q'{    p_cgr_name => '#CGR_NAME#',\CR\}' || 
+q'{    p_cgr_description => q'|#CGR_DESCRIPTION#|',\CR\}' || 
+q'{    p_cgr_app_id => l_app_id,\CR\}' || 
+q'{    p_cgr_page_id => #CGR_PAGE_ID#,\CR\}' || 
+q'{    p_cgr_with_recursion => #CGR_WITH_RECURSION#,\CR\}' || 
+q'{    p_cgr_active => #CGR_ACTIVE#);\CR\}' || 
+q'{  #RULES#\CR\}' || 
+q'{  #APEX_ACTIONS#\CR\}' || 
+q'{  adc_admin.propagate_rule_change(adc_admin.map_id(#CGR_ID#));\CR\}' || 
+q'{\CR\}' || 
+q'{  commit;\CR\}' || 
+q'{end;\CR\}' || 
+q'{/\CR\}' || 
+q'{\CR\}' || 
+q'{}',
+    p_uttm_log_text => q'{Rule group page #CGR_PAGE_ID# exported.}',
+    p_uttm_log_severity => 70
+  );
+
+  utl_text.merge_template(
+    p_uttm_name => 'EXPORT_RULE_GROUP',
+    p_uttm_type => 'ADC',
+    p_uttm_mode => 'EXPORT_APP',
+    p_uttm_text => q'{declare\CR\}' || 
+q'{  l_foo number;\CR\}' || 
+q'{  l_app_id number;\CR\}' || 
+q'{begin\CR\}' || 
+q'{  l_foo := adc_admin.map_id;\CR\}' || 
+q'{  l_app_id := wwv_flow.g_flow_id;\CR\}' || 
+q'{\CR\}' || 
+q'{  dbms_output.put_line('  -- Rulegroup #CGR_ID#, page #CGR_APP_ID#');\CR\}' || 
+q'{\CR\}' || 
+q'{  adc_admin.prepare_rule_group_import(\CR\}' || 
+q'{    p_cgr_app_id => l_app_id,\CR\}' || 
+q'{    p_cgr_page_id => #CGR_PAGE_ID#);\CR\}' || 
+q'{\CR\}' || 
+q'{  adc_admin.merge_rule_group(\CR\}' || 
+q'{    p_cgr_id => adc_admin.map_id(#CGR_ID#),\CR\}' || 
+q'{    p_cgr_app_id => l_app_id,\CR\}' || 
+q'{    p_cgr_page_id => #CGR_PAGE_ID#,\CR\}' || 
+q'{    p_cgr_with_recursion => #CGR_WITH_RECURSION#,\CR\}' || 
+q'{    p_cgr_active => #CGR_ACTIVE#);\CR\}' || 
+q'{  #RULES#\CR\}' || 
+q'{  #APEX_ACTIONS#\CR\}' || 
+q'{\CR\}' || 
+q'{  adc_admin.propagate_rule_change(adc_admin.map_id(#CGR_ID#));\CR\}' || 
+q'{\CR\}' || 
+q'{  commit;\CR\}' || 
+q'{end;\CR\}' || 
+q'{/\CR\}' || 
+q'{}',
+    p_uttm_log_text => q'{APEX application #CGR_APP_ID# including all rule groups exported.}',
+    p_uttm_log_severity => 70
+  );
+
+  utl_text.merge_template(
     p_uttm_name => 'APEX_ACTION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ACTION',
-    p_uttm_text => q'{{"name":"#CAA_NAME#"#CAA_LABEL|,^CR^"label":"|"|##CAA_LABEL_KEY|,^CR^"labelKey":"|"|##CAA_CONTEXT_LABEL|,^CR^"contextLabel":"|"|##CAA_ICON|,^CR^"icon":"|"|##CAA_ICON_TYPE|,^CR^"iconType":"|"|##CAA_INITIALLY_DISABLED|,^CR^"disabled":||##CAA_INITIALLY_HIDDEN|,^CR^"hide":||##CAA_TITLE|,^CR^"title":"|"|##CAA_SHORTCUT|,^CR^"shortcut":"|"|##CAA_HREF|,^CR^"href":"|"|##CAA_ACTION|,^CR^"action":"|"|#}}',
+    p_uttm_text => q'{{"name":"#CAA_NAME#"#CAA_LABEL|,
+"label":"|"|##CAA_LABEL_KEY|,
+"labelKey":"|"|##CAA_CONTEXT_LABEL|,
+"contextLabel":"|"|##CAA_ICON|,
+"icon":"|"|##CAA_ICON_TYPE|,
+"iconType":"|"|##CAA_INITIALLY_DISABLED|,
+"disabled":||##CAA_INITIALLY_HIDDEN|,
+"hide":||##CAA_TITLE|,
+"title":"|"|##CAA_SHORTCUT|,
+"shortcut":"|"|##CAA_HREF|,
+"href":"|"|##CAA_ACTION|,
+"action":||#}}',
     p_uttm_log_text => q'{}',
     p_uttm_log_severity => 70
   );
@@ -82,7 +169,7 @@ q'{}}',
     p_uttm_name => 'JSON_ERRORS',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
-    p_uttm_text => q'{{"count":#ERROR_COUNT#,"errorDependentItems":"#DEPENDENT_ITEMS#","firingItems":"#FIRING_ITEMS#","errors":[#JSON_ERRORS#]}}',
+    p_uttm_text => q'{{"count":#ERROR_COUNT#,"firingItems":#FIRING_ITEMS#,"errors":[#JSON_ERRORS#]}}',
     p_uttm_log_text => q'{}',
     p_uttm_log_severity => 70
   );
@@ -100,20 +187,16 @@ q'{}}',
     p_uttm_name => 'RULE_STMT',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'DEFAULT',
-    p_uttm_text => q'{  with params as (\CR\}' || 
-q'{       select adc_util.c_true c_true,\CR\}' || 
-q'{                 adc_util.c_false c_false\CR\}' || 
-q'{            from dual)\CR\}' || 
-q'{select /*+ no_merge(p) */cru.cru_id, cru.cru_sort_seq, cru.cru_name, cru.cru_firing_items, cru_fire_on_page_load,\CR\}' || 
+    p_uttm_text => q'{select /*+ no_merge(p) */\CR\}' || 
+q'{       cru.cru_id, cru.cru_sort_seq, cru.cru_name, cru.cru_firing_items, cru_fire_on_page_load,\CR\}' || 
 q'{       cra_cpi_id item, cat_pl_sql pl_sql, cat_js js, cra_sort_seq, cra_param_1 param_1, cra_param_2 param_2, cra_param_3 param_3, cra_on_error,\CR\}' || 
 q'{       max(cra_on_error) over (partition by cru_sort_seq) cru_on_error,\CR\}' || 
 q'{       case row_number() over (partition by cru_sort_seq, cra_on_error order by crg.cra_sort_seq) when 1 then c_true else c_false end is_first_row\CR\}' || 
 q'{  from (#CGR_DECISION_TABLE#) crg\CR\}' || 
-q'{  join adc_rule cru\CR\}' || 
+q'{  join adc_rules cru\CR\}' || 
 q'{    on crg.cru_id = cru.cru_id\CR\}' || 
-q'{  join adc_action_type cat\CR\}' || 
+q'{  join adc_action_types cat\CR\}' || 
 q'{    on crg.cra_cat_id = cat.cat_id\CR\}' || 
-q'{ cross join params p\CR\}' || 
 q'{ where cat.cat_raise_recursive in (c_true, '#IS_RECURSIVE#')\CR\}' || 
 q'{   and crg.cra_raise_recursive in (c_true, '#IS_RECURSIVE#')\CR\}' || 
 q'{ order by cru.cru_sort_seq desc, crg.cra_sort_seq}',
@@ -174,24 +257,27 @@ q'{}',
     p_uttm_name => 'RULE_VIEW',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
-    p_uttm_text => q'{create or replace force view #PREFIX##CGR_ID# as\CR\}' || 
-q'{  with session_state as(\CR\}' || 
-q'{       select #COLUMN_LIST#,\CR\}' || 
-q'{              adc_util.c_true c_true,\CR\}' || 
+    p_uttm_text => q'{with params as(\CR\}' || 
+q'{       select adc_util.c_true c_true,\CR\}' || 
 q'{              adc_util.c_false c_false\CR\}' || 
 q'{         from dual),\CR\}' || 
+q'{     session_state as(\CR\}' || 
+q'{       select #COLUMN_LIST#,\CR\}' || 
+q'{              c_true, c_false\CR\}' || 
+q'{         from params),\CR\}' || 
 q'{       data as (\CR\}' || 
 q'{       select /*+ NO_MERGE(s) */\CR\}' || 
 q'{              r.cru_id, r.cru_name, r.cru_firing_items, r.cru_fire_on_page_load,\CR\}' || 
 q'{              r.cra_cpi_id, r.cra_cat_id, r.cra_sort_seq, r.cra_param_1, r.cra_param_2, r.cra_param_3, r.cra_on_error, r.cra_raise_recursive,\CR\}' || 
-q'{              rank() over (order by r.cru_sort_seq) rang, case s.initializing when 1 then s.c_true else s.c_false end initializing\CR\}' || 
+q'{              rank() over (order by r.cru_sort_seq) rang, s.initializing initializing,\CR\}' || 
+q'{              c_true, c_false\CR\}' || 
 q'{         from adc_bl_rules r\CR\}' || 
 q'{         join session_state s\CR\}' || 
 q'{           on instr(r.cru_firing_items, ',' || s.firing_item || ',') > 0\CR\}' || 
 q'{           or cru_fire_on_page_load = s.c_true\CR\}' || 
 q'{        where r.cgr_id = #CGR_ID#\CR\}' || 
 q'{          and (#WHERE_CLAUSE#))\CR\}' || 
-q'{select cru_id, cru_name, cra_cpi_id, cra_cat_id, cra_param_1, cra_param_2, cra_param_3, cra_on_error, cra_raise_recursive, cra_sort_seq\CR\}' || 
+q'{select cru_id, cru_name, cra_cpi_id, cra_cat_id, cra_param_1, cra_param_2, cra_param_3, cra_on_error, cra_raise_recursive, cra_sort_seq, c_true, c_false\CR\}' || 
 q'{  from data\CR\}' || 
 q'{ where rang = 1\CR\}' || 
 q'{    or cru_fire_on_page_load = initializing\CR\}' || 
@@ -204,9 +290,14 @@ q'{ order by cru_fire_on_page_load, rang}',
     p_uttm_name => 'RULE_VALIDATION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'DEFAULT',
-    p_uttm_text => q'{  with session_state as(\CR\}' || 
-q'{       select #COLUMN_LIST#\CR\}' || 
-q'{         from dual)\CR\}' || 
+    p_uttm_text => q'{with params as (\CR\}' || 
+q'{       select adc_util.c_true c_true,\CR\}' || 
+q'{              adc_util.c_false c_false\CR\}' || 
+q'{         from dual),\CR\}' || 
+q'{     session_state as(\CR\}' || 
+q'{       select #COLUMN_LIST#,\CR\}' || 
+q'{              c_true, c_false\CR\}' || 
+q'{         from params)\CR\}' || 
 q'{select *\CR\}' || 
 q'{  from session_state\CR\}' || 
 q'{ where #CONDITION#}',
@@ -241,19 +332,17 @@ q'{  dbms_output.put_line('&s1.Rulegroup #CGR_NAME#');\CR\}' ||
 q'{\CR\}' || 
 q'{  adc_admin.prepare_rule_group_import(\CR\}' || 
 q'{    p_cgr_app_id => l_app_id,\CR\}' || 
-q'{    p_cgr_page_id => #CGR_PAGE_ID#,\CR\}' || 
-q'{    p_cgr_name => '#CGR_NAME#');\CR\}' || 
+q'{    p_cgr_page_id => #CGR_PAGE_ID#);\CR\}' || 
 q'{\CR\}' || 
 q'{  adc_admin.merge_rule_group(\CR\}' || 
 q'{    p_cgr_id => adc_admin.map_id(#CGR_ID#),\CR\}' || 
-q'{    p_cgr_name => '#CGR_NAME#',\CR\}' || 
-q'{    p_cgr_description => q'|#CGR_DESCRIPTION#|',\CR\}' || 
 q'{    p_cgr_app_id => l_app_id,\CR\}' || 
 q'{    p_cgr_page_id => #CGR_PAGE_ID#,\CR\}' || 
 q'{    p_cgr_with_recursion => #CGR_WITH_RECURSION#,\CR\}' || 
 q'{    p_cgr_active => #CGR_ACTIVE#);\CR\}' || 
 q'{  #RULES#\CR\}' || 
 q'{  #APEX_ACTIONS#\CR\}' || 
+q'{\CR\}' || 
 q'{  adc_admin.propagate_rule_change(adc_admin.map_id(#CGR_ID#));\CR\}' || 
 q'{\CR\}' || 
 q'{  commit;\CR\}' || 
@@ -413,7 +502,7 @@ q'{}',
     p_uttm_name => 'VIEW_ITEM',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ITEM',
-    p_uttm_text => q'{v('#ITEM#') #ITEM#}',
+    p_uttm_text => q'{adc_api.get_string('#ITEM#') #ITEM#}',
     p_uttm_log_text => q'{}',
     p_uttm_log_severity => 70
   );
@@ -431,7 +520,7 @@ q'{}',
     p_uttm_name => 'VIEW_ITEM',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'NUMBER_ITEM',
-    p_uttm_text => q'{to_number(v('#ITEM#'), '#CONVERSION#') #ITEM#}',
+    p_uttm_text => q'{adc_api.get_number('#ITEM#') #ITEM#}',
     p_uttm_log_text => q'{}',
     p_uttm_log_severity => 70
   );
@@ -449,7 +538,7 @@ q'{}',
     p_uttm_name => 'VIEW_ITEM',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'DATE_ITEM',
-    p_uttm_text => q'{to_date(v('#ITEM#'), '#CONVERSION#') #ITEM#}',
+    p_uttm_text => q'{adc_api.get_date('#ITEM#') #ITEM#}',
     p_uttm_log_text => q'{}',
     p_uttm_log_severity => 70
   );
@@ -467,7 +556,7 @@ q'{}',
     p_uttm_name => 'VIEW_ITEM',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'APP_ITEM',
-    p_uttm_text => q'{v('#ITEM#') #ITEM#}',
+    p_uttm_text => q'{adc_api.get_string('#ITEM#') #ITEM#}',
     p_uttm_log_text => q'{}',
     p_uttm_log_severity => 70
   );
@@ -485,7 +574,7 @@ q'{}',
     p_uttm_name => 'VIEW_ITEM',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'BUTTON',
-    p_uttm_text => q'{case adc.get_firing_item when '#ITEM#' then 1 else 0 end #ITEM#}',
+    p_uttm_text => q'{case adc_api.get_firing_item when '#ITEM#' then C_TRUE else C_FALSE end #ITEM#}',
     p_uttm_log_text => q'{}',
     p_uttm_log_severity => 70
   );
@@ -682,6 +771,7 @@ q'{    p_cat_id => '#CAT_ID#',\CR\}' ||
 q'{    p_cat_ctg_id => '#CAT_CTG_ID#',\CR\}' || 
 q'{    p_cat_cif_id => '#CAT_CIF_ID#',\CR\}' || 
 q'{    p_cat_name => '#CAT_NAME#',\CR\}' || 
+q'{    p_cat_display_name => #CAT_DISPLAY_NAME#,\CR\}' || 
 q'{    p_cat_description => #CAT_DESCRIPTION#,\CR\}' || 
 q'{    p_cat_pl_sql => #CAT_PL_SQL#,\CR\}' || 
 q'{    p_cat_js => #CAT_JS#,\CR\}' || 
@@ -698,7 +788,7 @@ q'{}',
     p_uttm_name => 'INITIALIZE_CODE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'VALUE',
-    p_uttm_text => q'{apex_util.set_session_state('#ITEM#', #ITEM_SOURCE#);}',
+    p_uttm_text => q'{adc_api.set_session_state('#ITEM#', #ITEM_SOURCE#);}',
     p_uttm_log_text => q'{}',
     p_uttm_log_severity => 70
   );
@@ -725,12 +815,13 @@ q'{}',
     p_uttm_name => 'APEX_ACTION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
-    p_uttm_text => q'{// Integration von APEX-Actions\CR\}' || 
+    p_uttm_text => q'{// Integration of APEX Actions\CR\}' || 
 q'{#BIND_ACTION_ITEMS#\CR\}' || 
 q'{\CR\}' || 
 q'{apex.actions.add(\CR\}' || 
 q'{  [#ACTION_LIST#\CR\}' || 
-q'{  ]);}',
+q'{  ]);\CR\}' || 
+q'{}',
     p_uttm_log_text => q'{APEX actions created}',
     p_uttm_log_severity => 70
   );

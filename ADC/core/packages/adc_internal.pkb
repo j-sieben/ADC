@@ -332,7 +332,7 @@ as
       from dual
      where exists(
            select null
-             from adc_apex_action_items
+             from adc_apex_actions
             where cai_cpi_cgr_id = g_param.cgr_id);
             
     if l_has_actions = 1 then
@@ -649,6 +649,8 @@ as
               'FIRING_ITEMS', get_items_as_json(g_param.firing_items),
               'JS_FILE', C_JS_NAMESPACE,
               'DURATION', to_char(dbms_utility.get_time - g_param.now)));
+              
+    l_js := replace(l_js, adc_util.C_HASH, '#');
     
     pit.leave_optional(msg_params(msg_param('JavaScript', l_js)));
     return l_js;
@@ -1803,6 +1805,23 @@ as
     pit.leave_optional;
   end push_error;
   
+  
+  procedure create_initial_rule_group(
+    p_rule_group_row in out nocopy adc_rule_groups%rowtype)
+  as
+    l_rule_row adc_rules%rowtype;
+  begin 
+    -- Rule does not yet exist, create
+    adc_admin.merge_rule_group(p_rule_group_row);
+    l_rule_row.cru_cgr_id := p_rule_group_row.cgr_id;
+    l_rule_row.cru_name := 'die Seite öffnet';
+    l_rule_row.cru_condition := 'initializing = c_true';
+    l_rule_row.cru_sort_seq := 10;
+    l_rule_row.cru_active := adc_util.c_true;
+    l_rule_row.cru_fire_on_page_load := adc_util.c_false;
+    adc_admin.merge_rule(l_rule_row);
+  end create_initial_rule_group;
+  
 
   procedure read_settings(
     p_firing_item in varchar2,
@@ -1862,15 +1881,7 @@ as
       g_param.error_stack.delete;
       pit.leave_optional;
     when NO_DATA_FOUND then
-      -- Rule does not yet exist, create
-      adc_admin.merge_rule_group(l_rule_group_row);
-      l_rule_row.cru_cgr_id := l_rule_group_row.cgr_id;
-      l_rule_row.cru_name := 'die Seite öffnet';
-      l_rule_row.cru_condition := 'initializing = 1';
-      l_rule_row.cru_sort_seq := 10;
-      l_rule_row.cru_active := adc_util.c_true;
-      l_rule_row.cru_fire_on_page_load := adc_util.c_false;
-      adc_admin.merge_rule(l_rule_row);
+      create_initial_rule_group(l_rule_group_row);
       read_settings(p_firing_item, p_event, p_event_data);
   end read_settings;
     

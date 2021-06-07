@@ -60,4 +60,7 @@ define h2="**  "
 define h3="*   "
 define s1=".    - "
 
+
+alter session set current_schema=&INSTALL_USER.;
+
 set termout on

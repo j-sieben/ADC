@@ -62,7 +62,7 @@ with session_state as (
              select cra_id, cra_cgr_id,
                     case when cat_display_name is not null then
                       to_char(utl_text.bulk_replace(replace(replace(cat_display_name, '<p>'), '</p>', '<br>'), char_table(
-                        'ITEM', cra_cpi_id,
+                        'ITEM', case when cra_cpi_id = 'DOCUMENT' and to_char(cra_param_2) is not null then to_char(cra_param_2) else cra_cpi_id end,
                         'PARAM_1', cra_param_1,
                         'PARAM_2', cra_param_2,
                         'PARAM_3', cra_param_3)))

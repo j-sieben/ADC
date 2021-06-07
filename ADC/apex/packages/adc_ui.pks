@@ -47,6 +47,12 @@ as
    */
   function get_export_type
     return varchar2;
+    
+    
+  /** Method to generate an apex action href attribute to create a new action
+   * %usage  Is called upon page initialization of page EDIT_CRU
+   */
+  procedure get_url_edit_cra;
 
 
   /** Method toi initialize an APEX collection for SRA (ADC Rule Actions)
@@ -54,7 +60,7 @@ as
    *         Required to capture new rule actions without  saving them to the target table directly
    */
   procedure initialize_cra_collection;
-
+  
 
   /** Method to validate page EDIT_CRU
    * %usage  Is called to validate user data if the page is submitted

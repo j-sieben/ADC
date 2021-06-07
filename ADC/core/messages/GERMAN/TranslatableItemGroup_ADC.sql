@@ -1548,6 +1548,15 @@ begin
     p_pti_description => q'^Wahlschalter (JA|NEIN)^'
   );
 
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'CRU_INITIAL_RULE_NAME',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^ADC^',
+    p_pti_name => q'^die Seite öffnet^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^Bezeichner des automatisiert erzeugten Anwendungsfalls^'
+  );
+
   commit;
 end;
 /

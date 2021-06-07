@@ -17,6 +17,14 @@ as
   end c_false;
 
 
+  function c_hash
+    return varchar2
+  as
+  begin
+    return '\u0023';
+  end c_hash;
+
+
   function get_boolean(
     p_bool in varchar2)
     return adc_util.flag_type

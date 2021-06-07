@@ -8,8 +8,9 @@ as
 
   /** Package constants */
   C_ALL_GROUPS constant adc_util.ora_name_type := 'ALL_GROUPS';
+  C_APEX_APP constant adc_util.ora_name_type := 'APEX_APP';
   C_APP_GROUPS constant adc_util.ora_name_type := 'APP_GROUPS';
-  C_PAGE_GROUPS constant adc_util.ora_name_type := 'PAGE_GROUPS';
+  C_PAGE_GROUP constant adc_util.ora_name_type := 'PAGE_GROUP';
 
   /** Method to map technical IDs upon import or copying of rule groups
    * %param [p_id] ID to map to a new ID. If NULL, the mapping list is initialized
@@ -90,18 +91,24 @@ as
 
   /** Method to export one rule group
    * %param  p_cgr_id  Rule group ID of the rule group that is to be exported
+   * %param [p_mode]   Optional information, needed to switch the frame template accordingly
    * %usage  If called, the respective rule group is exported as a CLOB instance
    * %return Script to import a rule group, including all necessary information, excluding action type definitions
    */
   function export_rule_group(
-    p_cgr_id in adc_rule_groups.cgr_id%type)
+    p_cgr_id in adc_rule_groups.cgr_id%type,
+    p_mode in varchar2 default C_APP_GROUPS)
     return clob;
 
 
   /** Method to export one or many rule groups
    * %param [p_cgr_app_id]  APEX application ID of the application of which all rule groups are to be exported
    * %param [p_cgr_page_id] If a rule group is copied, this parameter defines the target application page id
-   * %param [p_mode]        Flag to indicate what to export
+   * %param [p_mode]        Flag to indicate what to export. Options include:
+   *                        - C_ALL_GROUPS: Exports all rule groups of that workspace
+   *                        - C_APEX_APP: Exports apex application including all rule groups of that application
+   *                        - C_APP_GROUPS: Exports all rule groups of an APEX application
+   *                        - C_PAGE_GROUP: Exports rule group of a single APEX application page
    * %usage  Based on the parameters passed in this method will export one or more rule groups.
    *         If no parameter is passed in, all existing rule groups are exported.
    *         If only parameter P_CGR_APP_ID is passed in all rule groups of the respective APEX application are exported.
@@ -115,9 +122,8 @@ as
   function export_rule_groups(
     p_cgr_app_id in adc_rule_groups.cgr_app_id%type default null,
     p_cgr_page_id in adc_rule_groups.cgr_page_id%type default null,
-    p_mode in varchar2 default C_PAGE_GROUPS)
+    p_mode in varchar2 default C_APP_GROUPS)
     return blob;
-
 
   /** Method to prepare a rule group import
    * %param  p_workspace  Workspace name of the workspace the application is to be installed at
