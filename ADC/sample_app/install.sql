@@ -11,6 +11,15 @@ define msg_dir=&sample_dir.messages/&DEFAULT_LANGUAGE./
 prompt &h2.Remove existing installation
 @&sample_dir.clean_up_install.sql
 
+prompt create HR tables
+@?/demo/schema/human_resources/hr_cre.sql
+
+prompt populate HR data
+@?/demo/schema/human_resources/hr_popul.sql
+
+prompt modify HR schema
+@&script_dir.modify_hr_schema.sql
+
 prompt &h2.Create database objects
 prompt &h3.Create views
 

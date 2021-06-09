@@ -28,14 +28,14 @@ prompt APPLICATION 117 - ADC-Administration
 -- Application Export:
 --   Application:     117
 --   Name:            ADC-Administration
---   Exported By:     ADC_APP
+--   Exported By:     ADC_ADMIN
 --   Flashback:       0
 --   Export Type:     Application Export
---     Pages:                     15
---       Items:                   95
+--     Pages:                     14
+--       Items:                   94
 --       Validations:              6
 --       Processes:               25
---       Regions:                 43
+--       Regions:                 42
 --       Buttons:                 29
 --       Dynamic Actions:          7
 --     Shared Components:
@@ -44,7 +44,7 @@ prompt APPLICATION 117 - ADC-Administration
 --       Navigation:
 --         Lists:                  5
 --         Breadcrumbs:            1
---           Entries:              6
+--           Entries:              5
 --       Security:
 --         Authentication:         1
 --         Authorization:          2
@@ -119,7 +119,7 @@ wwv_flow_api.create_flow(
 ,p_csv_encoding=>'Y'
 ,p_auto_time_zone=>'N'
 ,p_last_updated_by=>'ADC_ADMIN'
-,p_last_upd_yyyymmddhh24miss=>'20210606172313'
+,p_last_upd_yyyymmddhh24miss=>'20210609164146'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>8
 ,p_ui_type_name => null
@@ -278,15 +278,6 @@ wwv_flow_api.create_list_item(
 ,p_translate_list_text_y_n=>'Y'
 ,p_security_scheme=>wwv_flow_api.id(151198882243347619)
 ,p_list_item_current_type=>'TARGET_PAGE'
-);
-wwv_flow_api.create_list_item(
- p_id=>wwv_flow_api.id(94818672735437622)
-,p_list_item_display_sequence=>60
-,p_list_item_link_text=>'ADC Designer'
-,p_list_item_link_target=>'f?p=&APP_ID.:13:&APP_SESSION.::&DEBUG.:::'
-,p_parent_list_item_id=>wwv_flow_api.id(83261146608242037828)
-,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
-,p_list_item_current_for_pages=>'13'
 );
 end;
 /
@@ -675,13 +666,6 @@ begin
 wwv_flow_api.create_menu(
  p_id=>wwv_flow_api.id(83261146410334037824)
 ,p_name=>' Navigationspfad'
-);
-wwv_flow_api.create_menu_option(
- p_id=>wwv_flow_api.id(94819879492437630)
-,p_parent_id=>wwv_flow_api.id(264656639806301173)
-,p_short_name=>'ADC Designer'
-,p_link=>'f?p=&APP_ID.:13:&APP_SESSION.::&DEBUG.:::'
-,p_page_id=>13
 );
 wwv_flow_api.create_menu_option(
  p_id=>wwv_flow_api.id(150989455252800526)
@@ -14392,7 +14376,7 @@ wwv_flow_api.create_page(
 ,p_browser_cache=>'N'
 ,p_help_text=>unistr('F\00FCr diese Seite ist keine Hilfe verf\00FCgbar.')
 ,p_last_updated_by=>'ADC_ADMIN'
-,p_last_upd_yyyymmddhh24miss=>'20210428114941'
+,p_last_upd_yyyymmddhh24miss=>'20210609163830'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(42094869633150754603)
@@ -14448,19 +14432,17 @@ wwv_flow_api.create_page_button(
 ,p_warn_on_unsaved_changes=>null
 );
 wwv_flow_api.create_page_item(
- p_id=>wwv_flow_api.id(42094870058423754604)
-,p_name=>'P8_EXPORT_TYPE'
-,p_item_sequence=>10
+ p_id=>wwv_flow_api.id(76703430279662627)
+,p_name=>'P8_INCLUDE_APP'
+,p_item_sequence=>30
 ,p_item_plug_id=>wwv_flow_api.id(42094869633150754603)
-,p_prompt=>'Typ des Exports'
-,p_display_as=>'NATIVE_SELECT_LIST'
-,p_named_lov=>'LOV_EXPORT_TYPES'
-,p_cHeight=>1
+,p_prompt=>'inkl. APEX-Anwendung'
+,p_display_as=>'NATIVE_YES_NO'
+,p_begin_on_new_line=>'N'
+,p_grid_label_column_span=>4
 ,p_field_template=>wwv_flow_api.id(264568426687067700)
 ,p_item_template_options=>'#DEFAULT#'
-,p_lov_display_extra=>'NO'
-,p_attribute_01=>'NONE'
-,p_attribute_02=>'N'
+,p_attribute_01=>'APPLICATION'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(42094870429741754605)
@@ -14473,28 +14455,9 @@ wwv_flow_api.create_page_item(
 ,p_lov_display_null=>'YES'
 ,p_lov_null_text=>unistr('- Anwendung ausw\00E4hlen -')
 ,p_cHeight=>1
-,p_tag_css_classes=>'adc-ui-export-app adc-ui-export-page adc-ui-export-sgr adc-ui-hide'
 ,p_field_template=>wwv_flow_api.id(264568426687067700)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_lov_display_extra=>'YES'
-,p_attribute_01=>'NONE'
-,p_attribute_02=>'N'
-);
-wwv_flow_api.create_page_item(
- p_id=>wwv_flow_api.id(42094870829723754605)
-,p_name=>'P8_CGR_PAGE_ID'
-,p_item_sequence=>30
-,p_item_plug_id=>wwv_flow_api.id(42094869633150754603)
-,p_prompt=>'Anwendungsseite'
-,p_display_as=>'NATIVE_SELECT_LIST'
-,p_named_lov=>'LOV_CGR_APPLICATION_PAGES'
-,p_lov_display_null=>'YES'
-,p_lov_null_text=>unistr('- Seite ausw\00E4hlen -')
-,p_cHeight=>1
-,p_tag_css_classes=>'adc-ui-export-page adc-ui-export-sgr adc-ui-hide'
-,p_field_template=>wwv_flow_api.id(264568426687067700)
-,p_item_template_options=>'#DEFAULT#'
-,p_lov_display_extra=>'NO'
 ,p_attribute_01=>'NONE'
 ,p_attribute_02=>'N'
 );
@@ -16147,34 +16110,6 @@ wwv_flow_api.create_page_process(
 );
 end;
 /
-prompt --application/pages/page_00013
-begin
-wwv_flow_api.create_page(
- p_id=>13
-,p_user_interface_id=>wwv_flow_api.id(83261145119887037793)
-,p_name=>'ADC Designer'
-,p_alias=>'ADC-DESIGNER'
-,p_step_title=>'ADC Designer'
-,p_autocomplete_on_off=>'OFF'
-,p_group_id=>wwv_flow_api.id(150989795621804360)
-,p_page_template_options=>'#DEFAULT#'
-,p_last_updated_by=>'ADC_ADMIN'
-,p_last_upd_yyyymmddhh24miss=>'20210403164432'
-);
-wwv_flow_api.create_page_plug(
- p_id=>wwv_flow_api.id(94819515098437628)
-,p_plug_name=>'Breadcrumb'
-,p_region_template_options=>'#DEFAULT#:t-BreadcrumbRegion--useBreadcrumbTitle'
-,p_component_template_options=>'#DEFAULT#'
-,p_plug_template=>wwv_flow_api.id(264533997511067682)
-,p_plug_display_sequence=>10
-,p_plug_display_point=>'REGION_POSITION_01'
-,p_menu_id=>wwv_flow_api.id(83261146410334037824)
-,p_plug_source_type=>'NATIVE_BREADCRUMB'
-,p_menu_template_id=>wwv_flow_api.id(264569699313067700)
-);
-end;
-/
 prompt --application/pages/page_00099
 begin
 wwv_flow_api.create_page(
@@ -16394,8 +16329,7 @@ wwv_flow_api.create_page_process(
 );
 end;
 /
-set define ^
-alter session set current_schema=^INSTALL_USER.;
+set define ^alter session set current_schema=^INSTALL_USER.;
 declare
   l_foo number;
   l_app_id number;
@@ -16744,30 +16678,7 @@ begin
     p_cra_on_error => adc_util.C_FALSE,
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
-/*  
-  adc_admin.merge_apex_action(    
-    p_caa_id => adc_admin.map_id(1005),
-    p_caa_cgr_id => adc_admin.map_id(484),
-    p_caa_cty_id => 'ACTION',
-    p_caa_name => 'toggle-cgr-active',
-    p_caa_label => 'Dynamische Seite aktivieren oder deaktivieren',
-    p_caa_context_label => 'Aktiviert oder deaktiviert ADC für die Seite',
-    p_caa_icon => '',
-    p_caa_icon_type => '',
-    p_caa_title => '',
-    p_caa_shortcut => '',
-    p_caa_initially_disabled => adc_util.C_FALSE,
-    p_caa_initially_hidden => adc_util.C_FALSE,
-    p_caa_href => '',
-    p_caa_action => '');
   
-  adc_admin.merge_apex_action_item(
-    p_cai_caa_id => adc_admin.map_id(1005),
-    p_cai_cpi_cgr_id => adc_admin.map_id(484),
-    p_cai_cpi_id => 'B1_CGR_ACTIVE',
-    p_cai_active => adc_util.C_TRUE);
-*/
-
   adc_admin.merge_apex_action(    
     p_caa_id => adc_admin.map_id(544),
     p_caa_cgr_id => adc_admin.map_id(484),
@@ -17125,6 +17036,18 @@ begin
     p_caa_href => '',
     p_caa_action => '');
   
+  adc_admin.merge_apex_action_item(
+    p_cai_caa_id => adc_admin.map_id(1521),
+    p_cai_cpi_cgr_id => adc_admin.map_id(582),
+    p_cai_cpi_id => 'B5_CREATE_ACTION',
+    p_cai_active => adc_util.C_TRUE);
+
+  adc_admin.merge_apex_action_item(
+    p_cai_caa_id => adc_admin.map_id(1521),
+    p_cai_cpi_cgr_id => adc_admin.map_id(582),
+    p_cai_cpi_id => 'B5_CREATE_ACTION_1',
+    p_cai_active => adc_util.C_TRUE);
+
 
   adc_admin.propagate_rule_change(adc_admin.map_id(582));
 
@@ -17200,12 +17123,25 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
+    p_cra_id => adc_admin.map_id(1912),
+    p_cra_cru_id => adc_admin.map_id(622),
+    p_cra_cgr_id => adc_admin.map_id(620),
+    p_cra_cpi_id => 'P8_CGR_APP_ID',
+    p_cra_cat_id => 'REGISTER_ITEM',
+    p_cra_param_1 => q'||',
+    p_cra_param_2 => q'||',
+    p_cra_param_3 => q'||',
+    p_cra_sort_seq => 20,
+    p_cra_on_error => adc_util.C_FALSE,
+    p_cra_raise_recursive => adc_util.C_TRUE,
+    p_cra_active => adc_util.C_TRUE);
+  adc_admin.merge_rule_action(
     p_cra_id => adc_admin.map_id(624),
     p_cra_cru_id => adc_admin.map_id(622),
     p_cra_cgr_id => adc_admin.map_id(620),
-    p_cra_cpi_id => 'P8_EXPORT_TYPE',
+    p_cra_cpi_id => 'P8_INCLUDE_APP',
     p_cra_cat_id => 'SET_ITEM',
-    p_cra_param_1 => q'|adc_ui.get_export_type|',
+    p_cra_param_1 => q'|adc_util.C_TRUE|',
     p_cra_param_2 => q'||',
     p_cra_param_3 => q'||',
     p_cra_sort_seq => 10,
@@ -17215,17 +17151,17 @@ begin
   adc_admin.merge_rule(
     p_cru_id => adc_admin.map_id(626),
     p_cru_cgr_id => adc_admin.map_id(620),
-    p_cru_name => 'die Exporteinstellung ändert',
-    p_cru_condition => q'|firing_item in ('P8_EXPORT_TYPE', 'P8_CGR_APP_ID', 'P8_CGR_PAGE_ID')|',
+    p_cru_name => 'eine Anwendung wählt',
+    p_cru_condition => q'|firing_item = 'P8_CGR_APP_ID'|',
     p_cru_sort_seq => 20,
     p_cru_fire_on_page_load => adc_util.C_FALSE,
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(628),
+    p_cra_id => adc_admin.map_id(1906),
     p_cra_cru_id => adc_admin.map_id(626),
     p_cra_cgr_id => adc_admin.map_id(620),
-    p_cra_cpi_id => 'DOCUMENT',
+    p_cra_cpi_id => 'B8_EXPORT',
     p_cra_cat_id => 'PLSQL_CODE',
     p_cra_param_1 => q'|adc_ui.set_action_export_cgr;|',
     p_cra_param_2 => q'||',
@@ -17251,6 +17187,12 @@ begin
     p_caa_href => '',
     p_caa_action => '');
   
+  adc_admin.merge_apex_action_item(
+    p_cai_caa_id => adc_admin.map_id(630),
+    p_cai_cpi_cgr_id => adc_admin.map_id(620),
+    p_cai_cpi_id => 'B8_EXPORT',
+    p_cai_active => adc_util.C_TRUE);
+
 
   adc_admin.propagate_rule_change(adc_admin.map_id(620));
 
@@ -17685,45 +17627,7 @@ begin
 end;
 /
 
-
-declare
-  l_foo number;
-  l_app_id number;
-begin
-  l_foo := adc_admin.map_id;
-  l_app_id := apex_application_install.get_application_id;
-
-  dbms_output.put_line('Rulegroup page 13');
-
-  adc_admin.prepare_rule_group_import(
-    p_cgr_app_id => l_app_id,
-    p_cgr_page_id => 13);
-
-  adc_admin.merge_rule_group(
-    p_cgr_id => adc_admin.map_id(801),
-    p_cgr_app_id => l_app_id,
-    p_cgr_page_id => 13,
-    p_cgr_with_recursion => adc_util.C_TRUE,
-    p_cgr_active => adc_util.C_FALSE);
-  
-  adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(803),
-    p_cru_cgr_id => adc_admin.map_id(801),
-    p_cru_name => 'die Seite öffnet',
-    p_cru_condition => q'|initializing = C_TRUE|',
-    p_cru_sort_seq => 10,
-    p_cru_fire_on_page_load => adc_util.C_FALSE,
-    p_cru_active => adc_util.C_TRUE);
-  
-  
-  adc_admin.propagate_rule_change(adc_admin.map_id(801));
-
-  commit;
-end;
-/
-
-set define on
-prompt --application/end_environment
+set define onprompt --application/end_environment
 begin
 wwv_flow_api.import_end(p_auto_install_sup_obj => nvl(wwv_flow_application_install.get_auto_install_sup_obj, false));
 commit;

@@ -898,7 +898,7 @@ as
                       p_cgr_id => cgr.cgr_id,
                       p_mode => p_mode));
                   
-        l_file_name := replace(C_FILE_NAME_APPLICATION, '#APP_ID#', l_cgr_app_id);
+        l_file_name := replace(C_FILE_NAME_PATTERN, '#CGR_FILE_NAME#', cgr.cgr_file_name);
      
         apex_zip.add_file(
           p_zipped_blob => l_zip_file,

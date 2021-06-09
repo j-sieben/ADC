@@ -2,6 +2,10 @@ set define off
 
 begin
 
+  pit_admin.merge_message_group(
+    p_pmg_name => 'SADC',
+    p_pmg_description => 'Meldungen fuer die ADC-Beispielanwendung');
+
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADACT_PAGE',
     p_pti_pml_name => q'^GERMAN^',

@@ -143,7 +143,3 @@ prompt &h2.Version specific installation
 
 -- Re-Init after APEX install
 @tools/re_init_apex.sql
-
-prompt &h3.Install ADC rules
-prompt &s1.Create action types
---@&script_dir.action_types_system.sql

@@ -15,9 +15,9 @@ declare
                  'SADC_UI', '', -- Packages
                  'SADC_LOV_DEPARTMENT', 'SADC_LOV_JOB', 'SADC_UI_ADACT', 'SADC_UI_ADPTI', 
                  'SADC_UI_ADSTA', 'SADC_UI_EDEMP', 'SADC_UI_HOME', -- Views
-                 '',   -- Tabellen
+                 'JOB_HISTORY', 'EMPLOYEES', 'JOBS', 'DEPARTMENTS', 'LOCATIONS', 'REGIONS', 'COUNTRIES',   -- Tabellen
                  '',  -- Synonyme
-                 '' -- Sequenzen
+                 'LOCATIONS_SEQ', 'DEPARTMENTS_SEQ', 'EMPLOYEES_SEQ' -- Sequenzen
                  )
              and object_type not like '%BODY'
              and owner = upper('&INSTALL_USER.')

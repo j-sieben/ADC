@@ -408,40 +408,30 @@ as
   procedure process_export_cgr
   as
     l_cgr_app_id adc_rule_groups.cgr_app_id%type;
-    l_cgr_page_id adc_rule_groups.cgr_page_id%type;
-    l_cgr_id adc_rule_groups.cgr_id%type;
     l_mode adc_util.ora_name_type;
     l_zip_file_name adc_util.sql_char;
     l_zip_file blob;
 
     C_ZIP_CGR_FILE_NAME constant adc_util.ora_name_type := 'single_rule_group_#CGR_ID#.zip';
-    C_ZIP_PAGE_RULES_NAME constant adc_util.ora_name_type := 'app_#APP_ID#_page_#PAGE_ID#_rule_groups.zip';
+    C_ZIP_APEX_APP_NAME constant adc_util.ora_name_type := 'application_#APP_ID#.zip';
     C_ZIP_APP_RULES_NAME constant adc_util.ora_name_type := 'application_#APP_ID#_rule_groups.zip';
-    C_ZIP_ALL_RULES_NAME constant adc_util.ora_name_type := 'all_rule_groups.zip';
   begin
     pit.enter_mandatory;
 
     l_cgr_app_id := utl_apex.get_number('CGR_APP_ID');
-    l_cgr_page_id := utl_apex.get_number('CGR_PAGE_ID');
-    l_cgr_id := utl_apex.get_number('CGR_ID');
-
-    -- map request to export mode and set zip file name accordingly
-    case when utl_apex.request_is('EXPORT_PAGE') then
-      l_mode := adc_admin.C_PAGE_GROUP;
-      l_zip_file_name := replace(C_ZIP_PAGE_RULES_NAME, '#APP_ID#', l_cgr_app_id);
-      l_zip_file_name := replace(C_ZIP_PAGE_RULES_NAME, '#PAGE_ID#', l_cgr_page_id);
-    when utl_apex.request_is('EXPORT_APP') then
-      l_mode := adc_admin.C_APP_GROUPS;
-      l_zip_file_name := replace(C_ZIP_APP_RULES_NAME, '#APP_ID#', l_cgr_app_id);
+    
+    if utl_apex.get_string('INCLUDE_APP') = adc_util.C_TRUE then
+      l_mode := adc_admin.C_APEX_APP;
+      l_zip_file_name := replace(C_ZIP_APEX_APP_NAME, '#APP_ID#', l_cgr_app_id);
     else
-      l_mode := adc_admin.C_ALL_GROUPS;
-      l_zip_file_name := C_ZIP_ALL_RULES_NAME;
-    end case;
+      l_mode := adc_admin.c_APP_GROUPS;
+      l_zip_file_name := replace(C_ZIP_APP_RULES_NAME, '#APP_ID#', l_cgr_app_id);
+    end if;
 
     -- generate ZIP with the requested rule group files and download.
     l_zip_file := adc_admin.export_rule_groups(
                     p_cgr_app_id => l_cgr_app_id,
-                    p_cgr_page_id => l_cgr_page_id,
+                    p_cgr_page_id => null,
                     p_mode => l_mode);
                     
     pit.leave_mandatory;
@@ -1188,21 +1178,11 @@ as
 
     -- Action EXPORT_RULEGROUP
     adc_apex_action.action_init('export-rulegroup');
-    
-    -- It is possible that an cgr was selected without defining the application page.
-    -- In this case, determine the PAGE_ID before exporting, so that the export dialog works correctly.
-    if l_cgr_id is not null and l_cgr_page_id is null then
-      select cgr_page_id
-        into l_cgr_page_id
-        from adc_rule_groups
-       where cgr_id = l_cgr_id;
-      utl_apex.set_value('P1_CGR_PAGE_ID', l_cgr_page_id);
-    end if;
 
     l_javascript := utl_apex.get_page_url(
                       p_page => 'EXPORT_CGR',
-                      p_param_items => 'P8_CGR_APP_ID:P8_CGR_PAGE_ID',
-                      p_value_items => 'P1_CGR_APP_ID:P1_CGR_PAGE_ID',
+                      p_param_items => 'P8_CGR_APP_ID',
+                      p_value_items => 'P1_CGR_APP_ID',
                       p_triggering_element => 'B1_EXPORT_CGR');
 
     adc_apex_action.set_action(l_javascript);
@@ -1224,10 +1204,8 @@ as
 
   procedure set_action_export_cgr
   as
-    l_cgr_app_id utl_apex.item_rec;
-    l_cgr_page_id utl_apex.item_rec;
-    l_cgr_id utl_apex.item_rec;
-    l_export_type utl_apex.item_rec;
+    l_cgr_app_id adc_rule_groups.cgr_app_id%type;
+    l_include_app adc_util.flag_type;
     l_action varchar2(100);
     
     C_SUCCESS_COMMAND constant varchar2(100) := q'^apex.submit('EXPORT_#TYPE#');^';
@@ -1235,65 +1213,28 @@ as
     pit.enter_optional;
     
     -- Initialization
-    l_cgr_app_id := utl_apex.get_page_element('CGR_APP_ID');
-    l_cgr_page_id := utl_apex.get_page_element('CGR_PAGE_ID');
-    l_cgr_id  := utl_apex.get_page_element('CGR_ID');
-    l_export_type := utl_apex.get_page_element('EXPORT_TYPE');
-    l_action := replace(C_SUCCESS_COMMAND, '#TYPE#', l_export_type.item_value);
+    l_cgr_app_id := utl_apex.get_number('CGR_APP_ID');
+    l_include_app := utl_apex.get_string('INCLUDE_APP');
     
     -- If select list values change, set dependent select lists to null and refresh
-    case adc_api.get_firing_item
-      when l_cgr_app_id.item_name then 
-        -- application Id changed, reset and refresh page and cgr select lists
-        l_cgr_page_id.item_value := null;
-        adc.set_item(l_cgr_page_id.item_name, to_char(null));
-        adc.refresh_item(l_cgr_page_id.item_name);
-        
-        l_cgr_id.item_value := null;
-        adc.set_item(l_cgr_id.item_name, to_char(null));
-        adc.refresh_item(l_cgr_id.item_name);   
-      when l_cgr_page_id.item_name then
-        -- page id changed, only reset and refresh cgr select list
-        l_cgr_id.item_value := null;
-        adc.set_item(l_cgr_id.item_name, to_char(null)); 
-        adc.refresh_item(l_cgr_id.item_name);
-      else
-        null;
-    end case;
+    if l_include_app = adc_util.C_TRUE then 
+      l_action := adc_admin.C_APEX_APP;
+    else
+      l_action := adc_admin.C_APP_GROUPS;
+    end if;
+    l_action := replace(C_SUCCESS_COMMAND, '#TYPE#', l_action);
     
-    -- Show/Hide items based on export type
-    adc.show_hide_item('.adc-ui-export-' || lower(l_export_type.item_value), '.adc-ui-hide');
-
     -- harmonize apex action
     adc_apex_action.action_init('export-rulegroup');
 
-    case l_export_type.item_value
-      when 'PAGE' then
-        if l_cgr_page_id.item_value is not null then
-          adc_apex_action.set_label(adc_util.get_trans_item_name('CGR_EXPORT_LABEL_PAGE', msg_args(l_cgr_page_id.item_value)));
-          adc_apex_action.set_disabled(false);
-          adc_apex_action.set_action(l_action);
-        else
-          adc_apex_action.set_label(adc_util.get_trans_item_name('SELECT_PAGE'));
-          adc_apex_action.set_disabled(true);
-        end if;
-      when 'APP' then
-        if l_cgr_app_id.item_value is not null then
-          adc_apex_action.set_label(adc_util.get_trans_item_name('CGR_EXPORT_LABEL_APP', msg_args(l_cgr_app_id.item_value)));
-          adc_apex_action.set_disabled(false);
-          adc_apex_action.set_action(l_action);
-        else
-          adc_apex_action.set_label(adc_util.get_trans_item_name('SELECT_APP'));
-          adc_apex_action.set_disabled(true);
-        end if;
-      when 'ALL_CGR' then
-        adc_apex_action.set_label(adc_util.get_trans_item_name('CGR_EXPORT_LABEL_ALL'));
-        adc_apex_action.set_disabled(false);
-        adc_apex_action.set_action(l_action);
-      else
-        adc_apex_action.set_action(null);
-        adc_apex_action.set_disabled(true);
-    end case;
+    if l_cgr_app_id is not null then
+      adc_apex_action.set_label(adc_util.get_trans_item_name('CGR_EXPORT_LABEL_APP', msg_args(to_char(l_cgr_app_id))));
+      adc_apex_action.set_disabled(false);
+      adc_apex_action.set_action(l_action);
+    else
+      adc_apex_action.set_action(null);
+      adc_apex_action.set_disabled(true);
+    end if;
     
     adc.add_javascript(adc_apex_action.get_action_script);
 

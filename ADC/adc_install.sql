@@ -22,7 +22,7 @@ alter session set current_schema=&INSTALL_USER.;
 
 prompt
 prompt &section.
-prompt &h1.State Chart Toolkit (ADC)) Installation at user &INSTALL_USER.
+prompt &h1.APEX Dynamic Controller (ADC) Installation at user &INSTALL_USER.
 @&core_dir.install.sql
 
 

@@ -32,7 +32,7 @@ select cgr_id cpi_cgr_id,
        case when instr(upper(item_label_template), 'REQUIRED') > 0 then adc_util.C_TRUE else adc_util.C_FALSE end cpi_is_mandatory,
        -- default required items
        case
-         when item_source_data_type in ('NUMBER', 'DATE', 'TIMESTAMP') or instr(upper(item_label_template), 'REQUIRED') > 0 then adc_util.C_TRUE 
+         when item_source_data_type in ('NUMBER', 'DATE', 'TIMESTAMP') or format_mask is not null or instr(upper(item_label_template), 'REQUIRED') > 0 then adc_util.C_TRUE 
          else adc_util.C_FALSE end  cpi_is_required
   from apex_application_page_items aai
   join adc_rule_groups sgr
