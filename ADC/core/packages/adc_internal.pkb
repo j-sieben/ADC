@@ -332,7 +332,7 @@ as
       from dual
      where exists(
            select null
-             from adc_apex_actions
+             from adc_apex_action_items
             where cai_cpi_cgr_id = g_param.cgr_id);
             
     if l_has_actions = 1 then
@@ -686,7 +686,7 @@ as
                              p_msg_args => msg_args(
                                              to_char(l_actual_recursive_level), 
                                              to_char(p_rule.cru_sort_seq), 
-                                             p_rule.cru_name, 
+                                             convert(p_rule.cru_name, 'WE8ISO8859P1'), 
                                              g_param.firing_item)),
           p_debug_level => C_JS_RULE_ORIGIN);
       else
@@ -696,7 +696,7 @@ as
           p_msg_args => msg_args(
                           to_char(l_actual_recursive_level), 
                           to_char(p_rule.cru_sort_seq), 
-                          p_rule.cru_name, 
+                          convert(p_rule.cru_name, 'WE8ISO8859P1'), 
                           g_param.firing_item));
       end if;
     end if;
@@ -926,7 +926,7 @@ as
                      'PARAM_2', p_rule.cra_param_2,
                      'PARAM_3', p_rule.cra_param_3,
                      'CRU_SORT_SEQ', case when p_rule.cru_sort_seq is not null then 'RULE_' || p_rule.cru_sort_seq else 'NO_RULE_FOUND' end,
-                     'CRU_NAME', p_rule.cru_name,
+                     'CRU_NAME', convert(p_rule.cru_name, 'WE8ISO8859P1'),
                      'FIRING_ITEM', g_param.firing_item,
                      'CR', adc_util.C_CR));
       add_javascript(l_js_code, C_JS_CODE);

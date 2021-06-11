@@ -205,7 +205,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_NO_JAVASCRIPT',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^#2#// Kein JavaScript-Code fuer Regel "#1#"^',
+    p_pms_text => q'^// Kein JavaScript-Code fuer Regel "#1#"^',
     p_pms_description => q'^^',
     p_pms_pse_id => 70,
     p_pms_pml_name => 'GERMAN',
