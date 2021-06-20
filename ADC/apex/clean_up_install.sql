@@ -13,8 +13,8 @@ declare
            where object_name in (
                  '', -- Typen
                  'ADC_UI', 'PLUGIN_GROUP_SELECT_LIST', -- Packages
-                 'ADC_UI_ADMIN_CAT', 'ADC_UI_ADMIN_CGR_MAIN', 'ADC_UI_ADMIN_SIF', 'ADC_UI_ADMIN_CGR_RULES', 
-                 'ADC_UI_EDIT_RULE', 'ADC_UI_EDIT_RULE_ACTION', 'ADC_UI_EDIT_CAA', 'ADC_UI_EDIT_CAT', 'ADC_UI_EDIT_SIF', 'ADC_UI_EDIT_CGR', 
+                 'ADC_UI_ADMIN_CAT', 'ADC_UI_ADMIN_CGR_MAIN', 'ADC_UI_ADMIN_CGR_COMMANDS', 'ADC_UI_ADMIN_CGR_OVERVIEW', 'ADC_UI_ADMIN_CIF', 'ADC_UI_ADMIN_CGR_RULES', 
+                 'ADC_UI_EDIT_RULE', 'ADC_UI_EDIT_RULE_ACTION', 'ADC_UI_EDIT_CAA', 'ADC_UI_EDIT_CAT', 'ADC_UI_EDIT_CIF', 'ADC_UI_EDIT_CGR',  'ADC_UI_EDIT_CTG', 
                  'ADC_UI_EDIT_CGR_APEX_ACTION', 'ADC_UI_EDIT_CRA', 'ADC_UI_EDIT_CRU', 'ADC_UI_EDIT_CRU_ACTION', 
                  'ADC_UI_LIST_ACTION_TYPE', 'ADC_UI_LIST_PAGE_ITEMS', 'ADC_UI_LOV_ACTION_ITEM_FOCUS', 
                  'ADC_UI_LOV_ACTION_PARAM_TYPE', 'ADC_UI_LOV_ACTION_TYPE_GROUP', 'ADC_UI_LOV_APEX_ACTION_ITEMS', 
@@ -57,9 +57,11 @@ declare
       from adc_rule_groups
      where cgr_app_id = &APP_ID.;
 begin
-  for r in adc_cur loop
-    adc_admin.delete_rule_group(r.cgr_id);
-  end loop;
+  if &APP_ID. is not null then
+    for r in adc_cur loop
+      adc_admin.delete_rule_group(r.cgr_id);
+    end loop;
+  end if;
 end;
 /
 
@@ -70,15 +72,17 @@ declare
   l_ws number;
   c_app_alias constant varchar2(30 byte) := '&APEX_ALIAS.';  
 begin
-  select application_id, workspace_id
-    into l_app_id, l_ws
-    from apex_applications
-   where alias = c_app_alias
-     and owner = '&INSTALL_USER.';
-   
-  dbms_output.put_line('&s1.Remove application ' || c_app_alias);
-  wwv_flow_api.set_security_group_id(l_ws);
-  wwv_flow_api.remove_flow(l_app_id);
+  if c_app_alias is not null then
+    select application_id, workspace_id
+      into l_app_id, l_ws
+      from apex_applications
+     where alias = c_app_alias
+       and owner = '&INSTALL_USER.';
+     
+    dbms_output.put_line('&s1.Remove application ' || c_app_alias);
+    wwv_flow_api.set_security_group_id(l_ws);
+    wwv_flow_api.remove_flow(l_app_id);
+  end if;
 exception
   when others then
     dbms_output.put_line('&s1.Application ' || c_app_alias || ' does not exist');

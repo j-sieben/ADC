@@ -128,8 +128,9 @@ as
     
 
   /** Method executes any initialization code of the rule group
-   * %usage Is called during initialization of ADC for the page. ADC requires the initial values of the page items and
-   *        needs to compute them, as APEX does not store them during initialization in an accessible manner.
+   * %usage Called by the ADC plugin during initialization of the dynamic pages. 
+   *        ADC requires the initial values of the page items and needs to compute them, 
+   *        as APEX does not store them during initialization in an accessible manner.
    *        To allow for this, ADC re-executes any page computation and row fetch process as far as possible.
    */
   procedure process_initialization_code;
@@ -138,14 +139,16 @@ as
   /** Method to process a ADC request
    * %return JavaScript code in response to the request
    * %usage  Is used to calculate the new status of the page based on the session state values and the underlying ADC rules.
-   *         Flow: 
+   *         Flow:
+   *         - Make session state and metadata (firing item, event, event data etc.) available for the decision table
    *         - Query decision table (ADC_RULE_GROUPS.CGR_DECISION_TABLE) against actual session state
    *         - If a rule has to be executed, perform all assigned actions:
    *           - execute actions PL/SQL code immediately and 
    *           - collect all JavaScript
    *         - If a PL/SQL code changes session state, recursively check rules to determine whether further 
    *           rules have to be processed
-   *         - If no further rule has to be processed, return all collected JavaScript
+   *         - If no further rule has to be processed, return all collected JavaScript within a <script> element
+   *         This method is called from the ADC plugin
    */
   function process_request
     return clob;
@@ -165,7 +168,8 @@ as
    * %param  p_event        Firing event
    * %param  p_event_data   Additional event information
    * %usage  Is called before the actual rule action takes place (at the beginning of render and AJAX methods)
-   *         to copy the status to a package record.
+   *         to copy the plugin parameters and status to a package record.
+   *         This method is called from the ADC plugin
    */
   procedure read_settings(
     p_firing_item in varchar2,

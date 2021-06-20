@@ -10,28 +10,30 @@ clear screen
 set termout off
 col sys_user new_val SYS_USER format a30
 col install_user new_val INSTALL_USER format a30
-col apex_ws new_val APEX_WS format a30
-col apex_alias new_val APEX_ALIAS format a30
-col apex_sample_alias new_val APEX_SAMPLE_ALIAS format a30
-col apex_path new_val APEX_PATH format a20
 col app_id new_val APP_ID format a30
-col default_language new_val DEFAULT_LANGUAGE format a30
+col apex_ws new_val APEX_WS format a30
+col apex_alias new_val APEX_ALIAS
+col apex_sample_alias new_val APEX_SAMPLE_ALIAS
 col pit_owner new_val PIT_OWNER format a30
+col apex_path new_val APEX_PATH format a20
 
 -- Common directory paths
 define core_dir=core/
 define plugin_dir=plugin/
 
+   
 select user sys_user,
        upper('&1.') install_user,
-       upper('&2.') apex_ws, 
-       upper('&3.') apex_alias, 
-       upper('&3.') apex_sample_alias, 
-       '&4.' app_id,
-       upper('&5.') default_language
-  from V$NLS_VALID_VALUES
- where parameter = 'LANGUAGE'
-   and value = upper('&5.');
+       upper('&2.') apex_ws,
+       upper('&3.') apex_alias,
+       upper('&4.') apex_sample_alias
+  from dual;
+ 
+select application_id app_id
+  from apex_applications
+ where workspace = '&APEX_WS.'
+   and alias = '&APEX_ALIAS.';
+   
    
 select owner pit_owner
   from dba_tab_privs
@@ -39,11 +41,11 @@ select owner pit_owner
    and table_name = 'PIT'
  fetch first 1 row only;
 
--- Determine Apex path based on installed APEX user
+-- Apex Pfad anhand von installiertem APEX-Benutzer ermitteln
 select case 
-       when &INSTALL_USER..utl_apex.get_apex_version >= 20.2 then 'apex_20_2' end apex_path
+       when &INSTALL_USER..utl_apex.get_apex_version != 20.2 then 'apex_20_2' end apex_path
   from dual;
-
+  
 @settings.sql
    
 col ora_name_type new_val ORA_NAME_TYPE format a30
@@ -58,13 +60,11 @@ define h2="**  "
 define h3="*   "
 define s1=".    - "
 
-
-alter session set current_schema=&INSTALL_USER.;
-
 set termout on
+
 begin
   if '&APEX_PATH.' is null then
-    raise_application_error(-20000, 'APEX 20.2 or higher is required to install APC');
+    raise_application_error(-20000, 'APEX 20.2 or higher not found');
   end if;
 end;
 /

@@ -1,4 +1,4 @@
-set termout off
+set termout on
 
 variable script_name varchar2(100);
 variable with_ut varchar2(5);

@@ -26,15 +26,24 @@ as
   /** Private types */
   type item_stack_t is table of number index by varchar2(50);
   
-  -- Fehlerstack
+  -- Error stack
   type error_stack_t is table of adc_util.max_char index by binary_integer;
   
+  -- JavaScript stack
   type js_rec is record(
     script adc_util.max_char,
     hash raw(2000),
     debug_level binary_integer);
     
   type js_list is table of js_rec index by binary_integer;
+  
+  -- Cache session state values during rule processing to prevent unnecessary fetches
+  type session_value_rec is record(
+    string_value adc_util.max_char,
+    date_value date,
+    number_value number);
+
+  type session_value_tab is table of session_value_rec index by adc_util.ora_name_type;
   
   /** recursion stack
    * The recursion stack stores the page elements that were changed by the rules,
@@ -93,8 +102,9 @@ as
   g_has_errors boolean;
   g_param param_rec;
   g_recursion_limit binary_integer;
-  g_recursion_loop_is_error boolean;  
-  
+  g_recursion_loop_is_error boolean;
+  g_session_values session_value_tab;
+    
   $IF adc_util.C_WITH_UNIT_TESTS $THEN
   /*============ UNIT TEST ============*/ 
   g_test_mode boolean := false;
@@ -830,6 +840,7 @@ as
     l_cpi_conversion adc_page_items.cpi_conversion%type;
     l_number_val number;
     l_date_val date;
+    l_string_val adc_util.max_char;
   begin
     pit.enter_detailed('format_firing_item');
     
@@ -839,7 +850,7 @@ as
       from adc_page_items
      where cpi_cgr_id = g_param.cgr_id
        and cpi_id = g_param.firing_item
-       and cpi_conversion is not null;
+       and cpi_cit_id in ('ITEM', 'APP_ITEM');
     
     case l_cpi_cit_id
       when C_NUMBER_ITEM then
@@ -853,13 +864,13 @@ as
         -- conversion successful, set formatted string in session state
         set_session_state(g_param.firing_item, coalesce(to_char(l_date_val, l_cpi_conversion), get_string(g_param.firing_item)), adc_util.C_TRUE, null);
       else
-        pit.stop(msg.ADC_UNEXPECTED_CONV_TYPE, msg_args(l_cpi_cit_id));
+        l_string_val := get_string(g_param.firing_item);
     end case;
     
     pit.leave_detailed;
   exception
     when NO_DATA_FOUND then
-      -- no format mask detected, ignore.
+      -- no session state value, ignore.
       pit.leave_detailed;
   end format_firing_item;
 
@@ -1584,14 +1595,17 @@ as
     p_cpi_id in adc_page_items.cpi_id%type)
     return varchar2
   as
-    l_char varchar2(32767);
+    l_value session_value_rec;
   begin
     pit.enter_detailed(p_params => msg_params(msg_param('p_cpi_id', p_cpi_id)));
     
-    l_char := coalesce(v(p_cpi_id), get_mandatory_default_value(p_cpi_id));
+    if not g_session_values.exists(p_cpi_id) then
+      l_value.string_value := coalesce(v(p_cpi_id), get_mandatory_default_value(p_cpi_id));
+      g_session_values(p_cpi_id) := l_value;
+    end if;
     
-    pit.leave_detailed(p_params => msg_params(msg_param('Result', l_char)));
-    return l_char;
+    pit.leave_detailed(p_params => msg_params(msg_param('Result', g_session_values(p_cpi_id).string_value)));
+    return g_session_values(p_cpi_id).string_value;
   end get_string;
     
     
@@ -1601,51 +1615,55 @@ as
     p_throw_error in adc_util.flag_type default adc_util.C_TRUE)
     return date
   as
-    l_raw_value adc_util.max_char;
     l_format_mask adc_util.ora_name_type;
-    l_date date;
+    l_value session_value_rec;
   begin
     pit.enter_detailed(
       p_params => msg_params(
                     msg_param('p_cpi_id', p_cpi_id),
                     msg_param('p_format_mask', p_format_mask),
                     msg_param('p_throw_error', p_throw_error)));
+                    
+    if not g_session_values.exists(p_cpi_id) then
   
-    /** TODO: Umbauen auf VALIDATE_CONVERSION, falls 12.2 vorausgesetzt werden kann und die Bugs hierzu behoben sind */
-    l_raw_value := get_string(p_cpi_id);
-    l_format_mask := coalesce(p_format_mask, get_conversion(p_cpi_id), utl_apex.get_default_date_format);
-    l_date := to_date(l_raw_value, l_format_mask);
-    
-    pit.leave_detailed(p_params => msg_params(msg_param('Result', to_char(l_date, 'yyyy-mm-dd'))));
-    return l_date;
+      /** TODO: Umbauen auf VALIDATE_CONVERSION, falls 12.2 vorausgesetzt werden kann und die Bugs hierzu behoben sind */
+      l_value.string_value := get_string(p_cpi_id);
+      if l_value.string_value is not null then
+        l_format_mask := coalesce(p_format_mask, get_conversion(p_cpi_id), utl_apex.get_default_date_format);
+        l_value.date_value := to_date(l_value.string_value, l_format_mask);
+      end if;
+    end if;
+      
+    pit.leave_detailed(p_params => msg_params(msg_param('Result', g_session_values(p_cpi_id).string_value)));
+    return g_session_values(p_cpi_id).date_value;
   exception
     when msg.INVALID_DATE_ERR then
-      register_error(p_cpi_id, msg.INVALID_DATE, msg_args(l_raw_value, p_format_mask));
+      register_error(p_cpi_id, msg.INVALID_DATE, msg_args(l_value.string_value, p_format_mask));
       if p_throw_error = adc_util.C_TRUE then
         raise;
       end if;
-      pit.leave_detailed(p_params => msg_params(msg_param('Result', to_char(l_date, 'yyyy-mm-dd'))));
+      pit.leave_detailed(p_params => msg_params(msg_param('Result', l_value.string_value)));
       return null;
     when msg.INVALID_DATE_FORMAT_ERR then
-      register_error(p_cpi_id, msg.INVALID_DATE_FORMAT, msg_args(l_raw_value, p_format_mask));
+      register_error(p_cpi_id, msg.INVALID_DATE_FORMAT, msg_args(l_value.string_value, p_format_mask));
       if p_throw_error = adc_util.C_TRUE then
         raise;
       end if;
-      pit.leave_detailed(p_params => msg_params(msg_param('Result', to_char(l_date, 'yyyy-mm-dd'))));
+      pit.leave_detailed(p_params => msg_params(msg_param('Result', l_value.string_value)));
       return null;
     when msg.INVALID_YEAR_ERR or msg.INVALID_MONTH_ERR or msg.INVALID_DAY_ERR then
       register_error(p_cpi_id, msg.INVALID_YEAR, msg_args(substr(sqlerrm, 12)));
       if p_throw_error = adc_util.C_TRUE then
         raise;
       end if;
-      pit.leave_detailed(p_params => msg_params(msg_param('Result', to_char(l_date, 'yyyy-mm-dd'))));
+      pit.leave_detailed(p_params => msg_params(msg_param('Result', l_value.string_value)));
       return null;
     when others then
       register_error(p_cpi_id, msg.INVALID_DATE_FORMAT, msg_args(substr(sqlerrm, 12)));
       if p_throw_error = adc_util.C_TRUE then
         raise;
       end if;
-      pit.leave_detailed(p_params => msg_params(msg_param('Result', to_char(l_date, 'yyyy-mm-dd'))));
+      pit.leave_detailed(p_params => msg_params(msg_param('Result', l_value.string_value)));
       return null;
   end get_date;
   
@@ -1656,9 +1674,8 @@ as
     p_throw_error in adc_util.flag_type default adc_util.c_false)
     return number
   as
-    l_raw_value adc_util.max_char;
+    l_value session_value_rec;
     l_format_mask adc_util.ora_name_type;
-    l_result number;
   begin
     pit.enter_detailed(
       p_params => msg_params(
@@ -1666,27 +1683,31 @@ as
                     msg_param('p_format_mask', p_format_mask),
                     msg_param('p_throw_error', to_char(p_throw_error))));
     
-    l_raw_value := get_string(p_cpi_id);
-    l_raw_value := rtrim(ltrim(l_raw_value, ', '));
-    l_format_mask := replace(coalesce(p_format_mask, get_conversion(p_cpi_id), '99999999999999D9999999'), 'G');
-    l_result := to_number(l_raw_value, l_format_mask);
+    if not g_session_values.exists(p_cpi_id) then
+      l_value.string_value := get_string(p_cpi_id);
+      if l_value.string_value is not null then
+        l_value.string_value := rtrim(ltrim(l_value.string_value, ', '));
+        l_format_mask := replace(coalesce(p_format_mask, get_conversion(p_cpi_id), '99999999999999D9999999'), 'G');
+        l_value.number_value := to_number(l_value.string_value, l_format_mask);
+      end if;
+    end if;
     
-    pit.leave_detailed(p_params => msg_params(msg_param('Result', to_char(l_result))));
-    return l_result;
+    pit.leave_detailed(p_params => msg_params(msg_param('Result', l_value.string_value)));
+    return l_value.number_value;
   exception
     when msg.INVALID_NUMBER_FORMAT_ERR then
-      register_error(p_cpi_id, msg.INVALID_NUMBER_FORMAT, msg_args(l_raw_value, p_format_mask));
+      register_error(p_cpi_id, msg.INVALID_NUMBER_FORMAT, msg_args(l_value.string_value, p_format_mask));
       if p_throw_error = adc_util.C_TRUE then
         raise;
       end if;
-      pit.leave_detailed(p_params => msg_params(msg_param('Result', to_char(l_result))));
+      pit.leave_detailed(p_params => msg_params(msg_param('Result', l_value.string_value)));
       return null;
     when INVALID_NUMBER or VALUE_ERROR then
-      register_error(p_cpi_id, msg.ADC_INVALID_NUMBER_REMOVED, msg_args(l_raw_value));
+      register_error(p_cpi_id, msg.ADC_INVALID_NUMBER_REMOVED, msg_args(l_value.string_value));
       if p_throw_error = adc_util.C_TRUE then
         raise;
       end if;
-      pit.leave_detailed(p_params => msg_params(msg_param('Result', to_char(l_result))));
+      pit.leave_detailed(p_params => msg_params(msg_param('Result', l_value.string_value)));
       return null;
     when others then
       register_error(p_cpi_id, msg.SQL_ERROR, msg_args(substr(sqlerrm, 12)));
@@ -1758,6 +1779,9 @@ as
       process_rule;
       
       l_js_script := get_java_script;
+      
+      -- reset session value cache
+      g_session_values.delete;
       
     pit.leave_optional(
       p_params => msg_params(msg_param('JavaScript', l_js_script)));
@@ -1868,6 +1892,7 @@ as
     g_param.now := dbms_utility.get_time;
     g_param.stop_flag := false;
     g_param.collection_name := C_COLLECTION_NAME || g_param.cgr_id;
+    g_session_values.delete;
     
     format_firing_item;
     
