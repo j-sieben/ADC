@@ -57,3 +57,7 @@ ADC requires table to store the metadata at. These tables are named using the pr
 ### ADC application
 
 To offer the declarative functionality, ADC ships with an APEX application that allows to create and maintain use cases. This application should be your main enterance point for use cases as it supports you in putting together the use case and their respective actions best. The ADC application on the other hand is required on development environments only and should not be installed on test or production environments. It is not required to export or import use cases, as these are integrated into the normal APEX application export file or can be downloaded and installed using distinct SQL installation files.
+
+## ADC Sample Application
+
+ADC ships with a sample application that shows you how to use ADC from installing the plugin on the page up to the use of page commands. It is meant as a showcase application only and expects ADC to be installed on the system. It also is not all to cleanly coded as it create database tables within the worspace schema directly. It is assumed that this is OK for a sample application to make it easier to install it.
