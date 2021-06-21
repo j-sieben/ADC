@@ -60,4 +60,6 @@ To offer the declarative functionality, ADC ships with an APEX application that 
 
 ## ADC Sample Application
 
-ADC ships with a sample application that shows you how to use ADC from installing the plugin on the page up to the use of page commands. It is meant as a showcase application only and expects ADC to be installed on the system. It also is not all to cleanly coded as it create database tables within the worspace schema directly. It is assumed that this is OK for a sample application to make it easier to install it.
+ADC ships with a sample application that shows you step by step how to use ADC from installing the plugin on the page up to the use of page commands. From the respective example pages you can directly navigate to the settings in ADC required to achieve the tasks. This will help you to get started quickly.
+
+It is meant as a showcase application only and expects ADC to be installed on the system. It also is not all to cleanly coded as it create database tables within the worspace schema directly. It is assumed that this is OK for a sample application to make it easier to install it.
