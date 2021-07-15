@@ -1,6 +1,6 @@
 create or replace package adc_internal
   authid definer
-  accessible by (package adc_plugin, package adc_validation, package adc_api)
+  --accessible by (package adc_plugin, package adc_validation, package adc_api)
 as
 
   

@@ -1688,6 +1688,7 @@ as
         l_format_mask := coalesce(p_format_mask, get_conversion(p_cpi_id), utl_apex.get_default_date_format);
         l_value.date_value := to_date(l_value.string_value, l_format_mask);
       end if;
+      g_session_values(p_cpi_id) := l_value;
     end if;
       
     pit.leave_detailed(p_params => msg_params(msg_param('Result', g_session_values(p_cpi_id).string_value)));
@@ -1746,10 +1747,16 @@ as
         l_format_mask := replace(coalesce(p_format_mask, get_conversion(p_cpi_id), '99999999999999D9999999'), 'G');
         l_value.number_value := to_number(l_value.string_value, l_format_mask);
       end if;
+      pit.log_state(
+        msg_params(
+          msg_param('String', l_value.string_value),
+          msg_param('Formatmask', l_format_mask),
+          msg_param('Num-Value', l_value.number_value)));
+      g_session_values(p_cpi_id) := l_value;
     end if;
     
     pit.leave_detailed(p_params => msg_params(msg_param('Result', l_value.string_value)));
-    return l_value.number_value;
+    return g_session_values(p_cpi_id).number_value;
   exception
     when msg.INVALID_NUMBER_FORMAT_ERR then
       register_error(p_cpi_id, msg.INVALID_NUMBER_FORMAT, msg_args(l_value.string_value, p_format_mask));
