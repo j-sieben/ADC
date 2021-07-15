@@ -91,6 +91,7 @@ as
                     when 'TEXT' then null
                     when 'SELECT_LIST' then 'LOV_'
                     when 'TEXT_AREA' then 'AREA_'
+                    when 'SWITCH' then 'SWITCH_'
                   end || cap_sort_seq item_name
              from adc_action_parameters
              join adc_action_param_types
@@ -684,12 +685,14 @@ as
       select /*+ no_merge (p) */
              sat.cat_id, cat_cif_id, 
              cpt_id, cpt_item_type,
-             cap_sort_seq, cap_mandatory, cap_default,
+             cap_sort_seq, cap_mandatory, 
+             replace(cap_default, '''') cap_default,
              coalesce(cap_display_name, cpt_name) cpt_name,
              'P11_CRA_PARAM_' || 
              case cpt_item_type
                when 'SELECT_LIST' then 'LOV_'
                when 'TEXT_AREA' then 'AREA_'
+               when 'SWITCH' then 'SWITCH_'
              end || cap_sort_seq cap_page_item
         from adc_action_types_v sat
         join params p
@@ -708,7 +711,7 @@ as
     l_help_text adc_util.max_char;
     l_cat_id adc_action_types.cat_id%type;
     l_mandatory_message adc_util.max_char;
-    
+    l_cif_default adc_action_item_focus.cif_default%type;
   begin
     pit.enter_mandatory;
     
@@ -719,8 +722,16 @@ as
     adc.set_optional(C_PARAM_SELECTOR);
     
     -- Set list of page items
+    select dbms_assert.enquote_literal(cif_default)
+      into l_cif_default
+      from adc_action_types
+      join adc_action_item_focus
+        on cat_cif_id = cif_id
+     where cat_id = l_cat_id;
+     
     adc.refresh_item(
       p_cpi_id => 'P11_CRA_CPI_ID',
+      p_item_value => l_cif_default,
       p_set_item => adc_util.C_TRUE);
 
     -- Generate Help text for action type
@@ -735,7 +746,8 @@ as
       -- Show parameter region
       adc.show_item('R11_PARAMETER_' || param.cap_sort_seq);       
       
-      -- Set parameter label and mandatory state
+      -- Set parameter value, label and mandatory state
+      adc.set_item(param.cap_page_item, param.cap_default);
       adc.set_item_label(param.cap_page_item, param.cpt_name);
       if param.cap_mandatory = adc_util.C_TRUE then
         adc.set_mandatory(

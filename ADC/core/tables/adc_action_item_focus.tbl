@@ -4,6 +4,7 @@ create table adc_action_item_focus(
   cif_pmg_name varchar2(3 byte) default 'ADC' constraint chk_cif_pmg_name check(cif_pmg_name = 'ADC'),
   cif_actual_page_only &FLAG_TYPE. default &C_TRUE. constraint chk_cif_actual_page_only check(cif_actual_page_only in (&C_TRUE., &C_FALSE.)),
   cif_item_types varchar2(100 byte), 
+  cif_default varchar2(50 char), 
   cif_active &FLAG_TYPE. default &C_TRUE. constraint chk_cif_active check(cif_active in (&C_TRUE., &C_FALSE.)),
   constraint pk_adc_action_item_focus primary key(cif_id),
   constraint fk_cif_pti_id foreign key(cif_pti_id, cif_pmg_name)
@@ -19,4 +20,5 @@ comment on column adc_action_item_focus.cif_pti_id is 'Reference to PIT_TRANSLAT
 comment on column adc_action_item_focus.cif_pmg_name is 'Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC';
 comment on column adc_action_item_focus.cif_actual_page_only is 'Flag to indicate whether only items of the actual page should be shown';
 comment on column adc_action_item_focus.cif_item_types is 'Colon separated list of item types to show';
+comment on column adc_action_item_focus.cif_item_types is 'Optional default value for the item focus';
 comment on column adc_action_item_focus.cif_active is 'Flag to indicate whether rule group is in use';

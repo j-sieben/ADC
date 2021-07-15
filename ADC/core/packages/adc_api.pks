@@ -260,6 +260,32 @@ as
     p_jquery_selector in adc_rule_actions.cra_param_1%type default null);
     
     
+  /** Method to register a page item as to be observed.
+   * %param  p_cpi_id  page item to observe
+   * %usage  Is used to register a page item with ADC. This is necessary only, if:
+   *         - ADC action require the actually set value at the session state
+   *         - no technical condition references this item
+   *         If these requirements are met, this method allows to register a page item for observation
+   *         This method is only applicable during page initialization, as lateron no event handlers
+   *         are added to the page
+   */
+  procedure register_observer(
+    p_cpi_id in adc_page_items.cpi_id%type);
+    
+    
+  /** Method to set ADC to initialize mode
+   * %param [p_mode] Flag to indicate whether initialize mode has to be set (true, default) or not (false)
+   * %usage  This method is seldomly needed. It switches ADC to initialize mode. This mode is
+   *         detected automatically if no firing item is present, so in normal execution there is no
+   *         need to use it. If, on the other hand, ADC wants to re-initialize the page without reloading it,
+   *         it may be necessary to call this method upfront to prevent ADC from checking all mandatory items
+   *         and showing errors on the page.
+   *         After execution of the rule, initialize mode is set back automatically.
+   */
+  procedure set_initialize_mode(
+    p_mode in adc_util.flag_type default adc_util.C_TRUE);
+    
+    
   /** Wrapper around apex_util to set a value in the session state.
    * %param  p_cpi_id           page item to set
    * %param  p_value            page item to set mandatory or optional

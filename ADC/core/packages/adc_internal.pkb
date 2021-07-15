@@ -13,6 +13,7 @@ as
   
   C_NUMBER_ITEM constant adc_page_item_types.cit_id%type := 'NUMBER_ITEM';
   C_DATE_ITEM constant adc_page_item_types.cit_id%type := 'DATE_ITEM';
+  C_MAX_INTEGER constant number := 2147483647; -- Used to limit Hashfunktions to the max of BINARY_INTEGER
   C_REGISTER_OBSERVER constant adc_action_types.cat_id%type := 'REGISTER_OBSERVER';
   C_DELIMITER constant varchar2(1 byte) := ',';
   C_EVENT_INITIALIZE constant adc_util.ora_name_type := 'initialize';
@@ -56,24 +57,24 @@ as
   /** Record for recording the plugin attributes
    */
   type param_rec is record(
-    id number,                                       -- internal ID of the record
+    id number,                                        -- internal ID of the record
     cgr_id adc_rule_groups.cgr_id%type,               -- actual CGR_ID
     firing_item adc_page_items.cpi_id%type,           -- actual firing item (or adc_util.C_NO_FIRING_ITEM)
     firing_event adc_page_item_types.cit_event%type,  -- actual firing event (normally change or click, but can be any event)
-    event_data adc_util.max_char,                    -- optional event data that is returned from modal dialog pages etc.
-    bind_items item_stack_t,                         -- List of items for which ADC binds event handlers
-    page_items item_stack_t,                         -- List of items that changed their value in the session state
-    firing_items item_stack_t,                       -- List of items which are connected with firing item within their rules
-    error_stack error_stack_t,                       -- List errors that occurred
-    recursive_stack recursive_stack_t,               -- List of items which were marked to recursively check rules for
-    is_recursive adc_util.flag_type,                 -- Flag to indicate whether we're in a recursive rule run
-    js_action_stack js_list,                         -- JavaScript action stack, rule outcome of the rules executed so far
-    level_length level_length_t,                     -- cumulated length of the strings on the respective severity levels
-    recursive_level binary_integer,                  -- actual recursive level
-    allow_recursion boolean,                         -- Flag to indicate whether recursive calls are allowed for the active rule
-    notification_stack adc_util.max_char,            -- List of notifications to be shown in the browser console
-    stop_flag boolean,                               -- Flag to indicate that all rule execution has to be stopped
-    now binary_integer,                              -- timestamp, used to calculate the execution duration
+    event_data adc_util.max_char,                     -- optional event data that is returned from modal dialog pages etc.
+    bind_items item_stack_t,                          -- List of items for which ADC binds event handlers
+    page_items item_stack_t,                          -- List of items that changed their value in the session state
+    firing_items item_stack_t,                        -- List of items which are connected with firing item within their rules
+    error_stack error_stack_t,                        -- List errors that occurred
+    recursive_stack recursive_stack_t,                -- List of items which were marked to recursively check rules for
+    is_recursive adc_util.flag_type,                  -- Flag to indicate whether we're in a recursive rule run
+    js_action_stack js_list,                          -- JavaScript action stack, rule outcome of the rules executed so far
+    level_length level_length_t,                      -- cumulated length of the strings on the respective severity levels
+    recursive_level binary_integer,                   -- actual recursive level
+    allow_recursion boolean,                          -- Flag to indicate whether recursive calls are allowed for the active rule
+    notification_stack adc_util.max_char,             -- List of notifications to be shown in the browser console
+    stop_flag boolean,                                -- Flag to indicate that all rule execution has to be stopped
+    now binary_integer,                               -- timestamp, used to calculate the execution duration
     collection_name adc_util.ora_name_type            -- Collection used to maintain a list of mandatory items
   );
   
@@ -104,6 +105,7 @@ as
   g_recursion_limit binary_integer;
   g_recursion_loop_is_error boolean;
   g_session_values session_value_tab;
+  g_initialize_mode boolean;
     
   $IF adc_util.C_WITH_UNIT_TESTS $THEN
   /*============ UNIT TEST ============*/ 
@@ -274,7 +276,21 @@ as
   end append_test_result;
   $END
   /*============ HELPER ============*/ 
-
+  /** Method to savely close a cursor
+   */
+  procedure close_cursor(
+    p_cur in sys_refcursor)
+  as
+  begin
+    pit.enter_detailed('close_cursor');
+    
+    if p_cur%ISOPEN then
+      close p_cur;
+    end if;
+    
+    pit.leave_detailed;
+  end close_cursor;
+  
   
   /** Gets message text from PIT to integrate it as a comment into the response
    * @param  p_message_name  Message ID
@@ -320,7 +336,7 @@ as
   end append;
   
   
-  /**  Method returns all apex actions defined for the rule group as a JavaScript install script
+  /** Method returns all apex actions defined for the rule group as a JavaScript install script
    * @return JavaScript script that installs the apex actions on the page
    * @usage  Is used to register apex actions defined for the rule group on the page. Called during initialization.
    */
@@ -446,19 +462,25 @@ as
     return varchar2
   as
     l_json adc_util.max_char;
-    l_count binary_integer;
+    l_error_key binary_integer;
+    l_error_count binary_integer;
   begin
     pit.enter_optional('get_errors_as_json');
     
-    l_count := g_param.error_stack.count;
-    
-    for i in 1 .. l_count loop
-      utl_text.append(l_json, g_param.error_stack(i), C_DELIMITER, true);
-    end loop;
+    -- Initialization
+    l_error_count := g_param.error_stack.count;
+    if l_error_count > 0 then
+      l_error_key := g_param.error_stack.first;
+      
+      while g_param.error_stack is not null loop
+        utl_text.append(l_json, g_param.error_stack(l_error_key), C_DELIMITER, true);
+        l_error_key := g_param.error_stack.next(l_error_key);
+      end loop;
+    end if;
     
     select utl_text.generate_text(cursor(
              select uttm_text template,
-                    to_char(l_count) error_count,
+                    to_char(l_error_count) error_count,
                     l_json json_errors
                from utl_text_templates
               where uttm_type = C_PARAM_GROUP
@@ -946,6 +968,42 @@ as
     pit.leave_optional;
   end handle_js_code;
   
+  
+  /** Method adds timing information and NO_JAVASCRIPT messages if no JS was found
+   * %param  p_cru_name  Name of the rule
+   * %param  p_start     Timestamp when the rule started examination
+   * %usage  Is used to add missing information to the JavaScript answer block
+   *         for this rule examination run
+   */
+  procedure finalize_javascript_answer(
+    p_cru_name in varchar2,
+    p_start in binary_integer)
+  as
+    l_has_js boolean default false;
+  begin
+  
+    -- Add time measurement and collected notification messages to origin comments
+    for i in 1 .. g_param.js_action_stack.count loop
+      case when g_param.js_action_stack(i).debug_level = C_JS_RULE_ORIGIN then
+        utl_text.bulk_replace(g_param.js_action_stack(i).script, char_table(
+          'NOTIFICATION', g_param.notification_stack,
+          'TIME', coalesce(dbms_utility.get_time - p_start, 0) || 'hsec'));
+      when g_param.js_action_stack(i).debug_level = C_JS_CODE then
+        l_has_js := true;
+      else
+        null;
+      end case;
+    end loop;
+    
+    if not l_has_js then
+      -- No JavaScript found, notify if set to verbose
+      add_comment(
+        p_message_name => msg.ADC_NO_JAVASCRIPT, 
+        p_msg_args => msg_args(p_cru_name));
+    end if;
+    
+  end finalize_javascript_answer;
+  
 
   /** Helper to execute PL/SQL code
    * @param  p_rule  RULE_REC instance of the actually selected rule
@@ -1013,7 +1071,6 @@ as
     l_action_cur sys_refcursor;
     l_stmt adc_util.max_char;
     l_now binary_integer;
-    l_has_js boolean default false;
   begin
     pit.enter_mandatory('create_action');
 
@@ -1049,6 +1106,7 @@ as
       $IF adc_util.C_WITH_UNIT_TESTS $THEN
       append_test_result(l_rule);
       $END
+      -- check whether action has to be executed
       case when ((l_rule.cru_on_error = adc_util.C_FALSE or not g_has_errors) 
             and l_rule.cra_on_error = adc_util.C_FALSE) 
              or (l_rule.cra_on_error = adc_util.C_TRUE and g_has_errors) then
@@ -1068,36 +1126,18 @@ as
       -- get next action
       fetch l_action_cur into l_rule;
     end loop;
-    close l_action_cur;
+    close_cursor(l_action_cur);
     
-    -- Add time measurement and collected notification messages to origin comments
-    for i in 1 .. g_param.js_action_stack.count loop
-      case when g_param.js_action_stack(i).debug_level = C_JS_RULE_ORIGIN then
-        utl_text.bulk_replace(g_param.js_action_stack(i).script, char_table(
-          'NOTIFICATION', g_param.notification_stack,
-          'TIME', coalesce(dbms_utility.get_time - l_now, 0) || 'hsec'));
-      when g_param.js_action_stack(i).debug_level = C_JS_CODE then
-        l_has_js := true;
-      else
-        null;
-      end case;
-    end loop;
-    
-    if not l_has_js then
-      -- No JavaScript found, notify if set to verbose
-      add_comment(
-        p_message_name => msg.ADC_NO_JAVASCRIPT, 
-        p_msg_args => msg_args(l_rule.cru_name));
-    end if;
+    finalize_javascript_answer(l_rule.cru_name, l_now);
     
     pit.leave_mandatory;
   exception
     when msg.CONVERSION_IMPOSSIBLE_ERR or VALUE_ERROR or INVALID_NUMBER then
       -- Conversion errors where thrown, stop execution
-      close l_action_cur;
+      close_cursor(l_action_cur);
       pit.handle_exception;
     when others then
-      close l_action_cur;
+      close_cursor(l_action_cur);
       pit.handle_exception(msg.SQL_ERROR, msg_args(l_stmt));
   end create_action;
   
@@ -1143,12 +1183,12 @@ as
     -- Initialization
     l_actual_recursive_level := g_param.recursive_level;
     
-    -- increments recursion level for »breadth first« execution: First execute all rules on active level before dealing with
-    -- recursively called rules
+    -- increments recursion level for »breadth first« execution: First execute all rules on active level
+    -- before dealing with recursively called rules
     g_param.recursive_level := l_actual_recursive_level + 1;
     
-    -- is_recursive flag indicates whether actually we're in a recursive run or not. Used to exclude rules or actions 
-    -- which are not eligible for recursive execution
+    -- is_recursive flag indicates whether actually we're in a recursion run or not. 
+    -- Used to exclude rules or actions which are not eligible for recursive execution
     g_param.is_recursive := case l_actual_recursive_level when 1 then adc_util.C_FALSE else adc_util.C_TRUE end;
     
     -- iterate over recursion stack
@@ -1313,7 +1353,7 @@ as
       p_params => msg_params(
                     msg_param('p_cpi_id', p_cpi_id)));
        
-    if p_cpi_id != adc_util.C_NO_FIRING_ITEM then
+    if not g_initialize_mode then
       -- Try to read session value to detect data type errors
       l_item_value := check_data_type(p_cpi_id);
       l_item_value := trim(coalesce(l_item_value, get_mandatory_default(p_cpi_id)));
@@ -1367,15 +1407,6 @@ as
   end prepare_error;
   
 
-  /** Method to register items which have changed their value in the session state. If recursion is set to true, those elements
-   *  will cause ADC to evaluate rules for that element by imitating that an event has thrown on that element.
-   * %param  p_cpi_id             ID of the page item to register
-   * %param [p_allow_recursion] Flag to indicate whether this element is allowed to cause a recursive ADC rule call
-   * %usage  Is used to register page items that changed their value because of code executed in ADC. List is used to ...
-   *         - Return the changed value to the browser to harmonize the UI with the session state
-   *         - Have ADC evaluate any rules that fire based on the new value. This is true only if P_ALLOW_RECURSION is true.
-   *         - Remove any error from the page that reference this item. If the error still exists, it must be part of the answer
-   */
   procedure register_item(
     p_cpi_id in varchar2,
     p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE)
@@ -1588,7 +1619,32 @@ as
     
     pit.leave_optional;
     return l_json;
-  end get_bind_items_as_json; 
+  end get_bind_items_as_json;
+  
+  
+  function get_items_to_observe
+    return varchar2
+  as
+    l_observable_objects varchar2(2000);
+  begin
+    pit.enter_optional;
+    
+    select listagg(
+             case when cra_cpi_id = adc_util.C_NO_FIRING_ITEM
+                  then to_char(cra_param_2) 
+                  else cra_cpi_id end, ',') within group (order by cru_firing_items)
+      into l_observable_objects
+      from adc_bl_rules
+     where cra_cat_id = C_REGISTER_OBSERVER
+       and cgr_id = g_param.cgr_id;
+       
+    pit.leave_optional(p_params => msg_params(msg_param('Observable objects', l_observable_objects)));
+    return l_observable_objects;
+  exception
+    when NO_DATA_FOUND then
+      pit.leave_optional(p_params => msg_params(msg_param('Observable objects', 'None')));
+      return null;
+  end get_items_to_observe;
   
   
   function get_string(
@@ -1794,6 +1850,7 @@ as
   as
     l_error apex_error.t_error;
     l_error_json adc_util.max_char;
+    l_error_hash binary_integer;
   begin
     pit.enter_optional;
   
@@ -1810,32 +1867,44 @@ as
         l_error.message := pit.get_trans_item_name(C_PARAM_GROUP, 'INVALID_ERROR_MESSAGE');
     end;
     
-    select utl_text.generate_text(cursor(
-             select uttm_text template,
-                    l_error.page_item_name page_item,
-                    l_error.message message,
-                    l_error.additional_info additional_info,
-                    case l_error.page_item_name when adc_util.C_NO_FIRING_ITEM  then '"page"' else '["inline","page"]' end location
-               from utl_text_templates
-              where uttm_type = C_PARAM_GROUP
-                and uttm_name = 'JSON_ERRORS'
-                and uttm_mode = 'ERROR'))
-      into l_error_json
+    select ora_hash(l_error.message || l_error.page_item_name)
+      into l_error_hash
       from dual;
       
-    g_param.error_stack(g_param.error_stack.count + 1) := l_error_json;
-    g_has_errors := true;
+    if not g_param.error_stack.exists(l_error_hash) then    
+      select utl_text.generate_text(cursor(
+               select uttm_text template,
+                      l_error.page_item_name page_item,
+                      l_error.message message,
+                      l_error.additional_info additional_info,
+                      case l_error.page_item_name when adc_util.C_NO_FIRING_ITEM  then '"page"' else '["inline","page"]' end location
+                 from utl_text_templates
+                where uttm_type = C_PARAM_GROUP
+                  and uttm_name = 'JSON_ERRORS'
+                  and uttm_mode = 'ERROR'))
+        into l_error_json
+        from dual;
+        
+      g_param.error_stack(l_error_hash) := l_error_json;
+      g_has_errors := true;
+    end if;
     
     pit.leave_optional;
   end push_error;
   
   
+  /** Method to create initial rule group and rule for a page that references ADC
+   * %param  p_rule_group_row  Instance of the rule group row with predefined attributes
+   * %usage  Is called if ADC detects that a page which references ADC does not yet 
+   *         own a rule group and an initial rule. It then creates the default rule group and rule.
+   */
   procedure create_initial_rule_group(
     p_rule_group_row in out nocopy adc_rule_groups%rowtype)
   as
     l_rule_row adc_rules%rowtype;
-  begin 
-    -- Rule does not yet exist, create
+  begin
+    pit.enter_optional('create_initial_rule_group');
+    
     adc_admin.merge_rule_group(p_rule_group_row);
     l_rule_row.cru_cgr_id := p_rule_group_row.cgr_id;
     l_rule_row.cru_name := 'die Seite öffnet';
@@ -1844,6 +1913,9 @@ as
     l_rule_row.cru_active := adc_util.c_true;
     l_rule_row.cru_fire_on_page_load := adc_util.c_false;
     adc_admin.merge_rule(l_rule_row);
+    adc_admin.propagate_rule_change(p_rule_group_row.cgr_id);
+    
+    pit.leave_optional;
   end create_initial_rule_group;
   
 
@@ -1874,6 +1946,7 @@ as
     
     -- set recursion flag
     g_param.allow_recursion := l_allow_recursion = adc_util.C_TRUE;
+    g_initialize_mode := p_firing_item = adc_util.C_NO_FIRING_ITEM;
         
     -- Initialize collections
     g_param.bind_items.delete;
@@ -2157,31 +2230,28 @@ as
   end register_mandatory;
   
   
-  function register_observer
-    return varchar2
+  procedure register_observer(
+    p_cpi_id in adc_page_items.cpi_id%type)
   as
-    l_observable_objects varchar2(2000);
   begin
     pit.enter_optional;
     
-    select listagg(
-             case when cra_cpi_id = adc_util.C_NO_FIRING_ITEM
-                  then to_char(cra_param_2) 
-                  else cra_cpi_id end, ',') within group (order by cru_firing_items)
-      into l_observable_objects
-      from adc_bl_rules
-     where cra_cat_id = C_REGISTER_OBSERVER
-       and cgr_id = g_param.cgr_id;
-       
-    pit.leave_optional(p_params => msg_params(msg_param('Observable objects', l_observable_objects)));
-    return l_observable_objects;
-  exception
-    when NO_DATA_FOUND then
-      pit.leave_optional(p_params => msg_params(msg_param('Observable objects', 'None')));
-      return null;
+    if not g_param.bind_items.exists(p_cpi_id) and g_initialize_mode then
+      g_param.bind_items(g_param.bind_items.count + 1) := p_cpi_id;
+    end if;
+    
+    pit.leave_optional;
   end register_observer;
   
   
+  procedure set_initialize_mode(
+    p_mode in boolean default true)
+  as
+  begin
+   g_initialize_mode := p_mode;
+  end set_initialize_mode;
+      
+    
   procedure set_session_state(
     p_cpi_id in adc_page_items.cpi_id%type,
     p_value in varchar2,

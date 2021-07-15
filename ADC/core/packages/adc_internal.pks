@@ -63,6 +63,16 @@ as
   function get_bind_items_as_json
     return clob;
     
+
+  /** Method to retrieve a list of items that need to pass their actual value to ADC although they are not bound to an event handler
+   * %return Comma separated list of item selectors to register for observation
+   * %usage  Is called during plugin initialization.
+   *         Items which need to pass their actual value but need not be bound by an event handler are registered as observable items.
+   *         They don't call ADC when they are changed but pass their actual value with every call to ADC raised by other items.
+   */
+  function get_items_to_observe
+    return varchar2;
+    
     
   /* @see adc_api.get_string */
   function get_string(
@@ -158,6 +168,8 @@ as
    * %param  p_error  APEX error of type APEX_ERROR.T_ERROR to push onto the stack
    * %usage  Is called during execution of a rule, if an error is registered.
    *         All errors are collected on an error stack and sent to the page as part of the answer.
+   *         Before pushing an error, a hash code is generated that serves as an error key 
+   *         while at the same time prevents double erorrs to be pushed onto the stack
    */
   procedure push_error(
     p_error in apex_error.t_error);
@@ -243,8 +255,13 @@ as
     
   
   /* @see adc_api.register_observer */
-  function register_observer
-    return varchar2;
+  procedure register_observer(
+    p_cpi_id in adc_page_items.cpi_id%type);
+    
+    
+  /* @see adc_api.set_initialize_mode */
+  procedure set_initialize_mode(
+    p_mode in boolean default true);
 
 
   /* @see adc_api.set_session_state */

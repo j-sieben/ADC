@@ -1815,6 +1815,7 @@ as
     p_cif_description in pit_translatable_item.pti_description%type,
     p_cif_actual_page_only in adc_action_item_focus.cif_actual_page_only%type default adc_util.C_TRUE,
     p_cif_item_types in adc_action_item_focus.cif_item_types%type,
+    p_cif_default adc_action_item_focus.cif_default%type,
     p_cif_active in adc_action_item_focus.cif_active%type default adc_util.C_TRUE)
   as
     l_row adc_action_item_focus_v%rowtype;
@@ -1826,6 +1827,7 @@ as
                     msg_param('p_cif_description', p_cif_description),
                     msg_param('p_cif_actual_page_only', p_cif_actual_page_only),
                     msg_param('p_cif_item_types', p_cif_item_types),
+                    msg_param('p_cif_default', p_cif_default),
                     msg_param('p_cif_active', p_cif_active)));
                     
     l_row.cif_id := p_cif_id;
@@ -1833,6 +1835,7 @@ as
     l_row.cif_description := utl_text.unwrap_string(p_cif_description);
     l_row.cif_actual_page_only := adc_util.get_boolean(p_cif_actual_page_only);
     l_row.cif_item_types := p_cif_item_types;
+    l_row.cif_default := p_cif_default;
     l_row.cif_active := adc_util.get_boolean(p_cif_active);
     
     merge_action_item_focus(l_row);
@@ -1866,15 +1869,17 @@ as
                   C_ADC cif_pmg_name,
                   p_row.cif_actual_page_only cif_actual_page_only,
                   p_row.cif_item_types cif_item_types,
+                  p_row.cif_default cif_default,
                   p_row.cif_active cif_active
              from dual) s
        on (t.cif_id = s.cif_id)
      when matched then update set
           t.cif_actual_page_only = s.cif_actual_page_only,
           t.cif_item_types = s.cif_item_types,
+          t.cif_default = s.cif_default,
           t.cif_active = s.cif_active
-     when not matched then insert(cif_id, cif_pti_id, cif_pmg_name, cif_actual_page_only, cif_item_types, cif_active)
-          values(s.cif_id, s.cif_pti_id, s.cif_pmg_name, s.cif_actual_page_only, s.cif_item_types, s.cif_active);
+     when not matched then insert(cif_id, cif_pti_id, cif_pmg_name, cif_actual_page_only, cif_item_types, cif_default, cif_active)
+          values(s.cif_id, s.cif_pti_id, s.cif_pmg_name, s.cif_actual_page_only, s.cif_item_types, s.cif_default, s.cif_active);
     
     pit.leave_mandatory;
   end merge_action_item_focus;

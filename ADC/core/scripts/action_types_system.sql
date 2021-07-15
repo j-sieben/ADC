@@ -4,116 +4,124 @@ set sqlblanklines on
 begin
   -- ACTION_PARAM_TYPES
   adc_admin.merge_action_param_type(
-    p_CPT_id => 'APEX_ACTION',
-    p_CPT_name => 'APEX-Aktion',
-    p_CPT_display_name => '',
-    p_CPT_description => q'{<p>Existierende APEX-Aktion der Regelgruppe.</p>}',
-    p_CPT_item_type => 'SELECT_LIST',
-    p_CPT_active => adc_util.C_TRUE);
+    p_cpt_id => 'APEX_ACTION',
+    p_cpt_name => 'APEX-Aktion',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Existierende APEX-Aktion der Regelgruppe.</p>}',
+    p_cpt_item_type => 'SELECT_LIST',
+    p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_CPT_id => 'FUNCTION',
-    p_CPT_name => 'PL/SQL-Funktion',
-    p_CPT_display_name => '',
-    p_CPT_description => q'{<p>Eine bestehende PL/SQL-Funktion oder eine Package-Funktion<br>Es muss kein abschliessendes Semikolon angegeben werden.</p>}',
-    p_CPT_item_type => 'TEXT',
-    p_CPT_active => adc_util.C_TRUE);
+    p_cpt_id => 'FUNCTION',
+    p_cpt_name => 'PL/SQL-Funktion',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Eine bestehende PL/SQL-Funktion oder eine Package-Funktion<br>Es muss kein abschliessendes Semikolon angegeben werden.</p>}',
+    p_cpt_item_type => 'TEXT',
+    p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_CPT_id => 'JAVA_SCRIPT',
-    p_CPT_name => 'JavaScript-Ausdruck',
-    p_CPT_display_name => '',
-    p_CPT_description => q'{<p>Ausführbarer JavaScript-Ausdruck, keine Funktionsdefinition</p>}',
-    p_CPT_item_type => 'TEXT',
-    p_CPT_active => adc_util.C_TRUE);
+    p_cpt_id => 'JAVA_SCRIPT',
+    p_cpt_name => 'JavaScript-Ausdruck',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Ausführbarer JavaScript-Ausdruck, keine Funktionsdefinition</p>}',
+    p_cpt_item_type => 'TEXT',
+    p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_CPT_id => 'JAVA_SCRIPT_FUNCTION',
-    p_CPT_name => 'JavaScript-Funktion',
-    p_CPT_display_name => '',
-    p_CPT_description => q'{<p>Name einer JavaScript-Funktion oder anonyme Funktionsdefinition/IIFE</p>}',
-    p_CPT_item_type => 'TEXT',
-    p_CPT_active => adc_util.C_TRUE);
+    p_cpt_id => 'JAVA_SCRIPT_FUNCTION',
+    p_cpt_name => 'JavaScript-Funktion',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Name einer JavaScript-Funktion oder anonyme Funktionsdefinition/IIFE</p>}',
+    p_cpt_item_type => 'TEXT',
+    p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_CPT_id => 'JQUERY_SELECTOR',
-    p_CPT_name => 'jQuery-Selektor',
-    p_CPT_display_name => '',
-    p_CPT_description => q'{<p>jQuery-Ausdruck, um mehrere Elemente zu bearbeiten. Wird dieser Parameter verwendet, muss als ausl&ouml;sendes Element <code>DOCUMENT</code> eingetragen werden.</p>}',
-    p_CPT_item_type => 'TEXT',
-    p_CPT_active => adc_util.C_TRUE);
+    p_cpt_id => 'JQUERY_SELECTOR',
+    p_cpt_name => 'jQuery-Selektor',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>jQuery-Ausdruck, um mehrere Elemente zu bearbeiten. Wird dieser Parameter verwendet, muss als ausl&ouml;sendes Element <code>DOCUMENT</code> eingetragen werden.</p>}',
+    p_cpt_item_type => 'TEXT',
+    p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_CPT_id => 'PAGE_ITEM',
-    p_CPT_name => 'Seitenelement',
-    p_CPT_display_name => '',
-    p_CPT_description => q'{<p>Seitenelement oder Region der aktuellen Seite</p>}',
-    p_CPT_item_type => 'SELECT_LIST',
-    p_CPT_active => adc_util.C_TRUE);
+    p_cpt_id => 'PAGE_ITEM',
+    p_cpt_name => 'Seitenelement',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Seitenelement oder Region der aktuellen Seite</p>}',
+    p_cpt_item_type => 'SELECT_LIST',
+    p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_CPT_id => 'PIT_MESSAGE',
-    p_CPT_name => 'Name der Meldung',
-    p_CPT_display_name => '',
-    p_CPT_description => q'{<p>Bezeichner einer PIT-Meldung in der Form msg.NAME oder 'NAME', muss eine existierende Meldung sein.</p>}',
-    p_CPT_item_type => 'SELECT_LIST',
-    p_CPT_active => adc_util.C_TRUE);
+    p_cpt_id => 'PIT_MESSAGE',
+    p_cpt_name => 'Name der Meldung',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Bezeichner einer PIT-Meldung in der Form msg.NAME oder 'NAME', muss eine existierende Meldung sein.</p>}',
+    p_cpt_item_type => 'SELECT_LIST',
+    p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_CPT_id => 'PROCEDURE',
-    p_CPT_name => 'PL/SQL-Prozedur',
-    p_CPT_display_name => '',
-    p_CPT_description => q'{<p>Eine bestehende PL/SQL-Prozedur oder eine Package-Prozedur<br>Es muss kein abschliessendes Semikolon angegeben werden.</p>}',
-    p_CPT_item_type => 'TEXT',
-    p_CPT_active => adc_util.C_TRUE);
+    p_cpt_id => 'PROCEDURE',
+    p_cpt_name => 'PL/SQL-Prozedur',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Eine bestehende PL/SQL-Prozedur oder eine Package-Prozedur<br>Es muss kein abschliessendes Semikolon angegeben werden.</p>}',
+    p_cpt_item_type => 'TEXT',
+    p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_CPT_id => 'SEQUENCE',
-    p_CPT_name => 'Sequenz',
-    p_CPT_display_name => '',
-    p_CPT_description => q'{<p>Name einer existierenden Sequenz</p>}',
-    p_CPT_item_type => 'SELECT_LIST',
-    p_CPT_active => adc_util.C_TRUE);
+    p_cpt_id => 'SEQUENCE',
+    p_cpt_name => 'Sequenz',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Name einer existierenden Sequenz</p>}',
+    p_cpt_item_type => 'SELECT_LIST',
+    p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_CPT_id => 'SQL_STATEMENT',
-    p_CPT_name => 'SQL-Anweisung',
-    p_CPT_display_name => '',
-    p_CPT_description => q'{<p>Ausführbare SELECT-Anweisung, die Eingabe erfolgt, wie im SQL-Developer &uuml;blich, es ist keine Angabe eines Semikolons erforderlich.</p>}',
-    p_CPT_item_type => 'TEXT_AREA',
-    p_CPT_active => adc_util.C_TRUE);
+    p_cpt_id => 'SQL_STATEMENT',
+    p_cpt_name => 'SQL-Anweisung',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Ausführbare SELECT-Anweisung, die Eingabe erfolgt, wie im SQL-Developer &uuml;blich, es ist keine Angabe eines Semikolons erforderlich.</p>}',
+    p_cpt_item_type => 'TEXT_AREA',
+    p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_CPT_id => 'STRING',
-    p_CPT_name => 'Zeichenkette',
-    p_CPT_display_name => '',
-    p_CPT_description => q'{<p>Einfache Zeichenkette.<br>Die Zeichenkette wird mit Hochkommata umgeben, daher ist die Eingabe dieser Zeichen nicht erforderlich.</p>}',
-    p_CPT_item_type => 'TEXT',
-    p_CPT_active => adc_util.C_TRUE);
+    p_cpt_id => 'STRING',
+    p_cpt_name => 'Zeichenkette',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Einfache Zeichenkette.<br>Die Zeichenkette wird mit Hochkommata umgeben, daher ist die Eingabe dieser Zeichen nicht erforderlich.</p>}',
+    p_cpt_item_type => 'TEXT',
+    p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_CPT_id => 'STRING_OR_FUNCTION',
-    p_CPT_name => 'Zeichenkette oder PL/SQL-Funktion',
-    p_CPT_display_name => '',
-    p_CPT_description => q'{<p>Wird der Wert mit einfachen Hochkommata &uuml;bergeben, wird er als konstanter Text ausgegeben.<br>Wird der Parameter ohne Hochkommata übergeben, wird er als PL/SQL-Funktkion interpretiert, die einen Wert liefert.</p>}',
-    p_CPT_item_type => 'TEXT',
-    p_CPT_active => adc_util.C_TRUE);
+    p_cpt_id => 'STRING_OR_FUNCTION',
+    p_cpt_name => 'Zeichenkette oder PL/SQL-Funktion',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Wird der Wert mit einfachen Hochkommata &uuml;bergeben, wird er als konstanter Text ausgegeben.<br>Wird der Parameter ohne Hochkommata übergeben, wird er als PL/SQL-Funktkion interpretiert, die einen Wert liefert.</p>}',
+    p_cpt_item_type => 'TEXT',
+    p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_CPT_id => 'STRING_OR_JAVASCRIPT',
-    p_CPT_name => 'Zeichenkette oder JS-Ausdruck',
-    p_CPT_display_name => '',
-    p_CPT_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein JavaScript-Ausdruck, der zur Laufzeit berechnet wird</li><li>Leere Zeichenkette (&#39;&#39;). In diesem Fall wird der Wert des Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
-    p_CPT_item_type => 'TEXT',
-    p_CPT_active => adc_util.C_TRUE);
+    p_cpt_id => 'STRING_OR_JAVASCRIPT',
+    p_cpt_name => 'Zeichenkette oder JS-Ausdruck',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein JavaScript-Ausdruck, der zur Laufzeit berechnet wird</li><li>Leere Zeichenkette (&#39;&#39;). In diesem Fall wird der Wert des Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
+    p_cpt_item_type => 'TEXT',
+    p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_CPT_id => 'STRING_OR_PIT_MESSAGE',
-    p_CPT_name => 'Zeichenkette oder Meldungsname',
-    p_CPT_display_name => '',
-    p_CPT_description => q'{<p>Falls nicht mit Hochkommata eingeschlossen, ein PIT-Meldungsname der Form msg.NAME</p>}',
-    p_CPT_item_type => 'TEXT',
-    p_CPT_active => adc_util.C_TRUE);
+    p_cpt_id => 'STRING_OR_PIT_MESSAGE',
+    p_cpt_name => 'Zeichenkette oder Meldungsname',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Falls nicht mit Hochkommata eingeschlossen, ein PIT-Meldungsname der Form msg.NAME</p>}',
+    p_cpt_item_type => 'TEXT',
+    p_cpt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_cpt_id => 'SWITCH',
+    p_cpt_name => 'Schalter',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Wahrheitswert</p>}',
+    p_cpt_item_type => 'SWITCH',
+    p_cpt_active => adc_util.C_TRUE);
 
 
   -- PAGE_ITEM_TYPES
@@ -246,6 +254,7 @@ begin
     p_cif_description => q'{Alle Seitenelemente der Anwendung}',
     p_cif_actual_page_only => adc_util.C_FALSE,
     p_cif_item_types => 'DOCUMENT:ALL:APP_ITEM:BUTTON:DATE_ITEM:ITEM:NUMBER_ITEM:REGION:ELEMENT',
+    p_cif_default => 'DOCUMENT',
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -254,6 +263,7 @@ begin
     p_cif_description => q'{<p>Alle Anwendungs- und Seitenelemente der aktuellen Anwendungsseite mit Datumsformatmasek</p>}',
     p_cif_actual_page_only => adc_util.C_TRUE,
     p_cif_item_types => 'DATE_ITEM',
+    p_cif_default => null,
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -262,6 +272,7 @@ begin
     p_cif_description => q'{Die Aktion is keinem konkreten Seitenelement zugeordnet}',
     p_cif_actual_page_only => adc_util.C_TRUE,
     p_cif_item_types => 'DOCUMENT',
+    p_cif_default => 'DOCUMENT',
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -270,6 +281,7 @@ begin
     p_cif_description => q'{Alle Seitenelemente, die aktiviert und deaktiviert werden können}',
     p_cif_actual_page_only => adc_util.C_TRUE,
     p_cif_item_types => 'DATE_ITEM:ITEM:NUMBER_ITEM:DOCUMENT:BUTTON',
+    p_cif_default => 'DOCUMENT',
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -277,7 +289,8 @@ begin
     p_cif_name => 'Seitenelement oder jQuery-Selektor',
     p_cif_description => q'{Alle Seitenelemente oder ein jQuery-Selektor}',
     p_cif_actual_page_only => adc_util.C_FALSE,
-    p_cif_item_types => 'DATE_ITEM:ITEM:NUMBER_ITEM:ELEMENT',
+    p_cif_item_types => 'DATE_ITEM:ITEM:NUMBER_ITEM:ELEMENT',    
+    p_cif_default => null,
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -286,6 +299,7 @@ begin
     p_cif_description => q'{Keine Seitenelemente}',
     p_cif_actual_page_only => adc_util.C_TRUE,
     p_cif_item_types => 'DOCUMENT',
+    p_cif_default => 'DOCUMENT',
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -293,7 +307,8 @@ begin
     p_cif_name => 'Seitenelement (Zahl)',
     p_cif_description => q'{<p>Alle Anwendungs- und Seitenelemente der aktuellen Anwendungsseite mit Zahlformatmaske</p>}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'NUMBER_ITEM',
+    p_cif_item_types => 'NUMBER_ITEM',  
+    p_cif_default => null,
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -302,6 +317,7 @@ begin
     p_cif_description => q'{Alle Seitenelemente der aktuellen Anwendungsseite}',
     p_cif_actual_page_only => adc_util.C_TRUE,
     p_cif_item_types => 'BUTTON:DATE_ITEM:ITEM:NUMBER_ITEM:REGION:ELEMENT',
+    p_cif_default => null,
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -309,7 +325,8 @@ begin
     p_cif_name => 'Schaltflächen der aktuellen Seite',
     p_cif_description => q'{Alle Schaltflächen der aktuellen Anwendungsseite}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'BUTTON',
+    p_cif_item_types => 'BUTTON',  
+    p_cif_default => null,
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -317,7 +334,8 @@ begin
     p_cif_name => 'Seitenelement',
     p_cif_description => q'{<p>Alle Anwendungs- und Seitenelemente der aktuellen Anwendungsseite</p>}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'DATE_ITEM:ITEM:NUMBER_ITEM:ELEMENT',
+    p_cif_item_types => 'DATE_ITEM:ITEM:NUMBER_ITEM:ELEMENT',  
+    p_cif_default => null,
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -326,6 +344,7 @@ begin
     p_cif_description => q'{Alle Eingabefelder oder keine spezifische Angabe}',
     p_cif_actual_page_only => adc_util.C_TRUE,
     p_cif_item_types => 'DOCUMENT:DATE_ITEM:ITEM:NUMBER_ITEM:ELEMENT',
+    p_cif_default => 'DOCUMENT',
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -333,7 +352,8 @@ begin
     p_cif_name => 'Eingabefeld oder jQuery-Selektor',
     p_cif_description => q'{Alle Eingabefelder oder ein jQuery-Selektor}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'DATE_ITEM:ITEM:NUMBER_ITEM:ELEMENT',
+    p_cif_item_types => 'DATE_ITEM:ITEM:NUMBER_ITEM:ELEMENT',  
+    p_cif_default => null,
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -341,7 +361,8 @@ begin
     p_cif_name => 'Regionen der aktuellen Seite',
     p_cif_description => q'{Alle Regionen der aktuellen Anwendungsseite}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'REGION',
+    p_cif_item_types => 'REGION',    
+    p_cif_default => null,
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -349,7 +370,8 @@ begin
     p_cif_name => 'Seitenelemente, die aktualisiert werden können',
     p_cif_description => q'{Alle Seitenelemente, die aktualisiert werden können}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'ITEM:REGION',
+    p_cif_item_types => 'ITEM:REGION',  
+    p_cif_default => null,
     p_cif_active => adc_util.C_TRUE);
 
 
@@ -412,7 +434,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'AFTER_REFRESH',
-    p_cap_CPT_id => 'JAVA_SCRIPT_FUNCTION',
+    p_cap_cpt_id => 'JAVA_SCRIPT_FUNCTION',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Optionale JavaScript-Aktion.<br>Dieser Parameter muss der Name einer JavaScript-Funktion oder eine anonyme Funktionsdefinition sein, die als Callback aufgerufen wird.<br>Wird kein Parameter definiert, wird ADC aufgerufen und entsprechende Regeln ausgeführt, anderenfalls wird direkt die hier hinterlegte Funktion ausgeführt.</p>}',
@@ -447,7 +469,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'DIALOG_CLOSED',
-    p_cap_CPT_id => 'JAVA_SCRIPT_FUNCTION',
+    p_cap_cpt_id => 'JAVA_SCRIPT_FUNCTION',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Optionale JavaScript-Aktion.<br>Dieser Parameter muss der Name einer JavaScript-Funktion oder eine anonyme Funktionsdefinition sein, die als Callback aufgerufen wird.<br>Wird kein Parameter definiert, wird ADC aufgerufen und entsprechende Regeln ausgeführt, anderenfalls wird direkt die hier hinterlegte Funktion ausgeführt.</p>}',
@@ -469,7 +491,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'DISABLE_ITEM',
-    p_cap_CPT_id => 'JQUERY_SELECTOR',
+    p_cap_cpt_id => 'JQUERY_SELECTOR',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
@@ -491,7 +513,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'DOUBLE_CLICK',
-    p_cap_CPT_id => 'JAVA_SCRIPT_FUNCTION',
+    p_cap_cpt_id => 'JAVA_SCRIPT_FUNCTION',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Optionale JavaScript-Aktion.<br>Dieser Parameter muss der Name einer JavaScript-Funktion oder eine anonyme Funktionsdefinition sein, die als Callback aufgerufen wird.<br>Wird kein Parameter definiert, wird ADC aufgerufen und entsprechende Regeln ausgeführt, anderenfalls wird direkt die hier hinterlegte Funktion ausgeführt.</p>}',
@@ -513,7 +535,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'DYNAMIC_JAVASCRIPT',
-    p_cap_CPT_id => 'FUNCTION',
+    p_cap_cpt_id => 'FUNCTION',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>PL/SQL-Funktion, die eine JavaScript-Anweisung ausgibt.<br>Ohne "javascript:" verwenden, nur den JavaScript-Code ausgeben</p>}',
@@ -535,7 +557,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'ENABLE_ITEM',
-    p_cap_CPT_id => 'JQUERY_SELECTOR',
+    p_cap_cpt_id => 'JQUERY_SELECTOR',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
@@ -557,7 +579,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'ENTER_KEY',
-    p_cap_CPT_id => 'JAVA_SCRIPT_FUNCTION',
+    p_cap_cpt_id => 'JAVA_SCRIPT_FUNCTION',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Optionale JavaScript-Aktion.<br>Dieser Parameter muss der Name einer JavaScript-Funktion oder eine anonyme Funktionsdefinition sein, die als Callback aufgerufen wird.<br>Wird kein Parameter definiert, wird ADC aufgerufen und entsprechende Regeln ausgeführt, anderenfalls wird direkt die hier hinterlegte Funktion ausgeführt.</p>}',
@@ -592,7 +614,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'HIDE_ITEM',
-    p_cap_CPT_id => 'JQUERY_SELECTOR',
+    p_cap_cpt_id => 'JQUERY_SELECTOR',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
@@ -627,7 +649,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'IS_MANDATORY',
-    p_cap_CPT_id => 'STRING_OR_PIT_MESSAGE',
+    p_cap_cpt_id => 'STRING_OR_PIT_MESSAGE',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Fehlermeldung kann optional übergeben werden, ansonsten wird eine Standardmeldung verwendet.</p>}',
@@ -637,7 +659,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'IS_MANDATORY',
-    p_cap_CPT_id => 'JQUERY_SELECTOR',
+    p_cap_cpt_id => 'JQUERY_SELECTOR',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
@@ -659,7 +681,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'IS_OPTIONAL',
-    p_cap_CPT_id => 'JQUERY_SELECTOR',
+    p_cap_cpt_id => 'JQUERY_SELECTOR',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
@@ -681,7 +703,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'ITEM_NULL_SHOW',
-    p_cap_CPT_id => 'JQUERY_SELECTOR',
+    p_cap_cpt_id => 'JQUERY_SELECTOR',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
@@ -703,7 +725,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'JAVA_SCRIPT_CODE',
-    p_cap_CPT_id => 'JAVA_SCRIPT',
+    p_cap_cpt_id => 'JAVA_SCRIPT',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>JavaScript-Anweisung, die ausgeführt werden soll. (ohne Semikolon)</p>}',
@@ -725,7 +747,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'NOTIFY',
-    p_cap_CPT_id => 'STRING_OR_FUNCTION',
+    p_cap_cpt_id => 'STRING_OR_FUNCTION',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Der Meldungstext</p>}',
@@ -747,7 +769,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'NOT_NULL',
-    p_cap_CPT_id => 'JQUERY_SELECTOR',
+    p_cap_cpt_id => 'JQUERY_SELECTOR',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
@@ -757,7 +779,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'NOT_NULL',
-    p_cap_CPT_id => 'PIT_MESSAGE',
+    p_cap_cpt_id => 'PIT_MESSAGE',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Meldungsname, der ausgegeben werden soll, falls die Prüfung misslingt.</p>}',
@@ -779,7 +801,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'PLSQL_CODE',
-    p_cap_CPT_id => 'PROCEDURE',
+    p_cap_cpt_id => 'PROCEDURE',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>PL/SQL-Code, der ausgeführt werden soll.</p>}',
@@ -801,7 +823,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'REFRESH_AND_SET_VALUE',
-    p_cap_CPT_id => 'STRING_OR_JAVASCRIPT',
+    p_cap_cpt_id => 'STRING_OR_JAVASCRIPT',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Wert, der gesetzt werden soll.</p>}',
@@ -836,6 +858,19 @@ begin
 
 
   adc_admin.merge_action_type(
+    p_cat_id => 'REGISTER_OBSERVER',
+    p_cat_ctg_id => 'PAGE_ITEM',
+    p_cat_cif_id => 'PAGE_ITEM',
+    p_cat_name => 'Feld beobachten',
+    p_cat_display_name => q'{<p><strong>beobachte Feld </strong>“#ITEM#”</p>}',
+    p_cat_description => q'{<p>Beobachtet ein Feld, auch wenn kein Anwendungsfall es in der technischen Bedingung referenziert. So wird dessen aktueller Wert in den Session State übernommen.</p>}',
+    p_cat_pl_sql => q'{adc_api.register_observer('#ITEM#');}',
+    p_cat_js => q'{}',
+    p_cat_is_editable => adc_util.C_FALSE,
+    p_cat_raise_recursive => adc_util.C_TRUE);
+    
+
+  adc_admin.merge_action_type(
     p_cat_id => 'SET_ELEMENT_FROM_STMT',
     p_cat_ctg_id => 'PAGE_ITEM',
     p_cat_cif_id => 'PAGE_ITEM_OR_DOCUMENT',
@@ -849,7 +884,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'SET_ELEMENT_FROM_STMT',
-    p_cap_CPT_id => 'SQL_STATEMENT',
+    p_cap_cpt_id => 'SQL_STATEMENT',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>SQL-Anweisung, die einen oder mehrere Werte zurückgibt<br>Die Spaltenbezeichner müssen Elementnamen entsprechen, die Abfrageergebnisse werden in den zugehoerigen Seitenelementen gesetzt</p>}',
@@ -884,7 +919,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'SET_IG_SELECTION',
-    p_cap_CPT_id => 'PAGE_ITEM',
+    p_cap_cpt_id => 'PAGE_ITEM',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Name des Seitenelements, in das die Auswahl des IG gespeichert werden soll.</p>}',
@@ -894,13 +929,37 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'SET_IG_SELECTION',
-    p_cap_CPT_id => 'STRING',
+    p_cap_cpt_id => 'STRING',
     p_cap_sort_seq => 2,
     p_cap_default => q'{1}',
     p_cap_description => q'{<p>1- basierte Ordinalzahl der Spalte, die im hinterlegten Element abgelegt werden soll. Die Reihenfolge richtet sich nach der Reihenfolge auf der APEX-Anwendungsseite.</p>}',
     p_cap_display_name => 'Ordinalzahl der Wertespalte',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
+    
+
+  adc_admin.merge_action_type(
+    p_cat_id => 'SET_INITIALIZE_MODE',
+    p_cat_ctg_id => 'ADC',
+    p_cat_cif_id => 'DOCUMENT',
+    p_cat_name => 'Seite in Initialisierungsmodus setzen',
+    p_cat_display_name => q'{<p><strong>setze die Seite Initialisierungsmodus</strong></p>}',
+    p_cat_description => q'{<p>Setzt die Seite in den Initialisierungsmodus, um beim Rücksetzen von Elementwerten Fehlermeldungen bei Pflichtelementen zu unterbinden.</p>}',
+    p_cat_pl_sql => q'{adc_api.set_initialize_mode('#PARAM_1#');}',
+    p_cat_js => q'{}',
+    p_cat_is_editable => adc_util.C_FALSE,
+    p_cat_raise_recursive => adc_util.C_TRUE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'SET_INITIALIZE_MODE',
+    p_cap_cpt_id => 'SWITCH',
+    p_cap_sort_seq => 1,
+    p_cap_default => adc_util.C_TRUE,
+    p_cap_description => q'{<p><ul><li>Ja: Initialisierungsmodus ist aktiv</li><li>Nein: Initialisierungsmodus ist deaktiv. Wird normalerweise nicht benötigt.</li></ul></p>}',
+    p_cap_display_name => 'Initialisierung aktiv',
+    p_cap_mandatory => adc_util.C_TRUE,
+    p_cap_active => adc_util.C_TRUE);
+    
 
   adc_admin.merge_action_type(
     p_cat_id => 'SET_ITEM',
@@ -916,7 +975,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'SET_ITEM',
-    p_cap_CPT_id => 'STRING_OR_FUNCTION',
+    p_cap_cpt_id => 'STRING_OR_FUNCTION',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Der Elementwert.</p>}',
@@ -926,7 +985,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'SET_ITEM',
-    p_cap_CPT_id => 'JQUERY_SELECTOR',
+    p_cap_cpt_id => 'JQUERY_SELECTOR',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
@@ -961,7 +1020,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'SET_NULL_DISABLE',
-    p_cap_CPT_id => 'JQUERY_SELECTOR',
+    p_cap_cpt_id => 'JQUERY_SELECTOR',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
@@ -983,7 +1042,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'SET_NULL_HIDE',
-    p_cap_CPT_id => 'JQUERY_SELECTOR',
+    p_cap_cpt_id => 'JQUERY_SELECTOR',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
@@ -1005,7 +1064,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'SHOW_ERROR',
-    p_cap_CPT_id => 'STRING_OR_FUNCTION',
+    p_cap_cpt_id => 'STRING_OR_FUNCTION',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Geben Sie hier die Fehlermeldung ein. Diese kann auch durch eine PL/SQL-Funktion ermittelt werden.</p>}',
@@ -1027,7 +1086,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'SHOW_HIDE_ITEMS',
-    p_cap_CPT_id => 'JQUERY_SELECTOR',
+    p_cap_cpt_id => 'JQUERY_SELECTOR',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>jQuery-Selektor, der die Seitenelemente identifiziert, die eingeblendet werden sollen.</p>}',
@@ -1037,7 +1096,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'SHOW_HIDE_ITEMS',
-    p_cap_CPT_id => 'JQUERY_SELECTOR',
+    p_cap_cpt_id => 'JQUERY_SELECTOR',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>jQuery-Selektor, der die Seitenelemente identifiziert, die ausgeblendet werden sollen.</p>}',
@@ -1059,7 +1118,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'SHOW_ITEM',
-    p_cap_CPT_id => 'JQUERY_SELECTOR',
+    p_cap_cpt_id => 'JQUERY_SELECTOR',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
@@ -1094,7 +1153,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'SUBMIT',
-    p_cap_CPT_id => 'STRING',
+    p_cap_cpt_id => 'STRING',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>REQUEST-Wert, kann optional übergeben werden, ansonsten wird SUBMIT verwendet.</p>}',
@@ -1104,7 +1163,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'SUBMIT',
-    p_cap_CPT_id => 'PIT_MESSAGE',
+    p_cap_cpt_id => 'PIT_MESSAGE',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Meldungsname, der ausgegeben werden soll, falls die Prüfung der Seite misslingt.</p>}',
@@ -1126,7 +1185,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'SUBMIT_WO_VALIDATION',
-    p_cap_CPT_id => 'STRING',
+    p_cap_cpt_id => 'STRING',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
@@ -1161,7 +1220,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'XOR',
-    p_cap_CPT_id => 'JQUERY_SELECTOR',
+    p_cap_cpt_id => 'JQUERY_SELECTOR',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Komma-separierte Liste von Elementnamen oder CSS-Klassen, die die Felder identifizieren, die zu einer Gruppe zusammengefasst werden. Innerhalb dieser Gruppe muss beim Prüfen der Werte entweder genau ein Feld einen NOT NULL-Wert besitzen, oder alle Werte müssen leer sein</p>}',
@@ -1171,7 +1230,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'XOR',
-    p_cap_CPT_id => 'PIT_MESSAGE',
+    p_cap_cpt_id => 'PIT_MESSAGE',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Meldungsname, der ausgegeben werden soll, falls die Prüfung misslingt. Muss ein PIT-Meldungsname sein, in der Form MSG.&lt;Meldungsname&gt;</p>}',
@@ -1193,7 +1252,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'XOR_NN',
-    p_cap_CPT_id => 'JQUERY_SELECTOR',
+    p_cap_cpt_id => 'JQUERY_SELECTOR',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Komma-separierte Liste von Elementnamen oder CSS-Klassen, die die Felder identifizieren, die zu einer Gruppe zusammengefasst werden. Innerhalb dieser Gruppe muss beim Prüfen der Werte genau ein Feld einen NOT NULL-Wert besitzen.<br>Sind alle Elemente NULL oder sind mehr al ein Element NOT NULL, wird ein Fehler geworfen</p>}',
@@ -1203,7 +1262,7 @@ begin
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'XOR_NN',
-    p_cap_CPT_id => 'PIT_MESSAGE',
+    p_cap_cpt_id => 'PIT_MESSAGE',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Medlungsname, der ausgegeben werden soll, falls die Prüfung misslingt. Muss ein PIT-Meldungsname sein, in der Form MSG.&lt;Meldungsname&gt;</p>}',

@@ -340,6 +340,34 @@ as
   end register_mandatory;
   
   
+  procedure register_observer(
+    p_cpi_id in adc_page_items.cpi_id%type)
+  as
+  begin
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_cpi_id', p_cpi_id)));
+                    
+    adc_internal.register_observer(p_cpi_id);
+    
+    pit.leave_mandatory;
+  end register_observer;
+    
+    
+  procedure set_initialize_mode(
+    p_mode in adc_util.flag_type default adc_util.C_TRUE)
+  as
+  begin
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_mode', p_mode)));
+                    
+    adc_internal.set_initialize_mode(p_mode = adc_util.C_TRUE);
+    
+    pit.leave_mandatory;
+  end set_initialize_mode;
+  
+  
   procedure set_session_state(
     p_cpi_id in adc_page_items.cpi_id%type,
     p_value in varchar2,

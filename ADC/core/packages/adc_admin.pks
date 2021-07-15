@@ -395,12 +395,15 @@ as
     
 
   /** Administration of ACTION ITEM FOCUS */
-  /** Methode zur Erzeugung eines ITEM-Fokus
-   * %param  p_cif_id           ID des Aktionstyps
-   * %param  p_cif_name         Klartextbezeichnung des Aktions-Parametertyps
-   * %param  p_cif_description  Optionale Beschreibung, wird als Hilfstext angezeigt
-   * %param [p_cif_active]      Flag, das anzeigt, ob dieser Parametertyp verwendet wird. Defaults to ADC_UTIL.C_TRUE
-   * %usage  Wird verwendet, um den ITEM-Focus einer Aktion zu definieren
+  /** Method for generating an ITEM focus
+   * %param  p_cif_id                ID of the item focus
+   * %param  p_cif_name              Name of the item focus
+   * %param  p_cif_description       Optional description
+   * %param  p_cif_actual_page_only  Flag to indicate whether only items from the actual APEX page are recognized
+   * %param  p_cif_item_types        List of item types to include
+   * %param [p_cif_default]          Optional default value for the item type
+   * %param [p_cif_active]           Flag, das anzeigt, ob dieser Parametertyp verwendet wird. Defaults to ADC_UTIL.C_TRUE
+   * %usage  Used to define the ITEM focus of an action
    */
   procedure merge_action_item_focus(
     p_cif_id in adc_action_item_focus.cif_id%type,
@@ -408,6 +411,7 @@ as
     p_cif_description in pit_translatable_item.pti_description%type,
     p_cif_actual_page_only in adc_action_item_focus.cif_actual_page_only%type default adc_util.C_TRUE,
     p_cif_item_types in adc_action_item_focus.cif_item_types%type,
+    p_cif_default adc_action_item_focus.cif_default%type,
     p_cif_active in adc_action_item_focus.cif_active%type default adc_util.C_TRUE);
 
   procedure merge_action_item_focus(

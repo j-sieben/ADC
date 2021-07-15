@@ -42,7 +42,7 @@ as
     l_result.attribute_02 := adc_internal.get_page_items;
     l_result.attribute_03 := p_plugin.attribute_01;
     l_result.attribute_04 := utl_raw.cast_to_raw(l_java_script);
-    l_result.attribute_05 := adc_internal.register_observer;
+    l_result.attribute_05 := adc_internal.get_items_to_observe;
     
     pit.leave_mandatory;
     return l_result;
