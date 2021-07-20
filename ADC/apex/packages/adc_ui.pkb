@@ -27,22 +27,6 @@ as
    *         Type casting is auto detected if APEX has knowledge of the type, fi by using a format mask.
    *         If this does not exist, it will try to find the type based on a fetch row process and a database column reference.
    */
-  procedure copy_edit_cgr
-  as
-  begin
-    pit.enter_detailed('copy_edit_cgr');
-    
-    g_page_values := utl_apex.get_page_values('EDIT_CGR_FORM');
-    g_edit_cgr_row.cgr_id := to_number(utl_apex.get(g_page_values, 'CGR_ID'), '999990');
-    g_edit_cgr_row.cgr_app_id := to_number(utl_apex.get(g_page_values, 'CGR_APP_ID'), 'fm9999999999990');
-    g_edit_cgr_row.cgr_page_id := to_number(utl_apex.get(g_page_values, 'CGR_PAGE_ID'), 'fm9999999999990');
-    g_edit_cgr_row.cgr_active := utl_apex.get(g_page_values, 'CGR_ACTIVE');
-    g_edit_cgr_row.cgr_with_recursion := utl_apex.get(g_page_values, 'CGR_WITH_RECURSION');
-    
-    pit.leave_detailed;
-  end copy_edit_cgr;
-
-
   procedure copy_edit_cru
   as
   begin
@@ -202,6 +186,7 @@ as
     g_edit_cif_row.cif_name := utl_apex.get(g_page_values, 'cif_name');
     g_edit_cif_row.cif_description := utl_apex.get(g_page_values, 'cif_description');
     g_edit_cif_row.cif_item_types := utl_apex.get(g_page_values, 'cif_item_types');
+    g_edit_cif_row.cif_default := utl_apex.get(g_page_values, 'cif_default');
     g_edit_cif_row.cif_actual_page_only := utl_apex.get(g_page_values, 'cif_actual_page_only');
     g_edit_cif_row.cif_active := utl_apex.get(g_page_values, 'cif_active');
   
@@ -362,7 +347,7 @@ as
     l_cgr_id := utl_apex.get_number('CGR_ID');
     
     update adc_rule_groups
-       set cgr_active = case cgr_active when adc_util.c_true then adc_util.c_false else adc_util.c_true end
+       set cgr_active = case cgr_active when c_true then c_false else c_true end
      where cgr_id = l_cgr_id;
      
     commit;
@@ -421,7 +406,7 @@ as
 
     l_cgr_app_id := utl_apex.get_number('CGR_APP_ID');
     
-    if utl_apex.get_string('INCLUDE_APP') = adc_util.C_TRUE then
+    if utl_apex.get_string('INCLUDE_APP') = c_true then
       l_mode := adc_admin.C_APEX_APP;
       l_zip_file_name := replace(C_ZIP_APEX_APP_NAME, '#APP_ID#', l_cgr_app_id);
     else
@@ -634,7 +619,7 @@ as
         from adc_ui_edit_cra;
     l_cra_rec adc_rule_actions%rowtype;
   begin
-    pit.enter_mandatory;
+    pit.enter_mandatory('maintain_rule_action');
     
     for sra in missing_cra_cur loop
       adc_admin.delete_rule_action(sra.cra_id);
@@ -679,7 +664,7 @@ as
     
     cursor action_type_cur(p_cat_id in adc_action_types.cat_id%type) is
       with params as(
-             select C_TRUE c_active,
+             select c_true c_active,
                     p_cat_id cat_id
                from dual)
       select /*+ no_merge (p) */
@@ -722,17 +707,19 @@ as
     adc.set_optional(C_PARAM_SELECTOR);
     
     -- Set list of page items
-    select dbms_assert.enquote_literal(cif_default)
-      into l_cif_default
-      from adc_action_types
-      join adc_action_item_focus
-        on cat_cif_id = cif_id
-     where cat_id = l_cat_id;
+    if l_cat_id is null then
+      select dbms_assert.enquote_literal(cif_default)
+        into l_cif_default
+        from adc_action_types
+        join adc_action_item_focus
+          on cat_cif_id = cif_id
+       where cat_id = l_cat_id;
+    end if;
      
     adc.refresh_item(
       p_cpi_id => 'P11_CRA_CPI_ID',
       p_item_value => l_cif_default,
-      p_set_item => adc_util.C_TRUE);
+      p_set_item => c_true);
 
     -- Generate Help text for action type
     select trim('''' from apex_escape.js_literal(help_text))
@@ -749,7 +736,7 @@ as
       -- Set parameter value, label and mandatory state
       adc.set_item(param.cap_page_item, param.cap_default);
       adc.set_item_label(param.cap_page_item, param.cpt_name);
-      if param.cap_mandatory = adc_util.C_TRUE then
+      if param.cap_mandatory = c_true then
         adc.set_mandatory(
           p_cpi_id => param.cap_page_item,
           p_msg_text => replace(l_mandatory_message, '#LABEL#', param.cpt_name));
@@ -763,7 +750,7 @@ as
         adc.refresh_item(
           p_cpi_id => param.cap_page_item, 
           p_item_value => param.cap_default,
-          p_set_item => adc_util.C_TRUE);
+          p_set_item => c_true);
       end if;
       
     end loop;
@@ -908,14 +895,20 @@ as
 
       if l_cap_rec_1.cap_cpt_id is not null then
         adc_admin.merge_action_parameter(l_cap_rec_1);
+      else
+        adc_admin.delete_action_parameter(l_cap_rec_1);
       end if;
 
       if l_cap_rec_2.cap_cpt_id is not null then
         adc_admin.merge_action_parameter(l_cap_rec_2);
+      else
+        adc_admin.delete_action_parameter(l_cap_rec_2);
       end if;
 
       if l_cap_rec_3.cap_cpt_id is not null then
         adc_admin.merge_action_parameter(l_cap_rec_3);
+      else
+        adc_admin.delete_action_parameter(l_cap_rec_3);
       end if;
 
     when utl_apex.deleting then
@@ -1124,17 +1117,45 @@ as
   end get_action_type_help;
   
   
+  function get_cgr_id
+    return adc_rule_groups.cgr_id%type
+  as
+    l_cgr_id adc_rule_groups.cgr_id%type;
+  begin
+    pit.enter_detailed('get_cgr_id');
+    
+    with params as (
+           select utl_apex.get_number('CGR_APP_ID') p_app_id,
+                  utl_apex.get_number('CGR_PAGE_ID') p_page_id
+             from dual)
+    select /*+ no_merge (p) */ cgr_id
+      into l_cgr_id
+      from adc_rule_groups
+      join params p
+        on cgr_app_id = p_app_id
+       and cgr_page_id = p_page_id;
+       
+    adc.set_item('P1_CGR_ID', l_cgr_id);
+    
+    pit.leave_detailed(
+      p_params => msg_params(msg_param('CGR_ID', l_cgr_id)));
+    return l_cgr_id;
+  exception
+    when NO_DATA_FOUND then
+      pit.leave_detailed;
+      return null;
+  end get_cgr_id;
+  
+  
   procedure set_cgr_id
   as
     l_cgr_id adc_rule_groups.cgr_id%type;
   begin
-    select cgr_id
-      into l_cgr_id
-      from adc_rule_groups
-     where cgr_app_id = utl_apex.get_number('CGR_APP_ID')
-       and cgr_page_id = utl_apex.get_number('CGR_PAGE_ID');
-       
-    adc.set_item('P1_CGR_ID', l_cgr_id);
+    pit.enter_mandatory('get_cgr_id');
+    
+    l_cgr_id := get_cgr_id;
+    
+    pit.leave_mandatory;
   end set_cgr_id;
   
 
@@ -1149,8 +1170,8 @@ as
     pit.enter_optional;
 
     l_cgr_app_id := utl_apex.get_number('CGR_APP_ID');
-    l_cgr_page_id := utl_apex.get_number('CGR_PAGE_ID');
-    l_cgr_id := utl_apex.get_number('CGR_ID');
+    l_cgr_page_id := utl_apex.get_number('CGR_PAGE_ID');    
+    l_cgr_id := get_cgr_id;
     
     -- Action CREATE_CAA
     adc_apex_action.action_init('create-apex-action');
@@ -1229,7 +1250,7 @@ as
     l_include_app := utl_apex.get_string('INCLUDE_APP');
     
     -- If select list values change, set dependent select lists to null and refresh
-    if l_include_app = adc_util.C_TRUE then 
+    if l_include_app = c_true then 
       l_action := adc_admin.C_APEX_APP;
     else
       l_action := adc_admin.C_APP_GROUPS;

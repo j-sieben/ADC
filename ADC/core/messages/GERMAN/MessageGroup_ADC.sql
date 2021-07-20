@@ -490,6 +490,31 @@ begin
     p_pms_pml_name => 'GERMAN',
     p_error_number => -20000);
 
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_ACTION_REJECTED',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Aktion #1# wurde nicht ausgeführt, da ein Fehler vorlag und diese Aktion kein Fehlerhandler ist.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 70,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_ACTION_EXECUTED',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Führe Aktion #1# aus.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 70,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_INFINITE_LOOP',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Schleife #1# hat die maximal erlaubte Anzahl Durchläufe überschritten und wurde abgebrochen.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 30,
+    p_pms_pml_name => 'GERMAN',
+    p_error_number => -20000);
+
   commit;
   pit_admin.create_message_package;
 end;

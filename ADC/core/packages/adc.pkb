@@ -2,7 +2,7 @@ create or replace package body adc
 as
 
   C_BUTTON constant adc_page_item_types.cit_id%type := 'BUTTON';
-  
+  C_EMPTY_STRING constant adc_util.ora_name_type := '''''';
   
   
   /* ADDITIONAL ADC FUNCTIONALITY */
@@ -269,7 +269,12 @@ as
   begin
     pit.enter_optional;
     
-    l_item_value := apex_escape.js_literal(p_item_value);
+    if p_item_value is null then
+      l_item_value := C_EMPTY_STRING;
+    --else
+     -- l_item_value := apex_escape.js_literal(p_item_value);
+    end if;
+    
     if p_raise_event then
       adc_api.set_session_state(
         p_cpi_id => p_cpi_id, 

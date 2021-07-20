@@ -196,6 +196,9 @@ prompt &s1.Create package Body ADC_APEX_ACTION
 @&pkg_dir.adc_apex_action.pkb
 show errors
 
+@tools/check_unit_test_exists &pkg_dir.adc_ut.pks
+@tools/check_unit_test_exists &pkg_dir.adc_ut.pkb
+
 prompt &h2.Create parameters
 prompt &s1.Create ADC parameters
 @&script_dir.ParameterGroup_ADC.sql

@@ -9,7 +9,7 @@ with params as(
              ',' delimiter,
              '<span class="adc-error" title="Element existiert nicht.">' span_error,
              '<span class="adc-on-error">' span_on_error,
-             '<span class="adc-disabled">' span_disabled,
+             '<span class="adc-disabled">(disabled) ' span_disabled,
              '</i><span class="adc-deprecated">(deprecated) ' span_deprecated,
              '</span>' close_span,
              '' br,

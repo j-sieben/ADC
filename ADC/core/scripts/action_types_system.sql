@@ -95,7 +95,7 @@ begin
     p_cpt_id => 'STRING_OR_FUNCTION',
     p_cpt_name => 'Zeichenkette oder PL/SQL-Funktion',
     p_cpt_display_name => '',
-    p_cpt_description => q'{<p>Wird der Wert mit einfachen Hochkommata &uuml;bergeben, wird er als konstanter Text ausgegeben.<br>Wird der Parameter ohne Hochkommata übergeben, wird er als PL/SQL-Funktkion interpretiert, die einen Wert liefert.</p>}',
+    p_cpt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein PL/SQL-Funktionsaufruf, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
     p_cpt_item_type => 'TEXT',
     p_cpt_active => adc_util.C_TRUE);
 
@@ -103,7 +103,7 @@ begin
     p_cpt_id => 'STRING_OR_JAVASCRIPT',
     p_cpt_name => 'Zeichenkette oder JS-Ausdruck',
     p_cpt_display_name => '',
-    p_cpt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein JavaScript-Ausdruck, der zur Laufzeit berechnet wird</li><li>Leere Zeichenkette (&#39;&#39;). In diesem Fall wird der Wert des Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
+    p_cpt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein JavaScript-Ausdruck, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
     p_cpt_item_type => 'TEXT',
     p_cpt_active => adc_util.C_TRUE);
 
@@ -131,7 +131,7 @@ begin
     p_cit_has_value => adc_util.C_FALSE,
     p_cit_include_in_view => adc_util.C_TRUE,
     p_cit_event => 'apexafterrefresh',
-    p_cit_col_template => q'{case adc_api.get_event when 'apexafterrefresh' then adc_api.get_firing_item end after_refresh}',
+    p_cit_col_template => q'{case p_event when 'apexafterrefresh' then p_firing_item end after_refresh}',
     p_cit_init_template => q'{}');
   adc_admin.merge_page_item_type(
     p_cit_id => 'ALL',
@@ -155,7 +155,7 @@ begin
     p_cit_has_value => adc_util.C_FALSE,
     p_cit_include_in_view => adc_util.C_FALSE,
     p_cit_event => 'click',
-    p_cit_col_template => q'{case adc_api.get_firing_item when '#ITEM#' then c_true else c_false end #ITEM#}',
+    p_cit_col_template => q'{case p_firing_item when '#ITEM#' then c_true else c_false end #ITEM#}',
     p_cit_init_template => q'{}');
   adc_admin.merge_page_item_type(
     p_cit_id => 'COMMAND',
@@ -163,7 +163,7 @@ begin
     p_cit_has_value => adc_util.C_FALSE,
     p_cit_include_in_view => adc_util.C_TRUE,
     p_cit_event => 'command',
-    p_cit_col_template => q'{case adc_api.get_event when 'command' then adc_api.get_event_data end command}',
+    p_cit_col_template => q'{case p_event when 'command' then p_event_data end command}',
     p_cit_init_template => q'{}');
   adc_admin.merge_page_item_type(
     p_cit_id => 'DATE_ITEM',
@@ -179,7 +179,7 @@ begin
     p_cit_has_value => adc_util.C_FALSE,
     p_cit_include_in_view => adc_util.C_TRUE,
     p_cit_event => 'apexafterclosedialog',
-    p_cit_col_template => q'{case adc_api.get_event when 'apexafterclosedialog' then adc_api.get_firing_item end dialog_closed}',
+    p_cit_col_template => q'{case p_event when 'apexafterclosedialog' then p_firing_item end dialog_closed}',
     p_cit_init_template => q'{}');
   adc_admin.merge_page_item_type(
     p_cit_id => 'DOCUMENT',
@@ -195,7 +195,7 @@ begin
     p_cit_has_value => adc_util.C_FALSE,
     p_cit_include_in_view => adc_util.C_TRUE,
     p_cit_event => 'dblclick',
-    p_cit_col_template => q'{case adc_api.get_event when 'dblclick' then adc_api.get_firing_item end double_click}',
+    p_cit_col_template => q'{case p_event when 'dblclick' then p_firing_item end double_click}',
     p_cit_init_template => q'{}');
   adc_admin.merge_page_item_type(
     p_cit_id => 'ENTER_KEY',
@@ -203,7 +203,7 @@ begin
     p_cit_has_value => adc_util.C_FALSE,
     p_cit_include_in_view => adc_util.C_TRUE,
     p_cit_event => 'enter',
-    p_cit_col_template => q'{case adc_api.get_event when 'enter' then adc_api.get_firing_item end enter_key}',
+    p_cit_col_template => q'{case p_event when 'enter' then p_firing_item end enter_key}',
     p_cit_init_template => q'{}');
   adc_admin.merge_page_item_type(
     p_cit_id => 'FIRING_ITEM',
@@ -211,7 +211,7 @@ begin
     p_cit_has_value => adc_util.C_FALSE,
     p_cit_include_in_view => adc_util.C_TRUE,
     p_cit_event => '',
-    p_cit_col_template => q'{adc_api.get_firing_item firing_item}',
+    p_cit_col_template => q'{p_firing_item firing_item}',
     p_cit_init_template => q'{}');
   adc_admin.merge_page_item_type(
     p_cit_id => 'INITIALIZING',
@@ -219,7 +219,7 @@ begin
     p_cit_has_value => adc_util.C_FALSE,
     p_cit_include_in_view => adc_util.C_TRUE,
     p_cit_event => '',
-    p_cit_col_template => q'{case adc_api.get_firing_item when 'DOCUMENT' then c_true else c_false end initializing}',
+    p_cit_col_template => q'{case p_firing_item when 'DOCUMENT' then c_true else c_false end initializing}',
     p_cit_init_template => q'{}');
   adc_admin.merge_page_item_type(
     p_cit_id => 'ITEM',
@@ -263,7 +263,7 @@ begin
     p_cif_description => q'{<p>Alle Anwendungs- und Seitenelemente der aktuellen Anwendungsseite mit Datumsformatmasek</p>}',
     p_cif_actual_page_only => adc_util.C_TRUE,
     p_cif_item_types => 'DATE_ITEM',
-    p_cif_default => null,
+    p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -289,8 +289,8 @@ begin
     p_cif_name => 'Seitenelement oder jQuery-Selektor',
     p_cif_description => q'{Alle Seitenelemente oder ein jQuery-Selektor}',
     p_cif_actual_page_only => adc_util.C_FALSE,
-    p_cif_item_types => 'DATE_ITEM:ITEM:NUMBER_ITEM:ELEMENT',    
-    p_cif_default => null,
+    p_cif_item_types => 'DATE_ITEM:ITEM:NUMBER_ITEM:ELEMENT',
+    p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -307,8 +307,8 @@ begin
     p_cif_name => 'Seitenelement (Zahl)',
     p_cif_description => q'{<p>Alle Anwendungs- und Seitenelemente der aktuellen Anwendungsseite mit Zahlformatmaske</p>}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'NUMBER_ITEM',  
-    p_cif_default => null,
+    p_cif_item_types => 'NUMBER_ITEM',
+    p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -317,7 +317,7 @@ begin
     p_cif_description => q'{Alle Seitenelemente der aktuellen Anwendungsseite}',
     p_cif_actual_page_only => adc_util.C_TRUE,
     p_cif_item_types => 'BUTTON:DATE_ITEM:ITEM:NUMBER_ITEM:REGION:ELEMENT',
-    p_cif_default => null,
+    p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -325,8 +325,8 @@ begin
     p_cif_name => 'Schaltflächen der aktuellen Seite',
     p_cif_description => q'{Alle Schaltflächen der aktuellen Anwendungsseite}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'BUTTON',  
-    p_cif_default => null,
+    p_cif_item_types => 'BUTTON',
+    p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -334,8 +334,8 @@ begin
     p_cif_name => 'Seitenelement',
     p_cif_description => q'{<p>Alle Anwendungs- und Seitenelemente der aktuellen Anwendungsseite</p>}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'DATE_ITEM:ITEM:NUMBER_ITEM:ELEMENT',  
-    p_cif_default => null,
+    p_cif_item_types => 'DATE_ITEM:ITEM:NUMBER_ITEM:ELEMENT',
+    p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -352,8 +352,8 @@ begin
     p_cif_name => 'Eingabefeld oder jQuery-Selektor',
     p_cif_description => q'{Alle Eingabefelder oder ein jQuery-Selektor}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'DATE_ITEM:ITEM:NUMBER_ITEM:ELEMENT',  
-    p_cif_default => null,
+    p_cif_item_types => 'DATE_ITEM:ITEM:NUMBER_ITEM:ELEMENT',
+    p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -361,8 +361,8 @@ begin
     p_cif_name => 'Regionen der aktuellen Seite',
     p_cif_description => q'{Alle Regionen der aktuellen Anwendungsseite}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'REGION',    
-    p_cif_default => null,
+    p_cif_item_types => 'REGION',
+    p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -370,8 +370,8 @@ begin
     p_cif_name => 'Seitenelemente, die aktualisiert werden können',
     p_cif_description => q'{Alle Seitenelemente, die aktualisiert werden können}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'ITEM:REGION',  
-    p_cif_default => null,
+    p_cif_item_types => 'ITEM:REGION',
+    p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
 
@@ -640,7 +640,7 @@ begin
     p_cat_ctg_id => 'PAGE_ITEM',
     p_cat_cif_id => 'PAGE_ITEM_OR_DOCUMENT',
     p_cat_name => 'Feld ist Pflichtfeld',
-    p_cat_display_name => q'{<p><strong>mache Feld </strong>“#ITEM#” zum <strong>Pflichtfeld</strong></p>}',
+    p_cat_display_name => q'{<p><strong>mache </strong>#PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“#ITEM##” zum <strong>Pflichtfeld</strong></p>}',
     p_cat_description => q'{<p>Macht ein Seitenelement zu einem Pflichtfeld inkl. Validierung.</p>}',
     p_cat_pl_sql => q'{adc_api.register_mandatory('#ITEM#', adc_util.C_TRUE, '#PARAM_1#', '#PARAM_2#');}',
     p_cat_js => q'{de.condes.plugin.adc.setMandatory('#SELECTOR#', true);  de.condes.plugin.adc.show('#SELECTOR#');}',
@@ -672,7 +672,7 @@ begin
     p_cat_ctg_id => 'PAGE_ITEM',
     p_cat_cif_id => 'PAGE_ITEM_OR_DOCUMENT',
     p_cat_name => 'Feld ist optional',
-    p_cat_display_name => q'{<p><strong>mache Feld</strong> “#ITEM#” <strong>optional</strong></p>}',
+    p_cat_display_name => q'{<p><strong>mache </strong>#PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“#ITEM##” <strong>optional</strong></p>}',
     p_cat_description => q'{<p>Macht ein Seitenelement zu einem optionalen Element und setzt Pflichtfeld-Validierung aus.</p>}',
     p_cat_pl_sql => q'{adc_api.register_mandatory('#ITEM#', adc_util.C_FALSE, null, '#PARAM_2#');}',
     p_cat_js => q'{de.condes.plugin.adc.setMandatory('#SELECTOR#',false);}',
@@ -694,7 +694,7 @@ begin
     p_cat_ctg_id => 'PAGE_ITEM',
     p_cat_cif_id => 'PAGE_ITEM',
     p_cat_name => 'Feld leeren und aktivieren',
-    p_cat_display_name => q'{<p><strong>leere</strong> Feld “#ITEM#” und <strong>aktiviere</strong> es</p>}',
+    p_cat_display_name => q'{<p><strong>leere</strong> #PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“#ITEM##” und <strong>aktiviere</strong> es</p>}',
     p_cat_description => q'{<p>Setzt das referenzierte Seitenelement auf NULL und zeigt es auf der Seite an.</p>}',
     p_cat_pl_sql => q'{adc_api.set_session_state('#ITEM#', '', '#ALLOW_RECURSION#', '#PARAM_2#');}',
     p_cat_js => q'{de.condes.plugin.adc.enable('#SELECTOR#');}',
@@ -789,7 +789,7 @@ begin
 
   adc_admin.merge_action_type(
     p_cat_id => 'PLSQL_CODE',
-    p_cat_ctg_id => 'PL_SQL',
+    p_cat_ctg_id => 'ADC',
     p_cat_cif_id => 'ALL',
     p_cat_name => 'PL/SQL-Code ausführen',
     p_cat_display_name => q'{<p>führe <strong>PL/SQL-Code</strong> “#PARAM_1#” aus</p>}',
@@ -814,7 +814,7 @@ begin
     p_cat_ctg_id => 'PAGE_ITEM',
     p_cat_cif_id => 'ALL',
     p_cat_name => 'Feld aktualisieren und Wert setzen',
-    p_cat_display_name => q'{<p><strong>aktualisiere</strong> Feld “#ITEM#” und <strong>setze Feldwert </strong>auf “#PARAM_1#”</p>}',
+    p_cat_display_name => q'{<p><strong>aktualisiere</strong> Feld “#ITEM#” und <strong>setze Feldwert </strong>auf #PARAM_1|Wert “|”|aktuellen Sessionstatus#</p>}',
     p_cat_description => q'{<p>Aktualisiert ein Seitenelement und setzt das Feld auf den Sessionstatus</p>}',
     p_cat_pl_sql => q'{}',
     p_cat_js => q'{de.condes.plugin.adc.refreshAndSetValue('#ITEM#', #PARAM_1#);}',
@@ -868,7 +868,7 @@ begin
     p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_TRUE);
-    
+
 
   adc_admin.merge_action_type(
     p_cat_id => 'SET_ELEMENT_FROM_STMT',
@@ -900,7 +900,7 @@ begin
     p_cat_display_name => q'{<p><strong>setze Fokus</strong> in Feld “#ITEM#”</p>}',
     p_cat_description => q'{<p>Fokus in Eingabefeld der Seite setzen</p>}',
     p_cat_pl_sql => q'{}',
-    p_cat_js => q'{$('##SELECTOR#').focus();}',
+    p_cat_js => q'{$('##ITEM#').focus();}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_TRUE);
 
@@ -936,7 +936,6 @@ begin
     p_cap_display_name => 'Ordinalzahl der Wertespalte',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
-    
 
   adc_admin.merge_action_type(
     p_cat_id => 'SET_INITIALIZE_MODE',
@@ -954,21 +953,20 @@ begin
     p_cap_cat_id => 'SET_INITIALIZE_MODE',
     p_cap_cpt_id => 'SWITCH',
     p_cap_sort_seq => 1,
-    p_cap_default => adc_util.C_TRUE,
+    p_cap_default => q'{Y}',
     p_cap_description => q'{<p><ul><li>Ja: Initialisierungsmodus ist aktiv</li><li>Nein: Initialisierungsmodus ist deaktiv. Wird normalerweise nicht benötigt.</li></ul></p>}',
     p_cap_display_name => 'Initialisierung aktiv',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-    
 
   adc_admin.merge_action_type(
     p_cat_id => 'SET_ITEM',
     p_cat_ctg_id => 'PAGE_ITEM',
     p_cat_cif_id => 'PAGE_ITEM',
     p_cat_name => 'Feld auf Wert setzen',
-    p_cat_display_name => q'{<p><strong>setze Feld</strong> auf #PARAM_1|Wert “|”|NULL#</p>}',
+    p_cat_display_name => q'{<p><strong>setze </strong>#PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“#ITEM##” auf #PARAM_1|Wert “|”|NULL#</p>}',
     p_cat_description => q'{<p>Setzt das referenzierte Seitenelement auf den als Parameter übergebenen Wert.</p>}',
-    p_cat_pl_sql => q'{adc_api.set_session_state('#ITEM#', #PARAM_1#, '#ALLOW_RECURSION#', '#PARAM_2#');}',
+    p_cat_pl_sql => q'{adc_api.set_session_state('#ITEM#', #PARAM_1|||null#, '#ALLOW_RECURSION#', '#PARAM_2#');}',
     p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_TRUE);
@@ -1011,7 +1009,7 @@ begin
     p_cat_ctg_id => 'PAGE_ITEM',
     p_cat_cif_id => 'PAGE_ITEM',
     p_cat_name => 'Feld leeren und deaktivieren',
-    p_cat_display_name => q'{<p><strong>leere</strong> Feld “#ITEM#” und <strong>deaktiviere </strong>es</p>}',
+    p_cat_display_name => q'{<p><strong>leere</strong> #PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“#ITEM##” und <strong>deaktiviere </strong>es</p>}',
     p_cat_description => q'{<p>Setzt das referenzierte Seitenelement auf NULL und deaktiviert es auf der Seite.</p>}',
     p_cat_pl_sql => q'{adc_api.set_session_state('#ITEM#', '', '#ALLOW_RECURSION#', '#PARAM_2#');}',
     p_cat_js => q'{de.condes.plugin.adc.disable('#SELECTOR#');}',
@@ -1033,7 +1031,7 @@ begin
     p_cat_ctg_id => 'PAGE_ITEM',
     p_cat_cif_id => 'PAGE_ITEM',
     p_cat_name => 'Feld leeren und ausblenden',
-    p_cat_display_name => q'{<p><strong>leere</strong> Feld “#ITEM#” und <strong>blende es aus</strong></p>}',
+    p_cat_display_name => q'{<p><strong>leere</strong> #PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“#ITEM##” und <strong>blende es aus</strong></p>}',
     p_cat_description => q'{<p>Setzt das referenzierte Seitenelement auf NULL und blendet es auf der Seite aus.</p>}',
     p_cat_pl_sql => q'{adc_api.set_session_state('#ITEM#', '', '#ALLOW_RECURSION#', '#PARAM_2#');}',
     p_cat_js => q'{de.condes.plugin.adc.hide('#SELECTOR#');de.condes.plugin.adc.setMandatory('#SELECTOR#', false);}',

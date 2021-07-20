@@ -4,10 +4,14 @@ create or replace package adc_internal
 as
 
   
-  C_JS_CODE constant binary_integer := 1;
-  C_JS_RULE_ORIGIN constant binary_integer := 2;
-  C_JS_DEBUG constant binary_integer := 3;
-  C_JS_COMMENT constant binary_integer := 4;
+  C_JS_CODE constant binary_integer := pit.LEVEL_FATAL;
+  C_JS_RULE_ORIGIN constant binary_integer := pit.LEVEL_ERROR;
+  C_JS_DEBUG constant binary_integer := pit.LEVEL_WARN;
+  C_JS_COMMENT constant binary_integer := pit.LEVEL_INFO;
+  C_JS_DETAIL constant binary_integer := pit.LEVEL_DEBUG;
+  C_JS_VERBOSE constant binary_integer := pit.LEVEL_ALL;
+  
+  C_PARAM_ITEM_VALUE constant adc_util.ora_name_type := 'ITEM_VALUE';
   
   
   /** Package ADC_INTERNAL to maintain State Charts as a dynamic action plugin
@@ -37,28 +41,14 @@ as
   procedure initialize_test;
   $END
   
-  
-  /* Method to incorporate a JavaScript chunk into the response
-   * @param  p_script       JavaScript chunk to add
-   * @param [p_debug_level] Optional level indicator to control the output
-   * @usage  Is used to add a JavaScript chunk to an internal JavaScript collection.
-   *         Any chunk is assigned to a debug level, allowing to control the amount of code ADC will produce as an answer.
-   *         As for now, the answer is limited to 32KByte. To achieve that, SADC will reduce the level of the output if
-   *         required to keep the answer below 32KByte.
-   *         The method also looks for duplicate JavaScript and comments out earlier chunks with the same JavaScript. This
-   *         can happen based on the flow of rules. Removing duplicates reduces the amount of code the browser has to execute,
-   *         especially useful if a region is refreshed.
-   */
-  procedure add_javascript(
-    p_java_script in varchar2,
-    p_debug_level in binary_integer default C_JS_CODE);
-    
+  /********** PLUGIN METHODS **************/    
 
   /** Getter to retriece all elements that needs to be bound to an event handler as JSON
    * %return JSON instance containing name and event of all relevant page items
    * %usage  Is called during plugin initialization.
    *         The instance contains all relevant elements ADC needs to observe, along with the event it watches. For these items
    *         ADC will instantiate an event handler that calls ADC.
+   *         This method is called from the ADC plugin
    */
   function get_bind_items_as_json
     return clob;
@@ -69,9 +59,79 @@ as
    * %usage  Is called during plugin initialization.
    *         Items which need to pass their actual value but need not be bound by an event handler are registered as observable items.
    *         They don't call ADC when they are changed but pass their actual value with every call to ADC raised by other items.
+   *         This method is called from the ADC plugin
    */
   function get_items_to_observe
     return varchar2;
+    
+
+  /** Getter to retrieve a list of elements that potentially have changed during execution of ADC
+   * %return C_DELIMITER delimited list of page items that potentially have changed
+   * %usage  Is used to put together a C_DELIMITER delimited list of page items.
+   *         This method is called from the ADC plugin
+   */
+  function get_page_items
+    return varchar2;
+    
+
+  /** Method executes any initialization code of the rule group
+   * %usage  Called by the ADC plugin during initialization of the dynamic pages. 
+   *         ADC requires the initial values of the page items and needs to compute them, 
+   *         as APEX does not store them during initialization in an accessible manner.
+   *         To allow for this, ADC re-executes any page computation and row fetch process as far as possible.
+   *         This method is called from the ADC plugin
+   */
+  procedure process_initialization_code;
+
+
+  /** Method to process a ADC request
+   * %return JavaScript code in response to the request
+   * %usage  Is used to calculate the new status of the page based on the session state values and the underlying ADC rules.
+   *         Flow:
+   *         - Make session state and metadata (firing item, event, event data etc.) available for the decision table
+   *         - Query decision table (ADC_RULE_GROUPS.CGR_DECISION_TABLE) against actual session state
+   *         - If a rule has to be executed, perform all assigned actions:
+   *           - execute actions PL/SQL code immediately and 
+   *           - collect all JavaScript
+   *         - If a PL/SQL code changes session state, recursively check rules to determine whether further 
+   *           rules have to be processed
+   *         - If no further rule has to be processed, return all collected JavaScript within a <script> element
+   *         This method is called from the ADC plugin
+   */
+  function process_request
+    return clob;
+    
+    
+  /** Helper to copy plugin settings to an internal record G_PARAM
+   * %param  p_firing_item  Firing item
+   * %param  p_event        Firing event
+   * %param  p_event_data   Additional event information
+   * %usage  Is called before the actual rule action takes place (at the beginning of render and AJAX methods)
+   *         to copy the plugin parameters and status to a package record.
+   *         This method is called from the ADC plugin. Published separately to allow for the plugin to call
+   *         PROCESS_INITIALIZATION_CODE if required before calling PROCESS_REQUEST
+   */
+  procedure read_settings(
+    p_firing_item in varchar2,
+    p_event in varchar2,
+    p_event_data in varchar2);
+    
+  
+  /********** ADC FUNCTIONALITY SUPPORT **************/    
+  
+  /* Method to incorporate a JavaScript chunk into the response
+   * @param  p_script       JavaScript chunk to add
+   * @param [p_debug_level] Optional level indicator to control the output
+   * @usage  Is used to add a JavaScript chunk to an internal JavaScript collection.
+   *         Any chunk is assigned to a debug level, allowing to control the amount of code ADC will produce as an answer.
+   *         As for now, the answer is limited to 32KByte. To achieve that, ADC will reduce the level of the output if
+   *         required to keep the answer below 32KByte.
+   *         The method also looks for duplicate JavaScript and comments out earlier chunks with the same JavaScript. This
+   *         can happen based on the flow of rules. Removing duplicates reduces the amount of code the browser has to execute.
+   */
+  procedure add_javascript(
+    p_java_script in varchar2,
+    p_debug_level in binary_integer default C_JS_CODE);
     
     
   /* @see adc_api.get_string */
@@ -127,66 +187,6 @@ as
    */
   function get_firing_item
     return varchar2;
-    
-
-  /** Getter to retrieve a list of elements that potentially have changed during execution of ADC
-   * %return C_DELIMITER delimited list of page items that potentially have changed
-   * %usage  Is used to put together a C_DELIMITER delimited list of page items.
-   */
-  function get_page_items
-    return varchar2;
-    
-
-  /** Method executes any initialization code of the rule group
-   * %usage Called by the ADC plugin during initialization of the dynamic pages. 
-   *        ADC requires the initial values of the page items and needs to compute them, 
-   *        as APEX does not store them during initialization in an accessible manner.
-   *        To allow for this, ADC re-executes any page computation and row fetch process as far as possible.
-   */
-  procedure process_initialization_code;
-
-
-  /** Method to process a ADC request
-   * %return JavaScript code in response to the request
-   * %usage  Is used to calculate the new status of the page based on the session state values and the underlying ADC rules.
-   *         Flow:
-   *         - Make session state and metadata (firing item, event, event data etc.) available for the decision table
-   *         - Query decision table (ADC_RULE_GROUPS.CGR_DECISION_TABLE) against actual session state
-   *         - If a rule has to be executed, perform all assigned actions:
-   *           - execute actions PL/SQL code immediately and 
-   *           - collect all JavaScript
-   *         - If a PL/SQL code changes session state, recursively check rules to determine whether further 
-   *           rules have to be processed
-   *         - If no further rule has to be processed, return all collected JavaScript within a <script> element
-   *         This method is called from the ADC plugin
-   */
-  function process_request
-    return clob;
-
-
-  /** Method pushes a page item onto the error stack.
-   * %param  p_error  APEX error of type APEX_ERROR.T_ERROR to push onto the stack
-   * %usage  Is called during execution of a rule, if an error is registered.
-   *         All errors are collected on an error stack and sent to the page as part of the answer.
-   *         Before pushing an error, a hash code is generated that serves as an error key 
-   *         while at the same time prevents double erorrs to be pushed onto the stack
-   */
-  procedure push_error(
-    p_error in apex_error.t_error);
-    
-    
-  /** Helper to copy plugin settings to an internal record G_PARAM
-   * %param  p_firing_item  Firing item
-   * %param  p_event        Firing event
-   * %param  p_event_data   Additional event information
-   * %usage  Is called before the actual rule action takes place (at the beginning of render and AJAX methods)
-   *         to copy the plugin parameters and status to a package record.
-   *         This method is called from the ADC plugin
-   */
-  procedure read_settings(
-    p_firing_item in varchar2,
-    p_event in varchar2,
-    p_event_data in varchar2);
 
 
   /* Methods to implement the ADC specific functionality */
@@ -223,7 +223,8 @@ as
     
   /* @see adc_api.notify */
   procedure notify(
-    p_text in varchar2);
+    p_text in varchar2,
+    p_level in binary_integer default C_JS_COMMENT);
 
 
   /* @see adc_api.register_error */

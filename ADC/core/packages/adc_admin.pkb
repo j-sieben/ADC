@@ -2136,7 +2136,7 @@ as
 
     select utl_text.generate_text(cursor(
             select p.uttm_text template,
-                   cif_id, cif_name, adc_util.to_bool(cif_active) cif_active,
+                   cif_id, cif_name, adc_util.to_bool(cif_active) cif_active, cif_default,
                    utl_text.wrap_string(cif_description, C_WRAP_START, C_WRAP_END) cif_description,
                    adc_util.to_bool(cif_actual_page_only) cif_actual_page_only, cif_item_types
               from adc_action_item_focus_v

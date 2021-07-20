@@ -10,10 +10,11 @@ with session_state as (
              ',' delimiter,
              '<span class="adc-error" title="Element existiert nicht.">' span_error,
              '<span class="adc-on-error">' span_on_error,
-             '<span class="adc-disabled">' span_disabled,
+             '<span class="adc-disabled">(disabled) ' span_disabled,
              '</i><span class="adc-deprecated">(deprecated) ' span_deprecated,
              '</span>' close_span,
              '' br,
+             'fa-play' c_initialize,
              'fa-check' c_yes,
              'fa-times' c_no,
              adc_util.c_true c_true,
@@ -26,7 +27,7 @@ with session_state as (
       select /*+ no_merge (p) */
              p.cgr_app_id, p.cgr_page_id,
              cru.cru_id, cru.cru_cgr_id, cra_id, cru.cru_sort_seq, cra_sort_seq, 
-             case cru_fire_on_page_load when c_true then c_yes else c_no end cru_fire_on_page_load, 
+             case when cru.cru_firing_items is null then c_initialize when cru_fire_on_page_load = c_true then c_yes else c_no end cru_fire_on_page_load, 
              case cru_active when c_true then c_yes else c_no end cru_active,
              case
                when cpi.cpi_id is not null then p.span_error || cru.cru_name || p.close_span

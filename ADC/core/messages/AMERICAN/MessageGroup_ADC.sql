@@ -481,6 +481,31 @@ begin
     p_pms_pml_name => 'GERMAN',
     p_error_number => -20000);
 
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_ACTION_REJECTED',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Action #1# was not executed because there was an error and this action is not an error handler.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 70,
+    p_pms_pml_name => 'AMERICAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_ACTION_EXECUTED',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Executing action #1#.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 70,
+    p_pms_pml_name => 'AMERICAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_INFINITE_LOOP',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Loop #1# has exceeded the maximum allowed number of passes and has been aborted.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 30,
+    p_pms_pml_name => 'AMERICAN',
+    p_error_number => -20000);
+
   commit;
   pit_admin.create_message_package;
 end;
