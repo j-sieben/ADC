@@ -82,18 +82,18 @@ q'{}',
     p_uttm_name => 'APEX_ACTION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ACTION',
-    p_uttm_text => q'{{"name":"#CAA_NAME#"#CAA_LABEL|,
-"label":"|"|##CAA_LABEL_KEY|,
-"labelKey":"|"|##CAA_CONTEXT_LABEL|,
-"contextLabel":"|"|##CAA_ICON|,
-"icon":"|"|##CAA_ICON_TYPE|,
-"iconType":"|"|##CAA_INITIALLY_DISABLED|,
-"disabled":||##CAA_INITIALLY_HIDDEN|,
-"hide":||##CAA_TITLE|,
-"title":"|"|##CAA_SHORTCUT|,
-"shortcut":"|"|##CAA_HREF|,
-"href":"|"|##CAA_ACTION|,
-"action":||#}}',
+    p_uttm_text => q'{{"name":"#CAA_NAME#"#CAA_LABEL|,}' || 
+q'{ "label":"|"|##CAA_LABEL_KEY|,}' || 
+q'{ "labelKey":"|"|##CAA_CONTEXT_LABEL|,}' || 
+q'{ "contextLabel":"|"|##CAA_ICON|,}' || 
+q'{ "icon":"|"|##CAA_ICON_TYPE|,}' || 
+q'{ "iconType":"|"|##CAA_INITIALLY_DISABLED|,}' || 
+q'{ "disabled":||##CAA_INITIALLY_HIDDEN|,}' || 
+q'{ "hide":||##CAA_TITLE|,}' || 
+q'{ "title":"|"|##CAA_SHORTCUT|,}' || 
+q'{ "shortcut":"|"|##CAA_HREF|,}' || 
+q'{ "href":"|"|##CAA_ACTION|,}' || 
+q'{ "action":||#}}',
     p_uttm_log_text => q'{}',
     p_uttm_log_severity => 70
   );
@@ -184,27 +184,6 @@ q'{}}',
   );
 
   utl_text.merge_template(
-    p_uttm_name => 'RULE_STMT',
-    p_uttm_type => 'ADC',
-    p_uttm_mode => 'DEFAULT',
-    p_uttm_text => q'{select /*+ no_merge(p) */\CR\}' || 
-q'{       cru.cru_id, cru.cru_sort_seq, cru.cru_name, cru.cru_firing_items, cru_fire_on_page_load,\CR\}' || 
-q'{       cra_cpi_id item, cat_pl_sql pl_sql, cat_js js, cra_sort_seq, cra_param_1 param_1, cra_param_2 param_2, cra_param_3 param_3, cra_on_error,\CR\}' || 
-q'{       max(cra_on_error) over (partition by cru_sort_seq) cru_on_error,\CR\}' || 
-q'{       case row_number() over (partition by cru_sort_seq, cra_on_error order by crg.cra_sort_seq) when 1 then c_true else c_false end is_first_row\CR\}' || 
-q'{  from (#CGR_DECISION_TABLE#) crg\CR\}' || 
-q'{  join adc_rules cru\CR\}' || 
-q'{    on crg.cru_id = cru.cru_id\CR\}' || 
-q'{  join adc_action_types cat\CR\}' || 
-q'{    on crg.cra_cat_id = cat.cat_id\CR\}' || 
-q'{ where cat.cat_raise_recursive in (c_true, '#IS_RECURSIVE#')\CR\}' || 
-q'{   and crg.cra_raise_recursive in (c_true, '#IS_RECURSIVE#')\CR\}' || 
-q'{ order by cru.cru_sort_seq desc, crg.cra_sort_seq}',
-    p_uttm_log_text => q'{}',
-    p_uttm_log_severity => 70
-  );
-
-  utl_text.merge_template(
     p_uttm_name => 'ACTION_TYPE_HELP',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
@@ -277,15 +256,27 @@ q'{              rank() over (order by r.cru_sort_seq) rang, s.initializing init
 q'{              c_true, c_false\CR\}' || 
 q'{         from adc_bl_rules r\CR\}' || 
 q'{         join session_state s\CR\}' || 
-q'{           on instr(r.cru_firing_items, ',' || s.firing_item || ',') > 0\CR\}' || 
-q'{           or cru_fire_on_page_load = s.c_true\CR\}' || 
+q'{           on instr(',' || r.cru_firing_items || ',', ',' || s.firing_item || ',') > 0\CR\}' || 
+q'{           or (cru_fire_on_page_load = initializing\CR\}' || 
+q'{          and initializing = C_TRUE)\CR\}' || 
 q'{        where r.cgr_id = #CGR_ID#\CR\}' || 
-q'{          and (#WHERE_CLAUSE#))\CR\}' || 
-q'{select cru_id, cru_name, cra_cpi_id, cra_cat_id, cra_param_1, cra_param_2, cra_param_3, cra_on_error, cra_raise_recursive, cra_sort_seq, c_true, c_false\CR\}' || 
-q'{  from data\CR\}' || 
-q'{ where rang = 1\CR\}' || 
-q'{    or cru_fire_on_page_load = initializing\CR\}' || 
-q'{ order by cru_fire_on_page_load, rang}',
+q'{          and (#WHERE_CLAUSE#)),\CR\}' || 
+q'{     decision_table as(\CR\}' || 
+q'{       select cru_id, cru_name, cra_cpi_id, cra_cat_id, cra_param_1, cra_param_2, cra_param_3, cra_on_error, cra_raise_recursive, cra_sort_seq, c_true, c_false\CR\}' || 
+q'{         from data\CR\}' || 
+q'{        where rang = 1\CR\}' || 
+q'{           or (cru_fire_on_page_load = initializing\CR\}' || 
+q'{          and initializing = C_TRUE))\CR\}' || 
+q'{select cru.cru_id, cru.cru_sort_seq, cru.cru_name, cru.cru_firing_items, cru_fire_on_page_load,\CR\}' || 
+q'{       cra_cpi_id item, cat_pl_sql pl_sql, cat_js js, cra_sort_seq, cra_param_1 param_1, cra_param_2 param_2, cra_param_3 param_3, cra_on_error,\CR\}' || 
+q'{       max(cra_on_error) over (partition by cru_sort_seq) cru_on_error,\CR\}' || 
+q'{       case cra_sort_seq when 10 then c_true else c_false end is_first_row\CR\}' || 
+q'{  from decision_table crg\CR\}' || 
+q'{  join adc_rules cru\CR\}' || 
+q'{    on crg.cru_id = cru.cru_id\CR\}' || 
+q'{  join adc_action_types cat\CR\}' || 
+q'{    on crg.cra_cat_id = cat.cat_id\CR\}' || 
+q'{ order by cru.cru_sort_seq desc, crg.cra_sort_seq}',
     p_uttm_log_text => q'{Rule View #PREFIX##CGR_ID# created.}',
     p_uttm_log_severity => 70
   );
@@ -823,13 +814,13 @@ q'{}',
     p_uttm_name => 'APEX_ACTION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
-    p_uttm_text => q'{// Integration of APEX Actions\CR\}' || 
+    p_uttm_text => q'{
+// #APEX_ACTION_ORIGIN#\CR\}' || 
 q'{#BIND_ACTION_ITEMS#\CR\}' || 
 q'{\CR\}' || 
 q'{apex.actions.add(\CR\}' || 
 q'{  [#ACTION_LIST#\CR\}' || 
-q'{  ]);\CR\}' || 
-q'{}',
+q'{  ]);}',
     p_uttm_log_text => q'{APEX actions created}',
     p_uttm_log_severity => 70
   );
@@ -838,7 +829,7 @@ q'{}',
     p_uttm_name => 'APEX_ACTION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'BUTTON',
-    p_uttm_text => q'{$('##CPI_ID#').removeClass('js-actionButton').addClass('js-actionButton').attr('data-action', '#CAA_NAME#');}',
+    p_uttm_text => q'{$('^#CPI_ID#').removeClass('js-actionButton').addClass('js-actionButton').attr('data-action', '#CAA_NAME#');}',
     p_uttm_log_text => q'{}',
     p_uttm_log_severity => 70
   );

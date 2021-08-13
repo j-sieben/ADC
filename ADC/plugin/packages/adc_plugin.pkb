@@ -25,8 +25,8 @@ as
     
     -- Initialize
     adc_internal.read_settings(
-      p_firing_item => apex_application.g_x01,
-      p_event => apex_application.g_x02,
+      p_firing_item => coalesce(apex_application.g_x01, adc_util.C_NO_FIRING_ITEM),
+      p_event => coalesce(apex_application.g_x02, 'initialize'),
       p_event_data => apex_application.g_x03);
     
     -- Initialize session status with page item default values
@@ -41,7 +41,7 @@ as
     l_result.attribute_01 := adc_internal.get_bind_items_as_json;
     l_result.attribute_02 := adc_internal.get_page_items;
     l_result.attribute_03 := p_plugin.attribute_01;
-    l_result.attribute_04 := utl_raw.cast_to_raw(l_java_script);
+    l_result.attribute_04 := utl_raw.cast_to_raw(convert(l_java_script, 'WE8ISO8859P1', 'AL32UTF8'));
     l_result.attribute_05 := adc_internal.get_items_to_observe;
     
     pit.leave_mandatory;

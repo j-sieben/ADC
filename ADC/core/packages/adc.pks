@@ -216,6 +216,15 @@ as
   procedure set_optional(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
     p_jquery_selector in varchar2 default null);
+  
+  
+  /** Sets the HTML content of a page region
+   * %param  p_region_id  ID of the page region
+   * %param  p_html_code  HTML code of the region. Must not be escaped, this will be done within this method
+   */
+  procedure set_region_content(
+    p_region_id in adc_page_items.cpi_id%type,
+    p_html_code in adc_util.max_char);
 
 
   /** Hides the element from P_JQUERY_SEL_SHOW on the page and the elements from P_JQUERY_SEL_HIDE

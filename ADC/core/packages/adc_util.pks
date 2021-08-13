@@ -100,6 +100,27 @@ as
     p_item in varchar2,
     p_msg_args in msg_args default null)
     return varchar2;
+  
+  
+  /** Method to savely close a cursor
+   * @param  p_cur  Cursor which may still be open
+   * @usage  The method checks whether the cursor is still open and closes it in this case.
+   */
+  procedure close_cursor(
+    p_cur in sys_refcursor);
+  
+  
+  /** Method to monitor that loops can't go into infinite loop mode
+   * @param [p_counter]   Variable that holds the amount of loops
+   * @param [p_loop_name] Information required to identify the loop that has gone wild
+   * @usage  If the parameters are NULL, a new monitor is instantiated. Within the 
+   *         loop this method is called with a variable holding the amount of loops so far
+   *         The method increments this variable and checks it against the maximally allowed
+   *         loop operations. If it exceeds this limit, an exception is thrown
+   */
+  procedure monitor_loop(
+    p_counter in number default null,
+    p_loop_name in varchar2 default null);
 
 end adc_util;
 /

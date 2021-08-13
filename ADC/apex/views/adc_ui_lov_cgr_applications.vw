@@ -6,7 +6,7 @@ as
               utl_apex.current_user_in_group('ADC_ADMIN') is_adc_admin
          from dual)
 select /*+ NO_MERGE (p) */
-       distinct application_name || ' (' || application_id || ')' d, application_id r
+       distinct application_id || ' - ' || application_name || ' (' || alias || ')' d, application_id r
   from apex_applications app
   join adc_rule_groups sgr
     on app.application_id = sgr.cgr_app_id

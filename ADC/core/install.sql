@@ -159,6 +159,14 @@ prompt &s1.Create package ADC_INTERNAL
 @&pkg_dir.adc_internal.pks
 show errors
 
+prompt &s1.Create package ADC_RECURSION_STACK
+@&pkg_dir.adc_recursion_stack.pks
+show errors
+
+prompt &s1.Create package ADC_PAGE_STATE
+@&pkg_dir.adc_page_state.pks
+show errors
+
 prompt &s1.Create package ADC
 @&pkg_dir.adc.pks
 show errors
@@ -178,6 +186,14 @@ show errors
 
 prompt &s1.Create package Body ADC_INTERNAL
 @&pkg_dir.adc_internal.pkb
+show errors
+
+prompt &s1.Create package Body ADC_RECURSION_STACK
+@&pkg_dir.adc_recursion_stack.pkb
+show errors
+
+prompt &s1.Create package Body ADC_PAGE_STATE
+@&pkg_dir.adc_page_state.pkb
 show errors
 
 prompt &s1.Create package Body ADC_API

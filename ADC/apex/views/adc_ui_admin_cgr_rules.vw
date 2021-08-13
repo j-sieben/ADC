@@ -4,6 +4,13 @@ with session_state as (
        select utl_apex.get_number('CGR_APP_ID') g_app_id,
               utl_apex.get_number('CGR_PAGE_ID') g_page_id
          from dual),
+     translations as(
+              select max(decode(pti_id, 'ADC_AUTO_INITIALIZE', to_char(pti_description))) auto_initialize,
+                     max(decode(pti_id, 'ADC_FORCE_INITIALIZE', to_char(pti_description))) force_initialize,
+                     max(decode(pti_id, 'ADC_NO_INITIALIZE', to_char(pti_description))) no_initialize
+                from pit_translatable_item_v
+               where pti_pmg_name = 'ADC'
+                 and pti_id like 'ADC_%'),
      params as (
       select /*+ no_merge (s) */ cgr_id, cgr_app_id, cgr_page_id,
              '- ' cgr_page_prefix,
@@ -27,7 +34,16 @@ with session_state as (
       select /*+ no_merge (p) */
              p.cgr_app_id, p.cgr_page_id,
              cru.cru_id, cru.cru_cgr_id, cra_id, cru.cru_sort_seq, cra_sort_seq, 
-             case when cru.cru_firing_items is null then c_initialize when cru_fire_on_page_load = c_true then c_yes else c_no end cru_fire_on_page_load, 
+             case 
+               when cru_fire_on_page_load = c_true then c_yes 
+               when instr(cru.cru_condition, 'initializing') > 0 then c_initialize 
+               else c_no 
+             end cru_fire_on_page_load, 
+             case 
+               when cru_fire_on_page_load = c_true then force_initialize 
+               when instr(cru.cru_condition, 'initializing') > 0 then auto_initialize 
+               else no_initialize
+             end cru_fire_on_page_load_title, 
              case cru_active when c_true then c_yes else c_no end cru_active,
              case
                when cpi.cpi_id is not null then p.span_error || cru.cru_name || p.close_span
@@ -53,6 +69,7 @@ with session_state as (
                else cat_name
              end cra_name
         from params p
+       cross join translations
         join adc_rules cru
           on p.cgr_id = cru.cru_cgr_id
         left join adc_page_items cpi
@@ -80,7 +97,7 @@ with session_state as (
                  on cra_cat_id = cat_id) cra
           on cru_id = cra_cru_id)
 select app.application_name || ' (' || app.application_id || ')' application_name, pag.page_name || ' (' || pag.page_id || ')' page_name,
-      cru_id, cru_cgr_id, cru_name, cru_condition, cru_firing_items, cru_sort_seq, cru_fire_on_page_load, cru_active,
+      cru_id, cru_cgr_id, cru_name, cru_condition, cru_firing_items, cru_sort_seq, cru_fire_on_page_load, cru_fire_on_page_load_title, cru_active,
       listagg(cra_name , '')
         within group (order by cra_sort_seq) cru_action
  from actions a
@@ -91,5 +108,5 @@ select app.application_name || ' (' || app.application_id || ')' application_nam
   and cgr_page_id = pag.page_id
 group by cgr_app_id, app.application_name || ' (' || app.application_id || ')',
       pag.page_id, pag.page_name || ' (' || pag.page_id || ')',
-      cru_id, cru_cgr_id, cru_name, cru_condition, cru_firing_items, cru_sort_seq, cru_fire_on_page_load, cru_active;
+      cru_id, cru_cgr_id, cru_name, cru_condition, cru_firing_items, cru_sort_seq, cru_fire_on_page_load, cru_fire_on_page_load_title, cru_active;
 

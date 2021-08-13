@@ -533,7 +533,7 @@ as
   begin
     pit.enter_mandatory;
     
-    -- maintain apex action create_action
+    -- maintain apex action
     adc_apex_action.action_init('create-action');
     
     l_javascript := utl_apex.get_page_url(
@@ -662,16 +662,24 @@ as
     C_SET_CAT_HELP constant varchar2(100) := q'^$('^R11_CAT_HELP .t-Region-body').html('#HELP_TEXT#');^';
     C_PARAM_SELECTOR varchar2(100 byte) := '.adc-hide';
     
-    cursor action_type_cur(p_cat_id in adc_action_types.cat_id%type) is
+    cursor action_type_cur(
+             p_cra_id in adc_rule_actions.cra_id%type,
+             p_cat_id in adc_action_types.cat_id%type) is
       with params as(
              select c_true c_active,
-                    p_cat_id cat_id
+                    p_cra_id p_cra_id,
+                    p_cat_id p_cat_id
                from dual)
       select /*+ no_merge (p) */
              sat.cat_id, cat_cif_id, 
              cpt_id, cpt_item_type,
              cap_sort_seq, cap_mandatory, 
-             replace(cap_default, '''') cap_default,
+             coalesce(
+               case cap_sort_seq
+                 when 1 then cra_param_1
+                 when 2 then cra_param_2
+                 when 3 then cra_param_3
+               end, cap_default) cap_value,
              coalesce(cap_display_name, cpt_name) cpt_name,
              'P11_CRA_PARAM_' || 
              case cpt_item_type
@@ -680,20 +688,27 @@ as
                when 'SWITCH' then 'SWITCH_'
              end || cap_sort_seq cap_page_item
         from adc_action_types_v sat
-        join params p
-          on sat.cat_id = p.cat_id
-         and cat_active = p.c_active
+        join params
+          on cat_id = p_cat_id
+         and cat_active = c_active
         left join adc_action_parameters_v
           on sat.cat_id = cap_cat_id
-         and p.c_active = cap_active
+         and c_active = cap_active
         left join adc_action_param_types_v
           on cap_cpt_id = cpt_id
-         and p.c_active = cpt_active
+         and c_active = cpt_active
+        left join (
+             select *
+               from adc_ui_edit_cra
+               join params
+                 on cra_id = p_cra_id)
+          on cat_id = cra_cat_id
        where cap_sort_seq is not null
        order by cat_id, cap_sort_seq;
        
     l_item_id adc_util.ora_name_type;
     l_help_text adc_util.max_char;
+    l_cra_id adc_rule_actions.cra_id%type;
     l_cat_id adc_action_types.cat_id%type;
     l_mandatory_message adc_util.max_char;
     l_cif_default adc_action_item_focus.cif_default%type;
@@ -701,57 +716,72 @@ as
     pit.enter_mandatory;
     
     -- Initialize
+    l_cra_id := utl_apex.get_number('CRA_ID');
     l_cat_id := utl_apex.get_string('CRA_CAT_ID');  
     l_mandatory_message := pit.get_message_text(msg.ADC_ITEM_IS_MANDATORY);
+    -- Hide all parameter regions
     adc.hide_item(p_jquery_selector => C_PARAM_SELECTOR);
-    adc.set_optional(C_PARAM_SELECTOR);
     
-    -- Set list of page items
-    if l_cat_id is null then
-      select dbms_assert.enquote_literal(cif_default)
+    -- Get CRA_CPI_ID and set it after refresh
+    if l_cat_id is not null then
+      select coalesce(cra_cpi_id, cif_default)
         into l_cif_default
         from adc_action_types
         join adc_action_item_focus
           on cat_cif_id = cif_id
+        left join (
+             select *
+               from adc_rule_actions
+             where cra_id = l_cra_id)
+          on cat_id = cra_cat_id
        where cat_id = l_cat_id;
     end if;
      
     adc.refresh_item(
       p_cpi_id => 'P11_CRA_CPI_ID',
-      p_item_value => l_cif_default,
+      p_item_value => dbms_assert.enquote_literal(l_cif_default),
       p_set_item => c_true);
 
     -- Generate Help text for action type
-    select trim('''' from apex_escape.js_literal(help_text))
+    select help_text
       into l_help_text
       from adc_bl_cat_help
      where cat_id = l_cat_id;
-    adc.add_javascript(replace(C_SET_CAT_HELP, '#HELP_TEXT#', l_help_text));
+    adc.set_region_content(
+      p_region_id => 'R11_CAT_HELP',
+      p_html_code => l_help_text);
 
     -- Adjust Parameter settings to show only required parameters in the correct format
-    for param in action_type_cur(l_cat_id) loop
+    for param in action_type_cur(l_cra_id, l_cat_id) loop
       -- Show parameter region
-      adc.show_item('R11_PARAMETER_' || param.cap_sort_seq);       
-      
-      -- Set parameter value, label and mandatory state
-      adc.set_item(param.cap_page_item, param.cap_default);
-      adc.set_item_label(param.cap_page_item, param.cpt_name);
-      if param.cap_mandatory = c_true then
+      adc.show_item('R11_PARAMETER_' || param.cap_sort_seq);   
+      adc.set_item_label(param.cap_page_item, param.cpt_name);    
+          
+      -- First set items mandatory to avoid endless loops if a select list refreshes
+      if param.cap_mandatory = C_TRUE then
         adc.set_mandatory(
-          p_cpi_id => param.cap_page_item,
-          p_msg_text => replace(l_mandatory_message, '#LABEL#', param.cpt_name));
-      else
-        adc.show_item(param.cap_page_item);
+           p_cpi_id => param.cap_page_item,
+           p_msg_text => replace(l_mandatory_message, '#LABEL#', param.cpt_name));
+       else
+         adc.set_optional(p_cpi_id => param.cap_page_item);
+         adc.show_item(param.cap_page_item);
       end if;
-
-      -- Refresh if parameter is a list item
-      if param.cpt_item_type = 'SELECT_LIST' then
-        adc.set_item('P11_LOV_PARAM_' || param.cap_sort_seq, param.cpt_id);
+      
+     -- set values, if required after refresh
+     if param.cpt_item_type = 'SELECT_LIST' then
+       adc.set_item(
+         p_cpi_id => 'P11_LOV_PARAM_' || param.cap_sort_seq,
+         p_item_value => param.cpt_id);
         adc.refresh_item(
           p_cpi_id => param.cap_page_item, 
-          p_item_value => param.cap_default,
+          p_item_value => param.cap_value,
           p_set_item => c_true);
-      end if;
+     else
+       adc.set_item(
+         p_cpi_id => param.cap_page_item,
+         p_item_value => apex_escape.json(param.cap_value),
+         p_raise_event => false);
+     end if;
       
     end loop;
 
@@ -1142,7 +1172,8 @@ as
     return l_cgr_id;
   exception
     when NO_DATA_FOUND then
-      pit.leave_detailed;
+      pit.leave_detailed(
+        p_params => msg_params(msg_param('CGR_ID', 'No CGR_ID found')));
       return null;
   end get_cgr_id;
   
@@ -1151,28 +1182,39 @@ as
   as
     l_cgr_id adc_rule_groups.cgr_id%type;
   begin
-    pit.enter_mandatory('get_cgr_id');
+    pit.enter_mandatory('set_cgr_id');
     
-    l_cgr_id := get_cgr_id;
+    with params as (
+           select utl_apex.get_number('CGR_APP_ID') p_app_id,
+                  utl_apex.get_number('CGR_PAGE_ID') p_page_id
+             from dual)
+    select /*+ no_merge (p) */ cgr_id
+      into l_cgr_id
+      from adc_rule_groups
+      join params p
+        on cgr_app_id = p_app_id
+       and cgr_page_id = p_page_id;
+       
+    adc.set_item('P1_CGR_ID', l_cgr_id);
     
-    pit.leave_mandatory;
+    pit.leave_mandatory(
+      p_params => msg_params(msg_param('CGR_ID', l_cgr_id)));
+  exception
+    when NO_DATA_FOUND then
+      pit.leave_detailed(
+        p_params => msg_params(msg_param('CGR_ID', 'No CGR_ID found')));
   end set_cgr_id;
   
 
   /* APEX-Aktionen */
   procedure set_action_admin_cgr
   as
-    l_cgr_app_id adc_rule_groups.cgr_app_id%type;
-    l_cgr_page_id adc_rule_groups.cgr_page_id%type;
     l_cgr_id adc_rule_groups.cgr_id%type;
     l_javascript adc_util.max_char;
   begin
     pit.enter_optional;
-
-    l_cgr_app_id := utl_apex.get_number('CGR_APP_ID');
-    l_cgr_page_id := utl_apex.get_number('CGR_PAGE_ID');    
-    l_cgr_id := get_cgr_id;
     
+    l_cgr_id := adc_api.get_string('P1_CGR_ID');
     -- Action CREATE_CAA
     adc_apex_action.action_init('create-apex-action');
     

@@ -144,7 +144,7 @@ as
   function get_date(
     p_cpi_id in adc_page_items.cpi_id%type,
     p_format_mask in varchar2,
-    p_throw_error in adc_util.flag_type default adc_util.C_TRUE)
+    p_throw_error in adc_util.flag_type default adc_util.C_FALSE)
     return date;
   
   
@@ -152,7 +152,7 @@ as
   function get_number(
     p_cpi_id in adc_page_items.cpi_id%type,
     p_format_mask in varchar2,
-    p_throw_error in adc_util.flag_type default adc_util.c_false)
+    p_throw_error in adc_util.flag_type default adc_util.C_FALSE)
     return number;
 
 
@@ -192,7 +192,8 @@ as
   /* Methods to implement the ADC specific functionality */
   /* @see adc_api.execute_action */
   procedure check_mandatory(
-    p_cpi_id in adc_page_items.cpi_id%type);
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_stop in adc_util.flag_type default adc_util.C_FALSE);
 
 
   /* @see adc_api.execute_action */

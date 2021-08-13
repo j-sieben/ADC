@@ -133,7 +133,7 @@ as
 
   function get_date(
     p_cpi_id in adc_page_items.cpi_id%type,
-    p_format_mask in varchar2,
+    p_format_mask in varchar2 default null,
     p_throw_error in adc_util.flag_type default adc_util.C_TRUE)
     return date
   as
@@ -172,7 +172,7 @@ as
 
   function get_number(
     p_cpi_id in adc_page_items.cpi_id%type,
-    p_format_mask in varchar2,
+    p_format_mask in varchar2 default null,
     p_throw_error in adc_util.flag_type default adc_util.c_false)
     return number
   as
@@ -232,7 +232,7 @@ as
     p_text in varchar2)
   as
   begin
-    pit.enter_mandatory(
+    pit.enter_mandatory('notify',
       p_params => msg_params(
                     msg_param('p_text', p_text)));
 

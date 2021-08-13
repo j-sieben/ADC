@@ -1049,6 +1049,28 @@ begin
     p_cap_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_type(
+    p_cat_id => 'SET_REGION_CONTENT',
+    p_cat_ctg_id => 'ADC',
+    p_cat_cif_id => 'PAGE_REGION',
+    p_cat_name => 'HTML-Inhalt einer Region setzen',
+    p_cat_display_name => q'{<p><strong>setze Inhalt der Region</strong> “#ITEM#” auf berechneten Wert</p>}',
+    p_cat_description => q'{<p>Setzt den HTML-Inhalt einer statischen Region auf einen berechneten Wert.</p>}',
+    p_cat_pl_sql => q'{}',
+    p_cat_js => q'{$('##ITEM# .t-Region-body').html('#PARAM_1#');}',
+    p_cat_is_editable => adc_util.C_TRUE,
+    p_cat_raise_recursive => adc_util.C_TRUE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'SET_REGION_CONTENT',
+    p_cap_cpt_id => 'STRING',
+    p_cap_sort_seq => 1,
+    p_cap_default => q'{}',
+    p_cap_description => q'{<p>HTML-Code, der als Inhalt der Region verwendet werden soll.</p>}',
+    p_cap_display_name => 'HTML-Code',
+    p_cap_mandatory => adc_util.C_TRUE,
+    p_cap_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_type(
     p_cat_id => 'SHOW_ERROR',
     p_cat_ctg_id => 'JAVA_SCRIPT',
     p_cat_cif_id => 'PAGE_ITEM_OR_DOCUMENT',

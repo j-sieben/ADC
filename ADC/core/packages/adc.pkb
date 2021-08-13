@@ -271,8 +271,8 @@ as
     
     if p_item_value is null then
       l_item_value := C_EMPTY_STRING;
-    --else
-     -- l_item_value := apex_escape.js_literal(p_item_value);
+    else
+      l_item_value := p_item_value;
     end if;
     
     if p_raise_event then
@@ -280,12 +280,10 @@ as
         p_cpi_id => p_cpi_id, 
         p_value => l_item_value);
     else
-      --l_item_value := trim(c_apos from l_item_value);
-      adc_api.execute_action(
-        p_cat_id => 'SET_VALUE_ONLY',
-        p_cpi_id => p_cpi_id,
-        p_param_1 => l_item_value,
-        p_param_2 => p_jquery_selector);
+      adc_api.set_session_state(
+        p_cpi_id => p_cpi_id, 
+        p_value => l_item_value,
+        p_allow_recursion => adc_util.C_FALSE);
     end if;
     pit.leave_optional;
   end set_item;
@@ -379,6 +377,20 @@ as
       p_param_2 => p_jquery_selector);
     pit.leave_optional;
   end set_optional;
+  
+  
+  procedure set_region_content(
+    p_region_id in adc_page_items.cpi_id%type,
+    p_html_code in adc_util.max_char)
+  as
+  begin
+    pit.enter_optional;
+    adc_api.execute_action(
+      p_cat_id => 'SET_REGION_CONTENT',
+      p_cpi_id => p_region_id,
+      p_param_1 => trim('''' from apex_escape.js_literal(p_html_code)));
+    pit.leave_optional;
+  end set_region_content;
   
   
   procedure show_hide_item(

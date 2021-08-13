@@ -4,14 +4,6 @@ begin
     p_pmg_name => 'ADC',
     p_pmg_description => q'^Meldungen für das ADC Plugin^');
 
-  pit_admin.merge_message(
-    p_pms_name => 'ALLG_PASS_INFORMATION',
-    p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^#1#^',
-    p_pms_description => q'^^',
-    p_pms_pse_id => 70,
-    p_pms_pml_name => 'GERMAN',
-    p_error_number => null);
 
   pit_admin.merge_message(
     p_pms_name => 'ADC_ACTION_DOES_NOT_EXIST',
@@ -45,7 +37,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Regel-SQL: "#1#"^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => 60,
     p_pms_pml_name => 'GERMAN',
     p_error_number => null);
 
@@ -61,9 +53,9 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_ERROR_HANDLING',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^// Fehler in Rekursion #1#, Regel #2# (#3#), Ausloesendes Element: "#4#" aufgetreten, fuehre Fehlerbehandlung aus^',
+    p_pms_text => q'^Fehler in Rekursion #1#, Regel #2# (#3#), Auslösendes Element: "#4#" aufgetreten, fuehre Fehlerbehandlung aus^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => 40,
     p_pms_pml_name => 'GERMAN',
     p_error_number => null);
 
@@ -106,9 +98,9 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_INIT_ORIGIN',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^// Regel #1# (#2#), ausgeloest beim Seitenladen^',
+    p_pms_text => q'^Regel #1# (#2#), zusätzlich ausgelöst beim Laden der Seite^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
     p_error_number => null);
 
@@ -133,7 +125,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_INVALID_NUMBER_REMOVED',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Ungültige Zahl entfernt: #1#^',
+    p_pms_text => q'^Ungültige Zahl: #1#^',
     p_pms_description => q'^^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
@@ -205,18 +197,18 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_NO_JAVASCRIPT',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^// Kein JavaScript-Code fuer Regel "#1#"^',
+    p_pms_text => q'^Kein JavaScript-Code fuer Regel "#1#"^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => 60,
     p_pms_pml_name => 'GERMAN',
     p_error_number => null);
 
   pit_admin.merge_message(
     p_pms_name => 'ADC_NO_JAVASCRIPT_ACTION',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^// Keine JavaScript-Aktion^',
+    p_pms_text => q'^Keine JavaScript-Aktion^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => 60,
     p_pms_pml_name => 'GERMAN',
     p_error_number => null);
 
@@ -226,6 +218,15 @@ begin
     p_pms_text => q'^Keine Daten für Workspace #1# und Anwendung #2# gefunden^',
     p_pms_description => q'^^',
     p_pms_pse_id => 50,
+    p_pms_pml_name => 'GERMAN',
+    p_error_number => null);
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_NO_RULE_FOUND',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Kein Anwendungsfall für den aktuellen Seitenstatus gefunden^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 40,
     p_pms_pml_name => 'GERMAN',
     p_error_number => null);
 
@@ -241,18 +242,18 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_OUTPUT_CLIPPED',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^'// Weitere JavaScript-Aktion unterdrueckt, weil zu lang^',
+    p_pms_text => q'^'Weitere JavaScript-Aktion unterdrückt, weil zu lang^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => 40,
     p_pms_pml_name => 'GERMAN',
     p_error_number => null);
 
   pit_admin.merge_message(
     p_pms_name => 'ADC_OUTPUT_REDUCED',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^'// Ausgabe wegen Laenge auf Level #1# reduziert'^',
+    p_pms_text => q'^'Ausgabe wegen Länge auf Level #1# reduziert'^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => 60,
     p_pms_pml_name => 'GERMAN',
     p_error_number => null);
 
@@ -270,7 +271,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Beheben Sie vor dem Versenden alle Fehler der Seite.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => 40,
     p_pms_pml_name => 'GERMAN',
     p_error_number => null);
 
@@ -296,7 +297,7 @@ begin
     p_pms_name => 'ADC_PARAM_MISSING',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Feld #LABEL# ist ein Pflichtfeld.^',
-    p_pms_description => q'^Das Eingaefeld ist ein Pflichtparameter und muss daher belegt werden.^',
+    p_pms_description => q'^Das Eingabefeld ist ein Pflichtparameter und muss daher belegt werden.^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
     p_error_number => -20000);
@@ -349,9 +350,18 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_RULE_ORIGIN',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^// Rekursion #1#: #2# (#3#), Ausloesendes Element: "#4#", Dauer: #TIME##NOTIFICATION#^',
+    p_pms_text => q'^Rekursion #1#: Regel #2# (Wenn der Anwender #3#), Auslösendes Element: "#4#"#5| (Wert: |)|#, Dauer: #TIME##NOTIFICATION#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => 30,
+    p_pms_pml_name => 'GERMAN',
+    p_error_number => null);
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_APEX_ACTION_ORIGIN',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Integration der Seitenaktionen^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
     p_error_number => null);
 
@@ -387,7 +397,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Element ~#1#~ wurde auf den Wert ~#2#~ gesetzt^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => 60,
     p_pms_pml_name => 'GERMAN',
     p_error_number => null);
 
@@ -412,9 +422,9 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_STANDARD_JS',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^// Standard-ADC JavaScript^',
+    p_pms_text => q'^Standard-ADC JavaScript^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => 60,
     p_pms_pml_name => 'GERMAN',
     p_error_number => null);
 
@@ -475,7 +485,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_VIEW_CREATION',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Fehler beim Erstellen der Regelgruppenview #1#: #2#.^',
+    p_pms_text => q'^Fehler beim Erstellen der Decision Table #1#: #2#.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
@@ -495,7 +505,31 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Aktion #1# wurde nicht ausgeführt, da ein Fehler vorlag und diese Aktion kein Fehlerhandler ist.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => 40,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_STOP_NO_PLSQL',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^PL/SQL-Code "#1#" wurde nicht ausgeführt, da ein Fehler vorlag und die Regel gestoppt wurde.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 40,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_PLSQL_CODE',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^PL/SQL-Code: "#1#"^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 60,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_STOP_NO_JAVASCRIPT',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^JavaScript-Code "#1#" wurde nicht berücksichtigt, da ein Fehler vorlag und die Regel gestoppt wurde.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 40,
     p_pms_pml_name => 'GERMAN');
 
   pit_admin.merge_message(
@@ -503,7 +537,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Führe Aktion #1# aus.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => 50,
     p_pms_pml_name => 'GERMAN');
 
   pit_admin.merge_message(

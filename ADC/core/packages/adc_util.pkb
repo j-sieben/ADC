@@ -1,5 +1,6 @@
 create or replace package body adc_util
 as
+  g_loop_counter binary_integer;
 
   function c_true
     return flag_type
@@ -91,6 +92,33 @@ as
   begin
     return pit.get_trans_item_name(C_ADC, p_item, p_msg_args);
   end get_trans_item_name;
+  
+  
+  procedure close_cursor(
+    p_cur in sys_refcursor)
+  as
+  begin
+    pit.enter_detailed('close_cursor');
+    
+    if p_cur%ISOPEN then
+      close p_cur;
+    end if;
+    
+    pit.leave_detailed;
+  end close_cursor;
+  
+  
+  procedure monitor_loop(
+    p_counter in number default null,
+    p_loop_name in varchar2 default null)
+  as
+  begin
+    g_loop_counter := coalesce(p_counter, 0) + 1;
+    
+    if g_loop_counter > 100 then
+      pit.error(msg.ADC_INFINITE_LOOP, msg_args(p_loop_name));
+    end if;
+  end monitor_loop;
 
 end adc_util;
 /

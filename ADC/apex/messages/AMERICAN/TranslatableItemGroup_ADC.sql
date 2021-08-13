@@ -88,6 +88,33 @@ begin
     p_pti_description => q'^^'
   );
 
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'ADC_AUTO_INITIALIZE',
+    p_pti_pml_name => q'^AMERICAN^',
+    p_pti_pmg_name => q'^ADC^',
+    p_pti_name => q'^^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^Will be executed when initializing the page if the condition is met^'
+  );
+
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'ADC_FORCE_INITIALIZE',
+    p_pti_pml_name => q'^AMERICAN^',
+    p_pti_pmg_name => q'^ADC^',
+    p_pti_name => q'^^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^Will be executed additionally when initializing the page if the condition is met^'
+  );
+
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'ADC_NO_INITIALIZE',
+    p_pti_pml_name => q'^AMERICAN^',
+    p_pti_pmg_name => q'^ADC^',
+    p_pti_name => q'^^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^Will be executed if the condition is met and the use case is sorted first on the list.^'
+  );
+
   commit;
 end;
 /
