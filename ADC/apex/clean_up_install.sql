@@ -49,6 +49,13 @@ begin
 end;
 /
 
+prompt &h3.Removing ADC_UI translatable items
+begin
+  pit_admin.delete_message_group('ADC_UI');
+  commit;
+end;
+/
+
 
 prompt &h3.Removing ADC groups
 declare

@@ -1,12 +1,13 @@
 create or replace package body adc_util
 as
+  
   g_loop_counter binary_integer;
 
   function c_true
     return flag_type
   as
   begin
-    return &C_TRUE.;
+    return 'Y';--&C_TRUE.;
   end c_true;
 
 
@@ -14,7 +15,7 @@ as
     return flag_type
   as
   begin
-    return &C_FALSE.;
+    return 'N';--&C_FALSE.;
   end c_false;
 
 

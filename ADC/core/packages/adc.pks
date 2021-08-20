@@ -151,23 +151,33 @@ as
 
 
   /** Sets the referenced page element to the value passed as parameter
-   * %param [p_cpi_id]      Element to be set (default DOCUMENT, if p_jquery_selector filled)
-   * %param  p_item_value   Value of the element in quotation marks or function that returns value.
-   * %param [p_jquery_sel]  jQuery expression to edit multiple elements. (Default NULL, if p_spi_id filled)
-   * %param [p_raise_event] Flag indicating whether a Change Event should be triggered. (Default TRUE, event is triggered)
+   * %param [p_cpi_id]          Element to be set (default DOCUMENT, if p_jquery_selector filled)
+   * %param  p_item_value       Value of the element in quotation marks or function that returns value.
+   * %param [p_jquery_sel]      jQuery expression to edit multiple elements. (Default NULL, if p_spi_id filled)
+   * %param [p_allow_recursion] Flag indicating whether a Change Event should be triggered. (Default adc_util.C_TRUE, event is triggered)
+   * %usage  Is used to set the value of a page item in session state. Overloaded versions to cater for String, Number and Date values.
+   *         Parameter P_ALLOW_RECURSION is used to surpress recursive execution of rules based on the page item.
+   *         Default is to not surpress recursion, but in difficult rule situations, it may be necessary to set it to FALSE
    */
   procedure set_item(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
     p_item_value in varchar2,
     p_jquery_selector in varchar2 default null,
-    p_raise_event in boolean default true);
+    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE);
     
     
   procedure set_item(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
     p_item_value in number,
     p_jquery_selector in varchar2 default null,
-    p_raise_event in boolean default true);
+    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE);
+    
+    
+  procedure set_item(
+    p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
+    p_item_value in date,
+    p_jquery_selector in varchar2 default null,
+    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE);
 
 
   /** Sets a field label to the transferred value

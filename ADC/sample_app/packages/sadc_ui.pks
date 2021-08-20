@@ -65,6 +65,14 @@ as
   /** Methods to maintain page adact
    */
   procedure adact_control_action;
+  
+  
+  /** Method prints the help text for a given action type
+   * %param  p_cat_id  ID of the action type to print the help text for
+   * %usage  Is used to display the help text for the documentation pages
+   */
+  procedure print_help_text(
+    p_cat_id in adc_action_types.cat_id%type);
     
 end sadc_ui;
 /

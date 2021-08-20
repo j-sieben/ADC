@@ -28,7 +28,7 @@ as
     p_cpi_id in adc_page_items.cpi_id%type);
     
   
-  /** Method to register a page item puish a page item onto the recursion stack
+  /** Method to register a firing item onto the recursion stack
    * %param  p_cgr_id           ID of the rule group. 
    * %param  p_cpi_id           ID of the page item to push. May also be C_NO_FIRING_ITEM
    * %param  p_allow_recursion  Flag to indicate whether recursion is forbidden for that action type.
@@ -37,7 +37,7 @@ as
    *         If the actually selected action type does not allow for recursion, it will
    *         not be pushed, resulting in no recursive rule evaluation
    */
-  procedure push(
+  procedure push_firing_item(
     p_cgr_id in adc_rule_groups.cgr_id%type,
     p_cpi_id in adc_page_items.cpi_id%type,
     p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE);
@@ -48,7 +48,8 @@ as
    * %usage  Normal use case is to pop the actual firing item after it has been succesfully dealt with.
    *         If the rule execution signals a STOP_RULE, all recursive items are removed from the stack
    */
-  procedure pop(
+  procedure pop_firing_item(
+    p_cpi_id in adc_page_items.cpi_id%type,
     p_all in adc_util.flag_type default adc_util.C_FALSE);
   
   
@@ -65,6 +66,14 @@ as
    */
   function get_level
     return pls_integer;
+    
+    
+  /** Method get all firing items back in  JSON [{"id":"#ID#","value":"#VALUE#"},..]
+   * %return JSON string containing the JSON representation of the CHAR_TABLE
+   * %usage  Is used to collect all firing items in JSON to send it back to the client
+   */
+  function get_firing_items_as_json
+    return varchar2;
     
     
 end adc_recursion_stack;

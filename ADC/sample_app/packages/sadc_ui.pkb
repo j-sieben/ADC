@@ -48,8 +48,10 @@ as
   as
     l_prev_title utl_apex.ora_name_type;
     l_prev_target utl_apex.ora_name_type;
+    l_prev_id apex_application_pages.page_id%type;
     l_next_title utl_apex.ora_name_type;
     l_next_target utl_apex.ora_name_type;
+    l_next_id apex_application_pages.page_id%type;
   begin
     pit.enter_mandatory;
     
@@ -61,8 +63,10 @@ as
            select /*+ no_merge(p) */ 
                   lag(page_name) over (order by display_sequence) prev_title, 
                   lag(page_alias) over (order by display_sequence) prev_target,
+                  lag(page_id) over (order by display_sequence) prev_id,
                   lead(page_name) over (order by display_sequence) next_title, 
                   lead(page_alias) over (order by display_sequence) next_target,
+                  lead(page_id) over (order by display_sequence) next_id,
                   page_id, p_page_id, display_sequence
              from apex_application_pages
              join params p
@@ -71,25 +75,29 @@ as
                   -- Extrahiere Zielseite aus Navigationsmenue und joine ueber Seiten-ID oder -Alias
                on substr(target_value, instr(target_value, ':') + 1, instr(target_value, ':', 1, 2) - instr(target_value, ':') - 1) in (to_char(page_id), page_alias)
             where list_name = 'Desktop Navigation Menu'
-              and level_value = 2
-              and page_id between 2 and 99)
-    select prev_title, prev_target, next_title, next_target
-      into l_prev_title, l_prev_target, l_next_title, l_next_target
+              and level_value = 3
+              and parent_page_alias = 'tutorial')
+    select prev_id, prev_title, prev_target, next_id, next_title, next_target
+      into l_prev_id, l_prev_title, l_prev_target, l_next_id, l_next_title, l_next_target
       from data
      where page_id = p_page_id
      order by display_sequence;
          
     utl_apex.set_value('SADC_PREV_TITLE', l_prev_title);
     utl_apex.set_value('SADC_PREV_TARGET', l_prev_target);
+    utl_apex.set_value('SADC_PREV_ID', l_prev_id);
     utl_apex.set_value('SADC_NEXT_TITLE', l_next_title);
     utl_apex.set_value('SADC_NEXT_TARGET', l_next_target);
+    utl_apex.set_value('SADC_NEXT_ID', l_next_id);
     
     pit.leave_mandatory(
       p_params => msg_params(
                     msg_param('SADC_PREV_TITLE', l_prev_title),
                     msg_param('SADC_PREV_TARGET', l_prev_target),
+                    msg_param('SADC_PREV_ID', l_prev_id),
                     msg_param('SADC_NEXT_TITLE', l_next_title),
-                    msg_param('SADC_NEXT_TARGET', l_next_target)));
+                    msg_param('SADC_NEXT_TARGET', l_next_target),
+                    msg_param('SADC_NEXT_ID', l_next_id)));
   exception
     when no_data_found then
       pit.leave_mandatory;
@@ -217,7 +225,7 @@ as
     pit.enter_mandatory;
     
     -- Initialization
-    l_employee_id := utl_apex.get_number('employee_id');
+    l_employee_id := to_number(adc_api.get_event_data);
     adc_apex_action.action_init('edit-employee');
     
     select j.is_manager, substr(e.first_name, 1, 1) || '. ' || e.last_name || ' bearbeiten'
@@ -245,7 +253,26 @@ as
     
     pit.leave_mandatory;
   end adact_control_action;
-
+  
+  
+  procedure print_help_text(
+    p_cat_id in adc_action_types.cat_id%type)
+  as
+    l_help_text adc_util.max_char;
+  begin
+    pit.enter_mandatory(
+      p_params => msg_params(msg_param('p_cat_id', p_cat_id)));
+      
+    select help_text
+      into l_help_text
+      from adc_bl_cat_help
+     where cat_id = p_cat_id;
+  
+    utl_apex.print(l_help_text);
+   
+    pit.leave_mandatory;
+  end print_help_text;
+  
 
 end sadc_ui;
 /

@@ -288,15 +288,20 @@ as
     
   /** Wrapper around apex_util to set a value in the session state.
    * %param  p_cpi_id           page item to set
-   * %param  p_value            page item to set mandatory or optional
-   * %param  p_allow_recursion  page item to set mandatory or optional
-   * %param  p_jquery_selector  Optional selector to set the mandatory status of many items at once
-   * %usage  Is used to set a session state value. In extension to apex_util, setting a vlue using this method
-   *         leads to recursive rule execution for the changed page items.
+   * %param  p_value            Optional string value to set the item to.
+   * %param  p_number_value     Optional number value to set the item to.
+   * %param  p_date_value       Optional date value to set the item to.
+   * %param  p_allow_recursion  Flag to indicate whether changing the item value is allowed to raise recursive rule execution. Default TRUE
+   * %param  p_jquery_selector  Optional selector to set many items at once
+   * %usage  Is used to set a session state value. In extension to apex_util, setting a value using this method
+   *         leads to recursive rule execution for the changed page items if allowed an it gives the possibility
+   *         to set the value of many items using a jQuery selector.
    */
   procedure set_session_state(
     p_cpi_id in adc_page_items.cpi_id%type,
-    p_value in varchar2,
+    p_value in varchar2 default null,
+    p_number_value in number default null,
+    p_date_value in date default null,
     p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE,
     p_jquery_selector in adc_rule_actions.cra_param_1%type default null);
 

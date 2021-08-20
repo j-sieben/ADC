@@ -9,7 +9,7 @@ with session_state as (
                      max(decode(pti_id, 'ADC_FORCE_INITIALIZE', to_char(pti_description))) force_initialize,
                      max(decode(pti_id, 'ADC_NO_INITIALIZE', to_char(pti_description))) no_initialize
                 from pit_translatable_item_v
-               where pti_pmg_name = 'ADC'
+               where pti_pmg_name = 'ADC_UI'
                  and pti_id like 'ADC_%'),
      params as (
       select /*+ no_merge (s) */ cgr_id, cgr_app_id, cgr_page_id,

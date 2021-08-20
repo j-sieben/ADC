@@ -774,13 +774,13 @@ as
          p_item_value => param.cpt_id);
         adc.refresh_item(
           p_cpi_id => param.cap_page_item, 
-          p_item_value => param.cap_value,
+          p_item_value => dbms_assert.enquote_literal(param.cap_value),
           p_set_item => c_true);
      else
        adc.set_item(
          p_cpi_id => param.cap_page_item,
          p_item_value => apex_escape.json(param.cap_value),
-         p_raise_event => false);
+         p_allow_recursion => adc_util.C_FALSE);
      end if;
       
     end loop;

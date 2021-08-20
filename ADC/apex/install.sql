@@ -124,7 +124,7 @@ prompt &s1.Create view ADC_UI_LIST_PAGE_ITEMS
 
 
 prompt &h2.Create Translatable items
-@&msg_dir.TranslatableItemGroup_ADC.sql
+@&msg_dir.TranslatableItemGroup_ADC_UI.sql
 
 
 prompt &h2.Create PL/SQL objects

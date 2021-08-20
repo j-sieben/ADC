@@ -20,10 +20,11 @@ select /*+ NO_MERGE (p) */
        end link_icon,
        case 
          when is_adc_admin = c_false and a.cat_is_editable = c_false then '#'
-         else apex_page.get_url(
+         else utl_apex.get_page_url(
                 p_page => target_page,
-                p_items => target_item,
-                p_values => a.cat_id)
+                p_param_items => target_item,
+                p_value_list => a.cat_id,
+                p_triggering_element => 'R2_ACTION_TYPE')
        end link_target
   from adc_action_types_v a
   join adc_action_type_groups_v g

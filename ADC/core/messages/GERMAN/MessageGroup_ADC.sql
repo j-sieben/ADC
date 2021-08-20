@@ -123,7 +123,7 @@ begin
     p_error_number => -20000);
 
   pit_admin.merge_message(
-    p_pms_name => 'ADC_INVALID_NUMBER_REMOVED',
+    p_pms_name => 'ADC_INVALID_NUMBER',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Ungültige Zahl: #1#^',
     p_pms_description => q'^^',
@@ -384,6 +384,15 @@ begin
     p_error_number => null);
 
   pit_admin.merge_message(
+    p_pms_name => 'ADC_FIRING_ITEM_PUSHED',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Element #1# wurde auf Rekursion #2# auf den Stack geschrieben.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 70,
+    p_pms_pml_name => 'GERMAN',
+    p_error_number => null);
+
+  pit_admin.merge_message(
     p_pms_name => 'ADC_RULE_VIEW_DELETED',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Regelgruppenview #1# wurde gelöscht.^',
@@ -511,7 +520,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_STOP_NO_PLSQL',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^PL/SQL-Code "#1#" wurde nicht ausgeführt, da ein Fehler vorlag und die Regel gestoppt wurde.^',
+    p_pms_text => q'^PL/SQL-Code wurde nicht ausgeführt, da ein Fehler vorlag und die Regel gestoppt wurde.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 40,
     p_pms_pml_name => 'GERMAN');

@@ -269,7 +269,9 @@ as
   /* @see adc_api.set_session_state */
   procedure set_session_state(
     p_cpi_id in adc_page_items.cpi_id%type,
-    p_value in varchar2,
+    p_value in varchar2 default null,
+    p_number_value in number default null,
+    p_date_value in date default null,
     p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE,
     p_jquery_selector in adc_rule_actions.cra_param_2%type default null);
 

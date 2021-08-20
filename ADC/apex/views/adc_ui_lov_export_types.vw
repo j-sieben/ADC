@@ -7,5 +7,5 @@ select pti_name d, substr(pti_id, 16) r,
        when 'PAGE' then 3
        else 4 end sort_seq
   from pit_translatable_item_v
- where pti_pmg_name = 'ADC'
+ where pti_pmg_name = 'ADC_UI'
    and pti_id like 'LOV_EXPORT_CGR%';

@@ -50,7 +50,7 @@ as
                     msg_param('p_error_on_null', p_error_on_null)));
 
     l_result := exclusive_or(p_value_list);
-    if (l_result = 0 or (l_result is null and p_error_on_null = adc_util.C_TRUE)) then
+    if (l_result = adc_util.C_FALSE or (l_result is null and p_error_on_null = adc_util.C_TRUE)) then
       adc_api.register_error(p_cpi_id, p_message, msg_args(''));
     end if;
     
@@ -95,7 +95,7 @@ as
       if p_mapping is not null then
         for i in 1 .. p_mapping.count loop
           if mod(i, 2) = 1 then
-            l_error_code_map(p_mapping(i)) := p_mapping(i+1);
+            l_error_code_map(p_mapping(i)) := p_mapping(i + 1);
           end if;
         end loop;
       end if;
@@ -262,29 +262,21 @@ as
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
     p_item_value in varchar2,
     p_jquery_selector in varchar2 default null,
-    p_raise_event in boolean default true)
+    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE)
   as
     C_APOS constant varchar2(1 byte) := '''';
     l_item_value utl_apex.max_char;
   begin
     pit.enter_optional;
     
-    if p_item_value is null then
-      l_item_value := C_EMPTY_STRING;
-    else
-      l_item_value := p_item_value;
-    end if;
+    l_item_value := coalesce(p_item_value, C_EMPTY_STRING);
     
-    if p_raise_event then
-      adc_api.set_session_state(
-        p_cpi_id => p_cpi_id, 
-        p_value => l_item_value);
-    else
-      adc_api.set_session_state(
-        p_cpi_id => p_cpi_id, 
-        p_value => l_item_value,
-        p_allow_recursion => adc_util.C_FALSE);
-    end if;
+    adc_api.set_session_state(
+      p_cpi_id => p_cpi_id, 
+      p_value => l_item_value,
+      p_jquery_selector => p_jquery_selector,
+      p_allow_recursion => p_allow_recursion);
+        
     pit.leave_optional;
   end set_item;
   
@@ -293,24 +285,38 @@ as
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
     p_item_value in number,
     p_jquery_selector in varchar2 default null,
-    p_raise_event in boolean default true)
+    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE)
   as
     C_APOS constant varchar2(1 byte) := '''';
   begin
     pit.enter_optional;
     
-    if p_raise_event then
-      adc_api.set_session_state(
-        p_cpi_id => p_cpi_id, 
-        p_value => p_item_value);
-    else
-      --l_item_value := trim(c_apos from l_item_value);
-      adc_api.execute_action(
-        p_cat_id => 'SET_VALUE_ONLY',
-        p_cpi_id => p_cpi_id,
-        p_param_1 => p_item_value,
-        p_param_2 => p_jquery_selector);
-    end if;
+    adc_api.set_session_state(
+      p_cpi_id => p_cpi_id, 
+      p_number_value => p_item_value,
+      p_jquery_selector => p_jquery_selector,
+      p_allow_recursion => p_allow_recursion);
+        
+    pit.leave_optional;
+  end set_item;
+  
+  
+  procedure set_item(
+    p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
+    p_item_value in date,
+    p_jquery_selector in varchar2 default null,
+    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE)
+  as
+    C_APOS constant varchar2(1 byte) := '''';
+  begin
+    pit.enter_optional;
+    
+    adc_api.set_session_state(
+      p_cpi_id => p_cpi_id, 
+      p_date_value => p_item_value,
+      p_jquery_selector => p_jquery_selector,
+      p_allow_recursion => p_allow_recursion);
+        
     pit.leave_optional;
   end set_item;
   
