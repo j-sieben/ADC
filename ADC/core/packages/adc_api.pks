@@ -235,14 +235,14 @@ as
     p_msg_args in msg_args default null);
     
     
-  /** Method to register an error with ADC
+  /** Method to register an item as a firing item
    * %param  p_cpi_id           page item to register
-   * %param  p_allow_recursion  page item to set mandatory or optional
-   * %usage  Is used to additionally register a page item with ADC
+   * %usage  Registering an item as a firing explicitly serves as a mechanism
+   *         to evaluate all ADC rules related to this item. This is useful if
+   *         it is required to execute ADC rule without changing the item's value.
    */
   procedure register_item(
-    p_cpi_id in varchar2,
-    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE);
+    p_cpi_id in varchar2);
     
     
   /** Method to register a page item as mandatory or optional at ADC

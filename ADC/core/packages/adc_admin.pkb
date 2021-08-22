@@ -126,15 +126,13 @@ as
       p_params => msg_params(
                     msg_param('p_cgr_id', p_cgr_id)));
 
-      -- Step 1: remove REQUIRED flags and mark any element as erroneus, will be cleared later on
+      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Step 1: Remove REQUIRED flags and mark any element as erroneus, will be cleared later on'));
       update adc_page_items
          set cpi_is_required = adc_util.C_FALSE,
              cpi_has_error = adc_util.C_TRUE
        where cpi_cgr_id = p_cgr_id;
 
-      pit.verbose(msg.PIT_PASS_MESSAGE, msg_args('REQUIRED flags set'));
-
-      -- Step 2: Merge APEX page items into ADC_PAGE_ITEMS
+      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Step 2: Merge APEX page items into ADC_PAGE_ITEMS'));
       --         Mark any item with a conversion or mandatory as required to enable ADC to dynamically validate the format
       --         Mark any item with a required label as mandatory to dynamically check for NOT NULL
       merge into adc_page_items t
@@ -166,9 +164,7 @@ as
        when not matched then insert(cpi_id, cpi_cit_id, cpi_cty_id, cpi_label, cpi_cgr_id, cpi_conversion, cpi_item_default, cpi_css, cpi_is_required, cpi_is_mandatory)
             values(s.cpi_id, s.cpi_cit_id, s.cpi_cty_id, s.cpi_label, s.cpi_cgr_id, s.cpi_conversion, s.cpi_item_default, s.cpi_css, s.cpi_is_required, s.cpi_is_mandatory);
 
-      pit.verbose(msg.PIT_PASS_MESSAGE, msg_args('APEX items merged into ADC_PAGE_ITEMS'));
-
-      -- Step 3: mark page items referenced in a technical condition as relevant
+      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Step 3: mark page items referenced in a technical condition as relevant'));
       merge into adc_page_items t
       using (select distinct cpi_cgr_id, cpi_id
                from (select cgr.cgr_id cpi_cgr_id, i.column_value cpi_id
@@ -189,9 +185,7 @@ as
        when matched then update set
             t.cpi_is_required = adc_util.C_TRUE;
 
-      pit.verbose(msg.PIT_PASS_MESSAGE, msg_args('Relevant items marked'));
-
-      -- Step 4: remove elements which are
+      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Step 4: remove elements which are irreleveant, erroneus, not referenced'));
       -- - irrelevant and
       -- - erroneus (fi not existing anymore) and
       -- - not referenced by rule actions
@@ -204,15 +198,12 @@ as
                from adc_rule_actions
               where cra_cgr_id = p_cgr_id);
 
-      pit.verbose(msg.PIT_PASS_MESSAGE, msg_args('Irrelevant, erroneous and not referenced items removed'));
-
-      -- Mark errors in adc_rules and ADC_RULE_ACTION
-      -- Reset all error flags for rule to FALSE
+      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Mark errors in adc_rules and ADC_RULE_ACTION and reset all error flags for rule to FALSE'));
       update adc_rules
          set cru_has_error = adc_util.C_FALSE
        where cru_cgr_id = p_cgr_id;
-
-      -- Mark rules that reference items with error flag
+      
+      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Mark rules that reference items with error flag'));
       merge into adc_rules t
       using (select distinct cru.cru_id
                from adc_page_items cpi
@@ -224,12 +215,12 @@ as
        when matched then update set
             t.cru_has_error = adc_util.C_TRUE;
 
-      -- Reset all error flags for rule actions to FALSE
+      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Reset all error flags for rule actions to FALSE'));
       update adc_rule_actions
          set cra_has_error = adc_util.C_FALSE
        where cra_cgr_id = p_cgr_id;
 
-      -- Mark rule actions that reference items with error flag
+      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Mark rule actions that reference items with error flag'));
       merge into adc_rule_actions t
       using (select cpi_cgr_id cra_cgr_id, cpi_id cra_cpi_id
                from adc_page_items
@@ -240,16 +231,12 @@ as
        when matched then update set
             t.cra_has_error = adc_util.C_TRUE;
 
-      pit.verbose(msg.PIT_PASS_MESSAGE, msg_args('Errors marked'));
-
-      -- create initialization code and persist at adc_rule_groups for fast page initialization
+      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('create initialization code and persist at adc_rule_groups for fast page initialization'));
       l_initialization_code := create_initialization_code(p_cgr_id);
 
       update adc_rule_groups
          set cgr_initialization_code = l_initialization_code
        where cgr_id = p_cgr_id;
-
-      pit.verbose(msg.PIT_PASS_MESSAGE, msg_args('Initialization code generated and saved'));
 
     pit.leave_optional;
   exception
@@ -2335,7 +2322,9 @@ as
   begin
     pit.enter_mandatory(
       p_params => msg_params(
-                    msg_param('p_cap_cat_id', p_cap_cat_id)));
+                    msg_param('p_cap_cat_id', p_cap_cat_id),
+                    msg_param('p_cap_cpt_id', p_cap_cpt_id),
+                    msg_param('p_cap_sort_seq', p_cap_sort_seq)));
                     
     l_row.cap_cat_id := p_cap_cat_id;
     l_row.cap_cpt_id := p_cap_cpt_id;
@@ -2351,7 +2340,6 @@ as
     p_row in adc_action_parameters_v%rowtype)
   as
   begin
-    pit.enter_mandatory;
                     
     delete from adc_action_parameters
      where cap_cat_id = p_row.cap_cat_id
@@ -2361,6 +2349,20 @@ as
     pit.leave_mandatory;
   end delete_action_parameter;
   
+  procedure delete_action_parameters(
+    p_cap_cat_id in adc_action_parameters.cap_cat_id%type)
+  as
+  begin
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_cap_cat_id', p_cap_cat_id)));
+                    
+    delete from adc_action_parameters
+     where cap_cat_id = p_cap_cat_id;
+    
+    pit.leave_mandatory;
+  end delete_action_parameters;
+    
 
   procedure validate_action_parameter(
     p_row in adc_action_parameters_v%rowtype)
@@ -2381,7 +2383,8 @@ as
     p_cit_include_in_view in adc_page_item_types_v.cit_include_in_view%type,
     p_cit_event           in adc_page_item_types_v.cit_event%type,
     p_cit_col_template    in adc_page_item_types_v.cit_col_template%type,
-    p_cit_init_template   in adc_page_item_types_v.cit_init_template%type) 
+    p_cit_init_template   in adc_page_item_types_v.cit_init_template%type,
+    p_cit_is_custom_event in adc_page_item_types_v.cit_is_custom_event%type) 
   as
     l_row adc_page_item_types_v%rowtype;
   begin
@@ -2394,6 +2397,7 @@ as
     l_row.cit_event := p_cit_event;
     l_row.cit_col_template := p_cit_col_template;
     l_row.cit_init_template := p_cit_init_template;
+    l_row.cit_is_custom_event := p_cit_is_custom_event;
     
     merge_page_item_type(l_row);
 
@@ -2427,7 +2431,8 @@ as
                   p_row.cit_include_in_view cit_include_in_view,
                   p_row.cit_event cit_event,
                   p_row.cit_col_template cit_col_template,
-                  p_row.cit_init_template cit_init_template
+                  p_row.cit_init_template cit_init_template,
+                  p_row.cit_is_custom_event cit_is_custom_event
              from dual) s
        on (t.cit_id = s.cit_id)
      when matched then update set
@@ -2435,11 +2440,12 @@ as
             t.cit_include_in_view = s.cit_include_in_view,
             t.cit_event = s.cit_event,
             t.cit_col_template = s.cit_col_template,
-            t.cit_init_template = s.cit_init_template
+            t.cit_init_template = s.cit_init_template,
+            t.cit_is_custom_event = s.cit_is_custom_event
      when not matched then insert(
-            t.cit_id, t.cit_pti_id, t.cit_pmg_name, t.cit_has_value, t.cit_include_in_view, t.cit_event, t.cit_col_template, t.cit_init_template)
+            t.cit_id, t.cit_pti_id, t.cit_pmg_name, t.cit_has_value, t.cit_include_in_view, t.cit_event, t.cit_col_template, t.cit_init_template, t.cit_is_custom_event)
           values(
-            s.cit_id, s.cit_pti_id, s.cit_pmg_name, s.cit_has_value, s.cit_include_in_view, s.cit_event, s.cit_col_template, s.cit_init_template);
+            s.cit_id, s.cit_pti_id, s.cit_pmg_name, s.cit_has_value, s.cit_include_in_view, s.cit_event, s.cit_col_template, s.cit_init_template, s.cit_is_custom_event);
 
     pit.leave_mandatory;
   end merge_page_item_type;

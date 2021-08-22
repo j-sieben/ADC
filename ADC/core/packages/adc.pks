@@ -63,13 +63,10 @@ as
 
   /** Hides the referenced page element
    * %param [p_cpi_id]     Element to be hidden (default DOCUMENT, if p_jquery_selector filled)
-   * %param [p_whole_row]  display the complete row, e.g. if several elements are in one column and should be displayed at different times 
-   *                       (Default NULL, if effect on whole row, 'N', if effect only on the element)
    * %param [p_jquery_sel] jQuery expression to edit multiple elements. (Default NULL, if p_cpi_id filled)
    */
   procedure hide_item(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
-    p_whole_row in adc_util.flag_type default null,
     p_jquery_selector in varchar2 default null);
 
 
@@ -248,13 +245,10 @@ as
 
   /** Displays the referenced page element
    * %param [p_spi_id]     Element to be displayed (default DOCUMENT, if p_jquery_selector filled)
-   * %param [p_whole_row]  display the complete row, e.g. if several elements are in one column and should be displayed at different times 
-   *                       (Default NULL, if effect on whole row, 'N', if effect only on the element)
    * %param [p_jquery_sel] jQuery expression to edit multiple elements. (Default NULL, if p_spi_id filled)
    */
   procedure show_item(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
-    p_whole_row in adc_util.flag_type default adc_util.C_TRUE,
     p_jquery_selector in varchar2 default null);
     
     

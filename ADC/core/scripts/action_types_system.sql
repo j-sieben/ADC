@@ -52,6 +52,14 @@ begin
     p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
+    p_cpt_id => 'SUBMIT_TYPE',
+    p_cpt_name => 'Submit und/oder Validierung',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Typen der Seitenweiterleitung</p>}',
+    p_cpt_item_type => 'SELECT_LIST',
+    p_cpt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
     p_cpt_id => 'ITEM_STATUS',
     p_cpt_name => 'Anzeigestatus',
     p_cpt_display_name => '',
@@ -80,6 +88,14 @@ begin
     p_cpt_name => 'Sequenz',
     p_cpt_display_name => '',
     p_cpt_description => q'{<p>Name einer existierenden Sequenz</p>}',
+    p_cpt_item_type => 'SELECT_LIST',
+    p_cpt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_cpt_id => 'EVENT',
+    p_cpt_name => 'Zusätzliche JavaScript-Events',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Liste der JavaScript-Events, die durch ADC überwacht werden können.</p>}',
     p_cpt_item_type => 'SELECT_LIST',
     p_cpt_active => adc_util.C_TRUE);
 

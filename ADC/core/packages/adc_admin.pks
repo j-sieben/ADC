@@ -516,6 +516,15 @@ as
   procedure delete_action_parameter(
     p_row in adc_action_parameters_v%rowtype);
 
+  /** Method to remove all parameters for an action type
+   * %param  p_cap_cat_id      Reference to ADC_ACTION_TYPE
+   * %usage  Is used to remove any existing action parameters prior to adding then again.
+   *         This is necessary to prevent PK violations and to remove any parameters
+   *         which are no longer required.
+   */
+  procedure delete_action_parameters(
+    p_cap_cat_id in adc_action_parameters.cap_cat_id%type);
+
   procedure validate_action_parameter(
     p_row in adc_action_parameters_v%rowtype);
 
@@ -528,6 +537,7 @@ as
    * %param  p_cit_event            Event thas has to be bound if a rule requires this item
    * %param  p_cit_col_template     Template for the session state view to retrieve the session state value
    * %param  p_cit_init_template    Template to get the initial session state value
+   * %param  p_cit_init_template    Flag that indicates whether this event has to be observered explicitly by a rule action
    */
   procedure merge_page_item_type(
     p_cit_id              in adc_page_item_types_v.cit_id%type,
@@ -536,7 +546,8 @@ as
     p_cit_include_in_view in adc_page_item_types_v.cit_include_in_view%type,
     p_cit_event           in adc_page_item_types_v.cit_event%type,
     p_cit_col_template    in adc_page_item_types_v.cit_col_template%type,
-    p_cit_init_template   in adc_page_item_types_v.cit_init_template%type);
+    p_cit_init_template   in adc_page_item_types_v.cit_init_template%type,
+    p_cit_is_custom_event in adc_page_item_types_v.cit_is_custom_event%type);
     
   procedure merge_page_item_type(
     p_row in out nocopy adc_page_item_types_v%rowtype);

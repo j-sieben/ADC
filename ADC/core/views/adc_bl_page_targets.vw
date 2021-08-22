@@ -9,6 +9,7 @@ select cgr_id cpi_cgr_id,
        when regexp_like(format_mask, '(^|(FM))[09DGL\.\,]+$', 'i') then 'NUMBER_ITEM'
        when format_mask is not null then 'DATE_ITEM'
        else 'ITEM' end cpi_cit_id,
+       'ELEMENT' item_type,
        case replace(display_as_code, 'NATIVE_')
          when 'SELECT_LIST' then 'RADIO_GROUP'
          when 'RADIO_GROUP' then 'RADIO_GROUP'
@@ -30,29 +31,31 @@ select cgr_id cpi_cgr_id,
     on application_id = sgr.cgr_app_id
    and page_id = sgr.cgr_page_id
  union all
-select cgr_id, item_name, 'APP_ITEM', null, null, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
+select cgr_id, item_name, 'APP_ITEM', 'APP_ELEMENT', null, null, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
   from apex_application_items
   join adc_rule_groups sgr
     on application_id = sgr.cgr_app_id
  union all
-select cgr_id, button_static_id, 'BUTTON', 'ACTION', label, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
+select cgr_id, button_static_id, 'BUTTON', 'BUTTON', 'ACTION', label, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
   from apex_application_page_buttons
   join adc_rule_groups sgr
     on application_id = sgr.cgr_app_id
    and page_id = sgr.cgr_page_id
  union all
-select cgr_id, static_id, 'REGION', null, region_name, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
+select cgr_id, static_id, 'REGION', 'REGION', null, region_name, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
   from apex_application_page_regions
   join adc_rule_groups sgr
     on application_id = sgr.cgr_app_id
    and page_id = sgr.cgr_page_id
  where static_id is not null
  union all
-select cgr_id, 'DOCUMENT', 'DOCUMENT', null, null, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
+select cgr_id, 'DOCUMENT', 'DOCUMENT', 'DOCUMENT', null, null, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
   from adc_rule_groups
  union all
-select cgr_id, 'COMMAND', 'COMMAND', null, null, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
+select cgr_id, 'COMMAND', 'COMMAND', 'COMMAND', null, null, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
   from adc_rule_groups
  union all
-select cgr_id, 'ALL', 'ALL', null, null, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
+select cgr_id, 'ALL', 'ALL', 'ALL', null, null, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
   from adc_rule_groups;
+
+comment on table adc_bl_page_targets is 'View to collect all page components that are accessible by ADC, along with an item type categorization for grouping in ITEM_FOCUS etc.';

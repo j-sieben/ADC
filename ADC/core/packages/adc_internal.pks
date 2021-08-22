@@ -242,7 +242,7 @@ as
     p_msg_args in msg_args default null);
 
 
-  /* @see adc_api.register_error */
+  /* @see adc_api.register_item */
   procedure register_item(
     p_cpi_id in varchar2,
     p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE);

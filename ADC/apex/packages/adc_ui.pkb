@@ -186,7 +186,7 @@ as
     g_edit_cif_row.cif_name := utl_apex.get(g_page_values, 'cif_name');
     g_edit_cif_row.cif_description := utl_apex.get(g_page_values, 'cif_description');
     g_edit_cif_row.cif_item_types := utl_apex.get(g_page_values, 'cif_item_types');
-    g_edit_cif_row.cif_default := utl_apex.get(g_page_values, 'cif_default');
+    --g_edit_cif_row.cif_default := utl_apex.get(g_page_values, 'cif_default');
     g_edit_cif_row.cif_actual_page_only := utl_apex.get(g_page_values, 'cif_actual_page_only');
     g_edit_cif_row.cif_active := utl_apex.get(g_page_values, 'cif_active');
   
@@ -922,6 +922,8 @@ as
     case
     when utl_apex.inserting or utl_apex.updating then
       adc_admin.merge_action_type(l_cat_rec);
+      
+      adc_admin.delete_action_parameters(l_cat_rec.cat_id);
 
       if l_cap_rec_1.cap_cpt_id is not null then
         adc_admin.merge_action_parameter(l_cap_rec_1);

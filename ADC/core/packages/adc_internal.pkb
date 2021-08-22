@@ -462,14 +462,14 @@ as
     pit.enter_detailed('check_recursion',
       p_params => msg_params(
                     msg_param('p_action_rec.item', p_action_rec.item),
-                    msg_param('p_action_rec.cru_fire_on_page_load', to_char(p_action_rec.cru_fire_on_page_load))));
+                    msg_param('p_action_rec.cru_fire_on_page_load', p_action_rec.cru_fire_on_page_load)));
     
     case when p_action_rec.item = adc_util.C_NO_FIRING_ITEM and p_action_rec.cru_fire_on_page_load = adc_util.C_TRUE
       then sResult := adc_util.C_FALSE;
       else sResult := adc_util.C_TRUE;
     end case;
     
-    pit.leave_detailed(msg_params(msg_param('Result', to_char(sResult))));
+    pit.leave_detailed(msg_params(msg_param('Result', sResult)));
     return sResult;
   end check_recursion;
   
@@ -1543,13 +1543,13 @@ as
   begin
     pit.enter_detailed('register_item',
       p_params => msg_params(
-                    msg_param('p_cpi_id', p_cpi_id), 
-                    msg_param('p_allow_recursion', to_char(p_allow_recursion))));
+                    msg_param('p_cpi_id', p_cpi_id),
+                    msg_param('p_allow_recursion', p_allow_recursion)));
                         
     -- Get the element value to make sure it is registered as a changed item
     l_dummy := adc_page_state.get_string(g_param.cgr_id, p_cpi_id);
     
-    adc_recursion_stack.push_firing_item(g_param.cgr_id, p_cpi_id, p_allow_recursion);
+    adc_recursion_stack.push_firing_item(g_param.cgr_id, p_cpi_id);
     
     pit.leave_detailed;
   end register_item;  

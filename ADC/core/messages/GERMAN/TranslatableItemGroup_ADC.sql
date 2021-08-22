@@ -591,6 +591,33 @@ begin
     p_pti_description => q'^^'
   );
 
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'SUBMIT_TYPE_A_VALIDATE_AND_SUBMIT',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^ADC^',
+    p_pti_name => q'^Seite validieren und weiterleiten^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^^'
+  );
+
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'SUBMIT_TYPE_B_VALIDATE_ONLY',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^ADC^',
+    p_pti_name => q'^Seite validieren, nicht weiterleiten^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^^'
+  );
+
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'SUBMIT_TYPE_C_SUBMIT_ONLY',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^ADC^',
+    p_pti_name => q'^Seite nicht validieren, aber weiterleiten^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^^'
+  );
+
   commit;
 end;
 /

@@ -124,15 +124,14 @@ as
   
   procedure hide_item(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
-    p_whole_row in adc_util.flag_type default null,
     p_jquery_selector in varchar2 default null)
   as
   begin
     pit.enter_optional;
     adc_api.execute_action(
-      p_cat_id => 'HIDE_ITEM',
+      p_cat_id => 'SET_VISUAL_STATE',
       p_cpi_id => p_cpi_id,
-      p_param_1 => p_whole_row,
+      p_param_1 => 'HIDE',
       p_param_2 => p_jquery_selector);
     pit.leave_optional;
   end hide_item;
@@ -406,7 +405,7 @@ as
   begin
     pit.enter_optional;
     adc_api.execute_action(
-      p_cat_id => 'TOGGLE_ITEMS',
+      p_cat_id => 'SHOW_HIDE_ITEMS',
       p_cpi_id => adc_util.C_NO_FIRING_ITEM,
       p_param_1 => p_jquery_sel_show,
       p_param_2 => p_jquery_sel_hide);
@@ -416,15 +415,14 @@ as
   
   procedure show_item(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
-    p_whole_row in adc_util.flag_type default adc_util.C_TRUE,
     p_jquery_selector in varchar2 default null)
   as
   begin
     pit.enter_optional;
     adc_api.execute_action(
-      p_cat_id => 'SHOW_ITEM',
+      p_cat_id => 'SET_VISUAL_STATE',
       p_cpi_id => p_cpi_id,
-      p_param_1 => p_whole_row,
+      p_param_1 => 'SHOW_ENABLE',
       p_param_2 => p_jquery_selector);
     pit.leave_optional;
   end show_item;

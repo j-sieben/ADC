@@ -110,6 +110,9 @@ prompt &s1.Create view ADC_BL_CAT_HELP
 prompt &s1.Create view ADC_PARAM_LOV_APEX_ACTION
 @&view_dir.adc_param_lov_apex_action.vw
 
+prompt &s1.Create view ADC_PARAM_ITEM_STATUS
+@&view_dir.adc_param_item_status.vw
+
 prompt &s1.Create view ADC_PARAM_LOV_PAGE_ITEM
 @&view_dir.adc_param_lov_page_item.vw
 
@@ -118,6 +121,9 @@ prompt &s1.Create view ADC_PARAM_LOV_PIT_MESSAGE
 
 prompt &s1.Create view ADC_PARAM_LOV_SEQUENCE
 @&view_dir.adc_param_lov_sequence.vw
+
+prompt &s1.Create view ADC_PARAM_LOV_SUBMI_TYPE
+@&view_dir.adc_param_lov_submit_type.vw
 
 prompt &s1.Create view ADC_RULE_GROUP_STATUS
 @&view_dir.adc_rule_group_status.vw

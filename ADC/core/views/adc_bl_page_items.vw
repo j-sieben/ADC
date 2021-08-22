@@ -13,7 +13,7 @@ union all
 select pti_name || ' ' || item_name, item_name,
        application_id, 0, item_type
   from apex_application_items
-  join pti on item_type = 'PAGE_ELEMENT'
+  join pti on item_type = 'APP_ELEMENT'
 union all
 select pti_name || ' ' || button_static_id, button_static_id,
        application_id, page_id, item_type

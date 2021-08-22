@@ -300,8 +300,7 @@ as
   
   
   procedure register_item(
-    p_cpi_id in varchar2,
-    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE)
+    p_cpi_id in varchar2)
   as
   begin
     pit.enter_mandatory(
@@ -309,8 +308,7 @@ as
                     msg_param('p_cpi_id', p_cpi_id)));
                     
     adc_internal.register_item(
-      p_cpi_id => p_cpi_id,
-      p_allow_recursion => p_allow_recursion);
+      p_cpi_id => p_cpi_id);
       
     pit.leave_mandatory;
   end register_item;

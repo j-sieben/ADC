@@ -7,11 +7,13 @@ create table adc_page_item_types(
 	cit_event varchar2(30 byte), 
 	cit_col_template varchar2(100 char), 
 	cit_init_template varchar2(100 char), 
+  cit_is_custom_event &FLAG_TYPE. default &C_FALSE.,
   constraint pk_adc_page_item_types primary key (cit_id),
   constraint fk_cit_pti_id foreign key(cit_pti_id, cit_pmg_name)
     references &PIT_OWNER..pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
   constraint chk_cit_has_value check (cit_has_value in (&C_TRUE., &C_FALSE.)),
-  constraint chk_cit_include_in_view check (cit_include_in_view in (&C_TRUE., &C_FALSE.))
+  constraint chk_cit_include_in_view check (cit_include_in_view in (&C_TRUE., &C_FALSE.)),
+  constraint chk_cit_is_custom_event check (cit_is_custom_event in (&C_TRUE., &C_FALSE.))
 ) organization index;
 
 comment on table adc_page_item_types  is 'Table to store page item types which are supported by ADC.';
@@ -20,5 +22,6 @@ comment on column adc_page_item_types.cit_pti_id is 'Reference to PIT_TRANSLATAB
 comment on column adc_page_item_types.cit_pmg_name is 'Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC';
 comment on column adc_page_item_types.cit_has_value is 'Flag to indicate whether element is included into the rule view automatically';
 comment on column adc_page_item_types.cit_event is 'JavaScript event to be bound to this element type by the plugin. If null, ADC won''t react on changes.';
-comment on column adc_page_item_types.cit_col_template is 'Template zur Erzeugung einer Spalte in der Regel-View.';
-comment on column adc_page_item_types.cit_init_template is 'Template zur Erzeugung des Initialisierungscodes';
+comment on column adc_page_item_types.cit_col_template is 'Template for creating a column in the decision table.';
+comment on column adc_page_item_types.cit_init_template is 'Template for generating the initialization code';
+comment on column adc_page_item_types.cit_init_template is 'Flag to indicate whether this event has to be observed explicitly by a rule action.';
