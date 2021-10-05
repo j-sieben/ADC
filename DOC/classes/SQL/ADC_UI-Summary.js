@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("SQLClass:ADC_UI","ADC_UI");NDSummary.OnSummaryLoaded("SQLClass:ADC_UI",[["SQL","SQL"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[1,0,0,"ADC_UI"],[2,0,2,"Functions","Functions"],[3,0,1,"C_TRUE","C_TRUE"],[4,0,1,"C_FALSE","C_FALSE"],[5,0,1,"designer_selection_changed","designer_selection_changed"]]);

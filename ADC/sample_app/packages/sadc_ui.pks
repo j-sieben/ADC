@@ -12,10 +12,10 @@ as
   /** Method for determining truth values
    */
   function C_TRUE
-    return adc_util.flag_type;
+  return adc_util.flag_type;
     
   function C_FALSE
-    return adc_util.flag_type;
+  return adc_util.flag_type;
     
   
   /** Method to automoatically calculate previous and next button values based on navigation list
@@ -43,7 +43,7 @@ as
    */
   function is_comm_eligible(
     p_job_id in jobs.job_id%type)
-    return adc_util.flag_type;
+  return adc_util.flag_type;
     
   
   /** Method to print a description text SADC.<P_TEXT_ID>
@@ -57,7 +57,7 @@ as
   /** Methods to maintain page edpti
    */
   function validate_edpti
-    return boolean;
+  return boolean;
 
   procedure process_edpti;
   
@@ -73,6 +73,10 @@ as
    */
   procedure print_help_text(
     p_cat_id in adc_action_types.cat_id%type);
+    
+  function get_help_text(
+    p_cat_id in adc_action_types.cat_id%type)
+  return varchar2;
     
 end sadc_ui;
 /

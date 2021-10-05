@@ -2,28 +2,51 @@ create or replace package adc_ui
   authid definer
 as
 
-  /** Maintain ADC rules via an APEX frontend
-   * @author Juergen Sieben, ConDeS GmbH
-   * @headcom
-   * %usage  This package implements the methods required to maintain ADC rule groups via an APEX application
+  /** 
+    Package: ADC_UI
+               Maintain ADC rules via an APEX frontend.
+               This package implements the methods required to maintain ADC rule groups via an APEX application
+   
+    Author: Juergen Sieben, ConDeS GmbH
    */
    
    
-  /** Method for determining truth values
+  /**
+    Function: C_TRUE
+      Method for determining truth values. Wrapper around adc_util.C_TRUE
    */
   function C_TRUE
     return adc_util.flag_type;
     
+  /**
+    Function: C_FALSE
+      Method for determining truth values. Wrapper around adc_util.C_FALSE
+   */
   function C_FALSE
     return adc_util.flag_type;
     
     
-  /** Determine the ID of the websheet helper application
-   * %return ID fo the websheet helper application
-   * %usage  Is called to initialize the help system.
+  /** 
+    Procedure: designer_selection_changed
+                 Handles selection changes in the hierarchy tree to control the visual appearance of the page.
+                 
+                 Is used to deduct the cgr from the selected entry in the designer tree.
+                 It then sets the value and refreshes the rule group report if the value has changed.
+                 Plus, it analyzes which level has been selected and calls the respective DESIGNER_SHOW_FORM method
    */
-  function get_help_websheet_id
-    return pls_integer;
+  procedure designer_selection_changed;
+  
+  
+  /** Method to show and populate a rule form
+   * %usage  Is used to show the rule form section of the designer and populate it with the values selected.
+   */
+  procedure designer_show_form_cru;
+  
+  
+  /** Method to show and populate a rule action form
+   * %usage  Is used to show the rule action form section of the designer and populate it with the values selected.
+   */
+  procedure designer_show_form_cra;
     
     
   /** Toggle active flag from rule group

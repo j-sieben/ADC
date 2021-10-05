@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("sql",["Type"],[["sql_char",,[["ADC_UTIL",,,,0,"File:core/packages/adc_util.pks:ADC_UTIL.sql_char","SQLClass:ADC_UTIL:sql_char"]]]]);

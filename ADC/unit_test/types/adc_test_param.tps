@@ -1,4 +1,6 @@
-create or replace type adc_test_param as object(
+create or replace type adc_test_param 
+  authid definer
+as object(
   id number,                               -- internal ID of the record
   cgr_id number,                           -- actual CGR_ID
   firing_item varchar2(128 byte),          -- actual firing item (or adc_util.C_NO_FIRING_ITEM)
@@ -13,9 +15,9 @@ create or replace type adc_test_param as object(
   js_action_stack adc_test_js_list,        -- JavaScript action stack, rule outcome of the rules executed so far
   level_length char_table,                 -- cumulated length of the strings on the respective severity levels
   recursive_level number,                  -- actual recursive level
-  allow_recursion char(1 byte),             -- Flag to indicate whether recursive calls are allowed for the active rule
+  allow_recursion char(1 byte),            -- Flag to indicate whether recursive calls are allowed for the active rule
   notification_stack varchar2(4000 byte),  -- List of notifications to be shown in the browser console
-  stop_flag char(1 byte),                   -- Flag to indicate that all rule execution has to be stopped
+  stop_flag char(1 byte),                  -- Flag to indicate that all rule execution has to be stopped
   now number                               -- Time in hsec
 );
 /

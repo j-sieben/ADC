@@ -1,7 +1,6 @@
 create or replace package body adc_plugin 
-as
+as  
   
-  /* DEFAULT PLUGIN FUNCTIONALITY */
   function render(
     p_dynamic_action in apex_plugin.t_dynamic_action,
     p_plugin in apex_plugin.t_plugin)
@@ -29,13 +28,10 @@ as
       p_event => coalesce(apex_application.g_x02, 'initialize'),
       p_event_data => apex_application.g_x03);
     
-    -- Initialize session status with page item default values
-    adc_internal.process_initialization_code;
-    
     -- Process initialization rules of ADC for that page. Response is a JavaScript that is executed on the page
     l_java_script := adc_internal.process_request;
     
-    -- Compose response
+    -- Compose Javascript for plugin instantiation on the page
     l_result.javascript_function := C_JS_FUNCTION;
     l_result.ajax_identifier := apex_plugin.get_ajax_identifier; 
     l_result.attribute_01 := adc_internal.get_bind_items_as_json;
@@ -78,7 +74,7 @@ as
     -- Process best matching rule of ADC for the actual page state. Response is a JavaScript that is executed on the page
     l_java_script := adc_internal.process_request;
     
-    -- Return response
+    -- Return JavaScript response
     htp.prn(l_java_script);
     
     pit.leave_mandatory;

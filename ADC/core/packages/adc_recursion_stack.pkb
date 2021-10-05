@@ -5,19 +5,17 @@ as
   
   type recursion_rec is record(
     item_stack recursive_stack_t,          -- List of items which were marked to recursively check rules for
+    firing_items char_table,               -- List of all "touched" page items. Used to monitor double recursion and
+                                           -- to provide a list of all items for which existing error messages have to be removed
     is_recursive adc_util.flag_type,       -- Flag to indicate whether we're in a recursive rule run
     allow_recursion adc_util.flag_type,    -- Flag to indicate whether recursive calls are allowed for the active rule,
-    limit pls_integer,                     -- Parameter to control max recursion depth
+    recursion_limit pls_integer,           -- Parameter to control max recursion depth
     loop_is_error boolean                  -- Parameter to control whether a loop in recursion has to be treated as an error
   );
   
   C_PARAM_GROUP constant adc_util.ora_name_type := 'ADC';
-  C_BIND_JSON_TEMPLATE constant adc_util.sql_char := '[#JSON#]';
   
   g_recursion recursion_rec;
-  g_firing_items char_table;
-
-  
   
   /** Method checks whether recursion stack contains entries
    */
@@ -44,8 +42,8 @@ as
   as
   begin
     g_recursion.loop_is_error := param.get_boolean('RAISE_RECURSION_LOOP', C_PARAM_GROUP);
-    g_recursion.limit := param.get_integer('RECURSION_LIMIT', C_PARAM_GROUP);
-    g_firing_items := char_table();
+    g_recursion.recursion_limit := param.get_integer('RECURSION_LIMIT', C_PARAM_GROUP);
+    g_recursion.firing_items := char_table();
   end initialize;
 
   
@@ -61,7 +59,7 @@ as
                     msg_param('p_cpi_id', p_cpi_id)));
     
     pop_firing_item(null, adc_util.C_TRUE);
-    g_firing_items.delete;
+    g_recursion.firing_items.delete;
         
     -- set recursion flag
     select coalesce(cgr_with_recursion, adc_util.C_TRUE)
@@ -93,12 +91,13 @@ as
     
     -- check recursion level does not exceeded max level
     if stack_is_not_empty then
-      pit.assert(get_level <= g_recursion.limit, msg.ADC_RECURSION_LIMIT, msg_args(p_cpi_id, to_char(g_recursion.limit)));
+      pit.assert(get_level <= g_recursion.recursion_limit, msg.ADC_RECURSION_LIMIT, msg_args(p_cpi_id, to_char(g_recursion.recursion_limit)));
     end if;
     
     if g_recursion.allow_recursion = adc_util.C_TRUE and p_allow_recursion = adc_util.C_TRUE then
     
-      if p_cpi_id is not null and not p_cpi_id member of g_firing_items then
+      -- Item has not been pushed already
+      if p_cpi_id is not null and not p_cpi_id member of g_recursion.firing_items then
   
         -- If page item to be registered is referenced in rules, register recursive call for this page item
         select count(*)
@@ -112,17 +111,13 @@ as
                   and cpi_is_required = adc_util.C_TRUE);
                   
         if l_cpi_has_rule > 0 then
-          -- First, push item uniquely on g_firing_items to retrieve all firing items later
-          g_firing_items.extend;
-          g_firing_items(g_firing_items.last) := p_cpi_id;
-          -- then add item to the recursive stack. After succesful completion the firing item will get popped from that stack
+          -- First, push item uniquely on g_recursion.firing_items to retrieve all firing items later
+          g_recursion.firing_items.extend;
+          g_recursion.firing_items(g_recursion.firing_items.last) := p_cpi_id;
+          -- then add item to the recursive stack. After succesful completion the firing item will be popped from that stack
           g_recursion.item_stack(p_cpi_id) := case g_recursion.item_stack.count when 0 then 1 else get_level + 1 end;
-          pit.debug(msg.ADC_FIRING_ITEM_PUSHED, msg_args(p_cpi_id, to_char(g_recursion.item_stack(p_cpi_id))));
-        else
-          pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Item ' || p_cpi_id || ' rejected, irrelevant'));
+          pit.info(msg.ADC_FIRING_ITEM_PUSHED, msg_args(p_cpi_id, to_char(g_recursion.item_stack(p_cpi_id))));
         end if;
-      else
-        pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Item ' || p_cpi_id || ' already on firing item stack'));
       end if;
     end if;
     
@@ -175,7 +170,7 @@ as
   function get_level
     return pls_integer
   as
-    l_level pls_integer;
+    l_level pls_integer := 0;
   begin
     pit.enter_optional('get_level');
     
@@ -193,12 +188,11 @@ as
   function get_firing_items_as_json
     return varchar2
   as
-    C_APOS constant char(1 byte) := '"';
     l_firing_items adc_util.max_char;
   begin
     pit.enter_optional;
   
-    l_firing_items := replace(C_BIND_JSON_TEMPLATE, '#JSON#', C_APOS || utl_text.table_to_string(g_firing_items, '","') || C_APOS);
+    l_firing_items := '["' || utl_text.table_to_string(g_recursion.firing_items, '","') || '"]';
     
     pit.leave_optional;
     return l_firing_items;

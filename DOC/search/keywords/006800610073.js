@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("has",["Function"],[["has_errors",,[["ADC_API",,,,0,"File:core/packages/adc_api.pks:ADC_API.has_errors","SQLClass:ADC_API:has_errors"]]],["has_no_errors",,[["ADC_API",,,,0,"File:core/packages/adc_api.pks:ADC_API.has_no_errors","SQLClass:ADC_API:has_no_errors"]]]]);

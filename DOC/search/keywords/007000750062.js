@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("pub",["Constant"],[["Public",,[["ADC_ADMIN","Public Constants",,,0,"File:core/packages/adc_admin.pks:ADC_ADMIN.Public_Constants","SQLClass:ADC_ADMIN:Public_Constants"]]]]);

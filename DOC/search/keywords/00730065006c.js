@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("sel",["Function"],[["select_region_entry",,[["ADC",,,,0,"File:core/packages/adc.pks:ADC.select_region_entry","SQLClass:ADC:select_region_entry"]]]]);

@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("aja",["Function"],[["ajax",,[["ADC_PLUGIN",,,,0,"File:plugin/packages/adc_plugin.pks:ADC_PLUGIN.ajax","SQLClass:ADC_PLUGIN:ajax"]]]]);

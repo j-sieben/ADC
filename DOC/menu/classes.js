@@ -1,0 +1,1 @@
+﻿NDMenu.OnSectionLoaded("classes.js",[[1,"ADC"],[1,"ADC_ADMIN"],[1,"ADC_APEX_ACTIONS"],[1,"ADC_API"],[1,"ADC_INTERNAL"],[1,"ADC_PAGE_STATE"],[1,"ADC_PLUGIN"],[1,"ADC_RECURSION_STACK"],[1,"ADC_UI"],[1,"ADC_UTIL"]]);

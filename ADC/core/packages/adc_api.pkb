@@ -84,7 +84,7 @@ as
     l_cmd := replace(c_cmd_template, '#COMMAND#', replace(trim(p_plsql), ';'));
     execute immediate l_cmd using out l_result;
     
-    adc_internal.add_javascript(replace(l_result, 'javascript:'), adc_internal.C_JS_CODE);
+    adc_internal.add_javascript(replace(l_result, 'javascript:'), adc_util.C_JS_CODE);
 
     pit.leave_mandatory;
   exception
@@ -118,16 +118,33 @@ as
   
   
   function exclusive_or(
-    p_value_list in varchar2)
+    p_item_list in varchar2)
     return adc_util.flag_type
   as
+    l_value_list char_table;
+    l_value_counter binary_integer := -1;
+    l_result adc_util.flag_type;
   begin
     pit.enter_mandatory(
       p_params => msg_params(
-                    msg_param('p_value_list', p_value_list)));
+                    msg_param('p_item_list', p_item_list)));
                     
-    pit.leave_mandatory;
-    return adc_internal.exclusive_or(p_value_list);
+    -- Tracing done in ADC_API  
+    adc_page_state.get_item_values_as_char_table(adc_internal.get_cgr_id, p_item_list, l_value_list);
+    
+    select count(*)
+      into l_value_counter
+      from table(l_value_list)
+     where column_value is not null
+       and rownum < 3;
+      
+    l_result := case l_value_counter
+                when 0 then null
+                when 1 then adc_util.C_TRUE
+                else adc_util.C_FALSE end;      
+                    
+    pit.leave_mandatory;          
+    return l_result;
   end exclusive_or;
   
 
@@ -138,10 +155,7 @@ as
     return date
   as
   begin
-    return adc_internal.get_date(
-             p_cpi_id => p_cpi_id,
-             p_format_mask => p_format_mask,
-             p_throw_error => p_throw_error);
+    return adc_page_state.get_date(adc_internal.get_cgr_id, p_cpi_id, p_format_mask);
   end get_date;
     
     
@@ -177,10 +191,7 @@ as
     return number
   as
   begin
-    return adc_internal.get_number(
-             p_cpi_id => p_cpi_id,
-             p_format_mask => p_format_mask,
-             p_throw_error => p_throw_error);
+    return adc_page_state.get_number(adc_internal.get_cgr_id, p_cpi_id, p_format_mask);
   end get_number;
   
   
@@ -189,8 +200,7 @@ as
     return varchar2
   as
   begin
-    return adc_internal.get_string(
-             p_cpi_id => p_cpi_id);
+    return adc_page_state.get_string(adc_internal.get_cgr_id, p_cpi_id);
   end get_string;
   
   
@@ -216,46 +226,93 @@ as
   end has_no_errors;
   
   
-  function not_null(
-    p_value_list in varchar2)
-    return adc_util.flag_type
+  procedure initialize_form_region(
+    p_static_id in adc_util.ora_name_type)
   as
-  begin
-    pit.enter_mandatory;
-    
-    pit.leave_mandatory;    
-    return adc_internal.not_null(p_value_list);
-  end not_null;
-
-
-  procedure notify(
-    p_text in varchar2)
-  as
-  begin
-    pit.enter_mandatory('notify',
-      p_params => msg_params(
-                    msg_param('p_text', p_text)));
-
-    adc_internal.notify(p_text);
-
-    pit.leave_mandatory;
-  end notify;
-  
-  
-  procedure notify(
-    p_message_name in varchar2,
-    p_msg_args in msg_args)
-  as
+    l_stmt adc_util.max_char;
   begin
     pit.enter_mandatory(
       p_params => msg_params(
-                    msg_param('p_message_name', p_message_name)));
-                    
-    notify(
-      p_text => pit.get_message_text(p_message_name, p_msg_args));
+                    msg_param('p_static_id', p_static_id)));
+
+    with templates as(
+           select uttm_text template, uttm_mode,
+                  utl_apex.get_application_id g_app_id,
+                  utl_apex.get_page_id g_page_id,
+                  p_static_id g_static_id
+             from utl_text_templates
+            where uttm_type = 'ADC'
+              and uttm_name = 'INITIALIZE_FORM')
+    select /*+ no_merge (t) */utl_text.generate_text(cursor(
+           select t.template, table_name "TABLE",
+                  utl_text.generate_text(cursor(
+                    select /*+ no_merge (s) */s.template, i.item_source column_name, i.item_name item_name,
+                           case i.item_source_data_type when 'NUMBER' then 'number' when 'DATE' then 'date' else 'string' end data_type
+                      from apex_application_page_items i
+                      join templates s
+                        on application_id = g_app_id
+                       and page_id = g_page_id
+                     where i.data_source_region_id = r.region_id
+                       and is_primary_key = 'Yes'
+                       and uttm_mode = 'STATE'),
+                    ',' || chr(10), 8) session_state,
+                  utl_text.generate_text(cursor(
+                    select /*+ no_merge (s) */s.template, i.item_source column_name, i.item_name item_name
+                      from apex_application_page_items i
+                      join templates s
+                        on application_id = g_app_id
+                       and page_id = g_page_id
+                     where i.data_source_region_id = r.region_id
+                       and uttm_mode = 'COLUMNS'),
+                    ', ') column_list
+             from apex_application_page_regions r
+             join templates t
+               on application_id = g_app_id
+              and page_id = g_page_id
+              and static_id = g_static_id
+            where uttm_mode = 'FRAME'))
+      into l_stmt
+      from dual;
       
+    pit.log_state(msg_params(msg_param('Statement', l_stmt)));
+    adc_internal.set_value_from_stmt(
+      p_cpi_id => null, 
+      p_stmt => l_stmt, 
+      p_allow_recursion => adc_util.C_FALSE);
+    
     pit.leave_mandatory;
-  end notify;
+  exception
+    when no_data_found then
+      pit.leave_mandatory;
+  end initialize_form_region;
+  
+  
+  function not_null(
+    p_item_list in varchar2)
+    return adc_util.flag_type
+  as
+    l_value_list char_table;
+    l_value_counter binary_integer;
+    l_result adc_util.flag_type := adc_util.C_FALSE;
+  begin
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_item_list', p_item_list)));
+    
+    -- Tracing done in ADC_API
+    adc_page_state.get_item_values_as_char_table(adc_internal.get_cgr_id, p_item_list, l_value_list);
+    select count(*)
+      into l_value_counter
+      from table(l_value_list)
+     where column_value is not null
+       and rownum < 2;
+    if l_value_counter = 1 then
+      l_result := adc_util.C_TRUE;
+    end if;    
+    
+    pit.leave_mandatory;    
+    return l_result;
+  end not_null;
   
   
   procedure register_error(
@@ -350,20 +407,6 @@ as
     
     pit.leave_mandatory;
   end register_observer;
-    
-    
-  procedure set_initialize_mode(
-    p_mode in adc_util.flag_type default adc_util.C_TRUE)
-  as
-  begin
-    pit.enter_mandatory(
-      p_params => msg_params(
-                    msg_param('p_mode', p_mode)));
-                    
-    adc_internal.set_initialize_mode(p_mode = adc_util.C_TRUE);
-    
-    pit.leave_mandatory;
-  end set_initialize_mode;
   
   
   procedure set_session_state(

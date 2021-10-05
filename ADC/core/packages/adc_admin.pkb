@@ -958,10 +958,10 @@ as
 
 
   procedure merge_apex_action_type(
-    p_cty_id in adc_apex_action_types.cty_id%type,
-    p_cty_name in pit_translatable_item.pti_name%type,
-    p_cty_description in pit_translatable_item.pti_description%type,
-    p_cty_active in adc_apex_action_types.cty_active%type)
+    p_cty_id in adc_apex_action_types_v.cty_id%type,
+    p_cty_name in adc_apex_action_types_v.cty_name%type,
+    p_cty_description in adc_apex_action_types_v.cty_description%type,
+    p_cty_active in adc_apex_action_types_v.cty_active%type)
   as
     l_row adc_apex_action_types_v%rowtype;
   begin
@@ -1019,7 +1019,7 @@ as
 
 
   procedure delete_apex_action_type(
-    p_cty_id in adc_apex_action_types.cty_id%type)
+    p_cty_id in adc_apex_action_types_v.cty_id%type)
   as
     l_row adc_apex_action_types_v%rowtype;
   begin
@@ -1246,7 +1246,7 @@ as
 
 
   procedure delete_apex_action(
-    p_caa_id in adc_apex_actions.caa_id%type)
+    p_caa_id in adc_apex_actions_v.caa_id%type)
   as
     l_row adc_apex_actions_v%rowtype;
   begin
@@ -1383,7 +1383,7 @@ as
 
   procedure merge_rule(
     p_cru_id in adc_rules.cru_id%type default null,
-    p_cru_cgr_id in adc_rule_groups.cgr_id%type,
+    p_cru_cgr_id in adc_rules.cru_cgr_id%type,
     p_cru_name in adc_rules.cru_name%type,
     p_cru_condition in adc_rules.cru_condition%type,
     p_cru_fire_on_page_load in adc_rules.cru_fire_on_page_load%type,
@@ -1525,14 +1525,19 @@ as
       from params p;
 
     -- perform validation
-    l_ctx := dbms_sql.open_cursor;
-    dbms_sql.parse(l_ctx, l_stmt, dbms_sql.native);
-    dbms_sql.close_cursor(l_ctx);
+    begin
+      l_ctx := dbms_sql.open_cursor;
+      dbms_sql.parse(l_ctx, l_stmt, dbms_sql.native);
+      dbms_sql.close_cursor(l_ctx);
+    exception
+      when others then
+        if dbms_sql.is_open(l_ctx) then
+          dbms_sql.close_cursor(l_ctx);
+        end if;
+        pit.error(msg.ADC_INVALID_SQL, msg_args(substr(sqlerrm, 12)));
+    end;
     
     pit.leave_mandatory;
-  exception
-    when others then
-      pit.stop(msg.SQL_ERROR);
   end validate_rule_condition;
   
 
@@ -1575,10 +1580,10 @@ as
 
 
   procedure merge_action_type_group(
-    p_ctg_id in adc_action_type_groups.ctg_id%type,
-    p_ctg_name in pit_translatable_item.pti_name%type,
-    p_ctg_description in pit_translatable_item.pti_description%type,
-    p_ctg_active in adc_action_type_groups.ctg_active%type default adc_util.C_TRUE)
+    p_ctg_id in adc_action_type_groups_v.ctg_id%type,
+    p_ctg_name in adc_action_type_groups_v.ctg_name%type,
+    p_ctg_description in adc_action_type_groups_v.ctg_description%type,
+    p_ctg_active in adc_action_type_groups_v.ctg_active%type default adc_util.C_TRUE)
   as
     l_row adc_action_type_groups_v%rowtype;
   begin
@@ -1678,12 +1683,12 @@ as
   
   
   procedure merge_action_param_type(
-    p_cpt_id in adc_action_param_types.cpt_id%type,
-    p_cpt_name in pit_translatable_item.pti_name%type,
-    p_cpt_display_name in pit_translatable_item.pti_display_name%type default null,
-    p_cpt_description in pit_translatable_item.pti_description%type default null,
-    p_cpt_item_type in adc_action_param_types.cpt_item_type%type,
-    p_cpt_active in adc_action_param_types.cpt_active%type default ADC_UTIL.C_TRUE)
+    p_cpt_id in adc_action_param_types_v.cpt_id%type,
+    p_cpt_name in adc_action_param_types_v.cpt_name%type,
+    p_cpt_display_name in adc_action_param_types_v.cpt_display_name%type default null,
+    p_cpt_description in adc_action_param_types_v.cpt_description%type default null,
+    p_cpt_item_type in adc_action_param_types_v.cpt_item_type%type,
+    p_cpt_active in adc_action_param_types_v.cpt_active%type default ADC_UTIL.C_TRUE)
   as
     l_row adc_action_param_types_v%rowtype;
   begin
@@ -1797,13 +1802,13 @@ as
 
 
   procedure merge_action_item_focus(
-    p_cif_id in adc_action_item_focus.cif_id%type,
-    p_cif_name in pit_translatable_item.pti_name%type,
-    p_cif_description in pit_translatable_item.pti_description%type,
-    p_cif_actual_page_only in adc_action_item_focus.cif_actual_page_only%type default adc_util.C_TRUE,
-    p_cif_item_types in adc_action_item_focus.cif_item_types%type,
-    p_cif_default adc_action_item_focus.cif_default%type,
-    p_cif_active in adc_action_item_focus.cif_active%type default adc_util.C_TRUE)
+    p_cif_id in adc_action_item_focus_v.cif_id%type,
+    p_cif_name in adc_action_item_focus_v.cif_name%type,
+    p_cif_description in adc_action_item_focus_v.cif_description%type,
+    p_cif_actual_page_only in adc_action_item_focus_v.cif_actual_page_only%type default adc_util.C_TRUE,
+    p_cif_item_types in adc_action_item_focus_v.cif_item_types%type,
+    p_cif_default adc_action_item_focus_v.cif_default%type,
+    p_cif_active in adc_action_item_focus_v.cif_active%type default adc_util.C_TRUE)
   as
     l_row adc_action_item_focus_v%rowtype;
   begin
@@ -1915,17 +1920,17 @@ as
 
 
   procedure merge_action_type(
-    p_cat_id in adc_action_types.cat_id%type,
-    p_cat_ctg_id in adc_action_type_groups.ctg_id%type,
-    p_cat_cif_id in adc_action_item_focus.cif_id%type,
-    p_cat_name in pit_translatable_item.pti_name%type,
-    p_cat_display_name in pit_translatable_item.pti_display_name%type,
-    p_cat_description in pit_translatable_item.pti_description%type default null,
-    p_cat_pl_sql in adc_action_types.cat_pl_sql%type,
-    p_cat_js in adc_action_types.cat_js%type,
-    p_cat_is_editable in adc_action_types.cat_is_editable%type default adc_util.C_TRUE,
-    p_cat_raise_recursive in adc_action_types.cat_raise_recursive%type default adc_util.C_TRUE,
-    p_cat_active in adc_action_types.cat_active%type default adc_util.C_TRUE)
+    p_cat_id in adc_action_types_v.cat_id%type,
+    p_cat_ctg_id in adc_action_types_v.cat_ctg_id%type,
+    p_cat_cif_id in adc_action_types_v.cat_cif_id%type,
+    p_cat_name in adc_action_types_v.cat_name%type,
+    p_cat_display_name in adc_action_types_v.cat_display_name%type,
+    p_cat_description in adc_action_types_v.cat_description%type default null,
+    p_cat_pl_sql in adc_action_types_v.cat_pl_sql%type,
+    p_cat_js in adc_action_types_v.cat_js%type,
+    p_cat_is_editable in adc_action_types_v.cat_is_editable%type default adc_util.C_TRUE,
+    p_cat_raise_recursive in adc_action_types_v.cat_raise_recursive%type default adc_util.C_TRUE,
+    p_cat_active in adc_action_types_v.cat_active%type default adc_util.C_TRUE)
   as
     l_row adc_action_types_v%rowtype;
   begin
@@ -2112,7 +2117,8 @@ as
                    adc_util.to_bool(cit_include_in_view) cit_include_in_view, 
                    cit_event, 
                    utl_text.wrap_string(cit_col_template, C_WRAP_START, C_WRAP_END) cit_col_template, 
-                   utl_text.wrap_string(cit_init_template, C_WRAP_START, C_WRAP_END) cit_init_template
+                   utl_text.wrap_string(cit_init_template, C_WRAP_START, C_WRAP_END) cit_init_template, 
+                   adc_util.to_bool(cit_is_custom_event) cit_is_custom_event
               from adc_page_item_types_v
           ))
       into l_page_item_types
@@ -2229,14 +2235,14 @@ as
 
 
   procedure merge_action_parameter(
-    p_cap_cat_id in adc_action_parameters.cap_cat_id%type,
-    p_cap_cpt_id in adc_action_parameters.cap_cpt_id%type,
-    p_cap_sort_seq in adc_action_parameters.cap_sort_seq%type,
-    p_cap_default in adc_action_parameters.cap_default%type,
-    p_cap_description in pit_translatable_item.pti_description%type,
-    p_cap_display_name in pit_translatable_item.pti_name%type,
-    p_cap_mandatory in adc_action_parameters.cap_mandatory%type,
-    p_cap_active in adc_action_parameters.cap_active%type default adc_util.C_TRUE)
+    p_cap_cat_id in adc_action_parameters_v.cap_cat_id%type,
+    p_cap_cpt_id in adc_action_parameters_v.cap_cpt_id%type,
+    p_cap_sort_seq in adc_action_parameters_v.cap_sort_seq%type,
+    p_cap_default in adc_action_parameters_v.cap_default%type,
+    p_cap_description in adc_action_parameters_v.cap_description%type,
+    p_cap_display_name in adc_action_parameters_v.cap_display_name%type,
+    p_cap_mandatory in adc_action_parameters_v.cap_mandatory%type,
+    p_cap_active in adc_action_parameters_v.cap_active%type default adc_util.C_TRUE)
   as
     l_row adc_action_parameters_v%rowtype;
   begin
@@ -2314,9 +2320,9 @@ as
   
   
   procedure delete_action_parameter(
-    p_cap_cat_id in adc_action_parameters.cap_cat_id%type,
-    p_cap_cpt_id in adc_action_parameters.cap_cpt_id%type,
-    p_cap_sort_seq in adc_action_parameters.cap_sort_seq%type)
+    p_cap_cat_id in adc_action_parameters_v.cap_cat_id%type,
+    p_cap_cpt_id in adc_action_parameters_v.cap_cpt_id%type,
+    p_cap_sort_seq in adc_action_parameters_v.cap_sort_seq%type)
   as
     l_row adc_action_parameters_v%rowtype;
   begin
@@ -2349,8 +2355,9 @@ as
     pit.leave_mandatory;
   end delete_action_parameter;
   
+  
   procedure delete_action_parameters(
-    p_cap_cat_id in adc_action_parameters.cap_cat_id%type)
+    p_cap_cat_id in adc_action_parameters_v.cap_cat_id%type)
   as
   begin
     pit.enter_mandatory(
@@ -2479,10 +2486,10 @@ as
 
   procedure merge_rule_action(
     p_cra_id in adc_rule_actions.cra_id%type,
-    p_cra_cru_id in adc_rules.cru_id%type,
-    p_cra_cgr_id in adc_rule_groups.cgr_id%type,
-    p_cra_cpi_id in adc_page_items.cpi_id%type,
-    p_cra_cat_id in adc_action_types.cat_id%type,
+    p_cra_cru_id in adc_rule_actions.cra_cru_id%type,
+    p_cra_cgr_id in adc_rule_actions.cra_cgr_id%type,
+    p_cra_cpi_id in adc_rule_actions.cra_cpi_id%type,
+    p_cra_cat_id in adc_rule_actions.cra_cat_id%type,
     p_cra_sort_seq in adc_rule_actions.cra_sort_seq%type,
     p_cra_param_1 in adc_rule_actions.cra_param_1%type default null,
     p_cra_param_2 in adc_rule_actions.cra_param_2%type default null,
@@ -2627,9 +2634,9 @@ as
 
 
   procedure add_translation(
-    p_table_shortcut in varchar2,
-    p_item_id in varchar2,
-    p_pml_name adc_util.ora_name_type,
+    p_table_shortcut in adc_util.ora_name_type,
+    p_item_id in adc_util.ora_name_type,
+    p_pml_name pit_translatable_item.pti_pml_name%type,
     p_name in pit_translatable_item.pti_name%type,
     p_display_name in pit_translatable_item.pti_display_name%type,
     p_description in pit_translatable_item.pti_description%type)

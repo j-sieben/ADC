@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("pus",["Function"],[["push_firing_item",,[["ADC_RECURSION_STACK",,,,0,"File:core/packages/adc_recursion_stack.pks:ADC_RECURSION_STACK.push_firing_item","SQLClass:ADC_RECURSION_STACK:push_firing_item"]]]]);

@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("map",["Function"],[["map_id",,[["ADC_ADMIN",,,,0,"File:core/packages/adc_admin.pks:ADC_ADMIN.map_id","SQLClass:ADC_ADMIN:map_id"]]]]);

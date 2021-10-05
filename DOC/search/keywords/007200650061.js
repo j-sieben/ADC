@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("rea",["Function"],[["read_settings",,[["ADC_INTERNAL",,,,0,"File:core/packages/adc_internal.pks:ADC_INTERNAL.read_settings","SQLClass:ADC_INTERNAL:read_settings"]]]]);

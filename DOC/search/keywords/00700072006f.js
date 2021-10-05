@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("pro",["Function"],[["process_request",,[["ADC_INTERNAL",,,,0,"File:core/packages/adc_internal.pks:ADC_INTERNAL.process_request","SQLClass:ADC_INTERNAL:process_request"]]],["propagate_rule_change",,[["ADC_ADMIN",,,,0,"File:core/packages/adc_admin.pks:ADC_ADMIN.propagate_rule_change","SQLClass:ADC_ADMIN:propagate_rule_change"]]]]);

@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("c_t",["Function"],[["C_TRUE",,[["ADC_UI",,,,0,"File:apex/packages/adc_ui.pks:ADC_UI.C_TRUE","SQLClass:ADC_UI:C_TRUE"],["ADC_UTIL",,,,0,"File:core/packages/adc_util.pks:ADC_UTIL.C_TRUE","SQLClass:ADC_UTIL:C_TRUE"]]]]);

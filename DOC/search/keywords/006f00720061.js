@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("ora",["Type"],[["ora_name_type",,[["ADC_UTIL",,,,0,"File:core/packages/adc_util.pks:ADC_UTIL.ora_name_type","SQLClass:ADC_UTIL:ora_name_type"]]]]);

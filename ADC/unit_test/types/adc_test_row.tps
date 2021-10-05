@@ -1,4 +1,6 @@
-create or replace type adc_test_row as object(
+create or replace type adc_test_row 
+  authid definer
+as object(
   cru_id number,
   cru_sort_seq number,
   cru_name varchar2(50),

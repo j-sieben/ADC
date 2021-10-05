@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("not",["Function"],[["not_null",,[["ADC",,,,0,"File:core/packages/adc.pks:ADC.not_null","SQLClass:ADC:not_null"],["ADC_API",,,,0,"File:core/packages/adc_api.pks:ADC_API.not_null","SQLClass:ADC_API:not_null"]]]]);

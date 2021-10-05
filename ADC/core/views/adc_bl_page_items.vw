@@ -24,7 +24,7 @@ union all
 select pti_name || ' ' || static_id, static_id,
        application_id, page_id, item_type
   from apex_application_page_regions
-  join pti on item_type = 'REGION'
+  join pti on item_type in ('FORM_REGION', 'REGION')
  where static_id is not null
 union all
 select ' ' || pti_name, item_type,

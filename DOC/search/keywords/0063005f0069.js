@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("c_i",["Constant"],[["C_INITIALIZE_EVENT",,[["ADC_UTIL",,,,0,"File:core/packages/adc_util.pks:ADC_UTIL.C_INITIALIZE_EVENT","SQLClass:ADC_UTIL:C_INITIALIZE_EVENT"]]]]);

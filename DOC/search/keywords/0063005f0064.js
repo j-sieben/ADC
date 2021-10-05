@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("c_d",["Constant"],[["C_DELIMITER",,[["ADC_UTIL",,,,0,"File:core/packages/adc_util.pks:ADC_UTIL.C_DELIMITER","SQLClass:ADC_UTIL:C_DELIMITER"]]]]);

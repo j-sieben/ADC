@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("SQLClass:ADC_PLUGIN","ADC_PLUGIN");NDSummary.OnSummaryLoaded("SQLClass:ADC_PLUGIN",[["SQL","SQL"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[49,0,0,"ADC_PLUGIN"],[55,0,2,"Functions","Functions"],[70,0,1,"render","render"],[72,0,1,"ajax","ajax"]]);

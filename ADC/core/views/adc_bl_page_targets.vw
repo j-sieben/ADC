@@ -42,7 +42,9 @@ select cgr_id, button_static_id, 'BUTTON', 'BUTTON', 'ACTION', label, null, null
     on application_id = sgr.cgr_app_id
    and page_id = sgr.cgr_page_id
  union all
-select cgr_id, static_id, 'REGION', 'REGION', null, region_name, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
+select cgr_id, static_id, 
+       case source_type_code when 'NATIVE_FORM' then 'FORM_REGION' else 'REGION' end, 
+       case source_type_code when 'NATIVE_FORM' then 'FORM_REGION' else 'REGION' end, null, region_name, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
   from apex_application_page_regions
   join adc_rule_groups sgr
     on application_id = sgr.cgr_app_id

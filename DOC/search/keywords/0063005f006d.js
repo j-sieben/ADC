@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("c_m",["Constant"],[["C_MAX_LENGTH",,[["ADC_UTIL",,,,0,"File:core/packages/adc_util.pks:ADC_UTIL.C_MAX_LENGTH","SQLClass:ADC_UTIL:C_MAX_LENGTH"]]]]);

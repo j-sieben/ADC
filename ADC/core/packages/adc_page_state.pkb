@@ -5,8 +5,9 @@ as
   C_APP_ITEM constant adc_page_item_types.cit_id%type := 'APP_ITEM';
   C_NUMBER_ITEM constant adc_page_item_types.cit_id%type := 'NUMBER_ITEM';
   C_DATE_ITEM constant adc_page_item_types.cit_id%type := 'DATE_ITEM';
-  C_DEFAULT_NUMBER_MASK constant adc_util.sql_char := 'fm999999999999999999D9999999';
+  C_DEFAULT_NUMBER_MASK constant adc_util.sql_char := 'fm9999999999999999990';
   C_NUMBER_GROUP_MASK constant adc_util.sql_char := 'G';
+  C_DELIMITER constant adc_util.sql_char := ',';
   
   -- Cache session state values during rule processing to prevent unnecessary fetches
   type session_value_rec is record(
@@ -16,7 +17,7 @@ as
 
   type session_value_tab is table of session_value_rec index by adc_util.ora_name_type;
   
-  g_session_values session_value_tab;    
+  g_session_values session_value_tab;
   
   /** Method to retrieve a default value for a mandatory page item
    * @param  p_cpi_id  ID of the page item
@@ -104,11 +105,14 @@ as
     -- Explicitly set the value and harmonize with the session state (fi when changing a session values during rule execution)
     case
     when p_number_value is not null and l_cpi_cit_id = C_NUMBER_ITEM then
-      g_session_values(p_cpi_id).string_value := to_char(p_number_value, l_cpi_conversion);
+      l_format_mask := replace(coalesce(p_format_mask, l_cpi_conversion, C_DEFAULT_NUMBER_MASK), C_NUMBER_GROUP_MASK);
+      g_session_values(p_cpi_id).string_value := to_char(p_number_value, l_format_mask);
       g_session_values(p_cpi_id).number_value := p_number_value;
+      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Number item ' || p_cpi_id || ' set to value ' || g_session_values(p_cpi_id).number_value || ', string vlue: ' || g_session_values(p_cpi_id).string_value));
       l_conversion_necessary := false;
     when p_date_value is not null and l_cpi_cit_id = C_DATE_ITEM then
-      g_session_values(p_cpi_id).string_value := to_char(p_date_value, l_cpi_conversion);
+      l_format_mask := coalesce(p_format_mask, l_cpi_conversion, apex_application.g_date_format);
+      g_session_values(p_cpi_id).string_value := to_char(p_date_value, l_format_mask);
       g_session_values(p_cpi_id).date_value := p_date_value;
       l_conversion_necessary := false;
     when p_value = C_FROM_SESSION_STATE then
@@ -288,6 +292,40 @@ as
     pit.leave_optional(msg_params(msg_param('JSON', l_json)));
     return l_json;
   end get_changed_items_as_json;
+  
+  
+  procedure get_item_values_as_char_table(
+    p_cgr_id in adc_rule_groups.cgr_id%type,
+    p_cpi_list in varchar2,
+    p_value_list out nocopy char_table)
+  as
+    l_filter adc_util.max_char;
+    C_TMPLT constant varchar2(1000) := q'^begin :x := char_table('#FILTER#'); end;^';
+    l_filter_list char_table;
+  begin
+    pit.enter_optional('get_item_values_as_char_table',
+      p_params => msg_params(msg_param('p_cpi_list', p_cpi_list)));
+    
+    -- convert comma separated list to CHAR_TABLE instance
+    l_filter := replace(replace(p_cpi_list, ' '), C_DELIMITER, ''',''');
+    execute immediate replace(C_TMPLT, '#FILTER#', l_filter) using out l_filter_list;
+    
+    -- Get the session state values as CHAR_TABLE
+    select cast(
+             multiset(
+               select apex_util.get_session_state(cpi_id)
+                 from adc_page_items spi
+                 join table(l_filter_list) t
+                   on t.column_value = cpi_id
+                   or instr(cpi_css, '|' || replace(t.column_value, '.') || '|') > 0
+                where cpi_cgr_id = p_cgr_id
+             ) as char_table
+           ) cpi_value
+      into p_value_list
+      from dual;
+      
+    pit.leave_optional;
+  end get_item_values_as_char_table;
   
 end adc_page_state;
 /

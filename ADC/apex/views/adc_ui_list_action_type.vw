@@ -15,3 +15,5 @@ select cat_name || case cat_active when adc_util.C_FALSE then ' (deprecated)' en
          join params p
            on cpi_cgr_id = c_cgr_id
         where cif_id = cat_cif_id);
+        
+comment on table adc_ui_list_action_type is 'List of all rule action types which have an item focus that exists on the page referenced by the rule group. This means, that an action related to a region is only displayed if at least one region is present on the page.';

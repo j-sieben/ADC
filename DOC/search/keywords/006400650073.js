@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("des",["Function"],[["designer_selection_changed",,[["ADC_UI",,,,0,"File:apex/packages/adc_ui.pks:ADC_UI.designer_selection_changed","SQLClass:ADC_UI:designer_selection_changed"]]]]);

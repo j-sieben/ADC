@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("ren",["Function"],[["render",,[["ADC_PLUGIN",,,,0,"File:plugin/packages/adc_plugin.pks:ADC_PLUGIN.render","SQLClass:ADC_PLUGIN:render"]]]]);

@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("sto",["Function"],[["stop_rule",,[["ADC",,,,0,"File:core/packages/adc.pks:ADC.stop_rule","SQLClass:ADC:stop_rule"],["ADC_API",,,,0,"File:core/packages/adc_api.pks:ADC_API.stop_rule","SQLClass:ADC_API:stop_rule"]]]]);

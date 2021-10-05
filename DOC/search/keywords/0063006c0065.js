@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("cle",["Function"],[["clean_adc_name",,[["ADC_UTIL",,,,0,"File:core/packages/adc_util.pks:ADC_UTIL.clean_adc_name","SQLClass:ADC_UTIL:clean_adc_name"]]]]);

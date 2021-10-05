@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("han",["Function"],[["handle_bulk_errors",,[["ADC",,,,0,"File:core/packages/adc.pks:ADC.handle_bulk_errors","SQLClass:ADC:handle_bulk_errors"]]]]);

@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("ini",["Function"],[["initialize_form_region",,[["ADC",,,,0,"File:core/packages/adc.pks:ADC.initialize_form_region","SQLClass:ADC:initialize_form_region"],["ADC_API",,,,0,"File:core/packages/adc_api.pks:ADC_API.initialize_form_region","SQLClass:ADC_API:initialize_form_region"]]]]);

@@ -132,6 +132,15 @@ begin
     p_error_number => -20000);
 
   pit_admin.merge_message(
+    p_pms_name => 'ADC_INVALID_SQL',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Fehler in technischer Bedingung: #1#^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 30,
+    p_pms_pml_name => 'GERMAN',
+    p_error_number => -20000);
+
+  pit_admin.merge_message(
     p_pms_name => 'ADC_ITEM_DOES_NOT_EXIST',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Seitenelement #1# existiert nicht in Anwendung #2#.^',

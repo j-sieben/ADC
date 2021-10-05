@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("typ",["Type"],[["Types",,[["ADC_UTIL","Package Types",,,0,"File:core/packages/adc_util.pks:ADC_UTIL.Package_Types","SQLClass:ADC_UTIL:Package_Types"]]]]);

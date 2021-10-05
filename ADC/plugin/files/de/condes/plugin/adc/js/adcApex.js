@@ -3,12 +3,12 @@ var de = de || {};
 de.condes = de.condes || {};
 de.condes.plugin = de.condes.plugin || {};
 de.condes.plugin.adc = de.condes.plugin.adc || {};
-de.condes.plugin.adc.apex_42_5_1 = {};
+de.condes.plugin.adc.apex_42_20_2 = {};
 
 /**
  * Interface between the ADC plugin and the APEX user interface for Version 5.1, Theme 42
- * @namespace de.condes.plugin.adc.apex_42_5_1
- * @since 5.1
+ * @namespace de.condes.plugin.adc.apex_42_20_2
+ * @since 20.2
  * @description
  * <p>ADC needs to interact with the APEX UI to achieve the visual effects requested by the page rules. APEX on the other hand
  * comes in different versions and themes, making it difficult for on central code to take care of all the different strategies
@@ -31,7 +31,8 @@ de.condes.plugin.adc.apex_42_5_1 = {};
       C_HIDDEN = "u-hidden",
       C_ITEM_ERROR = "apex-page-item-error",
       C_FORM_ERROR = "a-Form-error",
-      C_STANDARD_ERROR_SEL = ".htmldbStdErr";
+      C_STANDARD_ERROR_SEL = ".htmldbStdErr",
+      C_APEX_DISABLED_CLASS = 'adc-disabled';
 
   var A_DESCRIBEDBY = "aria-describedby",
       A_INVALID = "aria-invalid";
@@ -51,7 +52,7 @@ de.condes.plugin.adc.apex_42_5_1 = {};
   
   /**
    * Removes all messages in the notification region
-   * @memberof de.condes.plugin.adc.apex_42_5_1
+   * @memberof de.condes.plugin.adc.apex_42_20_2
    * @public
    * @override
    */
@@ -61,15 +62,16 @@ de.condes.plugin.adc.apex_42_5_1 = {};
 
   /**
    * Shows a confirmation dialog to the user before calling the intended rfunctionality
-   * @param {event} e Event that was raised by the user
+   * @param {event} pEvent Event that was raised by the user
    * @param {callback} callback Method to be called if the user confirmes this dialog
-   * @memberof de.condes.plugin.adc.apex_42_5_1
+   * @memberof de.condes.plugin.adc.apex_42_20_2
    * @public
    */
-  adc.confirmRequest = function(e, callback){
-    apex.dialog.confirm(e.data.message,e.data.title).then(function (answer) {
-      if(answer == "true"){
-         callback(e);
+  adc.confirmRequest = function(pEvent, callback){
+    apex.dialog.confirm(pEvent.data.message, pEvent.data.title)
+    .then(function (pAnswer) {
+      if(pAnswer == "true"){
+         callback(pEvent);
       };
     });
   };
@@ -80,7 +82,7 @@ de.condes.plugin.adc.apex_42_5_1 = {};
    * - select lists
    * - buttons
    * @param {string} pItemId ID of the page item to disable
-   * @memberof de.condes.plugin.adc.apex_42_5_1
+   * @memberof de.condes.plugin.adc.apex_42_20_2
    * @public
    */
   adc.disableElement = function (pItemId){
@@ -100,8 +102,6 @@ de.condes.plugin.adc.apex_42_5_1 = {};
     else if ($this.is('input')){
       apex.item(pItemId).disable();
     };
-    // Disabling an item means that it is visible. Make sure it is.
-    apex.item(pItemId).show();
   };
   
   /**
@@ -110,7 +110,7 @@ de.condes.plugin.adc.apex_42_5_1 = {};
    * - select lists
    * - buttons
    * @param {string} pItemId ID of the page item to disable
-   * @memberof de.condes.plugin.adc.apex_42_5_1
+   * @memberof de.condes.plugin.adc.apex_42_20_2
    * @public
    */
   adc.enableElement = function (pItemId){
@@ -143,7 +143,7 @@ de.condes.plugin.adc.apex_42_5_1 = {};
   /**
    * Removes filter area from interactive report or interactive grid
    * @param {string} pRegionId static id of the interactive report or grid
-   * @memberof de.condes.plugin.adc.apex_42_5_1
+   * @memberof de.condes.plugin.adc.apex_42_20_2
    * @public
    * @override
    */
@@ -152,14 +152,14 @@ de.condes.plugin.adc.apex_42_5_1 = {};
     $(`#${pRegionId} .a-MediaBlock`).hide(); // interactive grid
     
     $(`#${pRegionId}`).on('apexafterrefresh', function(){
-      hideReportFilterPanel(pRegionId);
+      adc.hideReportFilterPanel(pRegionId);
     });
   };
   
   /**
    * Maintains the error list on the page
    * @param {errorList} List of errors
-   * @memberof de.condes.plugin.adc.apex_42_5_1
+   * @memberof de.condes.plugin.adc.apex_42_20_2
    * @public
    * @override
    */
@@ -190,7 +190,7 @@ de.condes.plugin.adc.apex_42_5_1 = {};
    * Controls the mandatory status of a page item
    * @param {string} pItemId Page item ID of the item to set mandatory or optional
    * @param {boolean} pIsMandatory Flag to set a page item mandatory (true) or optional (false)
-   * @memberof de.condes.plugin.adc.apex_42_5_1
+   * @memberof de.condes.plugin.adc.apex_42_20_2
    * @public
    * @override
    */
@@ -210,7 +210,7 @@ de.condes.plugin.adc.apex_42_5_1 = {};
    * Sets the label of a page item
    * @param {string} pItemId ID of the page item to set the label of
    * @param {string} pItemLabel  New item label
-   * @memberof de.condes.plugin.adc.apex_42_5_1
+   * @memberof de.condes.plugin.adc.apex_42_20_2
    * @public
    * @override
    */
@@ -219,9 +219,19 @@ de.condes.plugin.adc.apex_42_5_1 = {};
   };
   
   /**
+   * Sets the title of a modal dialog window
+   * @param {string} pItemLabel  New item label
+   * @memberof de.condes.plugin.adc.apex_42_20_2
+   * @public
+   */
+  adc.setModalDialogTitle = function(pTitle){
+    parent.$('.ui-dialog-title').last().html(pTitle);
+  };
+  
+  /**
    * Shows a message on the page
    * @param {string} pMessage Message text to show
-   * @memberof de.condes.plugin.adc.apex_42_5_1
+   * @memberof de.condes.plugin.adc.apex_42_20_2
    * @public
    * @override
    */
@@ -230,11 +240,28 @@ de.condes.plugin.adc.apex_42_5_1 = {};
     msg.showPageSuccess(pMessage);
   };
   
+  /**
+   * Shows a wait spinner on the page
+   * @param {boolean} pFlag Flag to indicate whether to show (true) a wait spinner or not (false)
+   * @memberof de.condes.plugin.adc.apex_42_20_2
+   * @public
+   * @override
+   */
+  adc.showWaitSpinner = function(pFlag){
+    if(pFlag){
+      apex.util.showSpinner();
+    }
+    else{
+      $("#apex_wait_overlay").remove();
+      $(".u-Processing").remove();
+    };
+  };
+  
   /** 
    * Method submits page with the given request if no errors are on the page
    * @param {string} pRequest Request for the server
    * @param {string} pMessage Alert message warning the user if submit couldn't be executed due to errors on page
-   * @memberof de.condes.plugin.adc.apex_42_5_1
+   * @memberof de.condes.plugin.adc.apex_42_20_2
    * @public
    * @override
    */
@@ -251,4 +278,4 @@ de.condes.plugin.adc.apex_42_5_1 = {};
     }
   };
 
-})(de.condes.plugin.adc.apex_42_5_1, apex.message);
+})(de.condes.plugin.adc.apex_42_20_2, apex.message);

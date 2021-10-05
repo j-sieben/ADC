@@ -29,7 +29,7 @@ as
 
   /* INTERFACE */
   function c_true
-    return adc_util.flag_type
+  return adc_util.flag_type
   as
   begin
     return adc_util.C_TRUE;
@@ -37,7 +37,7 @@ as
   
     
   function c_false
-    return adc_util.flag_type
+  return adc_util.flag_type
   as
   begin
     return adc_util.C_FALSE;
@@ -141,7 +141,7 @@ as
 
   function is_comm_eligible(
     p_job_id in jobs.job_id%type)
-    return adc_util.flag_type 
+  return adc_util.flag_type 
   as
     l_comm_eligible pls_integer;
   begin
@@ -180,7 +180,7 @@ as
   
   
   function validate_edpti
-    return boolean
+  return boolean
   as
   begin
     pit.enter_mandatory;
@@ -258,9 +258,23 @@ as
   procedure print_help_text(
     p_cat_id in adc_action_types.cat_id%type)
   as
-    l_help_text adc_util.max_char;
   begin
     pit.enter_mandatory(
+      p_params => msg_params(msg_param('p_cat_id', p_cat_id)));
+      
+    utl_apex.print(get_help_text(p_cat_id));
+   
+    pit.leave_mandatory;
+  end print_help_text;
+  
+  
+  function get_help_text(
+    p_cat_id in adc_action_types.cat_id%type)
+  return varchar2
+  as
+    l_help_text adc_util.max_char;
+  begin
+    pit.enter_mandatory('get_help_text',
       p_params => msg_params(msg_param('p_cat_id', p_cat_id)));
       
     select help_text
@@ -268,10 +282,9 @@ as
       from adc_bl_cat_help
      where cat_id = p_cat_id;
   
-    utl_apex.print(l_help_text);
-   
     pit.leave_mandatory;
-  end print_help_text;
+    return(l_help_text);   
+  end get_help_text;
   
 
 end sadc_ui;

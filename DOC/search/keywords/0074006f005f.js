@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("to_",["Function"],[["to_bool",,[["ADC_UTIL",,,,0,"File:core/packages/adc_util.pks:ADC_UTIL.to_bool","SQLClass:ADC_UTIL:to_bool"]]]]);
