@@ -26,6 +26,9 @@ as
       It it also used to remove any error message from the APEX page for these items. 
       The error messages may be attached again based on the response, but by using this mechanism, 
       it is possible to remove only those errors for which rules have been processed.
+      
+    Author::
+      Juergen Sieben, ConDeS GmbH
    */
   
   

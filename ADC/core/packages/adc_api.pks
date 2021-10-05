@@ -15,8 +15,8 @@ as
              
              All other packages with the exception of ADC_PLUGIN are not allowed to directly address ADC_INTERNAL.
 
-    Author: Juergen Sieben, ConDeS GmbH
-
+    Author::
+      Juergen Sieben, ConDeS GmbH
    */
    
   $IF adc_util.C_WITH_UNIT_TESTS $THEN

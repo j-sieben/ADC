@@ -7,7 +7,8 @@ as
     
              Main package to administer ADC rules and related metadata.
 
-    Author: Juergen Sieben, ConDeS GmbH
+    Author::
+      Juergen Sieben, ConDeS GmbH
 
    */
 

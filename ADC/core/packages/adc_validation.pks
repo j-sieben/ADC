@@ -4,6 +4,14 @@ create or replace package adc_validation
 as 
 
   /**
+    Package: ADC_VALIDATION
+               Implements validation functionality for the internal meta data adminsitration.
+    
+    Author::
+      Juergen Sieben, ConDeS GmbH
+   */
+
+  /**
     Procedure: validate_param_lov
                  Method checks that a LOV view exists.
                  

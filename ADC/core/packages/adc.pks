@@ -8,8 +8,8 @@ as
              Implements the public interface of ADC and a wrapper around ADC_INTERNAL.EXECUTE_ACTION for system defined action types.
              Is called by ADC dynamic pages declaratively and directly from PL/SQL
 
-    Author: Juergen Sieben, ConDeS GmbH
-
+    Author::
+      Juergen Sieben, ConDeS GmbH
    */
   
   /**

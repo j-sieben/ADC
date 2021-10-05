@@ -7,8 +7,8 @@ as
     
              Provides data types, constants and generic helper functions for ADC
 
-    Author: Juergen Sieben, ConDeS GmbH
-
+    Author::
+      Juergen Sieben, ConDeS GmbH
    */
 
   /**

@@ -4,9 +4,10 @@ as
 
   /**
     Package: ADC_PLUGIN
-      Maintains State Charts as a dynamic action plugin.
+      Implements the dynamic action plugin inteface for ADC.
    
-    Author: Juergen Sieben, ConDeS GmbH
+    Author::
+      Juergen Sieben, ConDeS GmbH
    */
 
   

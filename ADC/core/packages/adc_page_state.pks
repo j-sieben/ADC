@@ -18,7 +18,8 @@ as
                Any changed value in the page state is reported back to the APEX page as part of the response
                and thus harmonized with the visual state on the page.
                
-    Author: Juergen Sieben, ConDeS GmbH
+    Author::
+      Juergen Sieben, ConDeS GmbH
    */
    
   /**

@@ -59,7 +59,8 @@ as
                When the re-converted script is appended to the page using jQuery, the script is immediately executed. After this, the <script> element is
                deleted from the page.
                
-    Author: Juergen Sieben, ConDeS GmbH
+    Author::
+      Juergen Sieben, ConDeS GmbH
    */
    
   $IF adc_util.C_WITH_UNIT_TESTS $THEN
