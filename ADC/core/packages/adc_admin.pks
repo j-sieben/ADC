@@ -448,7 +448,7 @@ as
       p_ctg_id - ID of the action type group to delete
    */
   procedure delete_action_type_group(
-    p_ctg_id in adc_action_type_groups.ctg_id%type);
+    p_ctg_id in adc_action_type_groups_v.ctg_id%type);
 
   /**
     Procedure: delete_action_type_group
@@ -515,7 +515,7 @@ as
       p_cpt_id - ID of the Action Parameter Type to delete
    */
   procedure delete_action_param_type(
-    p_cpt_id in adc_action_param_types.cpt_id%type);
+    p_cpt_id in adc_action_param_types_v.cpt_id%type);
 
   /**
     Procedure: delete_action_param_type
@@ -582,7 +582,7 @@ as
       p_cif_id - ID of the Action Item Focus to delete
    */
   procedure delete_action_item_focus(
-    p_cif_id in adc_action_item_focus.cif_id%type);
+    p_cif_id in adc_action_item_focus_v.cif_id%type);
 
   /**
     Procedure: delete_action_item_focus
@@ -653,7 +653,7 @@ as
       p_cat_id - ID of the action type to delete
    */
   procedure delete_action_type(
-    p_cat_id in adc_action_types.cat_id%type);
+    p_cat_id in adc_action_types_v.cat_id%type);
 
   /**
     Procedure: delete_action_type

@@ -1641,7 +1641,7 @@ as
 
 
   procedure delete_action_type_group(
-    p_ctg_id in adc_action_type_groups.ctg_id%type)
+    p_ctg_id in adc_action_type_groups_v.ctg_id%type)
   as
     l_row adc_action_type_groups_v%rowtype;
   begin
@@ -1754,7 +1754,7 @@ as
 
 
   procedure delete_action_param_type(
-    p_cpt_id in adc_action_param_types.cpt_id%type)
+    p_cpt_id in adc_action_param_types_v.cpt_id%type)
   as  
     l_row adc_action_param_types_v%rowtype;
   begin
@@ -1878,7 +1878,7 @@ as
 
 
   procedure delete_action_item_focus(
-    p_cif_id in adc_action_item_focus.cif_id%type)
+    p_cif_id in adc_action_item_focus_v.cif_id%type)
   as
     l_row adc_action_item_focus_v%rowtype;
   begin
@@ -2019,7 +2019,7 @@ as
 
 
   procedure delete_action_type(
-    p_cat_id in adc_action_types.cat_id%type)
+    p_cat_id in adc_action_types_v.cat_id%type)
   as
     l_row adc_action_types_v%rowtype;
   begin
