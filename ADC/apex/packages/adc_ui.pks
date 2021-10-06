@@ -71,6 +71,24 @@ as
   function get_export_type
     return varchar2;
     
+  /**
+    Function: get_lov_sql
+                Method to retrieve a select statement that reads values for a given
+                Action Parameter of type SELECT_LIST
+                
+    Parameters:
+      p_cpt_id - Type of the Action Parameter
+      p_cgr_id - ID of the rule group. Is used to filter the LOV statement
+    
+    Returns:
+      Select statement to be executed by the ADC_UI to retrieve values for an Action Parameter#
+      of type SELECT_LIST
+   */
+  function get_lov_sql(
+    p_cpt_id in adc_action_param_types.cpt_id%type,
+    p_cgr_id in adc_rule_groups.cgr_id%type)
+    return varchar2;
+    
     
   /** Method to generate an apex action href attribute to create a new action
    * %usage  Is called upon page initialization of page EDIT_CRU

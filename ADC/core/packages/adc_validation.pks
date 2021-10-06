@@ -38,22 +38,6 @@ as
   procedure validate_param_lov(
     p_cpt_id in adc_action_param_types.cpt_id%type,
     p_cpt_item_type in adc_action_param_types.cpt_item_type%type);
-
-
-  /**
-    Function: get_lov_sql
-                Method to calculate the SQL statement for a parameter type.
-                
-                This method is called from ADC_UI to populate a LOV item for a parameter.
-                
-    Parameters:
-      p_cpt_id - Parameter Type
-      p_cgr_id - ID of the rule group to filter the LOV data if required.
-   */
-  function get_lov_sql(
-    p_cpt_id in adc_action_param_types.cpt_id%type,
-    p_cgr_id in adc_rule_groups.cgr_id%type)
-    return varchar2;
   
   /**
     Procedure: validate_parameter

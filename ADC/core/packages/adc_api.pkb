@@ -184,6 +184,28 @@ as
   end get_firing_item;
 
 
+  function get_lov_sql(
+    p_cpt_id in adc_action_param_types.cpt_id%type,
+    p_cgr_id in adc_rule_groups.cgr_id%type)
+    return varchar2
+  as
+    C_STMT constant varchar2(200) := q'^select d, r
+  from adc_param_lov_#CPT_ID#
+ where cgr_id = #CGR_ID#
+    or cgr_id is null^';
+    l_stmt varchar2(1000);
+  begin
+    if p_cpt_id is not null then
+      l_stmt := utl_text.bulk_replace(C_STMT, char_table(
+                  'CPT_ID', lower(p_cpt_id),
+                  'CGR_ID', p_cgr_id));
+    else
+      l_stmt := 'select null d, null r from dual';
+    end if;
+    return l_stmt;
+  end get_lov_sql;
+  
+
   function get_number(
     p_cpi_id in adc_page_items.cpi_id%type,
     p_format_mask in varchar2 default null,

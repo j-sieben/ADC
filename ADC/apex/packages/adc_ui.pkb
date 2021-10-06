@@ -909,7 +909,17 @@ as
     pit.leave_detailed;
     return l_export_type;
   end get_export_type;
-
+  
+  
+  function get_lov_sql(
+    p_cpt_id in adc_action_param_types.cpt_id%type,
+    p_cgr_id in adc_rule_groups.cgr_id%type)
+    return varchar2
+  as
+  begin
+    return adc_api.get_lov_sql(p_cpt_id, p_cgr_id);
+  end get_lov_sql;
+  
 
   procedure initialize_cra_collection
   as
