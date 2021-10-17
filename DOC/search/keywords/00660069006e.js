@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("fin",["Function"],[["finalize_javascript_answer",,[["ADC_INTERNAL Body",,,,0,"File:core/packages/adc_internal.pkb:ADC_INTERNAL_Body.finalize_javascript_answer","SQLClass:ADC_INTERNAL_Body:finalize_javascript_answer"]]]]);

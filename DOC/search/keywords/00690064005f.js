@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("id_",["Type"],[["id_map_t",,[["ADC_ADMIN Body",,,,0,"File:core/packages/adc_admin.pkb:ADC_ADMIN_Body.id_map_t","SQLClass:ADC_ADMIN_Body:id_map_t"]]]]);

@@ -27,12 +27,11 @@ with session_state as(
          join session_state s
            on cgr_id = p_cgr_id
         union all
-       select 'CAG_' || caa_cgr_id, 'CGR_' || caa_cgr_id, 'Seitenkommandos', caa_cgr_id, max(icon_cag || color_cag), 'CAA_GROUP',
+       select 'CAG_' || cgr_id, 'CGR_' || cgr_id, 'Seitenkommandos', cgr_id, icon_cag || color_cag, 'CAA_GROUP',
               '' menu_action_list
-         from adc_apex_actions_v
+         from adc_rule_groups
          join session_state s
-           on caa_cgr_id = p_cgr_id
-        group by caa_cgr_id
+           on cgr_id = p_cgr_id
         union all  
        select 'CAA_' || caa_id, 'CAG_' || caa_cgr_id, caa_label || ' (' || caa_name || ')', caa_id, icon_caa|| color_caa, 'APEX_ACTION',
               '' menu_action_list

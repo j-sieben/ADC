@@ -1,12 +1,29 @@
 create or replace package body adc_validation
 as
 
-  /* Private constants*/
-  
-  /* Private types */
-
-  /* Private global variables */
-
+  /**
+    Package: ADC_VALIDATION Body
+      Implements validation functionality for the internal meta data adminsitration.
+      
+      Accessible by ADC_PLUGIN, ADC_UI, ADC_INTERNAL and ADC_ADMIN only.
+    
+    Author::
+      Juergen Sieben, ConDeS GmbH
+   */
+   
+  /**
+    Group: Private methods
+   */
+  /**
+    Procedure: parse
+      Method to parse a statement and throw and exception if parsing fails.
+      
+    Parameter:
+      p_stmt - Statement to parse.
+      
+    Errors:
+      SQL_ERROR - if parsing fails.
+   */
   procedure parse(
     p_stmt in varchar2)
   as
@@ -28,6 +45,18 @@ as
   end parse;
 
 
+  /**
+    Procedure: parse_sql
+      Method to parse a statement and throw and exception if parsing fails.
+      
+      Only select statements are allowed and correctly parsed.
+      
+    Parameter:
+      p_stmt - Statement to parse.
+      
+    Errors:
+      SQL_ERROR - if parsing fails.
+   */
   procedure parse_sql(
     p_stmt in varchar2)
   as
@@ -49,6 +78,13 @@ as
   end parse_sql;
 
 
+  /**
+    Procedure: parse_string
+      Validate that p_calue is a string
+      
+    Parameter:
+      p_value - Value to check.
+   */
   procedure parse_string(
     p_value in out nocopy varchar2)
   as
@@ -67,22 +103,30 @@ end;~';
   end parse_string;
 
 
+  /**
+    Procedure: parse_function
+      Validate that p_calue is a string
+      
+    Parameters:
+      p_method - Method to check.
+      p_is_function - Flag to indicate whether p_value is a function
+   */
   procedure parse_function(
-    p_value in out nocopy varchar2,
-    p_function in boolean default true)
+    p_method in out nocopy varchar2,
+    p_is_function in boolean default true)
   as
     C_FUNCTION_STMT constant varchar2(200) := q'^declare l_foo utl_apex.max_char; begin l_foo := #STMT#; end;^';
     C_PROCEDURE_STMT constant varchar2(200) := q'^declare l_foo utl_apex.max_char; begin #STMT#; end;^';
     l_cur binary_integer;
     l_stmt varchar2(2000);
   begin
-    p_value := rtrim(p_value, ';');
-    if p_function then
+    p_method := rtrim(p_method, ';');
+    if p_is_function then
       l_stmt := C_FUNCTION_STMT;
     else
       l_stmt := C_PROCEDURE_STMT;
     end if;
-    l_stmt := replace(l_stmt, 'STMT', p_value);
+    l_stmt := replace(l_stmt, 'STMT', p_method);
     l_cur := dbms_sql.open_cursor(l_stmt);
     dbms_sql.parse(l_cur, l_stmt, dbms_sql.NATIVE);
     dbms_sql.close_cursor(l_cur);
@@ -93,7 +137,14 @@ end;~';
   end parse_function;
 
 
-  /* Private validators */
+  /**
+    Procedure: validate_is_apex_action
+      Validate that p_value is an APEX Action
+      
+    Parameters:
+      p_value - Method to check.
+      p_environment - Calling environment
+   */
   procedure validate_is_apex_action(
     p_value in out nocopy varchar2,
     p_environment in adc_util.environment_rec)
@@ -123,6 +174,14 @@ end;~';
   end validate_is_apex_action;
 
 
+  /**
+    Procedure: validate_is_string
+      Validate that p_value is aString
+      
+    Parameters:
+      p_value - Value to check.
+      p_target - Page item to link the execption to
+   */
   procedure validate_is_string(
     p_value in out nocopy varchar2,
     p_target in varchar2)
@@ -138,6 +197,14 @@ end;~';
   end validate_is_string;
 
 
+  /**
+    Procedure: validate_is_function
+      Validate that p_value is a function
+      
+    Parameters:
+      p_value - Value to check.
+      p_target - Page item to link the execption to
+   */
   procedure validate_is_function(
     p_value in out nocopy varchar2,
     p_target in varchar2)
@@ -153,6 +220,14 @@ end;~';
   end validate_is_function;
 
 
+  /**
+    Procedure: validate_is_procedure
+      Validate that p_value is a procedure
+      
+    Parameters:
+      p_value - Value to check.
+      p_target - Page item to link the execption to
+   */
   procedure validate_is_procedure(
     p_value in out nocopy varchar2,
     p_target in varchar2)
@@ -168,6 +243,14 @@ end;~';
   end validate_is_procedure;
 
 
+  /**
+    Procedure: validate_is_pit_message
+      Validate that p_value is a PIT message
+      
+    Parameters:
+      p_value - Value to check.
+      p_target - Page item to link the execption to
+   */
   procedure validate_is_pit_message(
     p_value in out nocopy varchar2,
     p_target in varchar2)
@@ -185,6 +268,14 @@ end;~';
   end validate_is_pit_message;
 
 
+  /**
+    Procedure: validate_is_string_or_function
+      Validate that p_value is a String or a function
+      
+    Parameters:
+      p_value - Value to check.
+      p_target - Page item to link the execption to
+   */
   procedure validate_is_string_or_function(
     p_value in out nocopy varchar2,
     p_target in varchar2)
@@ -205,6 +296,14 @@ end;~';
   end validate_is_string_or_function;
 
 
+  /**
+    Procedure: validate_is_string_or_message
+      Validate that p_value is a String or a PIT message
+      
+    Parameters:
+      p_value - Value to check.
+      p_target - Page item to link the execption to
+   */
   procedure validate_is_string_or_message(
     p_value in out nocopy varchar2,
     p_target in varchar2)
@@ -225,6 +324,14 @@ end;~';
   end validate_is_string_or_message;
 
 
+  /**
+    Procedure: validate_is_sql_statement
+      Validate that p_value is a SQL statement
+      
+    Parameters:
+      p_value - Value to check.
+      p_target - Page item to link the execption to
+   */
   procedure validate_is_sql_statement(
     p_value in out nocopy varchar2,
     p_target in varchar2)
@@ -245,6 +352,14 @@ end;~';
   end validate_is_sql_statement;
 
 
+  /**
+    Procedure: validate_is_selector
+      Validate that p_value is a jQuery selector
+      
+    Parameters:
+      p_value - Value to check.
+      p_target - Page item to link the execption to
+   */
   procedure validate_is_selector(
     p_value in out nocopy varchar2,
     p_target in varchar2,
@@ -270,6 +385,14 @@ end;~';
   end validate_is_selector;
 
 
+  /**
+    Procedure: validate_is_page_item
+      Validate that p_value is a APEX page item
+      
+    Parameters:
+      p_value - Value to check.
+      p_target - Page item to link the execption to
+   */
   procedure validate_is_page_item(
     p_value in out nocopy varchar2,
     p_target in varchar2,
@@ -291,6 +414,14 @@ end;~';
   end validate_is_page_item;
 
 
+  /**
+    Procedure: validate_is_sequence
+      Validate that p_value is an existing sequence
+      
+    Parameters:
+      p_value - Value to check.
+      p_target - Page item to link the execption to
+   */
   procedure validate_is_sequence(
     p_value in out nocopy varchar2,
     p_target in varchar2)
@@ -311,6 +442,13 @@ end;~';
   end validate_is_sequence;
 
 
+  /**
+    Procedure: execute_plsql_code
+      Execute the PL/SQL block passed in
+      
+    Parameters:
+      p_plsql_code - PL/SQL block to execute
+   */
   procedure execute_plsql_code(
     p_plsql_code in varchar2)
   as
@@ -324,6 +462,16 @@ end;~';
   end execute_plsql_code;
 
 
+  /**
+    Function: execute_function_as_varchar2
+      Execute the PL/SQL block passed in and return result as VARCHAR2
+      
+    Parameters:
+      p_plsql_code - PL/SQL function to execute
+      
+    Returns:
+      The result of the function as VARCHAR2
+   */
   function execute_function_as_varchar2(
     p_plsql_code in varchar2)
     return varchar2
@@ -339,6 +487,16 @@ end;~';
   end execute_function_as_varchar2;
 
 
+  /**
+    Function: execute_function_as_boolean
+      Execute the PL/SQL block passed in and return result as BOOLEAN
+      
+    Parameters:
+      p_plsql_code - PL/SQL function to execute
+      
+    Returns:
+      A boolean flag the expression evaluates to
+   */
   function execute_function_as_boolean(
     p_plsql_code in varchar2)
     return boolean
@@ -354,6 +512,16 @@ end;~';
   end execute_function_as_boolean;
 
 
+  /**
+    Function: evaluate_plsql_expression
+      Execute the PL/SQL block passed in and return result as BOOLEAN
+      
+    Parameters:
+      p_plsql_code - PL/SQL expression to execute
+      
+    Returns:
+      A boolean flag the expression evaluates to
+   */
   function evaluate_plsql_expression(
     p_plsql_code in varchar2)
     return boolean
@@ -369,6 +537,13 @@ end;~';
   end evaluate_plsql_expression;
 
 
+  /**
+    Procedure: evaluate_sql_expression
+      Execute the PL/SQL block passed in and return result as BOOLEAN
+      
+    Parameters:
+      p_plsql_code - SQL expression to execute
+   */
   procedure evaluate_sql_expression(
     p_stmt in varchar2)
   as
@@ -380,7 +555,13 @@ end;~';
   end evaluate_sql_expression;
 
 
-  /* INTERFACE */
+  /**
+    Group: Public methods
+   */
+  /**
+    Procedure: validate_param_lov
+      See <ADC_VALIDATION.validate_param_lov>
+   */
   procedure validate_param_lov(
     p_cpt_id in adc_action_param_types.cpt_id%type,
     p_cpt_item_type in adc_action_param_types.cpt_item_type%type)
@@ -412,6 +593,10 @@ end;~';
   end validate_param_lov;
 
 
+  /**
+    Procedure: validate_parameter
+      See <ADC_VALIDATION.validate_parameter>
+   */
   procedure validate_parameter(
     p_value in out nocopy adc_rule_actions.cra_param_1%type,
     p_cpt_id in adc_action_param_types.cpt_id%type,

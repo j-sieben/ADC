@@ -1,8 +1,7 @@
 create or replace editionable view adc_ui_designer_rules
 as
 with session_state as (
-       select utl_apex.get_number('CGR_APP_ID') g_app_id,
-              utl_apex.get_number('CGR_PAGE_ID') g_page_id
+       select utl_apex.get_number('CGR_ID') g_cgr_id
          from dual),
      translations as(
               select max(decode(pti_id, 'ADC_AUTO_INITIALIZE', to_char(pti_description))) auto_initialize,
@@ -28,8 +27,7 @@ with session_state as (
              adc_util.c_false c_false
         from adc_rule_groups
         join session_state s
-          on cgr_app_id = g_app_id
-         and cgr_page_id = g_page_id),
+          on cgr_id = g_cgr_id),
     actions as(
       select /*+ no_merge (p) */
              p.cgr_app_id, p.cgr_page_id,
@@ -97,7 +95,7 @@ with session_state as (
                  on cra_cat_id = cat_id) cra
           on cru_id = cra_cru_id)
 select app.application_name || ' (' || app.application_id || ')' application_name, pag.page_name || ' (' || pag.page_id || ')' page_name,
-      cru_id, cru_cgr_id, cru_name, cru_condition, cru_firing_items, cru_sort_seq, cru_fire_on_page_load, cru_fire_on_page_load_title, cru_active,
+      'CRU_' || cru_id cru_id, cru_cgr_id, cru_name, cru_condition, cru_firing_items, cru_sort_seq, cru_fire_on_page_load, cru_fire_on_page_load_title, cru_active,
       listagg(cra_name , '')
         within group (order by cra_sort_seq) cru_action
  from actions a

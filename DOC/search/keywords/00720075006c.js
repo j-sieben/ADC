@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("rul",["Type"],[["rule_action_rec",,[["ADC_INTERNAL Body",,,,0,"File:core/packages/adc_internal.pkb:ADC_INTERNAL_Body.rule_action_rec","SQLClass:ADC_INTERNAL_Body:rule_action_rec"]]]]);

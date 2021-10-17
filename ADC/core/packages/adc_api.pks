@@ -63,6 +63,13 @@ as
     
   
   /**
+    Procedure: clear_page_state
+      Method to clear the actual page state
+   */
+  procedure clear_page_state;
+  
+  
+  /**
     Procedure: execute_action
                  Method to execute a defined ACTION TYPE.
                  
@@ -454,34 +461,49 @@ as
 
 
   /** 
-    Procedure: set_value_from_stmt
-                 Procedure to set the session state of one or many items based on a SQL statement.
-                 
-                 Is used to set one or more item values based on a SQL query. Two operation modes:
-                 
-                 - P_CPI_ID is set to a page item ID
-                   In this case the SQL query must return a scalar value
-                 - P_CPI_ID ist DOCUMENT oder NULL
-                   In this mode the query is allowed to return more than one column but one row only.
-                   The column names must match page item column source names. 
-                   If a match is found, the respective element is set to the column value
+    Procedure: set_value_from_statement
+      Procedure to set the session state of one or many items based on a SQL statement.
+      
+      Is used to set one or more item values based on a SQL query. Two operation modes:
+      
+      - P_CPI_ID is set to a page item ID
+        In this case the SQL query must return a scalar value
+      - P_CPI_ID ist DOCUMENT oder NULL
+        In this mode the query is allowed to return more than one column but one row only.
+        The column names must match page item column source names. 
+        If a match is found, the respective element is set to the column value
    
     Parameters:
       p_cpi_id - ID of the page item
-      p_stmt - SELECT statement to retrieve the new page item value or values
+      p_statement - SELECT statement to retrieve the new page item value or values
    */
-  procedure set_value_from_stmt(
+  procedure set_value_from_statement(
     p_cpi_id in adc_page_items.cpi_id%type,
-    p_stmt in varchar2);
+    p_statement in varchar2);
+
+
+  /** 
+    Procedure: set_value_from_cursor
+      Procedure to set the session state of one or many items based on a SQL statement.
+      
+      The query is allowed to return more than one column but one row only.
+      The column names must match page item column source names. 
+      If a match is found, the respective element is set to the column value
+   
+    Parameters:
+      p_cursor - Opened cursor with the respective column names and values
+   */
+  procedure set_value_from_cursor(
+    p_cursor in out nocopy sys_refcursor);
     
     
   /** 
     Procedure: stop_rule
-                 Method to stop the execution of a rule.
-                 
-                 Is used to prevent further recursion or exeution steps in case of a failure.
-                 This method is normally called as an exception handler in a rule.
-                 It may also be called from within PL/SQL to prevent recursive rule execution.
+      Method to stop the execution of a rule.
+      
+      Is used to prevent further recursion or exeution steps in case of a failure.
+      This method is normally called as an exception handler in a rule.
+      It may also be called from within PL/SQL to prevent recursive rule execution.
    */
   procedure stop_rule;
 

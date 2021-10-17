@@ -12,7 +12,7 @@ declare
             from all_objects
            where object_name in (
                  '', -- Typen
-                 'ADC_UI', 'PLUGIN_GROUP_SELECT_LIST', -- Packages
+                 'ADC_UI', 'SPLITTER_PLUGIN', -- Packages
                  'ADC_UI_ADMIN_CAT', 'ADC_UI_ADMIN_CGR_MAIN', 'ADC_UI_ADMIN_CGR_COMMANDS', 'ADC_UI_ADMIN_CGR_OVERVIEW', 'ADC_UI_ADMIN_CIF', 'ADC_UI_ADMIN_CGR_RULES', 
                  'ADC_UI_EDIT_RULE', 'ADC_UI_EDIT_RULE_ACTION', 'ADC_UI_EDIT_CAA', 'ADC_UI_EDIT_CAT', 'ADC_UI_EDIT_CIF', 'ADC_UI_EDIT_CGR',  'ADC_UI_EDIT_CTG', 
                  'ADC_UI_EDIT_CGR_APEX_ACTION', 'ADC_UI_EDIT_CRA', 'ADC_UI_EDIT_CRU', 'ADC_UI_EDIT_CRU_ACTION', 

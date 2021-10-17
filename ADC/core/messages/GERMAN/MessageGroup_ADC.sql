@@ -177,6 +177,15 @@ begin
     p_error_number => -20000);
 
   pit_admin.merge_message(
+    p_pms_name => 'ADC_RULE_ACTION_EXISTS',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Diese Kombination aus Attributen einer Regelaktion existiert bereits.^',
+    p_pms_description => q'^Die Attribute CRA_CGR_ID, CRA_CRU_ID, CRA_CPI_ID, CRA_CAT_ID und CRA_ON_ERROR müssen eindeutig sein.^',
+    p_pms_pse_id => 30,
+    p_pms_pml_name => 'GERMAN',
+    p_error_number => -20000);
+
+  pit_admin.merge_message(
     p_pms_name => 'ADC_MERGE_RULE_GROUP',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Fehler beim Mergen von Regelgruppe #1#: #SQLERRM#^',
@@ -564,6 +573,24 @@ begin
     p_pms_text => q'^Schleife #1# hat die maximal erlaubte Anzahl Durchläufe überschritten und wurde abgebrochen.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 30,
+    p_pms_pml_name => 'GERMAN',
+    p_error_number => -20000);
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_NUMBER_ITEM_SET',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Zahlelement #1# auf Wert #2# gesetzt, Zeichenkettenwert: #3#.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 50,
+    p_pms_pml_name => 'GERMAN',
+    p_error_number => -20000);
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_DATE_ITEM_SET',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Datumselement #1# auf Wert #2# gesetzt, Zeichenkettenwert: #3#.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 50,
     p_pms_pml_name => 'GERMAN',
     p_error_number => -20000);
 

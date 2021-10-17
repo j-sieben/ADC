@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("ren",["Function"],[["render",,[["ADC_PLUGIN",,,,0,"File:plugin/packages/adc_plugin.pks:ADC_PLUGIN.render","SQLClass:ADC_PLUGIN:render"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("ren",["Function"],[["render",,[["ADC_PLUGIN",,,,0,"File:plugin/packages/adc_plugin.pks:ADC_PLUGIN.render","SQLClass:ADC_PLUGIN:render"],["SPLITTER_PLUGIN",,,,0,"File:apex/packages/splitter_plugin.pks:SPLITTER_PLUGIN.render","SQLClass:SPLITTER_PLUGIN:render"]]]]);

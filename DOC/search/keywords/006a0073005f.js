@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("js_",["Type"],[["js_list",,[["ADC_INTERNAL Body",,,,0,"File:core/packages/adc_internal.pkb:ADC_INTERNAL_Body.js_list","SQLClass:ADC_INTERNAL_Body:js_list"]]],["js_rec",,[["ADC_INTERNAL Body",,,,0,"File:core/packages/adc_internal.pkb:ADC_INTERNAL_Body.js_rec","SQLClass:ADC_INTERNAL_Body:js_rec"]]]]);

@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("lev",["Type"],[["level_length_t",,[["ADC_INTERNAL Body",,,,0,"File:core/packages/adc_internal.pkb:ADC_INTERNAL_Body.level_length_t","SQLClass:ADC_INTERNAL_Body:level_length_t"]]]]);

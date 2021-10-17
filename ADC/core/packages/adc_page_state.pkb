@@ -1,6 +1,23 @@
 create or replace package body adc_page_state
 as
+  /** 
+    Package: ADC_PAGE_STATE Body
+      Implementation of the ADC_PAGE_STATE logic
+               
+    Author::
+      Juergen Sieben, ConDeS GmbH
+   */
 
+  /**
+    Group: Private constants
+   *
+  /**
+    Constants:
+      C_ITEM - Generic page item (String)
+      C_APP_ITEM - Application item
+      C_NUMBER_ITEM - Number page item
+      C_DATE_ITEM - Date page item
+   */
   C_ITEM constant adc_page_item_types.cit_id%type := 'ITEM';
   C_APP_ITEM constant adc_page_item_types.cit_id%type := 'APP_ITEM';
   C_NUMBER_ITEM constant adc_page_item_types.cit_id%type := 'NUMBER_ITEM';
@@ -9,6 +26,17 @@ as
   C_NUMBER_GROUP_MASK constant adc_util.sql_char := 'G';
   C_DELIMITER constant adc_util.sql_char := ',';
   
+  /**
+    Group: Types
+   */
+  /**
+    Type: session_value_rec
+    
+    Properties:
+      string_value - Actual value of the item as VARCHAR2
+      date_value - Actual value of the item as DATE, if possible
+      number_value  - Actual value of the item as NUMBER, if possible
+   */
   -- Cache session state values during rule processing to prevent unnecessary fetches
   type session_value_rec is record(
     string_value adc_util.max_char,
@@ -19,10 +47,21 @@ as
   
   g_session_values session_value_tab;
   
-  /** Method to retrieve a default value for a mandatory page item
-   * @param  p_cpi_id  ID of the page item
-   * @return Default value for that page item
-   * @usage  Is used to retrieve the default value if a mandatory item is NULL and  a default value was defined.
+  /**
+    Group: Private methods
+   */
+  /**
+    Function: get_mandatory_default_value
+      Method to retrieve a default value for a mandatory page item.
+      
+      Is used to retrieve the default value if a mandatory item is NULL and  a default value was defined.
+      
+    Parameters:
+      p_cgr_id - ID of the rule group. Required to retrieve format mask and default value
+      p_cpi_id - ID of the page item
+      
+    Returns:
+      Default value for that page item.
    */
   function get_mandatory_default_value(
     p_cgr_id in adc_rule_groups.cgr_id%type, 
@@ -57,7 +96,13 @@ as
   end get_mandatory_default_value;
   
   
-  /* INTERFACE */
+  /**
+    Group: Public methods
+   */
+  /**
+    Procedure: reset
+      See <ADC_PAGE_STATE.reset>
+   */
   procedure reset
   as
   begin
@@ -69,6 +114,10 @@ as
   end reset;
   
   
+  /**
+    Procedure: set_value
+      See <ADC_PAGE_STATE.set_value>
+   */
   procedure set_value(
     p_cgr_id in adc_rule_groups.cgr_id%type, 
     p_cpi_id in adc_page_items.cpi_id%type,
@@ -81,7 +130,7 @@ as
     l_cpi_cit_id adc_page_items.cpi_cit_id%type;
     l_cpi_conversion adc_page_items.cpi_conversion%type;
     l_format_mask adc_util.ora_name_type;
-    l_conversion_necessary boolean := true;
+    l_string_value adc_util.max_char;
   begin
     pit.enter_optional('set_value',
       p_params => msg_params(
@@ -93,60 +142,40 @@ as
                     msg_param('p_format_mask', p_format_mask),
                     msg_param('p_throw_error', p_throw_error)));
                     
-    
-    -- Check whether page item is allowed to have a value and get the format mask for the firing item
+    -- Check whether page item is allowed to have a value and get the item type and format mask
     select cpi_cit_id, cpi_conversion
       into l_cpi_cit_id, l_cpi_conversion
       from adc_page_items
      where cpi_cgr_id = p_cgr_id
        and cpi_id = p_cpi_id
        and cpi_cit_id in (C_ITEM, C_APP_ITEM, C_NUMBER_ITEM, C_DATE_ITEM);
-       
-    -- Explicitly set the value and harmonize with the session state (fi when changing a session values during rule execution)
-    case
-    when p_number_value is not null and l_cpi_cit_id = C_NUMBER_ITEM then
-      l_format_mask := replace(coalesce(p_format_mask, l_cpi_conversion, C_DEFAULT_NUMBER_MASK), C_NUMBER_GROUP_MASK);
-      g_session_values(p_cpi_id).string_value := to_char(p_number_value, l_format_mask);
-      g_session_values(p_cpi_id).number_value := p_number_value;
-      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Number item ' || p_cpi_id || ' set to value ' || g_session_values(p_cpi_id).number_value || ', string vlue: ' || g_session_values(p_cpi_id).string_value));
-      l_conversion_necessary := false;
-    when p_date_value is not null and l_cpi_cit_id = C_DATE_ITEM then
-      l_format_mask := coalesce(p_format_mask, l_cpi_conversion, apex_application.g_date_format);
-      g_session_values(p_cpi_id).string_value := to_char(p_date_value, l_format_mask);
-      g_session_values(p_cpi_id).date_value := p_date_value;
-      l_conversion_necessary := false;
-    when p_value = C_FROM_SESSION_STATE then
+    
+    -- If requested, get the value from the session state
+    if p_value = C_FROM_SESSION_STATE then
       g_session_values(p_cpi_id).string_value := coalesce(utl_apex.get_string(p_cpi_id), get_mandatory_default_value(p_cgr_id, p_cpi_id));
     else
       g_session_values(p_cpi_id).string_value := p_value;
+    end if;
+    
+    -- Explicitly set the value and harmonize with the session state (fi when changing a session values during rule execution)
+    case
+    when l_cpi_cit_id = C_NUMBER_ITEM then
+      l_format_mask := replace(coalesce(p_format_mask, l_cpi_conversion, C_DEFAULT_NUMBER_MASK), C_NUMBER_GROUP_MASK);
+      l_string_value := coalesce(g_session_values(p_cpi_id).string_value, to_char(p_number_value, l_format_mask));
+      g_session_values(p_cpi_id).string_value := l_string_value;
+      g_session_values(p_cpi_id).number_value := coalesce(p_number_value, to_number(l_string_value, l_format_mask));
+      pit.info(msg.ADC_NUMBER_ITEM_SET, msg_args(p_cpi_id , to_char(g_session_values(p_cpi_id).number_value), g_session_values(p_cpi_id).string_value));
+    when l_cpi_cit_id = C_DATE_ITEM then
+      l_format_mask := coalesce(p_format_mask, l_cpi_conversion, apex_application.g_date_format);
+      l_string_value := coalesce(g_session_values(p_cpi_id).string_value, to_char(p_date_value, l_format_mask));
+      g_session_values(p_cpi_id).string_value := l_string_value;
+      g_session_values(p_cpi_id).date_value := coalesce(p_date_value, to_date(l_string_value, l_format_mask));
+      pit.info(msg.ADC_DATE_ITEM_SET, msg_args(p_cpi_id , to_char(g_session_values(p_cpi_id).date_value), g_session_values(p_cpi_id).string_value));
+    else
+      null; --g_session_values(p_cpi_id).string_value := p_value;
     end case;
     
-    -- In either case harmonize date or number value with the new value if passed in accordingly
-    if l_conversion_necessary then
-      case l_cpi_cit_id
-        when C_NUMBER_ITEM then        
-          if g_session_values(p_cpi_id).string_value is not null then
-            l_format_mask := replace(coalesce(p_format_mask, l_cpi_conversion, C_DEFAULT_NUMBER_MASK), C_NUMBER_GROUP_MASK);
-            g_session_values(p_cpi_id).number_value := to_number(g_session_values(p_cpi_id).string_value, l_format_mask); 
-            -- conversion successful, set formatted string in session state
-            apex_util.set_session_state(p_cpi_id, to_char(g_session_values(p_cpi_id).number_value, l_format_mask));
-          else
-            g_session_values(p_cpi_id).number_value := null;
-          end if;
-        when C_DATE_ITEM then
-          -- convert to date
-          if g_session_values(p_cpi_id).string_value is not null then
-            l_format_mask := coalesce(p_format_mask, l_cpi_conversion, apex_application.g_date_format);
-            g_session_values(p_cpi_id).date_value := to_date(g_session_values(p_cpi_id).string_value, l_format_mask);
-            -- conversion successful, set formatted string in session state
-            apex_util.set_session_state(p_cpi_id, to_char(g_session_values(p_cpi_id).date_value, l_format_mask));
-          else
-            g_session_values(p_cpi_id).date_value := null;
-          end if;
-        else
-          apex_util.set_session_state(p_cpi_id, g_session_values(p_cpi_id).string_value);
-      end case;
-    end if;
+    apex_util.set_session_state(p_cpi_id, g_session_values(p_cpi_id).string_value);
     
     pit.leave_optional;
   exception
@@ -188,6 +217,10 @@ as
   end set_value;
   
   
+  /**
+    Function: get_string
+      See <ADC_PAGE_STATE.get_string>
+   */
   function get_string(
     p_cgr_id in adc_rule_groups.cgr_id%type,
     p_cpi_id in adc_page_items.cpi_id%type)
@@ -213,6 +246,10 @@ as
   end get_string;
   
     
+  /**
+    Function: get_date
+      See <ADC_PAGE_STATE.get_date>
+   */
   function get_date(
     p_cgr_id in adc_rule_groups.cgr_id%type,
     p_cpi_id in adc_page_items.cpi_id%type,
@@ -236,13 +273,18 @@ as
     return g_session_values(p_cpi_id).date_value;
   end get_date;
   
-    
+      
+  /**
+    Function: get_number
+      See <ADC_PAGE_STATE.get_number>
+   */
   function get_number(
     p_cgr_id in adc_rule_groups.cgr_id%type,
     p_cpi_id in adc_page_items.cpi_id%type,
     p_format_mask in varchar2)
     return number
   as
+    l_value number;
   begin
     pit.enter_optional('get_number',
       p_params => msg_params(
@@ -258,9 +300,16 @@ as
     
     pit.leave_optional(p_params => msg_params(msg_param('Result', get_string(p_cgr_id, p_cpi_id))));
     return g_session_values(p_cpi_id).number_value;
+  exception
+    when NO_DATA_FOUND then
+      return null;
   end get_number;
   
   
+  /**
+    Function: get_changed_items_as_json
+      See <ADC_PAGE_STATE.get_changed_items_as_json>
+   */
   function get_changed_items_as_json
     return varchar2
   as
@@ -294,6 +343,10 @@ as
   end get_changed_items_as_json;
   
   
+  /**
+    Procedure: get_item_values_as_char_table
+      See <ADC_PAGE_STATE.get_item_values_as_char_table>
+   */
   procedure get_item_values_as_char_table(
     p_cgr_id in adc_rule_groups.cgr_id%type,
     p_cpi_list in varchar2,

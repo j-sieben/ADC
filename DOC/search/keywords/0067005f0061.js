@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("g_a",["Variable"],[["g_apex_action_row",,[["ADC_UI_DESIGNER Body",,,,0,"File:apex/packages/adc_ui_designer.pkb:ADC_UI_DESIGNER_Body.g_apex_action_row","SQLClass:ADC_UI_DESIGNER_Body:g_apex_action_row"]]]]);

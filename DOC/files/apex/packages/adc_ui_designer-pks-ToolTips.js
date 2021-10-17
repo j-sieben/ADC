@@ -1,0 +1,1 @@
+﻿NDContentPage.OnToolTipsLoaded({292:"<div class=\"NDToolTip TClass LSQL\"><div class=\"TTSummary\">Main package to administer ADC rules and related metadata.</div></div>"});

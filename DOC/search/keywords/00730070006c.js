@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("spl",["Class"],[["SPLITTER_PLUGIN",,[[,,,,0,"File:apex/packages/splitter_plugin.pks:SPLITTER_PLUGIN","SQLClass:SPLITTER_PLUGIN"]]]]);

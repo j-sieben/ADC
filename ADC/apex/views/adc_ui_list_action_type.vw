@@ -1,7 +1,7 @@
 create or replace force view adc_ui_list_action_type
 as
 with params as(
-       select utl_apex.get_number('CRA_CGR_ID') c_cgr_id
+       select utl_apex.get_number('CGR_ID') c_cgr_id
          from dual)
 select cat_name || case cat_active when adc_util.C_FALSE then ' (deprecated)' end d, cat_id r, ctg_description grp
   from adc_action_types_v

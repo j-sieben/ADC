@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("err",["Type"],[["error_stack_t",,[["ADC_INTERNAL Body",,,,0,"File:core/packages/adc_internal.pkb:ADC_INTERNAL_Body.error_stack_t","SQLClass:ADC_INTERNAL_Body:error_stack_t"]]]]);

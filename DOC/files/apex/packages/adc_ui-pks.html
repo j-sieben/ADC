@@ -8,31 +8,85 @@
 
 <body onload="NDLoader.OnLoad('Content');" class="NDPage NDContentPage">
 
-<a name="ADC_UI"></a><a name="Topic1"></a><div class="CTopic TClass LSQL first">
+<a name="ADC_UI"></a><a name="Topic560"></a><div class="CTopic TClass LSQL first">
  <div class="CTitle">ADC_UI</div>
- <div class="CBody"><p>Maintain ADC rules via an APEX frontend.&nbsp; This package implements the methods required to maintain ADC rule groups via an APEX application</p><p>Author: Juergen Sieben, ConDeS GmbH</p></div>
+ <div class="CBody"><p>Maintain ADC rules via an APEX frontend.&nbsp; This package implements the methods required to maintain ADC rule groups via an APEX application.</p><p>Author:: Juergen Sieben, ConDeS GmbH</p></div>
 </div>
 
-<a name="ADC_UI.Functions"></a><a name="Topic2"></a><div class="CTopic TGroup LSQL">
+<a name="ADC_UI.Functions"></a><a name="Topic6"></a><div class="CTopic TGroup LSQL">
  <div class="CTitle">Functions</div>
 </div>
 
-<a name="ADC_UI.C_TRUE"></a><a name="Topic3"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_UI.C_TRUE"></a><a name="Topic7"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">C_TRUE</div>
- <div id="NDPrototype3" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> C_TRUE</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.flag_type" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,20);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_util.flag_type</a></div></div>
- <div class="CBody"><p>Method for determining truth values. Wrapper around adc_util.C_TRUE</p></div>
+ <div id="NDPrototype7" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> C_TRUE</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.flag_type" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,262);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_util.flag_type</a></div></div>
+ <div class="CBody"><p>Method for determining truth values. Wrapper around <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.C_TRUE" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,282);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UTIL.C_TRUE</a></p></div>
 </div>
 
-<a name="ADC_UI.C_FALSE"></a><a name="Topic4"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_UI.C_FALSE"></a><a name="Topic8"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">C_FALSE</div>
- <div id="NDPrototype4" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> C_FALSE</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.flag_type" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,20);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_util.flag_type</a></div></div>
- <div class="CBody"><p>Method for determining truth values. Wrapper around adc_util.C_FALSE</p></div>
+ <div id="NDPrototype8" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> C_FALSE</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.flag_type" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,262);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_util.flag_type</a></div></div>
+ <div class="CBody"><p>Method for determining truth values. Wrapper around <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.C_FALSE" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,283);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UTIL.C_FALSE</a></p></div>
 </div>
 
-<a name="ADC_UI.designer_selection_changed"></a><a name="Topic5"></a><div class="CTopic TFunction LSQL last">
- <div class="CTitle">designer_selection_changed</div>
- <div id="NDPrototype5" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> designer_selection_changed</div></div>
- <div class="CBody"><p>Handles selection changes in the hierarchy tree to control the visual appearance of the page.</p><p>Is used to deduct the cgr from the selected entry in the designer tree.&nbsp; It then sets the value and refreshes the rule group report if the value has changed.&nbsp; Plus, it analyzes which level has been selected and calls the respective DESIGNER_SHOW_FORM method</p></div>
+<a name="ADC_UI.process_export_cgr"></a><a name="Topic15"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">process_export_cgr</div>
+ <div id="NDPrototype15" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_export_cgr</div></div>
+ <div class="CBody"><p>Method to download one or many rule groups as a zip file</p></div>
+</div>
+
+<a name="ADC_UI.process_export_cat"></a><a name="Topic16"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">process_export_cat</div>
+ <div id="NDPrototype16" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_export_cat</div></div>
+ <div class="CBody"><p>Method to download action type definitions as a zip file</p></div>
+</div>
+
+<a name="ADC_UI.get_export_type"></a><a name="Topic17"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">get_export_type</div>
+ <div id="NDPrototype17" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> get_export_type</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">varchar2</span></div></div>
+ <div class="CBody"><p>Method to calculate the initial export state based on session state settings</p><div class="CHeading">Returns</div><p>One of the states ALL|APP|SGR</p></div>
+</div>
+
+<a name="ADC_UI.validate_edit_cat"></a><a name="Topic20"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">validate_edit_cat</div>
+ <div id="NDPrototype20" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_cat</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
+ <div class="CBody"><p>Method to validate page EDIT_CAT</p><p>Is called to validate user data if the page is submitted. (CAT = ADC Action Types).</p></div>
+</div>
+
+<a name="ADC_UI.process_edit_cat"></a><a name="Topic21"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">process_edit_cat</div>
+ <div id="NDPrototype21" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_cat</div></div>
+ <div class="CBody"><p>Method to process page EDIT_CAT</p><p>Is called to persist user data if the page is submitted. (CAT = ADC Action Types).</p></div>
+</div>
+
+<a name="ADC_UI.validate_edit_cif"></a><a name="Topic22"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">validate_edit_cif</div>
+ <div id="NDPrototype22" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_cif</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
+ <div class="CBody"><p>Method to validate page EDIT_CIF</p><p>Is called to validate user data if the page is submitted. (CIF = ADC Action Item Focus).</p></div>
+</div>
+
+<a name="ADC_UI.process_edit_cif"></a><a name="Topic23"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">process_edit_cif</div>
+ <div id="NDPrototype23" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_cif</div></div>
+ <div class="CBody"><p>Method to process page EDIT_CIF</p><p>Is called to persist user data if the page is submitted. (CIF = ADC Action Item Focus).</p></div>
+</div>
+
+<a name="ADC_UI.validate_edit_ctg"></a><a name="Topic24"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">validate_edit_ctg</div>
+ <div id="NDPrototype24" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_ctg</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
+ <div class="CBody"><p>Method to validate page EDIT_CTG</p><p>Is called to validate user data if the page is submitted. (CTG = ADC Action Type Groups).</p></div>
+</div>
+
+<a name="ADC_UI.process_edit_ctg"></a><a name="Topic25"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">process_edit_ctg</div>
+ <div id="NDPrototype25" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_ctg</div></div>
+ <div class="CBody"><p>Method to process page EDIT_CTG</p><p>Is called to persist user data if the page is submitted. (CTG = ADC Action Type Groups).</p></div>
+</div>
+
+<a name="ADC_UI.set_action_export_cgr"></a><a name="Topic28"></a><div class="CTopic TFunction LSQL last">
+ <div class="CTitle">set_action_export_cgr</div>
+ <div id="NDPrototype28" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> set_action_export_cgr</div></div>
+ <div class="CBody"><p>Method to maintain APEX actions for page EXPORT_CGR.</p><p>Is called if relevant changes are reported to ADC.</p></div>
 </div>
 
 </body></html>

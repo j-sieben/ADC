@@ -13,12 +13,19 @@ as
   begin
     pit.enter_optional(
       p_params => msg_params(
-                    msg_param('p_javascript', substr(p_javascript, 1, 4000))));
+                    msg_param('p_javascript', p_javascript)));
 
     adc_api.add_javascript(p_javascript);
 
     pit.leave_optional;
   end add_javascript;
+  
+  
+  procedure clear_page_state
+  as
+  begin
+    adc_api.clear_page_state;
+  end clear_page_state;
 
 
   procedure exclusive_or(
@@ -220,7 +227,7 @@ as
       adc_api.execute_action(
         p_cat_id => 'REFRESH_AND_SET_VALUE',
         p_cpi_id => p_cpi_id,
-        p_param_1 => coalesce(p_item_value, C_EMPTY_STRING));
+        p_param_1 => p_item_value);
     else
       adc_api.execute_action(
         p_cat_id => 'REFRESH_ITEM',
@@ -336,11 +343,10 @@ as
   
   procedure set_item(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
-    p_item_value in varchar2,
+    p_item_value in varchar2 default null,
     p_jquery_selector in varchar2 default null,
     p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE)
   as
-    l_item_value utl_apex.max_char;
   begin
     pit.enter_optional(
       p_params => msg_params(
@@ -349,11 +355,9 @@ as
                     msg_param('p_jquery_selector', p_jquery_selector),
                     msg_param('p_allow_recursion', p_allow_recursion)));
     
-    l_item_value := coalesce(p_item_value, C_EMPTY_STRING);
-    
     adc_api.set_session_state(
       p_cpi_id => p_cpi_id, 
-      p_value => l_item_value,
+      p_value => p_item_value,
       p_jquery_selector => p_jquery_selector,
       p_allow_recursion => p_allow_recursion);
         
@@ -431,22 +435,35 @@ as
   end set_item_label;
 
 
-  procedure set_items_from_stmt(
+  procedure set_items_from_statement(
     p_cpi_id in adc_page_items.cpi_id%type,
-    p_stmt in varchar2)
+    p_statement in varchar2)
   as
   begin
     pit.enter_optional(
       p_params => msg_params(
                     msg_param('p_cpi_id', p_cpi_id),
-                    msg_param('p_stmt', substr(p_stmt, 1, 4000))));
+                    msg_param('p_statement', p_statement)));
 
-    adc_api.set_value_from_stmt(
+    adc_api.set_value_from_statement(
       p_cpi_id => p_cpi_id,
-      p_stmt => p_stmt);
+      p_statement => p_statement);
 
     pit.leave_optional;
-  end set_items_from_stmt;
+  end set_items_from_statement;
+
+
+  procedure set_items_from_cursor(
+    p_cursor in out nocopy sys_refcursor)
+  as
+  begin
+    pit.enter_optional;
+
+    adc_api.set_value_from_cursor(
+      p_cursor => p_cursor);
+
+    pit.leave_optional;
+  end set_items_from_cursor;
   
   
   procedure set_mandatory(
@@ -547,6 +564,24 @@ as
       
     pit.leave_optional;
   end show_item;
+  
+  
+  procedure show_notification(
+    p_message_name in varchar2,
+    p_msg_args in msg_args default null)
+  as
+  begin
+    pit.enter_optional(
+      p_params => msg_params(
+                    msg_param('p_message_name', p_message_name)));
+    
+    adc_api.execute_action(
+      p_cat_id => 'NOTIFY',
+      p_cpi_id => adc_util.C_NO_FIRING_ITEM,
+      p_param_1 => pit.get_message_text(p_message_name, p_msg_args));
+      
+    pit.leave_optional;
+  end show_notification;
 
 
   procedure stop_rule

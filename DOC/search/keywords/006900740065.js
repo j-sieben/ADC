@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("ite",["Constant"],[["Item",,[["ADC_UI_DESIGNER Body","Item and Region constants",,,0,"File:apex/packages/adc_ui_designer.pkb:ADC_UI_DESIGNER_Body.Item_and_Region_constants","SQLClass:ADC_UI_DESIGNER_Body:Item_and_Region_constants"]]]]);

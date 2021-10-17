@@ -4,16 +4,18 @@ as
 
   /**
     Package: ADC_UTIL
-    
-             Provides data types, constants and generic helper functions for ADC
+      Provides data types, constants and generic helper functions for ADC.
 
     Author::
       Juergen Sieben, ConDeS GmbH
    */
 
   /**
-    Types: Package Types
-      ora_name_type - Varchar2 with the same length as an Oracle name (varying between 30 byte in Oracle up until version 11 to 128 byte starting with version 12)
+    Group: Public types
+   */
+  /**
+    Types: Package types
+      ora_name_type - Varchar2 with the same length as an Oracle name (varying between 30 byte in Oracle until version 11 and 128 byte starting with version 12)
       sql_char - Max length of a sql varchar2.
       max_char - Max length of a PL/SQL varchar2
       flag_type - Persistable representation of a boolean flag. May be defined upon installation of ADC.
@@ -23,10 +25,16 @@ as
   subtype max_char is varchar2(32767 byte);
   subtype flag_type is &FLAG_TYPE.;
    
+   
   /**
-    Records: environment_rec
-              Record that defines environmental information about the actually executed rule
-              Is used in adc_validation for checks against the meta data of ADC
+    Type: environment_rec
+      Record that defines environmental information about the actually executed rule
+      Is used in adc_validation for checks against the meta data of ADC
+      
+    Properties:
+      cgr_id - ID of the rule group actually in use
+      app_id - APEX application ID
+      page_id - APEX application page ID
    */
   type environment_rec is record(
     cgr_id adc_rule_groups.cgr_id%type,
@@ -35,7 +43,10 @@ as
   
 
   /**
-    Constants: Package Constants
+    Group: Public constants
+   */
+  /**
+    Constants: Public constants
       C_PARAM_GROUP - Name of the parameter group used to bundle the ADC parameters;
       C_ADC - Name of the UI message group name used for translatable items
       
@@ -78,16 +89,19 @@ as
   C_DELIMITER constant varchar2(1 byte) := ',';
   C_CR constant varchar2(2 byte) := chr(10);
   
+  /**
+    Group: Public methods
+   */
   /** 
     Function: C_TRUE
-              Getter method to retrieve a TRUE value as a flag_type
+      Getter method to retrieve a TRUE value as a flag_type
    */
   function C_TRUE
     return flag_type;    
   
   /** 
     Function: C_FALSE
-              Getter method to retrieve a FALSE value as a flag_type
+      Getter method to retrieve a FALSE value as a flag_type
    */
   function C_FALSE
     return flag_type;
@@ -95,9 +109,9 @@ as
   
   /** 
     Function: C_HASH
-                Method to retrieve a replacement char for # character
-                Used to mask the # character to avoid page effects in UTL_TEXT.
-                When delivering the JavaScript code, the character will be replaced by the # character again
+      Method to retrieve a replacement char for # character
+      Used to mask the # character to avoid page effects in UTL_TEXT.
+      When delivering the JavaScript code, the character will be replaced by the # character again
    */
   function C_HASH
     return varchar2;
@@ -105,9 +119,9 @@ as
   
   /**
     Function: get_boolean
-                Helper to map different boolean values to TRUE or FALSE.
-                Is used to map "TRUTHY" values to true and "FALSY" value to false.
-                Used to stabilize im- and export of meta data between versions of ADC
+      Helper to map different boolean values to TRUE or FALSE.
+      Is used to map "TRUTHY" values to true and "FALSY" value to false.
+      Used to stabilize im- and export of meta data between versions of ADC
                 
     Parameter:
       p_bool - Boolean value that is to be converted
@@ -121,7 +135,7 @@ as
   
   /** 
     Function: bool_to_flag
-                Method to cast a boolean value to it's flag_type representation
+      Method to cast a boolean value to it's flag_type representation
                   
     Parameter: 
       p_bool - Boolean value to convert
@@ -132,9 +146,9 @@ as
   
   /**
     Function: to_bool
-                Helper to create a string adc_util.C_TRUE/FALSE based upon parameter value.
-                Is used in export scripts to replace the actual boolean value with a reference to this package.
-                This is required to make the export scripts eligible for any FLAG_TYPE.
+      Helper to create a string adc_util.C_TRUE/FALSE based upon parameter value.
+      Is used in export scripts to replace the actual boolean value with a reference to this package.
+      This is required to make the export scripts eligible for any FLAG_TYPE.
                 
     Parameter:
       p_bool - Flag to indicate which string is required
@@ -146,7 +160,7 @@ as
   
   /**
     Function to_number
-               Wrapper around TO_NUMBER that extracts a GROUP selector from the conversion map to avoid errors
+      Wrapper around TO_NUMBER that extracts a GROUP selector from the conversion map to avoid errors
                
     Parameters:
       p_number - Number string to convert
@@ -163,12 +177,12 @@ as
 
   /** 
     Function: clean_adc_name
-                Helper to sanitize any ADC name to comply with internal naming rules
-                Name that adheres to the following naming conventions:
-                - no quotes
-                - no blanks (replaced by underscores)
-                - all uppercase
-                - length limit 50
+      Helper to sanitize any ADC name to comply with internal naming rules
+      Name that adheres to the following naming conventions:
+      - no quotes
+      - no blanks (replaced by underscores)
+      - all uppercase
+      - length limit 50
     
     Parameter:
       p_name - Name to sanitize
@@ -183,7 +197,7 @@ as
   
   /** 
     Function: get_trans_item_name
-                Wrapper around PIT.get_trans_item_name that sets the trans item group to ADC
+      Wrapper around PIT.get_trans_item_name that sets the trans item group to ADC
                 
     Parameters:
       p_item - Item to translate
@@ -200,9 +214,9 @@ as
   
   /**
     Procedure: close_cursor
-                 Method to savely close a cursor
-                 The method checks whether the cursor is still open and closes it in this case.
-                
+      Method to savely close a cursor
+      The method checks whether the cursor is still open and closes it in this case.
+      
     Parameter:
       p_cur - Cursor which may still be open
    */
@@ -212,16 +226,15 @@ as
   
   /**
     Procedure: monitor_loop
-                 Method to monitor that loops can't go into infinite loop mode.
-                 If the parameters are NULL, a new monitor is instantiated. Within the 
-                 loop this method is called with a variable holding the amount of loops so far
-                 The method increments this variable and checks it against the maximally allowed
-                 loop operations. If it exceeds this limit, an exception is thrown
-                 
+      Method to monitor that loops can't go into infinite loop mode.
+      If the parameters are NULL, a new monitor is instantiated. Within the 
+      loop this method is called with a variable holding the amount of loops so far
+      The method increments this variable and checks it against the maximally allowed
+      loop operations. If it exceeds this limit, an exception is thrown
+      
     Parameters:
       p_counter - Optional variable that holds the amount of loops
       p_loop_name - Optional name of the the loop to monitor
-   * @usage  
    */
   procedure monitor_loop(
     p_counter in number default null,

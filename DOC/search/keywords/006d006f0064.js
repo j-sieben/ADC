@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("mod",["Constant"],[["Mode",,[["ADC_UI_DESIGNER Body","Mode and Action constants",,,0,"File:apex/packages/adc_ui_designer.pkb:ADC_UI_DESIGNER_Body.Mode_and_Action_constants","SQLClass:ADC_UI_DESIGNER_Body:Mode_and_Action_constants"]]]]);

@@ -134,8 +134,16 @@ prompt &s1.Create package ADC_UI
 @&pkg_dir.adc_ui.pks
 show errors
 
+prompt &s1.Create package SPLITTER_PLUGIN
+@&pkg_dir.splitter_plugin.pks
+show errors
+
 prompt &s1.Create package Body ADC_UI
 @&pkg_dir.adc_ui.pkb
+show errors
+
+prompt &s1.Create package body SPLITTER_PLUGIN
+@&pkg_dir.splitter_plugin.pkb
 show errors
 
 prompt &h2.Version specific installation

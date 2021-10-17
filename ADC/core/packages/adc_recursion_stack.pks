@@ -3,8 +3,10 @@ create or replace package adc_recursion_stack
   accessible by (package adc_internal)
 as
 
-  /** Package: ADC_RECURSION_STACK
-      This package separates the maintenance of the recursive stack from the core functionality
+  /** 
+    Package: ADC_RECURSION_STACK
+      This package separates the maintenance of the recursive stack from the core functionality.
+      It is accessible by <ADC_INTERNAL> only.
       
       A recursion stack is used to control recursive rule execution in that the list of
       firing items for which the rules have to be evaluated is collected.
@@ -31,16 +33,18 @@ as
       Juergen Sieben, ConDeS GmbH
    */
   
-  
+  /**
+    Group: Public methods
+   */
   /**
     Procedure: reset
-                 Method to reset the recursion stack.
-                 
-                 This method performs the following tasks:
-                 
-                 - reset the recursion stack
-                 - detect whether the selected rule group supports recursion or not
-                 - put the initial firing item onto the recursion stack.
+      Method to reset the recursion stack.
+      
+      This method performs the following tasks:
+      
+      - reset the recursion stack
+      - detect whether the selected rule group supports recursion or not
+      - put the initial firing item onto the recursion stack.
                  
     Parameters:
       p_cgr_id - ID of the rule group. Is used to check whether recursion is allowed for this rule group
@@ -53,10 +57,10 @@ as
   
   /** 
     Procedure: push_firing_item
-                 Method to register a firing item onto the recursion stack.
-                 
-                 If the actually selected action type does not allow for recursion, it will
-                 not be pushed, resulting in no recursive rule evaluation
+      Method to register a firing item onto the recursion stack.
+      
+      If the actually selected action type does not allow for recursion, it will
+      not be pushed, resulting in no recursive rule evaluation
                  
     Parameters:
       p_cgr_id - ID of the rule group. 
@@ -71,10 +75,10 @@ as
   
   /**
     Procedure: pop_firing_item
-                 Method to pop one or all items from the recursive stack.
-                 
-                 Normal use case is to pop the actual firing item after it has been succesfully evaluated.
-                 If the rule execution signals a STOP_RULE, all recursive items are removed from the stack
+      Method to pop one or all items from the recursive stack.
+      
+      Normal use case is to pop the actual firing item after it has been succesfully evaluated.
+      If the rule execution signals a STOP_RULE, all recursive items are removed from the stack
                  
     Parameter:
       p_all - Flag to indicate whether all items should be popped (adc_util.C_TRUE) or not (adc_util.C_FALSE)
@@ -86,7 +90,7 @@ as
   
   /**
     Function: get_next
-                Method to retrieve the name of the first entry of the recursion stack.
+      Method to retrieve the name of the first entry of the recursion stack.
                 
     Returns:
       Name of the first entry of the recursion stack
@@ -97,7 +101,7 @@ as
   
   /**
     Function: get_level
-                Method to retrieve the actual recursion level for notification purposes.
+      Method to retrieve the actual recursion level for notification purposes.
    */
   function get_level
     return pls_integer;
@@ -105,13 +109,13 @@ as
     
   /** 
     Function: get_firing_items_as_json
-                Method get all firing items back in  JSON
-                
-                --- Code
-                [{"id":"#ID#","value":"#VALUE#"},..]
-                ---
-                
-                Is used to collect all firing items in JSON to send it back to the client
+      Method get all firing items back in  JSON
+      
+      --- Code
+      [{"id":"#ID#","value":"#VALUE#"},..]
+      ---
+      
+      Is used to collect all firing items in JSON to send it back to the client
                 
     Returns:
       JSON string containing the JSON representation of the CHAR_TABLE

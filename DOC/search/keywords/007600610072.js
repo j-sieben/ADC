@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("var",["Variable"],[["variables",,[["ADC_UI Body","State variables",,,0,"File:apex/packages/adc_ui.pkb:ADC_UI_Body.State_variables","SQLClass:ADC_UI_Body:State_variables"],["ADC_UI_DESIGNER Body","State variables",,,0,"File:apex/packages/adc_ui_designer.pkb:ADC_UI_DESIGNER_Body.State_variables","SQLClass:ADC_UI_DESIGNER_Body:State_variables"]]]]);

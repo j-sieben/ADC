@@ -8,60 +8,66 @@
 
 <body onload="NDLoader.OnLoad('Content');" class="NDPage NDContentPage">
 
-<a name="ADC_APEX_ACTIONS"></a><a name="Topic136"></a><div class="CTopic TClass LSQL first">
+<a name="ADC_APEX_ACTIONS"></a><a name="Topic511"></a><div class="CTopic TClass LSQL first">
  <div class="CTitle">ADC_APEX_ACTIONS</div>
  <div class="CBody"><p>Helper package to maintain APEX Actions from within ADC. The package offers a set of methods to adjust the APEX Action and creates a JavaScript snippet to change the APEX Action code on the page</p><div class="CHeading">Author</div><p>Juergen Sieben, ConDeS GmbH</p></div>
 </div>
 
-<a name="ADC_APEX_ACTIONS.Functions"></a><a name="Topic205"></a><div class="CTopic TGroup LSQL">
+<a name="ADC_APEX_ACTIONS.Functions"></a><a name="Topic512"></a><div class="CTopic TGroup LSQL">
  <div class="CTitle">Functions</div>
 </div>
 
-<a name="ADC_APEX_ACTIONS.get_action_script"></a><a name="Topic141"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_APEX_ACTIONS.get_action_script"></a><a name="Topic513"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">get_action_script</div>
- <div id="NDPrototype141" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> get_action_script</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">varchar2</span></div></div>
+ <div id="NDPrototype513" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> get_action_script</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">varchar2</span></div></div>
  <div class="CBody"><p>Method to retrieve the created JavaScript.</p><div class="CHeading">Returns</div><p>JavaScript code to include in the ADC answer to adjust APEX Action settings on the page.</p></div>
 </div>
 
-<a name="ADC_APEX_ACTIONS.set_href"></a><a name="Topic149"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_APEX_ACTIONS.set_href"></a><a name="Topic514"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">set_href</div>
- <div id="NDPrototype149" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_href(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_href&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_href<span class="SHKeyword">%type</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype514" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_href(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_href&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_href<span class="SHKeyword">%type</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Method to set the HREF param in an ACTION type APEX-Action and resets the ACTION attribute to NULL.</p><div class="CHeading">Parameter</div><p>p_href&nbsp; Link that is set within the action</p></div>
 </div>
 
-<a name="ADC_APEX_ACTIONS.set_action"></a><a name="Topic156"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_APEX_ACTIONS.set_action"></a><a name="Topic515"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">set_action</div>
- <div id="NDPrototype156" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_action(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_action&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_action<span class="SHKeyword">%type</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype515" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_action(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_action&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_action<span class="SHKeyword">%type</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Method to set the ACTION param in an ACTION type APEX-Action and resets the HREF attribute to NULL.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">p_href</td><td class="CDLDefinition"><p>Link that is set within the action</p></td></tr></table></div>
 </div>
 
-<a name="ADC_APEX_ACTIONS.execute_immediate"></a><a name="Topic161"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_APEX_ACTIONS.execute_immediate"></a><a name="Topic516"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">execute_immediate</div>
- <div id="NDPrototype161" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> execute_immediate(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_inline&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td><td class="PDefaultValueSeparator">&nbsp;<span class="SHKeyword">default</span>&nbsp;</td><td class="PDefaultValue last">false</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype516" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> execute_immediate(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_inline&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td><td class="PDefaultValueSeparator">&nbsp;<span class="SHKeyword">default</span>&nbsp;</td><td class="PDefaultValue last">false</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Method to execute the action, either immediately or after setting all attributes first.</p><p>Use this method to execute the action you're working on directly.&nbsp; When calling this method with &lt;p_inline&gt; = TRUE it is possible to execute the action and adjust action settings directly afterwards, e.g. disabling the action.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">p_inline<div class="CDLParameterType"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></div></td><td class="CDLDefinition"><p>Optional flag to indicate whether the command to execute the action shall be</p></td></tr></table><ul><li><p>TRUE: included directly when this method is called or</p></li><li><p>FALSE (Default): after all action settings, before the additional JavaScript code</p></li></ul></div>
 </div>
 
-<a name="ADC_APEX_ACTIONS.set_title"></a><a name="Topic166"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_APEX_ACTIONS.set_label"></a><a name="Topic517"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">set_label</div>
+ <div id="NDPrototype517" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_label(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_label&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_label<span class="SHKeyword">%type</span>,</td><td></td><td class="last"></td></tr><tr><td class="PName first">p_is_key&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td><td class="PDefaultValueSeparator">&nbsp;<span class="SHKeyword">default</span>&nbsp;</td><td class="PDefaultValue last">false</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Method to adjust the action label.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">p_label<div class="CDLParameterType"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_label<span class="SHKeyword">%type</span></div></td><td class="CDLDefinition"><p>Label that is to be set for this action</p></td></tr><tr><td class="CDLEntry">p_is_key<div class="CDLParameterType"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></div></td><td class="CDLDefinition"><p>Flag to distinguish plain label text (false) from reference to APEX_MESSAGE (true). Default to true.</p></td></tr></table></div>
+</div>
+
+<a name="ADC_APEX_ACTIONS.set_title"></a><a name="Topic518"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">set_title</div>
- <div id="NDPrototype166" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_title(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_title&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_title<span class="SHKeyword">%type</span>,</td><td></td><td class="last"></td></tr><tr><td class="PName first">p_is_key&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td><td class="PDefaultValueSeparator">&nbsp;<span class="SHKeyword">default</span>&nbsp;</td><td class="PDefaultValue last">false</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype518" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_title(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_title&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_title<span class="SHKeyword">%type</span>,</td><td></td><td class="last"></td></tr><tr><td class="PName first">p_is_key&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td><td class="PDefaultValueSeparator">&nbsp;<span class="SHKeyword">default</span>&nbsp;</td><td class="PDefaultValue last">false</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Method to adjust the action title.</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">p_title<div class="CDLParameterType"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_title<span class="SHKeyword">%type</span></div></td><td class="CDLDefinition"><p>Title that is to be set for this action</p></td></tr><tr><td class="CDLEntry">p_is_key<div class="CDLParameterType"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></div></td><td class="CDLDefinition"><p>Flag to distinguish plain label text (false) from reference to APEX_MESSAGE (true). Default to true.</p></td></tr></table></div>
 </div>
 
-<a name="ADC_APEX_ACTIONS.set_disabled"></a><a name="Topic171"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_APEX_ACTIONS.set_disabled"></a><a name="Topic519"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">set_disabled</div>
- <div id="NDPrototype171" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_disabled(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_disabled&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype519" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_disabled(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_disabled&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Method to disable or enable an action.</p><div class="CHeading">Parameter</div><p>p_disabled&nbsp; Flag to indicate whether</p><ul><li><p>TRUE: The action is disabled or</p></li><li><p>FALSE: The action is enabled</p></li></ul></div>
 </div>
 
-<a name="ADC_APEX_ACTIONS.set_visible"></a><a name="Topic177"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_APEX_ACTIONS.set_visible"></a><a name="Topic520"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">set_visible</div>
- <div id="NDPrototype177" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_visible(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_visible&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype520" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_visible(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_visible&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Method to control the visibility of the UI-elements attached to the action.</p><div class="CHeading">Parameter</div><p>p_visible&nbsp; Flag to indicate whether</p><ul><li><p>TRUE: The action is invisible or</p></li><li><p>FALSE: The action is visible</p></li></ul></div>
 </div>
 
-<a name="ADC_APEX_ACTIONS.add_script"></a><a name="Topic179"></a><div class="CTopic TFunction LSQL last">
+<a name="ADC_APEX_ACTIONS.add_script"></a><a name="Topic521"></a><div class="CTopic TFunction LSQL last">
  <div class="CTitle">add_script</div>
- <div id="NDPrototype179" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> add_script(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_script&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">varchar2</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype521" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> add_script(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_script&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">varchar2</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Method to add a script that has to be executed after the settings for the actions have taken place.</p><div class="CHeading">Parameter</div><p>p_script&nbsp; JavaScript-chunk (without javascript:-Prefix) that shall be executed</p></div>
 </div>
 

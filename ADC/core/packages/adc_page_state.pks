@@ -5,46 +5,52 @@ as
 
   /** 
     Package: ADC_PAGE_STATE
-               Package to implement the page state API
-               This package separates the maintenance of the page state from the core functionality
-               
-               The Page State differs from the session state in that it contains all items required by the
-               ADC rule, not necessary anything that is in session state. It also persists date and number values
-               as the respective type and not as a string only as the session state does.
-               It is designed as a cache to prevent recurring conversion and environment switches during the 
-               processing of a request which may call the page state more than once.
-               
-               If a value is set via ADC, it harmonizes the cache and the session state for the changed items.
-               Any changed value in the page state is reported back to the APEX page as part of the response
-               and thus harmonized with the visual state on the page.
+      Package to implement the page state API. It is accessible by packages <ADC_INTERNAL> and <ADC_API> only.
+      This package separates the maintenance of the page state from the core functionality.
+      
+      The Page State differs from the session state in that it contains all items required by the
+      ADC rule, not necessary anything that is in session state. It also persists date and number values
+      as the respective type and not as a string only as the session state does.
+      It is designed as a cache to prevent recurring conversion and environment switches during the 
+      processing of a request which may call the page state more than once.
+      
+      If a value is set via ADC, it harmonizes the cache and the session state for the changed items.
+      Any changed value in the page state is reported back to the APEX page as part of the response
+      and thus harmonized with the visual state on the page.
                
     Author::
       Juergen Sieben, ConDeS GmbH
    */
    
   /**
-    Constants: Package constants
+    Group: Public constants
+   */
+  /**
+    Constants:
       C_FROM_SESSION_STATE - Indicator to retrieve the actual item value from the session state
    */
   C_FROM_SESSION_STATE constant adc_util.ora_name_type := 'FROM_SESSION_STATE';
 
   /**
+    Group: Public methods
+   */
+  /**
     Procedure: reset
-                 Method to reset the page state cache.
-                 
-                 Is called before and after a request is processed to reset any page state values
+      Method to reset the page state cache.
+      
+      Is called before and after a request is processed to reset any page state values
    */
   procedure reset;
   
   
   /** 
     Procedure: set_value
-                 Method to set a page item value both in session state and in page state cache.
-                 
-                 Analyzes, whether the firing item has got a conversion mask. If so,
-                 
-                 - it tries to convert it and catches any conversion errors
-                 - it converts the item value and stores a formatted version in the session state
+      Method to set a page item value both in session state and in page state cache.
+      
+      Analyzes, whether the firing item has got a conversion mask. If so,
+      
+      - it tries to convert it and catches any conversion errors
+      - it converts the item value and stores a formatted version in the session state
                  
     Parameters:
       p_cgr_id - ID of the rule group, necessary to read format masks from the ADC metadata
@@ -76,10 +82,10 @@ as
   
   /** 
     Function: get_string
-                Getter method to retrieve a page state value as string.
-                
-                As this method is called during initialization as well and the firing item value is requested,
-                it must assure that no value is returned if C_NO_FIRING_ITEM is requested.
+      Getter method to retrieve a page state value as string.
+      
+      As this method is called during initialization as well and the firing item value is requested,
+      it must assure that no value is returned if C_NO_FIRING_ITEM is requested.
    
     Parameters:
       p_cgr_id - Id of the rule group to enable the logic to decide upon possible conversion and format masks
@@ -96,7 +102,7 @@ as
     
   /** 
     Function: get_date
-                Getter method to retrieve a page state value as date.
+      Getter method to retrieve a page state value as date.
    
     Parameters:
       p_cgr_id - Id of the rule group to enable the logic to decide upon possible conversion and format masks
@@ -116,7 +122,7 @@ as
     
   /** 
     Function: get_number
-                Getter method to retrieve a page state value as number.
+      Getter method to retrieve a page state value as number.
    
     Parameters:
       p_cgr_id - Id of the rule group to enable the logic to decide upon possible conversion and format masks
@@ -136,13 +142,13 @@ as
     
   /**
     Function: get_changed_items_as_json
-                Method get all changed items back in JSON
-                
-                --- Code
-                [{"id":"#ID#","value":"#VALUE#"},..]
-                ---
-                
-                Is used to collect all changed items along with their value in JSON to send it back to the client.
+      Method get all changed items back in JSON
+      
+      --- Code
+      [{"id":"#ID#","value":"#VALUE#"},..]
+      ---
+      
+      Is used to collect all changed items along with their value in JSON to send it back to the client.
                 
     Returns:
       JSON string containing the JSON representation of the CHAR_TABLE
@@ -153,10 +159,10 @@ as
   
   /**
     Procedure: get_item_values_as_char_table
-                 Method to retrieve a list of session state values from a comma delimited item list.
-                 
-                 This method is used as a helper to get the session state values of a comma separated list of page item names.
-                 It is called by EXCLUSIVE_OR and NOT_NULL to check whether the respective rules are obeyed.
+      Method to retrieve a list of session state values from a comma delimited item list.
+      
+      This method is used as a helper to get the session state values of a comma separated list of page item names.
+      It is called by EXCLUSIVE_OR and NOT_NULL to check whether the respective rules are obeyed.
                  
     Parameters:
       p_cgr_id - Id of the rule group to enable the logic to decide upon possible conversion and format masks

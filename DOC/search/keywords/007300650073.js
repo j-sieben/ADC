@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("ses",["Type"],[["session_value_rec",,[["ADC_PAGE_STATE Body",,,,0,"File:core/packages/adc_page_state.pkb:ADC_PAGE_STATE_Body.session_value_rec","SQLClass:ADC_PAGE_STATE_Body:session_value_rec"]]]]);

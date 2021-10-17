@@ -4,34 +4,41 @@ as
 
   /**
     Package: ADC 
-    
-             Implements the public interface of ADC and a wrapper around ADC_INTERNAL.EXECUTE_ACTION for system defined action types.
-             Is called by ADC dynamic pages declaratively and directly from PL/SQL
+      Implements the public interface of ADC and a wrapper around ADC_API.EXECUTE_ACTION for system defined action types.
+      Is called by ADC dynamic pages declaratively and directly from PL/SQL
 
     Author::
       Juergen Sieben, ConDeS GmbH
    */
   
   /**
+    Group: Public methods
+   */
+  /**
     Procedure: add_javascript
-    
-               Registers JavaScript code for execution. 
-               Is used if PL/SQL code that is part of the application logic needs to register JavaScript for execution. 
-               In that case, EXECUTE_JAVASCRIPT may not be as elegant to use.
+      Registers JavaScript code for execution. 
+      Is used if PL/SQL code that is part of the application logic needs to register JavaScript for execution. 
+      In that case, EXECUTE_JAVASCRIPT may not be as elegant to use.
 
     Parameters:
       p_javascript - JavaScript to execute on page
    */
   procedure add_javascript(
     p_javascript in varchar2);
+    
+    
+  /**
+    Procedure: clear_page_state
+      Method to clear the ADC page state for the actual page
+   */
+  procedure clear_page_state;
 
 
   /** 
     Procedure: exclusive_or
-    
-               Method to assure that exactly one or at most one page item of a selection of page items contains a value.
-               Is used to assert that at least one page item of a list of items contains a value. If an error is raised, this
-               can be used to proceed with an exception handler within the ADC rule.
+      Method to assure that exactly one or at most one page item of a selection of page items contains a value.
+      Is used to assert that at least one page item of a list of items contains a value. If an error is raised, this
+      can be used to proceed with an exception handler within the ADC rule.
                  
     Parameters:
       p_cpi_id - Page item ID that is selected to show the error message
@@ -51,7 +58,7 @@ as
 
 
   /** Function: exclusive_or
-                Function overload. Is used to be able to utilize EXCLUSIVE_OR within an ADC rule condition (used in SQL)
+        Function overload. Is used to be able to utilize EXCLUSIVE_OR within an ADC rule condition (used in SQL)
                 
     Parameters: 
       p_value_list - colon-separated list of page item IDs to check
@@ -68,15 +75,15 @@ as
   
   /** 
     Procedure: handle_bulk_errors
-                 Method to encapsulate PIT collection mode error treatment
-                 
-                 Is used to retrieve the collection of messages collected during validation of a use case in PIT collect mode.
-                 The method retrieves the messages and maps the error codes to page items passed in via <P_MAPPING>.
-                 If found, it shows the exception inline with field and notification to those items, otherwise it shows the
-                 message without item reference in the notification area only.
-                 Supports #LABEL# replacement, page item name may be passed in with or without page prefix.
-                 Similar to UTL_APEX.HANDLE_BULK_ERRORS, but uses SCT to show the messages dynamically as opposed to UTL_APEX
-                 that encapsulates the messages in the validation life cycle step of APEX.
+      Method to encapsulate PIT collection mode error treatment
+      
+      Is used to retrieve the collection of messages collected during validation of a use case in PIT collect mode.
+      The method retrieves the messages and maps the error codes to page items passed in via <P_MAPPING>.
+      If found, it shows the exception inline with field and notification to those items, otherwise it shows the
+      message without item reference in the notification area only.
+      Supports #LABEL# replacement, page item name may be passed in with or without page prefix.
+      Similar to UTL_APEX.HANDLE_BULK_ERRORS, but uses SCT to show the messages dynamically as opposed to UTL_APEX
+      that encapsulates the messages in the validation life cycle step of APEX.
                  
      Parameter: 
        p_mapping - CHAR_TABLE instance with error code - page item names couples, according to DECODE function
@@ -87,7 +94,7 @@ as
 
   /**
     Procedure: hide_item
-                 Hides the referenced page element or all page elements referenced by a jQuery expression
+      Hides the referenced page element or all page elements referenced by a jQuery expression
                  
     Parameters:
       p_cpi_id - Optional element to be hidden, defaults to <ADC_UTIL>.<C_NO_FIRING_ITEM>, if p_jquery_selector filled
@@ -100,13 +107,13 @@ as
     
   /** 
     Procedure: initialize_form_region
-                Method to initialize a form region with data
-                Is used to dynamically initialize the values of a form region.
-                It requires
-                
-                - A static ID for the form region, as it is possible to have more than one form region on a page
-                - At least one page item that is flagged as the primary key column
-                - Flag EDITABLE of the form region set to true
+      Method to initialize a form region with data
+      Is used to dynamically initialize the values of a form region.
+      It requires
+      
+      - A static ID for the form region, as it is possible to have more than one form region on a page
+      - At least one page item that is flagged as the primary key column
+      - Flag EDITABLE of the form region set to true
                 
     Parameter:
       p_static_id - Static ID of the form region to initialize
@@ -117,8 +124,8 @@ as
 
   /** 
     Procedure: not_null
-                 Method to assure that at least on page item of a list of page items contains a value.
-                 Is used to make sure that at least one page item of a list of page items contains a value.
+      Method to assure that at least on page item of a list of page items contains a value.
+      Is used to make sure that at least one page item of a list of page items contains a value.
                  
     Parameters:
       p_cpi_id - Page item ID that is selected to show the error message
@@ -137,7 +144,7 @@ as
 
   /** 
     Function: not_null
-                Overload as function.Is used to be able to utilize NOT_NULL within an ADC rule condition (used in SQL)
+      Overload as function. Is used to be able to utilize NOT_NULL within an ADC rule condition (used in SQL)
                 
     Parameters:
       p_value_list - List of page item IDs to check
@@ -154,15 +161,15 @@ as
     
   /** 
     Procedure: remember_page_status
-                 Persists the value of the actually visible or explicitly requested input fields for later comparison.
-                 
-                 Is used to persist the actual page status of selected page items in an ADC internal MAP.
-                 After having persited the status, everal action types react if they detect changes
-                 between the persisted and actual page state.
-                 
-                 In contrast to the built in option of APEX, this method can be called at any time and will
-                 persist the actual status for later comparison. This is useful in dynamic forms if the content
-                 of the form is changed by ADC.
+      Persists the value of the actually visible or explicitly requested input fields for later comparison.
+      
+      Is used to persist the actual page status of selected page items in an ADC internal MAP.
+      After having persited the status, everal action types react if they detect changes
+      between the persisted and actual page state.
+      
+      In contrast to the built in option of APEX, this method can be called at any time and will
+      persist the actual status for later comparison. This is useful in dynamic forms if the content
+      of the form is changed by ADC.
    
     Parameters:
       p_page_items - Optional JSON array containing a list of page item IDs that are to be persisted
@@ -177,11 +184,11 @@ as
 
   /** 
     Procedure: refresh_item
-                 Updates an element and sets the session state.
-                 
-                 Is used to refresh a page item. In addition to the refresh methods, this method allows
-                 to set a page item to a defined value according to P_ITEM_VAL after refresh.
-                 Is usable for page items and refreshable regions
+      Updates an element and sets the session state.
+      
+      Is used to refresh a page item. In addition to the refresh methods, this method allows
+      to set a page item to a defined value according to P_ITEM_VAL after refresh.
+      Is usable for page items and refreshable regions
    
     Parameters:
       p_cpi_id - Page item to be updated
@@ -200,8 +207,8 @@ as
 
   /** 
     Procedure: register_error
-                 Method to register an error. Is called to register an error onto the error stack. 
-                 May be called from PL/SQL directly or implicitly as the consequence of an internal error.
+      Method to register an error. Is called to register an error onto the error stack. 
+      May be called from PL/SQL directly or implicitly as the consequence of an internal error.
                  
     Parameters:
       p_cpi_id - ID of the page item that is referenced by the error (or DOCUMENT)
@@ -216,8 +223,8 @@ as
 
   /**
     Procedure: register_error
-                 Overload to allow for PIT messages to be used. Is called to register an error onto the error stack. 
-                 May be called from PL/SQL directly or implicitly as the consequence of an internal error.
+      Overload to allow for PIT messages to be used. Is called to register an error onto the error stack. 
+      May be called from PL/SQL directly or implicitly as the consequence of an internal error.
                  
     Parameters:
       p_cpi_id - ID of the page item that is referenced by the error (or DOCUMENT)
@@ -232,8 +239,8 @@ as
 
   /** 
     Procedure: select_region_entry
-                Selects a selectable in a region such as in an interactive grid, interactive report, classic report or tree region.
-                Is used to select a selectable entry in a region that supports selection. As of now, interactive grid and tree are supported.
+      Selects a selectable in a region such as in an interactive grid, interactive report, classic report or tree region.
+      Is used to select a selectable entry in a region that supports selection. As of now, interactive grid and tree are supported.
                 
     Parameters:
       p_region_id - Static ID of the region you want to set a selectable at
@@ -248,7 +255,7 @@ as
 
   /** 
     Procedure: set_focus
-                 Sets the focus to the element defined in <p_cpi_id>
+      Sets the focus to the element defined in <p_cpi_id>
                  
     Parameter:
       p_cpi_id - element to focus on
@@ -259,11 +266,11 @@ as
 
   /** 
     Procedure: set_item
-                 Sets the referenced page element to the value passed as parameter.
-                 Is used to set the value of a page item in session state. Overloaded versions to cater for String, Number and Date values.
-                 
-                 Parameter <p_allow_recursion> is used to surpress recursive execution of rules based on the page item.
-                 Default is to not surpress recursion, but in difficult rule situations, it may be necessary to set it to FALSE
+      Sets the referenced page element to the value passed as parameter.
+      Is used to set the value of a page item in session state. Overloaded versions to cater for String, Number and Date values.
+      
+      Parameter <p_allow_recursion> is used to surpress recursive execution of rules based on the page item.
+      Default is to not surpress recursion, but in difficult rule situations, it may be necessary to set it to FALSE
    
     Parameters:
       p_cpi_id - Optional element ID to be set, defaults to adc_util.C_NO_FIRING_ITEM if <p_jquery_selector> is set
@@ -273,7 +280,7 @@ as
    */
   procedure set_item(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
-    p_item_value in varchar2,
+    p_item_value in varchar2 default null,
     p_jquery_selector in varchar2 default null,
     p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE);
     
@@ -294,7 +301,7 @@ as
 
   /** 
     Procedure: set_item_label
-                 Sets a field label to the transferred value
+      Sets a field label to the transferred value
                  
     Parameters:
       p_cpi_id - Optional element ID to be set (defaults to adc_util.C_NO_FIRING_ITEM, if <p_jquery_selector> is set)
@@ -309,29 +316,44 @@ as
 
   /** 
     Procedure: set_items_from_stmt
-                 Procedure to set the session state, based on an SQL statement.
-                 Is used to set one or more item values based on a SQL query.
-                 Two operation modes:
-                 
-                 - P_CPI_ID is set to a page item ID
-                   In this case the SQL query must return a scalar value
-                 - P_CPI_ID ist DOCUMENT oder NULL
-                   In this mode the query is allowed to return more than one column but one row only.
-                   The column names must match page item column source names. 
-                   If a match is found, the respective element is set to the column value
+      Procedure to set the session state, based on an SQL statement.
+      Is used to set one or more item values based on a SQL query.
+      Two operation modes:
+      
+      - P_CPI_ID is set to a page item ID
+        In this case the SQL query must return a scalar value
+      - P_CPI_ID ist DOCUMENT oder NULL
+        In this mode the query is allowed to return more than one column but one row only.
+        The column names must match page item column source names. 
+        If a match is found, the respective element is set to the column value
    
     Parameters:
       p_cpi_id - Optional ID of the page item. If NULL, the item ID is taken from the column names of <p_stmt>
-      p_stmt - SELECT statement to retrieve the new page item value or values
+      p_statement - SELECT statement to retrieve the new page item value or values
    */
-  procedure set_items_from_stmt(
+  procedure set_items_from_statement(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
-    p_stmt in varchar2);
+    p_statement in varchar2);
+
+
+  /** 
+    Procedure: set_items_from_cursor
+      Procedure to set the session state, based on an SQL statement.
+      
+      The query is allowed to return more than one column but one row only.
+      The column names must match page item column source names. 
+      If a match is found, the respective element is set to the column value
+   
+    Parameters:
+      p_cursor - Opened cursor with the respective column names and values
+   */
+  procedure set_items_from_cursor(
+    p_cursor in out nocopy sys_refcursor);
 
 
   /** 
     Procedure: set_mandatory
-                 Makes a page element a mandatory element and activates mandatory field validation.
+      Makes a page element a mandatory element and activates mandatory field validation.
                  
     Parameters:
       p_cpi_id - Optional element ID to be set (defaults to adc_util.C_NO_FIRING_ITEM, if <p_jquery_selector> is set)
@@ -346,7 +368,7 @@ as
 
   /** 
     Procedure: set_optional
-                 Makes a page element an optional element and suspends mandatory field validation.
+      Makes a page element an optional element and suspends mandatory field validation.
                  
     Parameters:
       p_cpi_id - Optional element ID to be set (defaults to adc_util.C_NO_FIRING_ITEM, if <p_jquery_selector> is set)
@@ -359,7 +381,7 @@ as
   
   /** 
     Procedure: set_region_content
-                 Sets the HTML content of a page region
+      Sets the HTML content of a page region
    
     Parameters:
       p_region_id - ID of the page region
@@ -372,7 +394,7 @@ as
 
   /** 
     Procedure: show_hide_item
-                 Hides the element from P_JQUERY_SEL_SHOW on the page and the elements from P_JQUERY_SEL_HIDE
+      Hides the element from P_JQUERY_SEL_SHOW on the page and the elements from P_JQUERY_SEL_HIDE
    
     Parameters:
       p_jquery_sel_show - jQuery expression to display multiple elements
@@ -385,7 +407,7 @@ as
 
   /** 
     Procedure: show_item
-                 Displays the referenced page element
+      Displays the referenced page element
    
     Parameters:
       p_cpi_id - Optional element ID to be set (defaults to adc_util.C_NO_FIRING_ITEM, if <p_jquery_selector> is set)
@@ -394,6 +416,19 @@ as
   procedure show_item(
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
     p_jquery_selector in varchar2 default null);
+
+
+  /** 
+    Procedure: show_notification
+      Shows a success or failure notification
+   
+    Parameters:
+      p_message_name - Name of the message. Must be an existing PIT message name
+      p_msg_args - Optional message arguments
+   */
+  procedure show_notification(
+    p_message_name in varchar2,
+    p_msg_args in msg_args default null);
     
     
   /** 
@@ -409,21 +444,21 @@ as
 
   /** 
     Procedure: stop_rule
-                 Method to stop further execution of the active rule. Is used to stop the execution of an ADC rule if an error occured.
+      Method to stop further execution of the active rule. Is used to stop the execution of an ADC rule if an error occured.
    */
   procedure stop_rule;
 
 
   /**
     Procedure: validate_page
-                 Procedure for preparing the submit of the page.
-                 This procedure should be used only when ADC fully manages a page.
-                 fully manages a page. The procedure checks all page elements,
-                 set by ADC to MANDATORY against the session state.
-                 If a mandatory field is NULL, an error is registered and the page is prevented from being sent.
-                 the page is prevented.
-                 If a rule action is marked as a validation, this action gets executed by this method as well, 
-                 preventing that a page is submitted while still errors are on the page.
+      Procedure for preparing the submit of the page.
+      This procedure should be used only when ADC fully manages a page.
+      fully manages a page. The procedure checks all page elements,
+      set by ADC to MANDATORY against the session state.
+      If a mandatory field is NULL, an error is registered and the page is prevented from being sent.
+      the page is prevented.
+      If a rule action is marked as a validation, this action gets executed by this method as well, 
+      preventing that a page is submitted while still errors are on the page.
    */
   procedure validate_page;
   

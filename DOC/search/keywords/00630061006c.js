@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("cal",["Function"],[["calculate_parameter_value",,[["ADC_INTERNAL Body",,,,0,"File:core/packages/adc_internal.pkb:ADC_INTERNAL_Body.calculate_parameter_value","SQLClass:ADC_INTERNAL_Body:calculate_parameter_value"]]]]);

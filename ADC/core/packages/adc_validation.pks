@@ -1,28 +1,33 @@
 create or replace package adc_validation
   authid definer
-  accessible by (package adc_plugin, package adc_ui, package adc_internal, package adc_admin)
+  accessible by (package adc_util, package adc_admin)
 as 
 
   /**
     Package: ADC_VALIDATION
-               Implements validation functionality for the internal meta data adminsitration.
+      Implements validation functionality for the internal meta data adminsitration.
+      
+      Accessible by <ADC_UTIL> and <ADC_ADMIN> only.
     
     Author::
       Juergen Sieben, ConDeS GmbH
    */
 
   /**
+    Group: Publi methods
+   */
+  /**
     Procedure: validate_param_lov
-                 Method checks that a LOV view exists.
-                 
-                 For a action parameter of type SELECT_LIST, a LOV view is required to calculate
-                 the actual display and return values. It must also provide a column with the
-                 CGR_ID the values relate to to allow for filtering.
-                 This method checks that a LOV view with the correct column structure 
-                 that is able to deliver LOV data exists.
-                 
-                 This view must adhere to the naming convention ADC_PARAM_LOV_<PARAMETER_TYPE>
-                 
+      Method checks that a LOV view exists.
+      
+      For a action parameter of type SELECT_LIST, a LOV view is required to calculate
+      the actual display and return values. It must also provide a column with the
+      CGR_ID the values relate to to allow for filtering.
+      This method checks that a LOV view with the correct column structure 
+      that is able to deliver LOV data exists.
+      
+      This view must adhere to the naming convention ADC_PARAM_LOV_<PARAMETER_TYPE>
+      
     Example:                 
       For a parameter called PAGE_ITEM with parameter type SELECT_LIST, a view called
       ADC_PARAM_LOV_PAGE_ITEM must exist with a D, R and CGR_ID column.
@@ -41,8 +46,8 @@ as
   
   /**
     Procedure: validate_parameter
-                 Method to check an entered parameter value against meta data and 
-                 format it in order to directly use it in rule actions.
+      Method to check an entered parameter value against meta data and 
+      format it in order to directly use it in rule actions.
                  
     Parameters:
       p_value - Parameter value to check and format

@@ -43,6 +43,18 @@ as
   end add_javascript;
   
   
+  procedure clear_page_state
+  as
+  begin
+    pit.enter_mandatory;
+    
+    apex_util.clear_page_cache(utl_apex.get_page_id);
+    adc_page_state.reset;
+    
+    pit.leave_mandatory;
+  end clear_page_state;
+  
+  
   procedure execute_action(
     p_cat_id in adc_action_types.cat_id%type,
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
@@ -198,7 +210,7 @@ as
     if p_cpt_id is not null then
       l_stmt := utl_text.bulk_replace(C_STMT, char_table(
                   'CPT_ID', lower(p_cpt_id),
-                  'CGR_ID', p_cgr_id));
+                  'CGR_ID', coalesce(p_cgr_id, 0)));
     else
       l_stmt := 'select null d, null r from dual';
     end if;
@@ -297,9 +309,9 @@ as
       from dual;
       
     pit.log_state(msg_params(msg_param('Statement', l_stmt)));
-    adc_internal.set_value_from_stmt(
+    adc_internal.set_value_from_statement(
       p_cpi_id => null, 
-      p_stmt => l_stmt, 
+      p_statement => l_stmt, 
       p_allow_recursion => adc_util.C_FALSE);
     
     pit.leave_mandatory;
@@ -444,6 +456,8 @@ as
       p_params => msg_params(
                     msg_param('p_cpi_id', p_cpi_id),
                     msg_param('p_value', p_value),
+                    msg_param('p_number_value', p_number_value),
+                    msg_param('p_date_value', p_date_value),
                     msg_param('p_allow_recursion', p_allow_recursion),
                     msg_param('p_jquery_selector', p_jquery_selector)));
                     
@@ -459,22 +473,36 @@ as
   end set_session_state;
   
 
-  procedure set_value_from_stmt(
+  procedure set_value_from_statement(
     p_cpi_id in adc_page_items.cpi_id%type,
-    p_stmt in varchar2)
+    p_statement in varchar2)
   as
   begin
     pit.enter_mandatory(
       p_params => msg_params(
                     msg_param('p_cpi_id', p_cpi_id),
-                    msg_param('p_stmt', p_stmt)));
+                    msg_param('p_statement', p_statement)));
 
-    adc_internal.set_value_from_stmt(
+    adc_internal.set_value_from_statement(
       p_cpi_id => p_cpi_id,
-      p_stmt => p_stmt);
+      p_statement => p_statement,
+      p_allow_recursion => adc_util.C_FALSE);
 
     pit.leave_mandatory;
-  end set_value_from_stmt;
+  end set_value_from_statement;
+  
+
+  procedure set_value_from_cursor(
+    p_cursor in out nocopy sys_refcursor)
+  as
+  begin
+    pit.enter_mandatory;
+
+    adc_internal.set_value_from_cursor(
+      p_cursor => p_cursor);
+
+    pit.leave_mandatory;
+  end set_value_from_cursor;
   
   
   procedure stop_rule

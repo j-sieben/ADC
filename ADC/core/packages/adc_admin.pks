@@ -4,8 +4,7 @@ as
 
   /**
     Package: ADC_ADMIN
-    
-             Main package to administer ADC rules and related metadata.
+      Main package to administer ADC rules and related metadata.
 
     Author::
       Juergen Sieben, ConDeS GmbH
@@ -25,17 +24,17 @@ as
   C_APP_GROUPS constant adc_util.ora_name_type := 'APP_GROUPS';
   C_PAGE_GROUP constant adc_util.ora_name_type := 'PAGE_GROUP';
 
-  -- Group: Helper Functions
+  -- Group: Helper Methods
   /**
     Function: map_id
-                Method to map technical IDs upon import of rule groups.
-                As it is not known beforhand which ID an entry in a table will get, this method maintains a mapping table
-                that maps the original ID to the newly created IDs from a sequence.
-                
-                If the ID passed in is not found in the table, it returns the newly created ID.
-                If the ID is found in the table, the method returns the mapped ID.
-                Before an import of a rule group can take place, this method needs to be called with a NULL parameter to
-                initialize a new mapping table.
+      Method to map technical IDs upon import of rule groups.
+      As it is not known beforhand which ID an entry in a table will get, this method maintains a mapping table
+      that maps the original ID to the newly created IDs from a sequence.
+      
+      If the ID passed in is not found in the table, it returns the newly created ID.
+      If the ID is found in the table, the method returns the mapped ID.
+      Before an import of a rule group can take place, this method needs to be called with a NULL parameter to
+      initialize a new mapping table.
 
     Parameter:
       p_id - Optional ID to map to a new ID. If NULL, the mapping list is initialized
@@ -44,17 +43,39 @@ as
     p_id in number default null)
     return number;
     
+    
+  /**
+    Procedure: add_translation
+      Method to add translated data.
+      Is used to add translated names and descriptions for existing entries in the tables of ADC
+                 
+    Parameters:
+      p_table_shortcut - Prefix that is used in the respective table. Will prefix the translated PTI_ID
+      p_item_id - Name of the item for which a translation needs to be added
+      p_pmg_name - Name of the language. One of the Oracle supported language names
+      p_name - Translation for names
+      p_display_name - Translation for display names
+      p_description - Translation for descriptions and help texts
+   */
+  procedure add_translation(
+    p_table_shortcut in adc_util.ora_name_type,
+    p_item_id in adc_util.ora_name_type,
+    p_pml_name pit_translatable_item.pti_pml_name%type,
+    p_name in pit_translatable_item.pti_name%type,
+    p_display_name in pit_translatable_item.pti_display_name%type,
+    p_description in pit_translatable_item.pti_description%type);
+    
   
-  -- Group: Rule Group Functions
+  -- Group: Rule Group Methods
   /**
     Procedure; merge_rule_group
-                 Administration of RULE GROUPS. Is used to create a rule group.
+      Administration of RULE GROUPS. Is used to create a rule group.
 
     Parameters:
       p_cgr_app_id - APEX application id
       p_cgr_page_id - APEX application page id
       p_cgr_id - Optional technical ID of the rule group. Upon script based import this parameter is used as
-   *             a foreign key for rules in order to organize the relationship even if new IDs are created
+                 a foreign key for rules in order to organize the relationship even if new IDs are created
      p_cgr_with_recursion - Optional flag to indicate whehter this rule allows recursive calls
      p_cgr_active - Optional flag to indicate, whether this rule group is actually used. Defaults to ADC_UTIL.C_TRUE
    */
@@ -64,10 +85,10 @@ as
     p_cgr_id in adc_rule_groups.cgr_id%type default null,
     p_cgr_with_recursion in adc_rule_groups.cgr_with_recursion%type default adc_util.C_TRUE,
     p_cgr_active in adc_rule_groups.cgr_active%type default adc_util.C_TRUE);
-
+    
   /**
     Procedure: merge_rule_group
-                 Overlaod with a rowtype record.
+      Overlaod with a rowtype record.
     
     Parameter:
       p_row - Row record
@@ -78,7 +99,7 @@ as
 
   /**
     Procedure: delete_rule_group
-                 Is called from the ADC UI to remove a rule group
+      Is called from the ADC UI to remove a rule group
 
     Parameter:
       p_cgr_id - Technical ID of the rule group to delete
@@ -88,7 +109,7 @@ as
 
   /**
     Procedure: delete_rule_group
-                 Overlaod with a rowtype record.
+      Overlaod with a rowtype record.
     
     Parameter:
       p_row - Row record
@@ -98,7 +119,7 @@ as
 
   /**
     Procedure: validate_rule_group
-                 Method validates a newly created or updated rule group tupel
+      Method validates a newly created or updated rule group tupel
     
     Parameter:
       p_row - Row record
@@ -114,7 +135,7 @@ as
 
   /**
     Function: validate_rule_group
-                Method checks all rules of a rule group to find invalid rules. Is called before a rule group is exported.
+      Method checks all rules of a rule group to find invalid rules. Is called before a rule group is exported.
    
     Parameter:
       p_cgr_id - Rule group ID to check
@@ -129,13 +150,13 @@ as
 
   /**
     Procedure: propagate_rule_change
-                 Method to propagate that a rule has changed.
-                 
-                 Is used to propagate any rule change after a rule has been edited.
-                 Method checks whether rule group is valid, maintains the internal page item mappings and
-                 recreates the rule group decision table of the rule group.
-                 
-                 The export script calls this method automatically after a rule group has been imported completely
+      Method to propagate that a rule has changed.
+      
+      Is used to propagate any rule change after a rule has been edited.
+      Method checks whether rule group is valid, maintains the internal page item mappings and
+      recreates the rule group decision table of the rule group.
+      
+      The export script calls this method automatically after a rule group has been imported completely
    
     Parameter:
       p_cgr_id - ID of the rule group that has changed
@@ -146,7 +167,7 @@ as
 
   /** 
     Function: export_rule_group
-                Method to export one rule group. If called, the respective rule group is exported as a CLOB instance.
+      Method to export one rule group. If called, the respective rule group is exported as a CLOB instance.
                 
     Parameters:
       p_cgr_id  Rule group ID of the rule group that is to be exported
@@ -163,13 +184,13 @@ as
 
   /** 
     Function: export_rule_groups
-                Method to export one or many rule groups.
-                
-                Based on the parameters passed in this method will export one or more rule groups.
-                
-                - If no parameter is passed in, all existing rule groups are exported.
-                - If only parameter P_CGR_APP_ID is passed in all rule groups of the respective APEX application are exported.
-                - If parameters P_CGR_APP_ID and P_CGR_PAGE_ID is passed in only the rule group of the respecite APEX application page are exported.
+      Method to export one or many rule groups.
+      
+      Based on the parameters passed in this method will export one or more rule groups.
+      
+      - If no parameter is passed in, all existing rule groups are exported.
+      - If only parameter P_CGR_APP_ID is passed in all rule groups of the respective APEX application are exported.
+      - If parameters P_CGR_APP_ID and P_CGR_PAGE_ID is passed in only the rule group of the respecite APEX application page are exported.
    
     Parameters:
       p_cgr_app_id - Optional APEX application ID of the application of which all rule groups are to be exported
@@ -197,9 +218,9 @@ as
 
   /**
     Procedure: preoare_rule_group_import
-                 Method to prepare a rule group import.
-                 This method is called before a script based import of a rule group occurs to make sur that the actual
-                 application ID of the referenced application is used. This ID is taken using the application alias
+      Method to prepare a rule group import.
+      This method is called before a script based import of a rule group occurs to make sur that the actual
+      application ID of the referenced application is used. This ID is taken using the application alias
                  
     Parameters:
       p_workspace - Workspace name of the workspace the application is to be installed at
@@ -211,7 +232,7 @@ as
 
   /**
     Procedure: prepare_rule_group_import
-                 Overload, is used when no application alias is used but the ID of the application is known upon installation time
+      Overload, is used when no application alias is used but the ID of the application is known upon installation time
                  
     Parameters:
       p_workspace - Workspace name of the workspace the application is to be installed at
@@ -223,7 +244,7 @@ as
 
   /**
     Procedure: prepare_rule_group_import
-                 Overload, is used when application ID and page ID is known
+      Overload, is used when application ID and page ID is known
                  
     Parameters:
       p_cgr_app_id - Application ID
@@ -235,10 +256,10 @@ as
 
 
 
-  -- Group: Rule Functions
+  -- Group: Rule Methods
   /**
     Procedure: merge_rule
-                 Administration of RULES
+      Administration of RULES
     
     Parameters:
       p_cru_id - ID of the rule
@@ -260,7 +281,7 @@ as
 
   /**
     Procedure: merge_rule
-                 Overload with a row record
+      Overload with a row record
                  
     Parameter:
       p_row - Row record
@@ -270,7 +291,7 @@ as
 
   /**
     Procedure: delete_rule
-                 Deletes a rule
+      Deletes a rule
                  
     Parameter:
       p_cru_id - ID of the rule to delete
@@ -280,7 +301,7 @@ as
 
   /**
     Procedure: delete_rule
-                 Overload with a row record
+      Overload with a row record
                  
     Parameter:
       p_row - Row record
@@ -290,7 +311,7 @@ as
     
   /**
     Procedure: validate_rule_condition
-                 Method to validate a rule condition. Is called from VALIDATE_RULE as well
+      Method to validate a rule condition. Is called from VALIDATE_RULE as well
                  
     Parameter:
       p_row - Row record
@@ -304,7 +325,7 @@ as
 
   /**
     Procedure: validate_rule
-                 Method to validate a rule
+      Method to validate a rule
                  
     Parameter:
       p_row - Row record
@@ -321,8 +342,8 @@ as
 
   /**
     Procedure: resequence_rule
-                 Helper to resequence rules and rule actions.
-                 Is called automatically upon change of a rule to resequence all entries in steps of 10
+      Helper to resequence rules and rule actions.
+      Is called automatically upon change of a rule to resequence all entries in steps of 10
                  
     Parameter:
       p_cru_id - Rule group ID
@@ -331,10 +352,10 @@ as
     p_cru_id in adc_rules.cru_id%type);
 
 
-  -- Group: Rule Action Functions
+  -- Group: Rule Action Methods
   /**
     Procedure: merge_rule_action
-                 Administration of RULE ACTIONS
+      Administration of RULE ACTIONS
                  
     Parameters:
       p_cra_id - ID of the rule action
@@ -368,7 +389,7 @@ as
 
   /**
     Procedure: merge_rule_action
-                 Overload with a row record.
+      Overload with a row record.
                  
     Parameter:
       p_row - Row record
@@ -378,7 +399,7 @@ as
 
   /**
     Procedure: delete_rule_action
-                 Deletes a Rule Action
+      Deletes a Rule Action
                  
     Parameter:
       p_cra_id - ID of the rule action to delete
@@ -388,7 +409,7 @@ as
 
   /**
     Procedure: delete_rule_action
-                 Overload with a row record.
+      Overload with a row record.
                  
     Parameter:
       p_row - Row record
@@ -398,7 +419,7 @@ as
 
   /** 
     Procedure: validate_rule_action
-                 Method to validate a rule action
+      Method to validate a rule action
                  
     Parameter:
       p_row - Row record
@@ -408,15 +429,16 @@ as
       CRA_CGR_ID_MISSING - if Parameter CRA_CGR_ID IS NULL
       CRA_CPI_ID_MISSING - if Parameter CRA_CPI_ID IS NULL
       CRA_CAT_ID_MISSING - if Parameter CRA_CAT_ID IS NULL
+      ADC_RULE_ACTION_EXISTS - if combination of attributes CRA_CGR_ID, CRA_CRU_ID, CRA_CPI_ID, CRA_CAT_ID and CRA_ON_ERROR already exists for this rule.
    */
   procedure validate_rule_action(
     p_row in adc_rule_actions%rowtype);
 
 
-  -- Group: Action Type Functions
+  -- Group: Action Type Methods
   /**
     Procedure: merge_action_type_group
-                 Administration of ACTION TYPE GROUPS
+      Administration of ACTION TYPE GROUPS
                  
     Parameters:
       p_ctg_id - ID of the action type group
@@ -432,7 +454,7 @@ as
 
   /**
     Procedure: merge_action_type_group
-                 Overload with a row record
+      Overload with a row record
                  
     Parameter:
       p_row - Row record
@@ -442,7 +464,7 @@ as
 
   /**
     Procedure: delete_action_type_group
-                 Overload with a row record
+      Overload with a row record
                  
     Parameter:
       p_ctg_id - ID of the action type group to delete
@@ -452,7 +474,7 @@ as
 
   /**
     Procedure: delete_action_type_group
-                 Overload with a row record
+      Overload with a row record
                  
     Parameter:
       p_row - Row record
@@ -462,7 +484,7 @@ as
 
   /**
     Procedure: validate_action_type_group
-                 Validates an Action Type Group
+      Validates an Action Type Group
                  
     Parameter:
       p_row - Row record
@@ -477,7 +499,7 @@ as
 
   /**
     Procedure: merge_action_param_type
-                 Administration of ACTION PARAMETER TYPES
+      Administration of ACTION PARAMETER TYPES
                  
     Parameters:
       p_cpt_id - ID of the action parameter type
@@ -499,7 +521,7 @@ as
 
   /**
     Procedure: merge_action_param_type
-                 Overload with a row record
+      Overload with a row record
                  
     Parameter:
       p_row - Row record
@@ -509,7 +531,7 @@ as
 
   /**
     Procedure: delete_action_param_type
-                 Overload with a row record
+      Overload with a row record
                  
     Parameter:
       p_cpt_id - ID of the Action Parameter Type to delete
@@ -519,7 +541,7 @@ as
 
   /**
     Procedure: delete_action_param_type
-                 Overload with a row record
+      Overload with a row record
                  
     Parameter:
       p_row - Row record
@@ -529,7 +551,7 @@ as
     
   /**
     Procedure: validate_action_param_type
-                 VAlidates and Action Parameter Type
+      Validates and Action Parameter Type
                  
     Errors:
       msg.ADC_PARAM_LOV_MISSING - if LOV view is required but missing
@@ -544,7 +566,7 @@ as
 
   /**
     Procedure: merge_action_item_focus
-                 Method for generating an ITEM focus. Used to define the ITEM focus of an action
+      Method for generating an ITEM focus. Used to define the ITEM focus of an action
                  
     Parameters:
       p_cif_id - ID of the item focus
@@ -566,7 +588,7 @@ as
 
   /**
     Procedure: merge_action_item_focus
-                 Overload with a row record
+      Overload with a row record
                  
     Parameter:
       p_row - Row record
@@ -576,7 +598,7 @@ as
 
   /**
     Procedure: delete_action_item_focus
-                 Overload with a row record
+      Overload with a row record
                  
     Parameter:
       p_cif_id - ID of the Action Item Focus to delete
@@ -586,7 +608,7 @@ as
 
   /**
     Procedure: delete_action_item_focus
-                 Overload with a row record
+      Overload with a row record
                  
     Parameter:
       p_row - Row record
@@ -596,7 +618,7 @@ as
 
   /**
     Procedure: validate_action_item_focus
-                 Overload with a row record
+      Overload with a row record
                  
     Parameter:
       p_row - Row record
@@ -607,7 +629,7 @@ as
 
   /**
     Procedure: merge_action_type
-                 Administration of ACTION TYPES
+      Administration of ACTION TYPES
                  
     Paarmeters:
       p_cat_id - ID of the action type
@@ -637,7 +659,7 @@ as
 
   /**
     Procedure: merge_action_type
-                 Overload with a row record
+      Overload with a row record
                  
     Parameter:
       p_row - Row record
@@ -647,7 +669,7 @@ as
 
   /**
     Procedure: delete_action_type
-                 Deletes an Action Type
+      Deletes an Action Type
                  
     Parameter:
       p_cat_id - ID of the action type to delete
@@ -657,7 +679,7 @@ as
 
   /**
     Procedure: delete_action_type
-                 Overload with a row record
+      Overload with a row record
                  
     Parameter:
       p_row - Row record
@@ -667,7 +689,7 @@ as
     
   /**
     Procedure: validate_action_type
-                 Validates and Action Type
+      Validates and Action Type
                  
     Parameter:
       p_row - Row record
@@ -684,7 +706,7 @@ as
 
   /**
     Function: export_action_types
-                Method to export an action type. Creates a BLOB instance with the requested action types for export.
+      Method to export an action type. Creates a BLOB instance with the requested action types for export.
                 
     Parameter:
       p_cat_is_editable - Controls, which ADC rules to export:
@@ -700,7 +722,7 @@ as
 
   /**
     Procedure: merge_action_parameter
-                 Adminsitration of ACTION PARAMETERS
+      Adminsitration of ACTION PARAMETERS
                  
     Parameters:
       p_cap_cat_id - Reference to ADC_ACTION_TYPE
@@ -724,7 +746,7 @@ as
 
   /**
     Procedure: merge_action_parameter
-                 Overload with a row record
+      Overload with a row record
                  
     Parameter:
       p_row - Row record
@@ -734,7 +756,7 @@ as
 
   /**
     Procedure: delete_action_parameter
-                 Deletes an Action Parameter
+      Deletes an Action Parameter
                  
     Parameter:
       p_cap_cat_id - ID of the Action Type the parameter belongs to
@@ -748,7 +770,7 @@ as
 
   /**
     Procedure: delete_action_parameter
-                 Overload with a row record
+      Overload with a row record
                  
     Parameter:
       p_row - Row record
@@ -758,10 +780,10 @@ as
 
   /**
     Procedure: delete_action_parameters
-                 Method to remove all parameters for an action type.
-                 Is used to remove any existing action parameters prior to adding then again.
-                 This is necessary to prevent PK violations and to remove any parameters
-                 which are no longer required.
+      Method to remove all parameters for an action type.
+      Is used to remove any existing action parameters prior to adding then again.
+      This is necessary to prevent PK violations and to remove any parameters
+      which are no longer required.
                  
     Parameter:
       p_cap_cat_id - Reference to ADC_ACTION_TYPE
@@ -771,7 +793,7 @@ as
 
   /**
     Procedure: validate_action_parameter
-                 Validates an Action Parameter
+      Validates an Action Parameter
                  
     Parameter:
       p_row - Row record
@@ -782,7 +804,7 @@ as
 
   /**
     Procedure: merge_page_item_type
-                 Administration of PAGE ITEM TYPES
+      Administration of PAGE ITEM TYPES
                  
     Parameters:
       p_cit_id - Technical ID of the item type
@@ -806,7 +828,7 @@ as
     
   /**
     Procedure: merge_page_item_type
-                 Overload with a row record
+      Overload with a row record
                  
     Parameter:
       p_row - Row record
@@ -816,7 +838,7 @@ as
 
   /**
     Procedure: delete_page_item_type
-                 Deletes a Page Item Type
+      Deletes a Page Item Type
                  
     Parameter:
       p_row - Row record
@@ -826,7 +848,7 @@ as
     
   /**
     Procedure: validate_page_item_type
-                 Validates an Page Item Type
+      Validates an Page Item Type
                  
     Parameter:
       p_row - Row record
@@ -835,10 +857,10 @@ as
     p_row in adc_page_item_types_v%rowtype);
     
 
-  -- Group: APEX Action Functions
+  -- Group: APEX Action Methods
   /**
     Procedure: merge_apex_action_type
-                 Administration of APEX ACTION TYPES
+      Administration of APEX ACTION TYPES
                  
     Parameters:
       p_cty_id - Technical ID
@@ -854,7 +876,7 @@ as
 
   /**
     Procedure: merge_apex_action_type
-                 Overload with a rowtype record.
+      Overload with a rowtype record.
                  
     Parameter:
       p_row - Row record
@@ -864,7 +886,7 @@ as
 
   /**
     Procedure: delete_apex_action_type
-                 Deletes an APEX Action Type
+      Deletes an APEX Action Type
                  
     Parameter:
       p_cty_id - ID of the APEX Action Type
@@ -874,7 +896,7 @@ as
 
   /**
     Procedure: delete_apex_action_type
-                 Overload with a rowtype record.
+      Overload with a rowtype record.
                  
     Parameter:
       p_row - Row record
@@ -884,7 +906,7 @@ as
 
   /**
     Procedure: validate_apex_action_type
-                 Validates an APEX Action Type
+      Validates an APEX Action Type
                  
     Parameter:
       p_row - Row record
@@ -895,7 +917,7 @@ as
 
   /**
     Procedure: merge_apex_action
-                 Administration of APEX ACTIONS
+      Administration of APEX ACTIONS
                  
     Parameters:
       p_caa_cgr_id - Reference to a rule group
@@ -954,7 +976,7 @@ as
 
   /**
     Procedure: merge_apex_action
-                 Overload with a row record
+      Overload with a row record
                  
     Parameter:
       p_row - Row record
@@ -966,7 +988,7 @@ as
 
   /**
     Procedure: delete_apex_action
-                 Deletes an APEX Action
+      Deletes an APEX Action
                  
     Parameter:
       p_caa_id - ID of the APEX Action to delete
@@ -976,7 +998,7 @@ as
 
   /**
     Procedure: delete_apex_action
-                 Overload with a row record.
+      Overload with a row record.
                  
     Parameter:
       p_row - Row record
@@ -986,7 +1008,7 @@ as
 
   /**
     Procedure: validate_apex_action
-                 Validates an APEX Action Type
+      Validates an APEX Action Type
                  
     Parameter:
       p_row - Row record
@@ -997,7 +1019,7 @@ as
 
   /** 
     Procedure: merge_apex_action_item
-                 Administration of APEX ACTION ITEMS
+      Administration of APEX ACTION ITEMS
                  
     Parameters:
       p_cai_caa_id - Reference to a adc_apex_actions
@@ -1013,7 +1035,7 @@ as
 
   /**
     Procedure: merge_apex_action_item
-                 Overload with a row record.
+      Overload with a row record.
                  
     Parameter:
       p_row - Row record
@@ -1023,7 +1045,7 @@ as
 
   /**
     Procedure: delete_apex_action_item
-                 Deletes an APEX Action Item
+      Deletes an APEX Action Item
                  
     Parameter:
       p_cai_caa_id - ID of the APEX Action Item to delete
@@ -1033,7 +1055,7 @@ as
 
   /**
     Procedure: delete_apex_action_item
-                 Overload with a row record.
+      Overload with a row record.
                  
     Parameter:
       p_row - Row record
@@ -1043,36 +1065,13 @@ as
 
   /**
     Procedure: validate_apex_action_item
-                 Validates an APEX Action Item
+      Validates an APEX Action Item
                  
     Parameter:
       p_row - Row record
    */
   procedure validate_apex_action_item(
     p_row in adc_apex_action_items%rowtype);
-    
-
-  -- Group: Translation Functions
-  /**
-    Procedure: add_translation
-                 Method to add translated data.
-                 Is used to add translated names and descriptions for existing entries in the tables of ADC
-                 
-    Parameters:
-      p_table_shortcut - Prefix that is used in the respective table. Will prefix the translated PTI_ID
-      p_item_id - Name of the item for which a translation needs to be added
-      p_pmg_name - Name of the language. One of the Oracle supported language names
-      p_name - Translation for names
-      p_display_name - Translation for display names
-      p_description - Translation for descriptions and help texts
-   */
-  procedure add_translation(
-    p_table_shortcut in adc_util.ora_name_type,
-    p_item_id in adc_util.ora_name_type,
-    p_pml_name pit_translatable_item.pti_pml_name%type,
-    p_name in pit_translatable_item.pti_name%type,
-    p_display_name in pit_translatable_item.pti_display_name%type,
-    p_description in pit_translatable_item.pti_description%type);
 
 end adc_admin;
 /
