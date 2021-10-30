@@ -3,7 +3,7 @@ as
 
   /**
     Package: ADC_UI_DESIGNER  Body
-               Implementation of the GUI logic of the ADC APEX applications ADC Designer
+      Implementation of the GUI logic of the ADC APEX applications ADC Designer
 
     Author::
       Juergen Sieben, ConDeS GmbH
@@ -739,7 +739,7 @@ as
         p_cpi_id => C_REGION_HIERARCHY,
         p_set_item => adc_util.C_FALSE);
     when substr(adc_api.get_event_data, 1, 1) = '{' then
-      -- Event data is JSON. Indicates that an APEX Action has called the mehtod. Extract node type and -id
+      -- Event data is JSON. Indicates that an APEX Action has called the method. Extract node type and -id
       g_environment.target_mode := adc_api.get_event_data('targetMode');
       g_environment.action_mode := coalesce(adc_api.get_event_data('actionMode'), adc_api.get_event_data('targetMode'));
       g_environment.node_id := to_number(adc_api.get_event_data('id'));

@@ -18,25 +18,6 @@ as
     Author::
       Juergen Sieben, ConDeS GmbH
    */
-   
-  $IF adc_util.C_WITH_UNIT_TESTS $THEN
-  /* Setter/getter to switch package to test mode
-   * %param  p_mode  Switch to toggle test mode
-   * %usage  For automated tests, this switch controls wehther ADC fills an object structure with the outcome of
-   *         the processing. This is easier and saver than parsing OWA streams
-   */
-  procedure set_test_mode(
-    p_mode in boolean default false);    
-    
-  function get_test_mode
-    return boolean;
-    
-  /** Method to retrieve the result of the last action
-   * %return Object structure that contains the result of the process.
-   */
-  function get_test_result
-    return ut_adc_result;
-  $END
   
   /* CORE FUNCTIONALITY wrapper around ADC_INTERNAL
    * Methods are in alphabetical order.
@@ -90,7 +71,8 @@ as
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
     p_param_1 in adc_rule_actions.cra_param_1%type default null,
     p_param_2 in adc_rule_actions.cra_param_2%type default null,
-    p_param_3 in adc_rule_actions.cra_param_3%type default null);
+    p_param_3 in adc_rule_actions.cra_param_3%type default null,
+    p_allow_recursion in adc_util.flag_type default adc_util.C_FALSE);
         
 
   /** 
@@ -346,6 +328,22 @@ as
     return adc_util.flag_type;
     
     
+  /**
+    Procedure: raise_item_event
+                 Method to register an item as a firing item, effectively raising its related event. 
+                 
+                 Registering an item as a firing explicitly serves as a mechanism
+                 to evaluate all ADC rules related to this item. Effectively, this simulates
+                 raising the assigned event on the given item. This is useful 
+                 if it is required to execute ADC rules without changing the item's value.
+
+    Parameter:
+      p_cpi_id - page item to raise the event for
+   */
+  procedure raise_item_event(
+    p_cpi_id in varchar2);
+    
+    
   /** 
     Procedure: register_error
                  Method to register an error with ADC.
@@ -376,22 +374,6 @@ as
     p_cpi_id in varchar2,
     p_message_name in varchar2,
     p_msg_args in msg_args default null);
-    
-    
-  /**
-    Procedure: register_item
-                 Method to register an item as a firing item. 
-                 
-                 Registering an item as a firing explicitly serves as a mechanism
-                 to evaluate all ADC rules related to this item. Effectively, this simulates
-                 a change event on the given item. This is useful 
-                 if it is required to execute ADC rules without changing the item's value.
-
-    Parameter:
-      p_cpi_id - page item to register
-   */
-  procedure register_item(
-    p_cpi_id in varchar2);
     
     
   /**

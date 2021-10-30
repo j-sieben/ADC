@@ -1,11 +1,11 @@
 create or replace package adc_page_state
   authid definer
-  accessible by (package adc_internal, package adc_api)
+  accessible by (package adc_internal, package adc_api, package adc_response, package ut_adc_page_state)
 as
 
   /** 
     Package: ADC_PAGE_STATE
-      Package to implement the page state API. It is accessible by packages <ADC_INTERNAL> and <ADC_API> only.
+      Package to implement the page state API. It is accessible by packages <ADC_INTERNAL>, <ADC_RESPONSE> and <ADC_API> only.
       This package separates the maintenance of the page state from the core functionality.
       
       The Page State differs from the session state in that it contains all items required by the
@@ -33,7 +33,57 @@ as
 
   /**
     Group: Public methods
+   */    
+  /**
+    Function: item_may_have_value
+      Method checks whether an item is allowed to have a page state value.
+      
+    Parameters:
+      p_cgr_id - ID of the rule group.
+      p_cpi_id - ID of the page item
+      
+    Returns:
+      Flag to indicate whether this item is allowed to have a value (TRUE) or not (FALSE).
    */
+  function item_may_have_value(
+    p_cgr_id in adc_rule_groups.cgr_id%type, 
+    p_cpi_id in adc_page_items.cpi_id%type)
+    return boolean;
+ 
+
+  /**
+    Function: check_mandatory
+      Method checks whether an item is actually mandatory.
+      
+    Parameters:
+      p_cgr_id - ID of the rule group.
+      p_cpi_id - ID of the page item
+      
+    Errors:
+      msg.ADC_IS_MANDATORY_ERR - Error with the mandatory message. Either the message passed in or a default mandatory message
+   */
+  procedure check_mandatory(
+    p_cgr_id in adc_rule_groups.cgr_id%type, 
+    p_cpi_id in adc_page_items.cpi_id%type);
+    
+    
+  /**
+    Procedure: register_mandatory
+      Registers a page item to be mandatory or optional
+      
+    Parameters:
+      p_cgr_id - ID of the rule group.
+      p_cpi_id - ID of the page item
+      p_cpi_mandatory_message - Optional mandatory message. If NULL, a predefined mandatory message is used
+      p_is_mandatory - Flag to indicate whether this item is mandatory (C_TRUE) or optional (C_FALSE)
+   */
+  procedure register_mandatory(
+    p_cgr_id in adc_rule_groups.cgr_id%type, 
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_cpi_mandatory_message in varchar2,
+    p_is_mandatory in adc_util.flag_type);
+    
+    
   /**
     Procedure: reset
       Method to reset the page state cache.
@@ -73,7 +123,7 @@ as
   procedure set_value(
     p_cgr_id in adc_rule_groups.cgr_id%type, 
     p_cpi_id in adc_page_items.cpi_id%type,
-    p_value in varchar2 default C_FROM_SESSION_STATE,
+    p_value in varchar2 default null,
     p_number_value in number default null,
     p_date_value in date default null,
     p_format_mask in varchar2 default null,

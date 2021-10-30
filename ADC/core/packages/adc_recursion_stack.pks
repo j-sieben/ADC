@@ -1,6 +1,6 @@
 create or replace package adc_recursion_stack
   authid definer
-  accessible by (package adc_internal)
+  accessible by (package adc_internal, package adc_response, package ut_adc_recursion_stack)
 as
 
   /** 
@@ -20,7 +20,8 @@ as
       - the item to push is referenced in a technical rule condition of the actual rule group 
         (If this condition is not met, it is clear that pusing this item onto the recursive
         stack will lead to a no rule result, wasting resources)
-      - the item was not pushed onto the recursion stack during the actual call before
+      - the item was not pushed onto the recursion stack during the actual call before,
+        prventing unnecessary double rule evaluation
       
       The recursion stack also maintains a list of all "touched" items, meaning all items
       which have been on the recursive stack during the actual rule evaluation.
@@ -48,7 +49,7 @@ as
                  
     Parameters:
       p_cgr_id - ID of the rule group. Is used to check whether recursion is allowed for this rule group
-      p_cpi_id - ID of the page item to push. May also be adc_util.C_NO_FIRING_ITEM 
+      p_cpi_id - ID of the page item to push. May also be <adc_util.C_NO_FIRING_ITEM>
    */
   procedure reset(
     p_cgr_id in adc_rule_groups.cgr_id%type,
@@ -65,12 +66,18 @@ as
     Parameters:
       p_cgr_id - ID of the rule group. 
       p_cpi_id - ID of the page item to push. May also be C_NO_FIRING_ITEM
-      p_allow_recursion - Flag to indicate whether recursion is forbidden for that action type. Value can be overwritten by g_param.allow_recursion
+      p_allow_recursion - Flag to indicate whether recursion is forbidden for that action type. 
+                          Value can be overwritten by g_param.allow_recursion, so if the rule is
+                          set to not evaluate recursion, this will be respected.
+      p_force - Flag to indicate whether this item should be pushed anyway to the recursive stack.
+                Set to C_TRUE on page initialization to assure that all firing items are on the
+                recursive stack.
    */
   procedure push_firing_item(
     p_cgr_id in adc_rule_groups.cgr_id%type,
     p_cpi_id in adc_page_items.cpi_id%type,
-    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE);
+    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE,
+    p_force in adc_util.flag_type default adc_util.C_FALSE);
   
   
   /**
@@ -81,6 +88,7 @@ as
       If the rule execution signals a STOP_RULE, all recursive items are removed from the stack
                  
     Parameter:
+      p_cpi_id - ID of the page item to pop. May also be C_NO_FIRING_ITEM
       p_all - Flag to indicate whether all items should be popped (adc_util.C_TRUE) or not (adc_util.C_FALSE)
    */
   procedure pop_firing_item(

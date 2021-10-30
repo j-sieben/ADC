@@ -795,13 +795,13 @@ begin
 
 
   adc_admin.merge_action_type(
-    p_cat_id => 'REGISTER_ITEM',
+    p_cat_id => 'RAISE_ITEM_EVENT',
     p_cat_ctg_id => 'PAGE_ITEM',
     p_cat_cif_id => 'PAGE_ITEM',
     p_cat_name => 'Feld-Event auslösen',
     p_cat_display_name => q'{<p><strong>führe Anwendungsfälle </strong>des Elements “#ITEM#” aus</p>}',
-    p_cat_description => q'{<p>Löst einen <span style="font-family:'Courier New', Courier, monospace;">CHANGE</span>-Event auf das angegebene Feld aus und sorgt für die Abarbeitung der zugehörigen Regeln</p>}',
-    p_cat_pl_sql => q'{adc_api.register_item('#ITEM#');}',
+    p_cat_description => q'{<p>Löst den zugehörigen Event auf das angegebene Seitenelement aus und sorgt für die Abarbeitung der zugehörigen Regeln</p>}',
+    p_cat_pl_sql => q'{adc_api.raise_item_event('#ITEM#');}',
     p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_TRUE);

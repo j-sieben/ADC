@@ -22,9 +22,10 @@ as
   C_APP_ITEM constant adc_page_item_types.cit_id%type := 'APP_ITEM';
   C_NUMBER_ITEM constant adc_page_item_types.cit_id%type := 'NUMBER_ITEM';
   C_DATE_ITEM constant adc_page_item_types.cit_id%type := 'DATE_ITEM';
-  C_DEFAULT_NUMBER_MASK constant adc_util.sql_char := 'fm9999999999999999990';
+  C_DEFAULT_NUMBER_MASK constant adc_util.sql_char := 'fm9999999999999999990D999999999999';
   C_NUMBER_GROUP_MASK constant adc_util.sql_char := 'G';
   C_DELIMITER constant adc_util.sql_char := ',';
+  C_COLLECTION_NAME constant adc_util.ora_name_type := adc_util.C_PARAM_GROUP || '_CGR_STATUS_';
   
   /**
     Group: Types
@@ -72,6 +73,7 @@ as
   begin
     pit.enter_optional('get_mandatory_default_value',
       p_params => msg_params(
+                    msg_param('p_cgr_id', p_cgr_id),
                     msg_param('p_cpi_id', p_cpi_id)));
                     
     select cpi_item_default
@@ -97,8 +99,196 @@ as
   
   
   /**
+    Function: get_mandatory_message
+      Returns a default mandatory message for a page item.
+      
+      If a mandatory item is NULL, a message has to be generated which may have been excplicitly given or not.
+      This method creates this message and returns a standard message if no explicit message is available.
+      
+    Parameter:
+      p_cpi_id - ID of the mandatory page item
+      
+    Returns:
+      Error message for missing value
+   */
+  function get_mandatory_message(
+    p_cgr_id in adc_rule_groups.cgr_id%type, 
+    p_cpi_id in adc_page_items.cpi_id%type)
+    return varchar2
+  as
+    l_mandatory_message adc_rule_group_status.cgs_cpi_mandatory_message%type;
+  begin
+    pit.enter_optional('get_mandatory_message',
+      p_params => msg_params(
+                    msg_param('p_cpi_id', p_cpi_id)));       
+       
+    select coalesce(cgs_cpi_mandatory_message, to_char(pit.get_message_text(msg.ADC_ITEM_IS_MANDATORY_DEFAULT, msg_args(cgs_cpi_label))))
+      into l_mandatory_message
+      from adc_rule_group_status
+     where cgs_cgr_id = p_cgr_id
+       and cgs_cpi_id = p_cpi_id;
+    
+    pit.leave_optional(
+      p_params => msg_params(
+                    msg_param('Msg', l_mandatory_message)));
+    return l_mandatory_message;
+  exception
+    when NO_DATA_FOUND then
+      -- Not an available item, ignore
+      pit.leave_optional;
+      return null;
+  end get_mandatory_message;
+  
+  
+  /**
     Group: Public methods
    */
+  /**
+    Function: check_mandatory
+      See <ADC_PAGE_STATE.check_mandatory>
+   */
+  procedure check_mandatory(
+    p_cgr_id in adc_rule_groups.cgr_id%type, 
+    p_cpi_id in adc_page_items.cpi_id%type)
+  as
+    l_is_mandatory pls_integer;
+    l_message adc_util.max_char;
+  begin
+    pit.enter_optional('check_mandatory',
+      p_params => msg_params(
+                    msg_param('p_cgr_id', p_cgr_id),
+                    msg_param('p_cpi_id', p_cpi_id)));
+                    
+    select count(*), max(cgs_cpi_mandatory_message)
+      into l_is_mandatory, l_message
+      from adc_rule_group_status
+     where cgs_cgr_id = p_cgr_id
+       and cgs_cpi_id = p_cpi_id;
+       
+    if l_is_mandatory = 1 then
+      pit.assert_not_null(get_string(p_cgr_id, p_cpi_id), msg.ADC_ITEM_IS_MANDATORY, msg_args(l_message));
+    end if;
+       
+    pit.leave_optional;
+  end check_mandatory;
+    
+    
+  /**
+    Function: item_may_have_value
+      See <ADC_PAGE_STATE.item_may_have_value>
+   */
+  function item_may_have_value(
+    p_cgr_id in adc_rule_groups.cgr_id%type, 
+    p_cpi_id in adc_page_items.cpi_id%type)
+    return boolean
+  as
+    l_is_value_item pls_integer;
+  begin
+    pit.enter_optional(
+      p_params => msg_params(
+                    msg_param('p_cgr_id', p_cgr_id),
+                    msg_param('p_cpi_id', p_cpi_id)));
+  
+    select count(*)
+      into l_is_value_item
+      from adc_page_items
+     where cpi_cgr_id = p_cgr_id
+       and cpi_id = p_cpi_id
+       and cpi_cit_id in (C_ITEM, C_APP_ITEM, C_NUMBER_ITEM, C_DATE_ITEM);
+       
+    if l_is_value_item = 0 then
+      -- Adding a non item to the session values collection prevents further checks
+      g_session_values(p_cpi_id) := null;
+    end if;
+  
+    pit.leave_optional(
+      p_params => msg_params(
+                    msg_param('Result', adc_util.get_boolean(l_is_value_item))));
+                    
+    return adc_util.get_boolean(l_is_value_item) = adc_util.C_TRUE;
+  end item_may_have_value;
+  
+  
+  /**
+    Procedure: register_mandatory
+      See <ADC_PAGE_STATE.register_mandatory>
+   */
+  procedure register_mandatory(
+    p_cgr_id in adc_rule_groups.cgr_id%type, 
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_cpi_mandatory_message in varchar2,
+    p_is_mandatory in adc_util.flag_type)
+  as
+    l_collection_name adc_util.ora_name_type;
+    l_cgs_row adc_rule_group_status%rowtype;
+    cursor mandatory_items_cur is
+      select cpi_id, cpi_label, cpi_mandatory_message
+        from adc_page_items
+       where cpi_cgr_id = p_cgr_id
+         and cpi_is_mandatory = adc_util.C_TRUE;
+  begin
+    pit.enter_optional(
+      p_params => msg_params(
+                    msg_param('p_cgr_id', p_cgr_id),
+                    msg_param('p_cpi_id', p_cpi_id),
+                    msg_param('p_cpi_mandatory_message', p_cpi_mandatory_message),
+                    msg_param('p_is_mandatory', p_is_mandatory)));
+    
+    l_collection_name := C_COLLECTION_NAME || p_cgr_id;
+    
+    if p_cpi_id = adc_util.C_NO_FIRING_ITEM then
+      -- This option is called during page initialization only
+      -- Initialize internal APEX mandatory item collection
+      begin
+        apex_collection.create_or_truncate_collection(l_collection_name);
+      exception
+        when DUP_VAL_ON_INDEX then
+          -- This error can occur with hectic, multiple clicks, ignore.
+          null;
+      end;
+      
+      -- register all statically mandatory items, identifified by CPI_IS_MANDATORY
+      for item in mandatory_items_cur loop
+        apex_collection.add_member(
+          p_collection_name => l_collection_name,
+          p_c001 => item.cpi_id,
+          p_c002 => item.cpi_label,
+          p_c003 => item.cpi_mandatory_message,
+          p_generate_md5 => 'NO');
+      end loop;
+    else
+      -- Item ist registered or de-registered as mandatory explicitly
+      select cgs_cgr_id, cgs_id, cpi_id, cpi_label, cgs_cpi_mandatory_message
+        into l_cgs_row
+        from adc_page_items
+        left join adc_rule_group_status
+          on cpi_cgr_id = cgs_cgr_id
+         and cpi_id = cgs_cpi_id
+       where cpi_cgr_id = p_cgr_id
+         and cpi_id = p_cpi_id;
+         
+      case when p_is_mandatory = adc_util.C_TRUE and l_cgs_row.cgs_id is null then
+        pit.info(msg.PIT_PASS_MESSAGE, msg_args('Page item has become a mandatory field, register in collection'));
+        apex_collection.add_member(
+          p_collection_name => l_collection_name,
+          p_c001 => l_cgs_row.cgs_cpi_id,
+          p_c002 => l_cgs_row.cgs_cpi_label,
+          p_c003 => coalesce(p_cpi_mandatory_message, get_mandatory_message(p_cgr_id, l_cgs_row.cgs_cpi_id), 'null'),
+          p_generate_md5 => 'NO');
+      when p_is_mandatory = adc_util.C_FALSE and l_cgs_row.cgs_id is not null then
+        pit.info(msg.PIT_PASS_MESSAGE, msg_args('Page item must be removed from the list of mandatory elements'));
+        apex_collection.delete_member(
+          p_seq => l_cgs_row.cgs_id,
+          p_collection_name => l_collection_name);
+      else
+        pit.info(msg.PIT_PASS_MESSAGE, msg_args('Status of the page item has not changed'));
+      end case;
+    end if;
+    
+    pit.leave_optional;
+  end register_mandatory;
+  
+  
   /**
     Procedure: reset
       See <ADC_PAGE_STATE.reset>
@@ -121,7 +311,7 @@ as
   procedure set_value(
     p_cgr_id in adc_rule_groups.cgr_id%type, 
     p_cpi_id in adc_page_items.cpi_id%type,
-    p_value in varchar2 default C_FROM_SESSION_STATE,
+    p_value in varchar2 default null,
     p_number_value in number default null,
     p_date_value in date default null,
     p_format_mask in varchar2 default null,
@@ -130,9 +320,9 @@ as
     l_cpi_cit_id adc_page_items.cpi_cit_id%type;
     l_cpi_conversion adc_page_items.cpi_conversion%type;
     l_format_mask adc_util.ora_name_type;
-    l_string_value adc_util.max_char;
+    l_value session_value_rec;
   begin
-    pit.enter_optional('set_value',
+    pit.enter_optional(
       p_params => msg_params(
                     msg_param('p_cgr_id', p_cgr_id),
                     msg_param('p_cpi_id', p_cpi_id),
@@ -152,28 +342,39 @@ as
     
     -- If requested, get the value from the session state
     if p_value = C_FROM_SESSION_STATE then
-      g_session_values(p_cpi_id).string_value := coalesce(utl_apex.get_string(p_cpi_id), get_mandatory_default_value(p_cgr_id, p_cpi_id));
+      l_value.string_value := coalesce(utl_apex.get_string(p_cpi_id), get_mandatory_default_value(p_cgr_id, p_cpi_id));
+      g_session_values(p_cpi_id) := l_value;
     else
-      g_session_values(p_cpi_id).string_value := p_value;
+      l_value.string_value := p_value;
+      g_session_values(p_cpi_id) := l_value;
     end if;
     
     -- Explicitly set the value and harmonize with the session state (fi when changing a session values during rule execution)
     case
     when l_cpi_cit_id = C_NUMBER_ITEM then
-      l_format_mask := replace(coalesce(p_format_mask, l_cpi_conversion, C_DEFAULT_NUMBER_MASK), C_NUMBER_GROUP_MASK);
-      l_string_value := coalesce(g_session_values(p_cpi_id).string_value, to_char(p_number_value, l_format_mask));
-      g_session_values(p_cpi_id).string_value := l_string_value;
-      g_session_values(p_cpi_id).number_value := coalesce(p_number_value, to_number(l_string_value, l_format_mask));
+      -- first, get string value from parameter values
+      l_format_mask := coalesce(p_format_mask, l_cpi_conversion, C_DEFAULT_NUMBER_MASK);
+      l_value.string_value := coalesce(to_char(p_number_value, l_format_mask), g_session_values(p_cpi_id).string_value);
+      g_session_values(p_cpi_id).string_value := l_value.string_value;
+      -- then persist number value, either directly or by converting the string value
+      l_format_mask := replace(l_format_mask, C_NUMBER_GROUP_MASK);
+      g_session_values(p_cpi_id).number_value := coalesce(p_number_value, to_number(l_value.string_value, l_format_mask));
       pit.info(msg.ADC_NUMBER_ITEM_SET, msg_args(p_cpi_id , to_char(g_session_values(p_cpi_id).number_value), g_session_values(p_cpi_id).string_value));
     when l_cpi_cit_id = C_DATE_ITEM then
+      -- first, get string value from parameter values
       l_format_mask := coalesce(p_format_mask, l_cpi_conversion, apex_application.g_date_format);
-      l_string_value := coalesce(g_session_values(p_cpi_id).string_value, to_char(p_date_value, l_format_mask));
-      g_session_values(p_cpi_id).string_value := l_string_value;
-      g_session_values(p_cpi_id).date_value := coalesce(p_date_value, to_date(l_string_value, l_format_mask));
+      l_value.string_value := coalesce(to_char(p_date_value, l_format_mask), g_session_values(p_cpi_id).string_value);
+      g_session_values(p_cpi_id).string_value := l_value.string_value;
+      -- then persist date value, either directly or by converting the string value
+      g_session_values(p_cpi_id).date_value := coalesce(p_date_value, to_date(l_value.string_value, l_format_mask));
       pit.info(msg.ADC_DATE_ITEM_SET, msg_args(p_cpi_id , to_char(g_session_values(p_cpi_id).date_value), g_session_values(p_cpi_id).string_value));
     else
-      null; --g_session_values(p_cpi_id).string_value := p_value;
+      null;
     end case;
+    
+    if p_throw_error = adc_util.C_TRUE then
+      check_mandatory(p_cgr_id, p_cpi_id);
+    end if;
     
     apex_util.set_session_state(p_cpi_id, g_session_values(p_cpi_id).string_value);
     
@@ -184,35 +385,26 @@ as
       pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Item ' || p_cpi_id || ' does not have a value, ignored'));
       pit.leave_optional;
     -- NUMBER conversion
-    when msg.INVALID_NUMBER_FORMAT_ERR then
-      pit.leave_optional(p_params => msg_params(msg_param('Result', g_session_values(p_cpi_id).string_value)));
-      if p_throw_error = adc_util.C_TRUE then
-        pit.error(msg.INVALID_NUMBER_FORMAT, msg_args(g_session_values(p_cpi_id).string_value, p_format_mask));
-      end if;
     when INVALID_NUMBER or VALUE_ERROR then
-      if p_throw_error = adc_util.C_TRUE then
-        pit.error(msg.ADC_INVALID_NUMBER, msg_args(g_session_values(p_cpi_id).string_value));
-      end if;
-    -- DATE conversion
-    when msg.INVALID_DATE_ERR then
       pit.leave_optional(p_params => msg_params(msg_param('Result', g_session_values(p_cpi_id).string_value)));
       if p_throw_error = adc_util.C_TRUE then
-        pit.error(msg.INVALID_DATE, msg_args(g_session_values(p_cpi_id).string_value, p_format_mask));
+        pit.error(msg.ADC_INVALID_NUMBER, msg_args(g_session_values(p_cpi_id).string_value, l_format_mask));
       end if;
-    when msg.INVALID_DATE_FORMAT_ERR then
-      pit.leave_optional(p_params => msg_params(msg_param('Result', g_session_values(p_cpi_id).string_value)));
-      if p_throw_error = adc_util.C_TRUE then
-        pit.error(msg.INVALID_DATE_FORMAT, msg_args(g_session_values(p_cpi_id).string_value, p_format_mask));
-      end if;
-    when msg.INVALID_YEAR_ERR or msg.INVALID_MONTH_ERR or msg.INVALID_DAY_ERR then
-      pit.leave_optional(p_params => msg_params(msg_param('Result', g_session_values(p_cpi_id).string_value)));
-      if p_throw_error = adc_util.C_TRUE then
-        pit.error(msg.INVALID_YEAR, msg_args(substr(sqlerrm, 12)));
-      end if;
+    when msg.ADC_ITEM_IS_MANDATORY_ERR then
+      raise;
     when others then
       pit.leave_optional(p_params => msg_params(msg_param('Result', g_session_values(p_cpi_id).string_value)));
       if p_throw_error = adc_util.C_TRUE then
-        pit.error(msg.SQL_ERROR, msg_args(substr(sqlerrm, 12)));
+        case 
+        when sqlcode in (-1858, -1862) then
+          -- Number format related errors
+          pit.error(msg.ADC_INVALID_NUMBER, msg_args(substr(sqlerrm, 12)));
+        when sqlcode between -1866 and -1800 then
+          -- Date related errors. oo many to map them explicitly
+          pit.error(msg.ADC_INVALID_DATE, msg_args(substr(sqlerrm, 12)));
+        else
+          pit.error(msg.SQL_ERROR, msg_args(substr(sqlerrm, 12)));
+        end case;
       end if;
   end set_value;
   
@@ -229,17 +421,22 @@ as
     l_string_value adc_util.max_char;
   begin
     pit.enter_optional('get_string',
-      p_params => msg_params(msg_param('p_cpi_id', p_cpi_id)));
+      p_params => msg_params(
+                    msg_param('p_cgr_id', p_cgr_id),
+                    msg_param('p_cpi_id', p_cpi_id)));
     
-    if not g_session_values.exists(p_cpi_id) then
-      set_value(
-        p_cgr_id => p_cgr_id,
-        p_cpi_id => p_cpi_id);
-    end if;
-    
-    if g_session_values.exists(p_cpi_id) then
-      l_string_value := g_session_values(p_cpi_id).string_value;
-    end if;
+    case
+      when g_session_values.exists(p_cpi_id) then
+        l_string_value := g_session_values(p_cpi_id).string_value;
+      when not item_may_have_value(p_cgr_id, p_cpi_id) then
+        null;
+      else
+        set_value(
+          p_cgr_id => p_cgr_id,
+          p_cpi_id => p_cpi_id,
+          p_value => C_FROM_SESSION_STATE);
+        l_string_value := g_session_values(p_cpi_id).string_value;
+    end case;
     
     pit.leave_optional(p_params => msg_params(msg_param('Result', l_string_value)));
     return l_string_value;
@@ -256,21 +453,32 @@ as
     p_format_mask in varchar2)
     return date
   as
+    l_date_value date;
   begin
     pit.enter_optional('get_date',
       p_params => msg_params(
+                    msg_param('p_cgr_id', p_cgr_id),
                     msg_param('p_cpi_id', p_cpi_id),
                     msg_param('p_format_mask', p_format_mask)));
                     
-    if not g_session_values.exists(p_cpi_id) then
-      set_value(
-        p_cgr_id => p_cgr_id,
-        p_cpi_id => p_cpi_id, 
-        p_format_mask => p_format_mask);
-    end if;
+    case
+      when g_session_values.exists(p_cpi_id) then
+        l_date_value := g_session_values(p_cpi_id).date_value;
+      when not item_may_have_value(p_cgr_id, p_cpi_id) then
+        null;
+      else
+        set_value(
+          p_cgr_id => p_cgr_id,
+          p_cpi_id => p_cpi_id,
+          p_value => C_FROM_SESSION_STATE, 
+          p_format_mask => p_format_mask);
+        l_date_value := g_session_values(p_cpi_id).date_value;
+    end case;
       
-    pit.leave_optional(p_params => msg_params(msg_param('Result', get_string(p_cgr_id, p_cpi_id))));
-    return g_session_values(p_cpi_id).date_value;
+    pit.leave_optional(
+      p_params => msg_params(
+                    msg_param('Result', g_session_values(p_cpi_id).string_value)));
+    return l_date_value;
   end get_date;
   
       
@@ -284,25 +492,30 @@ as
     p_format_mask in varchar2)
     return number
   as
-    l_value number;
+    l_number_value number;
   begin
     pit.enter_optional('get_number',
       p_params => msg_params(
+                    msg_param('p_cgr_id', p_cgr_id),
                     msg_param('p_cpi_id', p_cpi_id),
                     msg_param('p_format_mask', p_format_mask)));
     
-    if not g_session_values.exists(p_cpi_id) then
-      set_value(
-        p_cgr_id => p_cgr_id,
-        p_cpi_id => p_cpi_id, 
-        p_format_mask => p_format_mask);
-    end if;
+    case
+      when g_session_values.exists(p_cpi_id) then
+        l_number_value := g_session_values(p_cpi_id).number_value;
+      when not item_may_have_value(p_cgr_id, p_cpi_id) then
+        null;
+      else
+        set_value(
+          p_cgr_id => p_cgr_id,
+          p_cpi_id => p_cpi_id,
+          p_value => C_FROM_SESSION_STATE, 
+          p_format_mask => p_format_mask);
+        l_number_value := g_session_values(p_cpi_id).number_value;
+    end case;
     
-    pit.leave_optional(p_params => msg_params(msg_param('Result', get_string(p_cgr_id, p_cpi_id))));
-    return g_session_values(p_cpi_id).number_value;
-  exception
-    when NO_DATA_FOUND then
-      return null;
+    pit.leave_optional(p_params => msg_params(msg_param('Result', g_session_values(p_cpi_id).string_value)));
+    return l_number_value;
   end get_number;
   
   
@@ -319,7 +532,7 @@ as
     l_item adc_page_items.cpi_id%type;
     l_what adc_util.max_char;
   begin
-    pit.enter_optional('get_changed_items_as_json');
+    pit.enter_optional;
     
     if g_session_values.count > 0 then
       l_item := g_session_values.first;
@@ -356,7 +569,7 @@ as
     C_TMPLT constant varchar2(1000) := q'^begin :x := char_table('#FILTER#'); end;^';
     l_filter_list char_table;
   begin
-    pit.enter_optional('get_item_values_as_char_table',
+    pit.enter_optional(
       p_params => msg_params(msg_param('p_cpi_list', p_cpi_list)));
     
     -- convert comma separated list to CHAR_TABLE instance

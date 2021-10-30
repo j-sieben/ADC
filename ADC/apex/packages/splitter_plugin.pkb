@@ -141,15 +141,15 @@ as
         apex_util.set_preference(get_preference_key(p_region_id), l_preference);
         apex_debug.info(
           p_message => 'Splitter preference for region %s set to %s:%s',
-          p0        => p_region_id,
-          p1        => p_position,
-          p2        => p_collapsed);
+          p0 => p_region_id,
+          p1 => p_position,
+          p2 => p_collapsed);
     else
         apex_debug.warn(
           p_message => 'Splitter preference for region %s is expected as nnn:[true|false] but received %s:%s',
-          p0        => p_region_id,
-          p1        => p_position,
-          p2        => p_collapsed);
+          p0 => p_region_id,
+          p1 => p_position,
+          p2 => p_collapsed);
     end if;
     
     pit.leave_optional;
@@ -228,23 +228,23 @@ as
     l_resize_jet_charts boolean := 'responsive-jet-charts' member of l_options;
   
     -- advanced options
-    l_advanced_options  boolean := nvl(p_region.attribute_15, 'N') = 'Y';
+    l_advanced_options boolean := nvl(p_region.attribute_15, 'N') = 'Y';
   
-    l_custom_selector   p_region.attribute_16%type := p_region.attribute_16;
-    l_step_size         number := p_region.attribute_17;  
-    l_key_step_size     number := p_region.attribute_18;
+    l_custom_selector p_region.attribute_16%type := p_region.attribute_16;
+    l_step_size number := p_region.attribute_17;  
+    l_key_step_size number := p_region.attribute_18;
   
     -- title messages
-    l_title             p_region.attribute_19%type := p_region.attribute_19;
-    l_title_collapse    p_region.attribute_20%type := get_message('collapse',p_region.attribute_20);
-    l_title_restore     p_region.attribute_21%type := get_message('restore', p_region.attribute_21);
+    l_title p_region.attribute_19%type := p_region.attribute_19;
+    l_title_collapse p_region.attribute_20%type := get_message('collapse',p_region.attribute_20);
+    l_title_restore p_region.attribute_21%type := get_message('restore', p_region.attribute_21);
   
-    l_change_function   p_region.attribute_22%type := nvl(p_region.attribute_22, 'function(){}');
+    l_change_function p_region.attribute_22%type := nvl(p_region.attribute_22, 'function(){}');
   
-    l_padding_first     number := nvl(p_region.attribute_23, 16);
-    l_padding_second    number := nvl(p_region.attribute_24, 16);
+    l_padding_first number := nvl(p_region.attribute_23, 16);
+    l_padding_second number := nvl(p_region.attribute_24, 16);
   
-    l_region_id         p_region.static_id%type := p_region.static_id;
+    l_region_id p_region.static_id%type := p_region.static_id;
   
     -- Javascript Initialization Code
     l_init_js_fn adc_util.max_char;
@@ -324,9 +324,9 @@ as
     p_plugin apex_plugin.t_plugin)
   return apex_plugin.t_region_ajax_result
   as
-    l_apex_error   apex_error.t_error;
-    l_result       apex_error.t_error_result;
-    l_return       apex_plugin.t_region_ajax_result;
+    l_apex_error apex_error.t_error;
+    l_result apex_error.t_error_result;
+    l_return apex_plugin.t_region_ajax_result;
   begin
     pit.enter_mandatory;
     
@@ -338,7 +338,7 @@ as
   
     set_preference(
       p_region_id => p_region.id,
-      p_position  => apex_application.g_x01,
+      p_position => apex_application.g_x01,
       p_collapsed => apex_application.g_x02);
   
     htp.p('{"status": "success"}');
@@ -348,21 +348,21 @@ as
   exception
     when others then
       apex_json.initialize_output;
-      l_apex_error.message             := sqlerrm;
-      l_apex_error.region_id           := p_region.id;
-      l_apex_error.ora_sqlcode         := sqlcode;
-      l_apex_error.ora_sqlerrm         := sqlerrm;
-      l_apex_error.error_backtrace     := dbms_utility.format_error_backtrace;
+      l_apex_error.message := sqlerrm;
+      l_apex_error.region_id := p_region.id;
+      l_apex_error.ora_sqlcode := sqlcode;
+      l_apex_error.ora_sqlerrm := sqlerrm;
+      l_apex_error.error_backtrace := dbms_utility.format_error_backtrace;
       
       l_result := error_function_callback(l_apex_error);
 
       apex_json.open_object;
-      apex_json.write('status'          , 'error');
-      apex_json.write('message'         , l_result.message);
-      apex_json.write('additional_info' , l_result.additional_info);
+      apex_json.write('status', 'error');
+      apex_json.write('message', l_result.message);
+      apex_json.write('additional_info', l_result.additional_info);
       apex_json.write('display_location', l_result.display_location);
-      apex_json.write('page_item_name'  , l_result.page_item_name);
-      apex_json.write('column_alias'    , l_result.column_alias);
+      apex_json.write('page_item_name', l_result.page_item_name);
+      apex_json.write('column_alias', l_result.column_alias);
       apex_json.close_object;
       
       pit.leave_mandatory;

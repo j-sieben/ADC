@@ -187,7 +187,7 @@ q'^}^',
     p_uttm_name => 'JS_SCRIPT_FRAME',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
-    p_uttm_text => q'^<script id="#ID#">#CR#  /** Init: #DURATION#hsec*/#CR#  #JS_FILE#.setItemValues(#ITEM_JSON#);#CR#  #JS_FILE#.setErrors(#ERROR_JSON#);#CR##SCRIPT##CR#</script>^',
+    p_uttm_text => q'^<script id="#ID#">#CR#  /** Total duration: #DURATION#hsec*/#CR#  #JS_FILE#.setItemValues(#ITEM_JSON#);#CR#  #JS_FILE#.setErrors(#ERROR_JSON#);#CR##SCRIPT##CR#</script>^',
     p_uttm_log_text => q'^^',
     p_uttm_log_severity => 70
   );
@@ -287,8 +287,8 @@ q'^        where rang = 1\CR\^' ||
 q'^           or (cru_fire_on_page_load = initializing\CR\^' || 
 q'^          and initializing = C_TRUE))\CR\^' || 
 q'^select cru.cru_id, cru.cru_sort_seq, cru.cru_name, cru.cru_firing_items, cru_fire_on_page_load,\CR\^' || 
-q'^       cra_cpi_id item, cat_pl_sql pl_sql, cat_js js, cra_sort_seq, cra_param_1 param_1, cra_param_2 param_2, cra_param_3 param_3, cra_on_error,\CR\^' || 
-q'^       max(cra_on_error) over (partition by cru_sort_seq) cru_on_error,\CR\^' || 
+q'^       cra_cpi_id cra_item, cat_pl_sql, cat_js, cra_sort_seq, cra_param_1, cra_param_2, cra_param_3, cra_on_error,\CR\^' || 
+q'^       max(cra_on_error) over (partition by cru_sort_seq) cru_has_error_handler,\CR\^' || 
 q'^       case cra_sort_seq when 10 then c_true else c_false end is_first_row\CR\^' || 
 q'^  from decision_table crg\CR\^' || 
 q'^  join adc_rules cru\CR\^' || 

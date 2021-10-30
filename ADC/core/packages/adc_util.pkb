@@ -7,7 +7,7 @@ as
     return flag_type
   as
   begin
-    return 'Y';--&C_TRUE.;
+    return &C_TRUE.;
   end c_true;
 
 
@@ -15,7 +15,7 @@ as
     return flag_type
   as
   begin
-    return 'N';--&C_FALSE.;
+    return &C_FALSE.;
   end c_false;
 
 
@@ -61,16 +61,6 @@ as
       return C_FALSE;
     end if;
   end bool_to_flag;
-
-
-  function to_number(
-    p_number in varchar2,
-    p_conversion in varchar2)
-    return number
-  as
-  begin
-    return to_number(p_number, replace(p_conversion, 'G'));
-  end to_number;
 
 
   function clean_adc_name(

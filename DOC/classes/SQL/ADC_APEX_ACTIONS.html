@@ -23,6 +23,12 @@
  <div class="CBody"><p>Method to retrieve the created JavaScript.</p><div class="CHeading">Returns</div><p>JavaScript code to include in the ADC answer to adjust APEX Action settings on the page.</p></div>
 </div>
 
+<a name="get_cgr_apex_actions"></a><a name="Topic249"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">get_cgr_apex_actions</div>
+ <div id="NDPrototype249" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> get_cgr_apex_actions(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_cgr_id&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_rule_groups.cgr_id<span class="SHKeyword">%type</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">varchar2</span></div></div>
+ <div class="CBody"><p>Method returns all apex actions defined for the rule group as a JavaScript install script.&nbsp; Called during initialization of ADC plugin.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">p_cgr_id<div class="CDLParameterType"><span class="SHKeyword">in</span> adc_rule_groups.cgr_id<span class="SHKeyword">%type</span></div></td><td class="CDLDefinition"><p>Rule Group Id to get the apex actions for</p></td></tr></table></div>
+</div>
+
 <a name="set_href"></a><a name="Topic514"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">set_href</div>
  <div id="NDPrototype514" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_href(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_href&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_href<span class="SHKeyword">%type</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>

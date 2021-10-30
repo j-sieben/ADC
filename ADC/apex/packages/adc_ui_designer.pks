@@ -7,10 +7,10 @@ as
       Maintain ADC rules via an APEX frontend.
       This package implements the methods required to maintain ADC rule groups via an APEX applications ADC designer.
       
-      Flow: The ADC Designer is a one pager that allows to administer a complete set of ADC rules. Its designed is 
+      Flow: The ADC Designer is a one pager that allows to administer a complete set of ADC rules. Its design is 
       inspired by the APEX page designer and completely controled by ADC. No additional JavaScript libraries are required.
       
-      The splitter used on the page is a plugin published by FOS.
+      The <splitter_plugin> used on the page is a plugin published by FOS.
       
       The ADC designer is controlled mainly by APEX Actions. They control the buttons on the page and are used for the
       sub menu in the hierarchy tree. This package controls the visible aspects of the APEX Actions as well as their

@@ -11,7 +11,7 @@ create table adc_page_items(
 	cpi_is_mandatory &FLAG_TYPE. default &C_FALSE., 
 	cpi_mandatory_message varchar2(200 char), 
 	cpi_has_error &FLAG_TYPE. default &C_FALSE.,
-  constraint pk_cru_rule_item primary key (cpi_cgr_id, cpi_id),
+  constraint pk_adc_page_items primary key (cpi_cgr_id, cpi_id),
   constraint fk_cpi_cit_id foreign key (cpi_cit_id)
 	  references adc_page_item_types (cit_id) on delete cascade,
   constraint fk_cpi_cgr_id foreign key (cpi_cgr_id)

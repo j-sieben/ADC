@@ -32,6 +32,7 @@ as
     additional_javascript utl_apex.max_char
   );
   g_action action_rec;
+  g_default_apex_action adc_util.max_char;
 
   subtype template_t is utl_apex.max_sql_char;
 
@@ -108,6 +109,18 @@ as
     end if;
     pit.leave_detailed;
   end append;
+  
+  
+  procedure initialize
+  as
+  begin
+    select max(decode(uttm_name, 'DEFAULT_APEX_ACTION', uttm_text)) default_apex_action
+      into g_default_apex_action
+      from utl_text_templates
+     where uttm_type = adc_util.C_PARAM_GROUP
+       and uttm_name in('DEFAULT_APEX_ACTION')
+       and uttm_mode in ('FRAME');
+  end initialize;
 
 
   /**
@@ -179,6 +192,94 @@ as
                     msg_param('Script', l_script)));
     return l_script;
   end get_action_script;
+  
+  
+  /**  
+    Procedure: append_apex_actions
+      See <ADC_APEX_ACTIONS.get_cgr_apex_actions>
+   */
+  function get_cgr_apex_actions(
+    p_cgr_id in adc_rule_groups.cgr_id%type)
+    return varchar2
+  as
+    l_actions_js adc_util.max_char;
+    l_has_actions binary_integer;
+  begin
+    pit.enter_optional('get_cgr_apex_actions');
+        
+    -- check whether APEX actions exist
+    select count(*)
+      into l_has_actions
+      from adc_apex_action_items
+     where cai_cpi_cgr_id = p_cgr_id
+       and rownum = 1;
+    pit.assert(l_has_actions > 0);
+                
+    -- Generate initalization JavaScript for APEX actions based on UTL_TEXT templates of name APEX_ACTION
+    with templates as (
+           select uttm_name, uttm_mode, uttm_text, p_cgr_id cgr_id
+             from utl_text_templates
+            where uttm_type = adc_util.C_PARAM_GROUP
+              and uttm_name = 'APEX_ACTION')
+    select utl_text.generate_text(cursor(
+             select uttm_text template,
+                    adc_util.C_CR cr,
+                    pit.get_message_text(msg.ADC_APEX_ACTION_ORIGIN) apex_action_origin,
+                    utl_text.generate_text(cursor(
+                      select uttm_text template,
+                             cpi_id, caa_name
+                        from adc_apex_action_items
+                        join adc_apex_actions
+                          on cai_caa_id = caa_id
+                        join adc_page_items
+                          on cai_cpi_cgr_id = cpi_cgr_id
+                         and cai_cpi_id = cpi_id
+                        join adc_page_item_types
+                          on cpi_cit_id = cit_id
+                        join templates
+                          on cit_id = uttm_mode
+                         and cai_cpi_cgr_id = cgr_id),
+                      p_delimiter => chr(10)
+                    ) bind_action_items,
+                    utl_text.generate_text(cursor(
+                      select uttm_text template, chr(10) || '    ' cr,
+                             caa_cgr_id, caa_cty_id, caa_name, 
+                             apex_escape.json(caa_label) caa_label,
+                             apex_escape.json(caa_label) caa_label_key, 
+                             apex_escape.json(caa_context_label) caa_context_label, 
+                             caa_icon, caa_icon_type,
+                             apex_escape.json(coalesce(caa_title, caa_label)) caa_title,
+                             apex_escape.json(coalesce(caa_title, caa_label)) caa_title_key,
+                             caa_shortcut,
+                             case caa_initially_disabled when adc_util.c_true then 'true' else 'false' end caa_initially_disabled,
+                             case caa_initially_hidden when adc_util.c_true then 'true' else 'false' end caa_initially_hidden,
+                             caa_href,
+                             -- Default is to inform ADC about invoking an APEX action on the page
+                             coalesce(caa_action, g_default_apex_action) caa_action
+                        from adc_apex_actions_v saa
+                        join adc_rule_groups cgr
+                          on saa.caa_cgr_id = cgr.cgr_id
+                        join templates t
+                          on t.cgr_id = cgr.cgr_id
+                         and uttm_mode = caa_cty_id),
+                      p_delimiter => adc_util.C_DELIMITER || chr(10) || '   '
+                    ) action_list
+               from templates
+              where uttm_mode = 'FRAME')
+           ) resultat
+      into l_actions_js
+      from dual;
+
+    pit.leave_optional(
+      p_params => msg_params(
+                    msg_param('APEX_ACTIONS', l_actions_js)));
+    return l_actions_js;
+  exception
+    when msg.ASSERT_TRUE_ERR then
+      -- not during initialization or no apex actions, ignore.
+      pit.leave_optional;
+      return null;
+  end get_cgr_apex_actions;
 
 
   /**
@@ -368,5 +469,7 @@ as
     pit.leave_optional;
   end add_script;
 
+begin
+  initialize;
 end adc_apex_action;
 /

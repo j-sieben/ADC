@@ -1,6 +1,6 @@
 create or replace package adc_internal
   authid definer
-  --accessible by (package adc_plugin, package adc_api)
+  accessible by (package adc_plugin, package adc_api, package ut_adc_internal)
 as
   
   
@@ -53,36 +53,12 @@ as
       This continues until there is no page element left on the recursion stack. To avoid infinite loops, some restrictive rules apply
       for the recursion stack. See the documentation of the <ADC_RECURSION_STACK> package for details.
       
-      Upon completion, the JavaScript answer stack is serialized into a HTML script element and passed back to the calling environment.
-      To avoid problems with JavaScript embedded into a JSON document, the JavaScript code is converted to a hex code representation
-      and re-converted client side.
-      When the re-converted script is appended to the page using jQuery, the script is immediately executed. After this, the HTML script element is
-      deleted from the page.
+      Upon completion, the JavaScript answer is returned to the calling APEX application. The answer is created by package <ADC_RESPONSE>. See there
+      for further information on the response format and their variations.
                
     Author::
       Juergen Sieben, ConDeS GmbH
    */
-   
-  $IF adc_util.C_WITH_UNIT_TESTS $THEN
-  /* Setter/getter to switch package to test mode
-   * %param  p_mode  Switch to toggle test mode
-   * %usage  For automated tests, this switch controls wehther ADC fills an object structure with the outcome of
-   *         the processing. This is easier and saver than parsing OWA streams
-   */
-  procedure set_test_mode(
-    p_mode in boolean default false);    
-    
-  function get_test_mode
-    return boolean;
-  
-  /** Method to retrieve the result of the last action
-   * %return Object structure that contains the result of the process.
-   */
-  function get_test_result
-    return ut_adc_result;
-
-  procedure initialize_test;
-  $END
   
   /**
     Group: Getter
@@ -139,10 +115,10 @@ as
 
   /**
     Function: get_firing_item
-      Getter to get the name of the firing item. If NULL, <ADC_UTIL.C_NO_FIRING_ITEM> is returned.
+      Getter to get the name of the firing item.
    
     Returns:
-      Name of the firing item or <ADC_UTIL.C_NO_FIRING_ITEM> if NULL
+      Name of the firing item
    */
   function get_firing_item
     return varchar2;
@@ -272,7 +248,16 @@ as
     p_cpi_id in adc_page_items.cpi_id%type,
     p_param_1 in adc_rule_actions.cra_param_1%type,
     p_param_2 in adc_rule_actions.cra_param_2%type,
-    p_param_3 in adc_rule_actions.cra_param_3%type);
+    p_param_3 in adc_rule_actions.cra_param_3%type,
+    p_allow_recursion in adc_util.flag_type);
+
+
+  /**
+    Procedure: raise_item_event
+      See <adc_api.register_item>
+   */
+  procedure raise_item_event(
+    p_cpi_id in varchar2);
 
 
   /**
@@ -293,15 +278,6 @@ as
     p_cpi_id in varchar2,
     p_message_name in varchar2,
     p_msg_args in msg_args default null);
-
-
-  /**
-    Procedure: register_item
-      See <adc_api.register_item>
-   */
-  procedure register_item(
-    p_cpi_id in varchar2,
-    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE);
 
 
   /**
@@ -363,5 +339,14 @@ as
 
   /* <adc_api.validate_page> */
   procedure validate_page;
+  
+  
+  $IF adc_util.C_WITH_UNIT_TESTS $THEN
+  /**
+    Procedure: initialize
+      Published for test purposes to be able to reset the package
+   */
+  procedure initialize;
+  $END
 end adc_internal;
 /

@@ -44,6 +44,8 @@ as
     loop_is_error boolean
   );
   
+  g_recursion recursion_rec;
+  
   
   /**
     Group: Private constants
@@ -53,8 +55,6 @@ as
       C_PARAM_GROUP - Name of the parameter group
    */
   C_PARAM_GROUP constant parameter_vw.par_pgr_id%type := 'ADC';
-  
-  g_recursion recursion_rec;
   
   /**
     Group: Private methods
@@ -113,6 +113,9 @@ as
                     msg_param('p_cgr_id', p_cgr_id),
                     msg_param('p_cpi_id', p_cpi_id)));
     
+    pit.assert_not_null(p_cgr_id);
+    pit.assert_not_null(p_cpi_id);
+    
     pop_firing_item(null, adc_util.C_TRUE);
     g_recursion.firing_items.delete;
         
@@ -123,7 +126,10 @@ as
      where cgr_id = p_cgr_id;
     
     -- Register firing item on recursion level 1 to start evaluation
-    push_firing_item(p_cgr_id, p_cpi_id);
+    push_firing_item(
+      p_cgr_id => p_cgr_id, 
+      p_cpi_id => p_cpi_id, 
+      p_force => adc_util.C_TRUE);
     
     pit.leave_optional(
       p_params => msg_params(
@@ -138,7 +144,8 @@ as
   procedure push_firing_item(
     p_cgr_id in adc_rule_groups.cgr_id%type,
     p_cpi_id in adc_page_items.cpi_id%type,
-    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE)
+    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE,
+    p_force in adc_util.flag_type default adc_util.C_FALSE)
   as
     l_cpi_has_rule pls_integer;
   begin
@@ -148,6 +155,9 @@ as
                     msg_param('p_cpi_id', p_cpi_id),
                     msg_param('p_allow_recursion', p_allow_recursion)));
     
+    pit.assert_not_null(p_cgr_id);
+    pit.assert_not_null(p_cpi_id);
+    
     -- check recursion level does not exceeded max level
     if stack_is_not_empty then
       pit.assert(get_level <= g_recursion.recursion_limit, msg.ADC_RECURSION_LIMIT, msg_args(p_cpi_id, to_char(g_recursion.recursion_limit)));
@@ -156,19 +166,22 @@ as
     if g_recursion.allow_recursion = adc_util.C_TRUE and p_allow_recursion = adc_util.C_TRUE then
     
       -- Item has not been pushed already
-      if p_cpi_id is not null and not p_cpi_id member of g_recursion.firing_items then
-  
-        -- If page item to be registered is referenced in rules, register recursive call for this page item
-        select count(*)
-          into l_cpi_has_rule
-          from dual
-         where exists(
-               select null
-                 from adc_rules
-                where instr(':' || cru_firing_items || ':', ':' || p_cpi_id || ':') > 0
-                  and cru_cgr_id = p_cgr_id);
-                  
-        if l_cpi_has_rule > 0 then
+      if not p_cpi_id member of g_recursion.firing_items then
+        if p_cpi_id != adc_util.C_NO_FIRING_ITEM then
+          -- If page item to be registered is referenced in rules, register recursive call for this page item
+          select count(*)
+            into l_cpi_has_rule
+            from dual
+           where exists(
+                 select null
+                   from adc_rules
+                   join adc_page_items
+                     on instr(',' || cru_firing_items || ',', ',' || cpi_id || ',') > 0
+                  where cpi_id = p_cpi_id
+                    and instr(cpi_cit_id, 'ITEM') > 0
+                    and cru_cgr_id = p_cgr_id);
+        end if;
+        if p_cpi_id = adc_util.C_NO_FIRING_ITEM or l_cpi_has_rule > 0  or p_force = adc_util.C_TRUE then
           -- First, push item uniquely on g_recursion.firing_items to retrieve all firing items later
           g_recursion.firing_items.extend;
           g_recursion.firing_items(g_recursion.firing_items.last) := p_cpi_id;
@@ -180,9 +193,6 @@ as
     end if;
     
     pit.leave_optional;
-  exception
-    when NO_DATA_FOUND then
-      pit.leave_optional;
   end push_firing_item;
   
   
@@ -266,9 +276,13 @@ as
   begin
     pit.enter_optional;
   
-    l_firing_items := '["' || utl_text.table_to_string(g_recursion.firing_items, '","') || '"]';
+    if g_recursion.firing_items.count > 0 then
+      l_firing_items := '["' || utl_text.table_to_string(g_recursion.firing_items, '","') || '"]';
+    else
+      l_firing_items := '[]';
+    end if;
     
-    pit.leave_optional;
+    pit.leave_optional(msg_params(msg_param('JSON', l_firing_items)));
     return l_firing_items;
   end get_firing_items_as_json;
 

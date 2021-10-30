@@ -38,7 +38,7 @@ begin
     p_pms_description => q'^^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
-    p_error_number => -1861);
+    p_error_number => -1821);
 
   pit_admin.merge_message(
     p_pms_name => 'INVALID_DATE_LENGTH',

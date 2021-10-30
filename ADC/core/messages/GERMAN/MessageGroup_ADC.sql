@@ -114,9 +114,9 @@ begin
     p_error_number => -20000);
 
   pit_admin.merge_message(
-    p_pms_name => 'ADC_INVALID_NUMBER',
+    p_pms_name => 'ADC_INVALID_DATE',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Ungültige Zahl. Erwartetes Format ~#1#~.^',
+    p_pms_text => q'^Ungültiges Datum: #1#.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
@@ -125,7 +125,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_INVALID_NUMBER',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Ungültige Zahl: #1#^',
+    p_pms_text => q'^Ungültige Zahl. Erwartetes Format ~#1#~.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
@@ -150,11 +150,20 @@ begin
     p_error_number => -20000);
 
   pit_admin.merge_message(
-    p_pms_name => 'ADC_ITEM_IS_MANDATORY',
+    p_pms_name => 'ADC_ITEM_IS_MANDATORY_DEFAULT',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Element #LABEL# ist ein Pflichtelement. Bitte tragen Sie einen Wert ein.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 70,
+    p_pms_pml_name => 'GERMAN',
+    p_error_number => null);
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_ITEM_IS_MANDATORY',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^#1#^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
     p_error_number => null);
 
@@ -368,7 +377,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_RULE_ORIGIN',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Rekursion #1#: Regel #2# (Wenn der Anwender #3#), Auslösendes Element: "#4#"#5| (Wert: |)|#, Dauer: #TIME##NOTIFICATION#^',
+    p_pms_text => q'^Rekursion #1#, Lauf #2#: Regel #3# (Wenn der Anwender #4#), Auslösendes Element: "#5#"#6| (Wert: |)|#, Dauer: #TIME#hsec^',
     p_pms_description => q'^^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
@@ -544,6 +553,14 @@ begin
     p_pms_pml_name => 'GERMAN');
 
   pit_admin.merge_message(
+    p_pms_name => 'ADC_PLSQL_ERROR',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Fehler beim Ausführen von PL/SQL-Code #1#: #SQLERRM#.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 30,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
     p_pms_name => 'ADC_PLSQL_CODE',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^PL/SQL-Code: "#1#"^',
@@ -591,6 +608,15 @@ begin
     p_pms_text => q'^Datumselement #1# auf Wert #2# gesetzt, Zeichenkettenwert: #3#.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 50,
+    p_pms_pml_name => 'GERMAN',
+    p_error_number => -20000);
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_INVALID_DEBUG_LEVEL',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Der Debuglevel ist nicht erlaubt, verwenden sie lediglich adc_util.C_JS_CODE, adc_util.C_JS_DEBUG, adc_util.C_JS_COMMENT oder adc_util.C_JS_DETAIL.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
     p_error_number => -20000);
 

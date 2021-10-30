@@ -18,10 +18,6 @@ as
         p_dynamic_action => p_dynamic_action);
     end if;
     
-    $IF adc_util.C_WITH_UNIT_TESTS $THEN
-    adc_internal.initialize_test;
-    $END
-    
     -- Initialize
     adc_internal.read_settings(
       p_firing_item => coalesce(apex_application.g_x01, adc_util.C_NO_FIRING_ITEM),
@@ -60,10 +56,6 @@ as
         p_plugin => p_plugin,
         p_dynamic_action => p_dynamic_action);
     end if;
-    
-    $IF adc_util.C_WITH_UNIT_TESTS $THEN
-    adc_internal.initialize_test;
-    $END
     
     -- Initialize
     adc_internal.read_settings(

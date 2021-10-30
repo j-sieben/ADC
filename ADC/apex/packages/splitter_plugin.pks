@@ -10,6 +10,9 @@ as
                in the page designer, but enhanced and without the requirement
                to grant access to an APEX internal package.
                
+               I just extracted the render and ajax method into this package and 
+               adopted it to my coding style (optically).
+               
     Author::
       FOS = FOEX Open Source (fos.world), by FOEX GmbH, Austria (www.foex.at)
       

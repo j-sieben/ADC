@@ -1,0 +1,1 @@
+﻿NDContentPage.OnToolTipsLoaded({256:"<div class=\"NDToolTip TClass LSQL\"><div class=\"TTSummary\">Provides data types, constants and generic helper functions for ADC.</div></div>"});

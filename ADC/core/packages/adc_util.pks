@@ -156,23 +156,6 @@ as
   function to_bool(
     p_bool in flag_type)
     return varchar2;
-    
-  
-  /**
-    Function to_number
-      Wrapper around TO_NUMBER that extracts a GROUP selector from the conversion map to avoid errors
-               
-    Parameters:
-      p_number - Number string to convert
-      p_conversion - Conversion mask, possibly containing a group selector
-      
-    Returns: 
-      Converted number
-   */
-  function to_number(
-    p_number in varchar2,
-    p_conversion in varchar2)
-    return number;
 
 
   /** 

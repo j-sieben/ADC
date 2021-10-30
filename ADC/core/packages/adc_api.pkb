@@ -1,33 +1,6 @@
 create or replace package body adc_api 
 as
 
-  /* Helper */
-  
-  $IF adc_util.C_WITH_UNIT_TESTS $THEN
-  procedure set_test_mode(
-    p_mode in boolean default false)
-  as
-  begin
-    adc_internal.set_test_mode(p_mode);
-  end set_test_mode;
-  
-  function get_test_mode
-    return boolean
-  as
-  begin
-    return adc_internal.get_test_mode;
-  end get_test_mode;
-  
-  
-  function get_test_result
-    return ut_adc_result
-  as
-  begin
-    return adc_internal.get_test_result;
-  end get_test_result;
-  $END
-  
-  
   /* CORE FUNCTIONALITY wrapper around ADC_INTERNAL */
   procedure add_javascript(
     p_javascript in varchar2)
@@ -60,7 +33,8 @@ as
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
     p_param_1 in adc_rule_actions.cra_param_1%type default null,
     p_param_2 in adc_rule_actions.cra_param_2%type default null,
-    p_param_3 in adc_rule_actions.cra_param_3%type default null)
+    p_param_3 in adc_rule_actions.cra_param_3%type default null,
+    p_allow_recursion in adc_util.flag_type default adc_util.C_FALSE)
   as
   begin
     pit.enter_optional(
@@ -69,14 +43,16 @@ as
                     msg_param('p_cpi_id', p_cpi_id),
                     msg_param('p_param_1', p_param_1),
                     msg_param('p_param_2', p_param_2),
-                    msg_param('p_param_3', p_param_3)));
+                    msg_param('p_param_3', p_param_3),
+                    msg_param('p_allow_recursion', p_allow_recursion)));
         
     adc_internal.execute_action(
       p_cat_id => p_cat_id,
       p_cpi_id => p_cpi_id,
       p_param_1 => p_param_1,
       p_param_2 => p_param_2,
-      p_param_3 => p_param_3);
+      p_param_3 => p_param_3,
+      p_allow_recursion => p_allow_recursion);
       
     pit.leave_mandatory;
   end execute_action;
@@ -349,6 +325,21 @@ as
   end not_null;
   
   
+  procedure raise_item_event(
+    p_cpi_id in varchar2)
+  as
+  begin
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_cpi_id', p_cpi_id)));
+                    
+    adc_internal.raise_item_event(
+      p_cpi_id => p_cpi_id);
+      
+    pit.leave_mandatory;
+  end raise_item_event;
+  
+  
   procedure register_error(
     p_cpi_id in varchar2,
     p_error_msg in varchar2,
@@ -388,21 +379,6 @@ as
       
     pit.leave_mandatory;
   end register_error;
-  
-  
-  procedure register_item(
-    p_cpi_id in varchar2)
-  as
-  begin
-    pit.enter_mandatory(
-      p_params => msg_params(
-                    msg_param('p_cpi_id', p_cpi_id)));
-                    
-    adc_internal.register_item(
-      p_cpi_id => p_cpi_id);
-      
-    pit.leave_mandatory;
-  end register_item;
   
   
   procedure register_mandatory(
