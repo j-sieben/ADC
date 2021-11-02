@@ -222,6 +222,32 @@ as
   
   
   /**
+    Function: check_recursion
+      See <adc_recursion_stack.check_recursion>
+   */
+  function check_recursion(
+    p_cra_cpi_id in adc_rule_actions.cra_cpi_id%type,
+    p_cru_fire_on_page_load in adc_rules.cru_fire_on_page_load%type)
+    return adc_util.flag_type
+  as
+    sResult adc_util.flag_type;
+  begin
+    pit.enter_detailed('check_recursion',
+      p_params => msg_params(
+                    msg_param('p_cra_cpi_id', p_cra_cpi_id),
+                    msg_param('p_cru_fire_on_page_load', p_cru_fire_on_page_load)));
+    
+    case when p_cra_cpi_id = adc_util.C_NO_FIRING_ITEM and p_cru_fire_on_page_load = adc_util.C_TRUE
+      then sResult := adc_util.C_FALSE;
+      else sResult := adc_util.C_TRUE;
+    end case;
+    
+    pit.leave_detailed(msg_params(msg_param('Result', sResult)));
+    return sResult;
+  end check_recursion;
+  
+  
+  /**
     Function: get_next
       See <ADC_RECURSION_STACK.get_next>
    */

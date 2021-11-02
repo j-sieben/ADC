@@ -211,41 +211,6 @@ as
     when others then
       return p_param;
   end calculate_parameter_value;
-
-
-  /** 
-    Function: check_recursion
-      Method to determine whether rule execution has to be checked for recursive allowance.
-      
-      Normally, any rule is checked whether it is allowed to be executed recursively. A rule that is set to 
-      FIRE_ON_PAGE_LOAD is an exception in this regard if the page is in initialization process.
-      Whether this is true for the actual rule is checked within this method.
-      
-    Parameter:
-      p_action_rec  <rule_action_rec> instance of the actually selected rule.
-      
-    Returns:
-      Flag to indicate whether a recursion has to be checked or not.
-   */
-  function check_recursion(
-    p_action_rec in rule_action_rec)
-    return adc_util.flag_type
-  as
-    sResult adc_util.flag_type;
-  begin
-    pit.enter_detailed('check_recursion',
-      p_params => msg_params(
-                    msg_param('p_action_rec.item', p_action_rec.cra_item),
-                    msg_param('p_action_rec.cru_fire_on_page_load', p_action_rec.cru_fire_on_page_load)));
-    
-    case when p_action_rec.cra_item = adc_util.C_NO_FIRING_ITEM and p_action_rec.cru_fire_on_page_load = adc_util.C_TRUE
-      then sResult := adc_util.C_FALSE;
-      else sResult := adc_util.C_TRUE;
-    end case;
-    
-    pit.leave_detailed(msg_params(msg_param('Result', sResult)));
-    return sResult;
-  end check_recursion;
   
   
   /** 
@@ -282,7 +247,9 @@ as
   /** 
     Procedure: get_and_collect_js_code
       Method to prepare JavaScript contained in a rule action for execution.
+      
       Before the JavaScript code can be collected, this method replaces all argument anchors.
+      The JavaScript Code is then handed over to <adc_response.add_javascript>.
       
     Parameter:
     p_action_rec - <rule_action_rec> instance of the actually selected rule.
@@ -365,7 +332,7 @@ as
                         'PARAM_1', case when p_action_rec.cra_param_1 is not null then analyze_parameter_value(p_action_rec.cra_item, p_action_rec.cra_param_1) end,
                         'PARAM_2', case when p_action_rec.cra_param_2 is not null then analyze_parameter_value(p_action_rec.cra_item, p_action_rec.cra_param_2) end,
                         'PARAM_3', case when p_action_rec.cra_param_3 is not null then analyze_parameter_value(p_action_rec.cra_item, p_action_rec.cra_param_3) end,
-                        'ALLOW_RECURSION', check_recursion(p_action_rec),
+                        'ALLOW_RECURSION', adc_recursion_stack.check_recursion(p_action_rec.cra_item, p_action_rec.cru_fire_on_page_load),
                         'ITEM_VALUE', C_PLSQL_ITEM_VALUE_TEMPLATE,
                         'EVENT_DATA', get_event_data(null),
                         'ITEM', p_action_rec.cra_item,

@@ -492,6 +492,7 @@ as
     adc_apex_action.set_disabled(l_disabled);
     if not l_disabled then
       adc_apex_action.set_action(assemble_action(C_ACTION_CREATE, p_row));
+      adc_apex_action.set_label(p_row.mda_create_button_label);
       adc_apex_action.set_title(p_row.mda_create_button_label);
     end if;
     adc.add_javascript(adc_apex_action.get_action_script);
@@ -502,6 +503,7 @@ as
     adc_apex_action.set_disabled(l_disabled);
     if not l_disabled then
     adc_apex_action.set_action(assemble_action(C_ACTION_DELETE, p_row));
+    adc_apex_action.set_label(p_row.mda_delete_button_label);
     adc_apex_action.set_title(p_row.mda_delete_button_label);
     end if;
     adc.add_javascript(adc_apex_action.get_action_script);

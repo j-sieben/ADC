@@ -94,6 +94,27 @@ as
   procedure pop_firing_item(
     p_cpi_id in adc_page_items.cpi_id%type,
     p_all in adc_util.flag_type default adc_util.C_FALSE);
+
+
+  /** 
+    Function: check_recursion
+      Method to determine whether rule execution has to be checked for recursive allowance.
+      
+      Normally, any rule is checked whether it is allowed to be executed recursively. A rule that is set to 
+      FIRE_ON_PAGE_LOAD is an exception in this regard if the page is in initialization process.
+      Whether this is true for the actual rule is checked within this method.
+      
+    Parameters:
+      p_cra_cpi_id - Item parameter of the rule action
+      p_cru_fire_on_page_load - Flag to indicate whether this rule has to be executed on page load as well
+      
+    Returns:
+      Flag to indicate whether a recursion has to be checked or not.
+   */
+  function check_recursion(
+    p_cra_cpi_id in adc_rule_actions.cra_cpi_id%type,
+    p_cru_fire_on_page_load in adc_rules.cru_fire_on_page_load%type)
+    return adc_util.flag_type;
   
   
   /**
