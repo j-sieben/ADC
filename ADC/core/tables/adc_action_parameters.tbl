@@ -13,7 +13,7 @@ create table adc_action_parameters(
   constraint fk_cap_cpt_id foreign key(cap_cpt_id)
     references adc_action_param_types(cpt_id) on delete cascade,
   constraint fk_cap_pti_id foreign key(cap_pti_id, cap_pmg_name)
-    references &PIT_OWNER..pit_translatable_item(pti_uid, pti_upmg) on delete cascade
+    references pit_translatable_item(pti_uid, pti_upmg) on delete cascade
 ) 
 organization index;
 

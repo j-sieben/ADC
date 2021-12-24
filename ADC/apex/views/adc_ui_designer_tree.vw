@@ -15,7 +15,7 @@ with session_state as(
               'fa-user-graduate' icon_cru,
               'fa-arrow-circle-o-right' icon_cra
          from adc_rule_groups
-        where cgr_app_id = (select utl_apex.get_number('CGR_APP_ID') from dual)),
+        where cgr_app_id = 117),--(select utl_apex.get_number('CGR_APP_ID') from dual)),
      data as(
        select /*+ no_merge (session_state) */
               'CGR_' || cgr_id node_id, 'P_' || cgr_page_id node_parent_id, cgr_page_id || ': ' || page_name || ' (' || page_alias || ')' node_name, cgr_page_id node_sort_seq, icon_cgr || color_cgr node_icon, 'RULE_GROUP' node_type,

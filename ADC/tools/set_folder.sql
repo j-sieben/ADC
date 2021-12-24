@@ -1,0 +1,11 @@
+define install_dir=&1./
+define tool_dir = tools/
+define seq_dir=&install_dir.sequences/
+define table_dir=&install_dir.tables/
+define type_dir=&install_dir.types/
+define view_dir=&install_dir.views/
+define pkg_dir=&install_dir.packages/
+define script_dir=&install_dir.scripts/
+define msg_dir=&install_dir.messages/&DEFAULT_LANGUAGE./
+define apex_version_dir=&install_dir.&APEX_PATH./
+define app_dir=&install_dir.&APEX_PATH./application/

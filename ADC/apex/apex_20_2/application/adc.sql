@@ -16834,25 +16834,22 @@ wwv_flow_api.create_page_process(
 );
 end;
 /
-set define ^alter session set current_schema=^INSTALL_USER.;
+/*set define ^
 declare
   l_foo number;
   l_app_id number;
 begin
   l_foo := adc_admin.map_id;
-  l_app_id := coalesce(apex_application_install.get_application_id, #APP_ID.);
+  l_app_id := coalesce(apex_application_install.get_application_id, ^APP_ID.);
 
   dbms_output.put_line('Rulegroup page 1');
 
   adc_admin.prepare_rule_group_import(
     p_cgr_app_id => l_app_id,
-    p_cgr_page_id => 1,
-    p_cgr_name => '#CGR_NAME#');
+    p_cgr_page_id => 1);
 
   adc_admin.merge_rule_group(
     p_cgr_id => adc_admin.map_id(484),
-    p_cgr_name => '#CGR_NAME#',
-    p_cgr_description => q'|#CGR_DESCRIPTION#|',
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 1,
     p_cgr_with_recursion => adc_util.C_TRUE,
@@ -17280,13 +17277,10 @@ begin
 
   adc_admin.prepare_rule_group_import(
     p_cgr_app_id => l_app_id,
-    p_cgr_page_id => 2,
-    p_cgr_name => '#CGR_NAME#');
+    p_cgr_page_id => 2);
 
   adc_admin.merge_rule_group(
     p_cgr_id => adc_admin.map_id(1203),
-    p_cgr_name => '#CGR_NAME#',
-    p_cgr_description => q'|#CGR_DESCRIPTION#|',
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 2,
     p_cgr_with_recursion => adc_util.C_TRUE,
@@ -17355,13 +17349,10 @@ begin
 
   adc_admin.prepare_rule_group_import(
     p_cgr_app_id => l_app_id,
-    p_cgr_page_id => 3,
-    p_cgr_name => '#CGR_NAME#');
+    p_cgr_page_id => 3);
 
   adc_admin.merge_rule_group(
     p_cgr_id => adc_admin.map_id(725),
-    p_cgr_name => '#CGR_NAME#',
-    p_cgr_description => q'|#CGR_DESCRIPTION#|',
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 3,
     p_cgr_with_recursion => adc_util.C_TRUE,
@@ -17395,13 +17386,10 @@ begin
 
   adc_admin.prepare_rule_group_import(
     p_cgr_app_id => l_app_id,
-    p_cgr_page_id => 4,
-    p_cgr_name => '#CGR_NAME#');
+    p_cgr_page_id => 4);
 
   adc_admin.merge_rule_group(
     p_cgr_id => adc_admin.map_id(1173),
-    p_cgr_name => '#CGR_NAME#',
-    p_cgr_description => q'|#CGR_DESCRIPTION#|',
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 4,
     p_cgr_with_recursion => adc_util.C_TRUE,
@@ -17435,13 +17423,10 @@ begin
 
   adc_admin.prepare_rule_group_import(
     p_cgr_app_id => l_app_id,
-    p_cgr_page_id => 5,
-    p_cgr_name => '#CGR_NAME#');
+    p_cgr_page_id => 5);
 
   adc_admin.merge_rule_group(
     p_cgr_id => adc_admin.map_id(582),
-    p_cgr_name => '#CGR_NAME#',
-    p_cgr_description => q'|#CGR_DESCRIPTION#|',
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 5,
     p_cgr_with_recursion => adc_util.C_TRUE,
@@ -17622,13 +17607,10 @@ begin
 
   adc_admin.prepare_rule_group_import(
     p_cgr_app_id => l_app_id,
-    p_cgr_page_id => 6,
-    p_cgr_name => '#CGR_NAME#');
+    p_cgr_page_id => 6);
 
   adc_admin.merge_rule_group(
     p_cgr_id => adc_admin.map_id(2001),
-    p_cgr_name => '#CGR_NAME#',
-    p_cgr_description => q'|#CGR_DESCRIPTION#|',
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 6,
     p_cgr_with_recursion => adc_util.C_TRUE,
@@ -17662,13 +17644,10 @@ begin
 
   adc_admin.prepare_rule_group_import(
     p_cgr_app_id => l_app_id,
-    p_cgr_page_id => 7,
-    p_cgr_name => '#CGR_NAME#');
+    p_cgr_page_id => 7);
 
   adc_admin.merge_rule_group(
     p_cgr_id => adc_admin.map_id(901),
-    p_cgr_name => '#CGR_NAME#',
-    p_cgr_description => q'|#CGR_DESCRIPTION#|',
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 7,
     p_cgr_with_recursion => adc_util.C_TRUE,
@@ -17702,13 +17681,10 @@ begin
 
   adc_admin.prepare_rule_group_import(
     p_cgr_app_id => l_app_id,
-    p_cgr_page_id => 8,
-    p_cgr_name => '#CGR_NAME#');
+    p_cgr_page_id => 8);
 
   adc_admin.merge_rule_group(
     p_cgr_id => adc_admin.map_id(620),
-    p_cgr_name => '#CGR_NAME#',
-    p_cgr_description => q'|#CGR_DESCRIPTION#|',
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 8,
     p_cgr_with_recursion => adc_util.C_TRUE,
@@ -17813,13 +17789,10 @@ begin
 
   adc_admin.prepare_rule_group_import(
     p_cgr_app_id => l_app_id,
-    p_cgr_page_id => 9,
-    p_cgr_name => '#CGR_NAME#');
+    p_cgr_page_id => 9);
 
   adc_admin.merge_rule_group(
     p_cgr_id => adc_admin.map_id(635),
-    p_cgr_name => '#CGR_NAME#',
-    p_cgr_description => q'|#CGR_DESCRIPTION#|',
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 9,
     p_cgr_with_recursion => adc_util.C_TRUE,
@@ -17997,13 +17970,10 @@ begin
 
   adc_admin.prepare_rule_group_import(
     p_cgr_app_id => l_app_id,
-    p_cgr_page_id => 10,
-    p_cgr_name => '#CGR_NAME#');
+    p_cgr_page_id => 10);
 
   adc_admin.merge_rule_group(
     p_cgr_id => adc_admin.map_id(1186),
-    p_cgr_name => '#CGR_NAME#',
-    p_cgr_description => q'|#CGR_DESCRIPTION#|',
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 10,
     p_cgr_with_recursion => adc_util.C_TRUE,
@@ -18028,13 +17998,10 @@ begin
 
   adc_admin.prepare_rule_group_import(
     p_cgr_app_id => l_app_id,
-    p_cgr_page_id => 11,
-    p_cgr_name => '#CGR_NAME#');
+    p_cgr_page_id => 11);
 
   adc_admin.merge_rule_group(
     p_cgr_id => adc_admin.map_id(566),
-    p_cgr_name => '#CGR_NAME#',
-    p_cgr_description => q'|#CGR_DESCRIPTION#|',
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 11,
     p_cgr_with_recursion => adc_util.C_TRUE,
@@ -18142,13 +18109,10 @@ begin
 
   adc_admin.prepare_rule_group_import(
     p_cgr_app_id => l_app_id,
-    p_cgr_page_id => 12,
-    p_cgr_name => '#CGR_NAME#');
+    p_cgr_page_id => 12);
 
   adc_admin.merge_rule_group(
     p_cgr_id => adc_admin.map_id(604),
-    p_cgr_name => '#CGR_NAME#',
-    p_cgr_description => q'|#CGR_DESCRIPTION#|',
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 12,
     p_cgr_with_recursion => adc_util.C_TRUE,
@@ -18240,7 +18204,8 @@ begin
 end;
 /
 
-set define onprompt --application/end_environment
+set define on*/
+prompt --application/end_environment
 begin
 wwv_flow_api.import_end(p_auto_install_sup_obj => nvl(wwv_flow_application_install.get_auto_install_sup_obj, false));
 commit;

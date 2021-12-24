@@ -10,7 +10,7 @@ create table adc_page_item_types(
   cit_is_custom_event &FLAG_TYPE. default &C_FALSE.,
   constraint pk_adc_page_item_types primary key (cit_id),
   constraint fk_cit_pti_id foreign key(cit_pti_id, cit_pmg_name)
-    references &PIT_OWNER..pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
+    references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
   constraint chk_cit_has_value check (cit_has_value in (&C_TRUE., &C_FALSE.)),
   constraint chk_cit_include_in_view check (cit_include_in_view in (&C_TRUE., &C_FALSE.)),
   constraint chk_cit_is_custom_event check (cit_is_custom_event in (&C_TRUE., &C_FALSE.))

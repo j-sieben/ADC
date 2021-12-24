@@ -27,7 +27,7 @@ create table adc_apex_actions(
   constraint fk_caa_cty_id foreign key (caa_cty_id)
 	  references adc_apex_action_types (cty_id) on delete cascade,
   constraint fk_caa_pti_id foreign key (caa_pti_id, caa_pmg_name)
-	  references &PIT_OWNER..pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
+	  references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
   constraint chk_caa_initially_disabled check (caa_initially_disabled in (&C_TRUE., &C_FALSE.)),
   constraint chk_caa_initially_hidden check (caa_initially_hidden in (&C_TRUE., &C_FALSE.))
 );

@@ -11,6 +11,4 @@ define script_dir=apex/scripts/
 
 set define on
 
-alter session set current_schema=&INSTALL_USER.;
-
 set termout on

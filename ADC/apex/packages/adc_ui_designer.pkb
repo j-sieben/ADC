@@ -69,10 +69,13 @@ as
   C_ITEM_CAA_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CAA_ID';
   C_ITEM_CRA_CAT_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRA_CAT_ID';
   C_ITEM_CRU_CGR_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRU_CGR_ID';
+  C_ITEM_CRA_CGR_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRA_CGR_ID';
+  C_ITEM_CAA_CGR_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CAA_CGR_ID';
   C_ITEM_SELECTED_NODE constant adc_util.ora_name_type := C_PAGE_PREFIX || 'SELECTED_NODE';
   
   C_REGION_RULES constant adc_util.ora_name_type := C_REGION_PREFIX || 'RULES';
   C_REGION_HIERARCHY constant adc_util.ora_name_type := C_REGION_PREFIX || 'HIERARCHY';
+  C_REGION_FINDINGS constant adc_util.ora_name_type := C_REGION_PREFIX || 'FINDINGS';
   C_REGION_HELP constant adc_util.ora_name_type := C_REGION_PREFIX || 'HELP';
   
   C_REGION_CGR_FORM constant adc_util.ora_name_type := C_REGION_PREFIX || 'CGR_FORM';
@@ -170,8 +173,8 @@ as
     pit.enter_detailed('copy_apex_action');
     
     g_page_values := utl_apex.get_page_values(C_REGION_CAA_FORM);
-    g_apex_action_row.caa_id := to_number(utl_apex.get(g_page_values, 'CAA_ID'), 'fm9999999999990d99999999');
-    g_apex_action_row.caa_cgr_id := to_number(utl_apex.get(g_page_values, 'CAA_CGR_ID'), 'fm9999999999990d99999999');
+    g_apex_action_row.caa_id := to_number(utl_apex.get(g_page_values, 'CAA_ID'), 'fm9999999999990');
+    g_apex_action_row.caa_cgr_id := to_number(utl_apex.get(g_page_values, 'CAA_CGR_ID'), 'fm9999999999990');
     g_apex_action_row.caa_cty_id := utl_apex.get(g_page_values, 'CAA_CTY_ID');
     g_apex_action_row.caa_name := utl_apex.get(g_page_values, 'CAA_NAME');
     g_apex_action_row.caa_label := utl_apex.get(g_page_values, 'CAA_LABEL');
@@ -615,6 +618,10 @@ as
       p_cpi_id => C_REGION_RULES,
       p_set_item => adc_util.C_FALSE);
 
+    adc.refresh_item(
+      p_cpi_id => C_REGION_FINDINGS,
+      p_set_item => adc_util.C_FALSE);
+
     pit.leave_mandatory;
   end process_page;
   
@@ -671,15 +678,26 @@ as
         g_environment.cgr_id := g_environment.node_id;
     end case;
     
-    -- Compre CGR_ID with session state. If changed, refresh rule report and Action Type LOV
+    -- Compare CGR_ID with session state. If changed, refresh rule report
     if coalesce(adc_api.get_number(C_ITEM_CGR_ID), 0) != g_environment.cgr_id then   
       adc.set_item(
         p_cpi_id => C_ITEM_CGR_ID,
         p_item_value => g_environment.cgr_id);
+      adc.set_item(
+        p_cpi_id => C_ITEM_CRU_CGR_ID,
+        p_item_value => g_environment.cgr_id);
+      adc.set_item(
+        p_cpi_id => C_ITEM_CRA_CGR_ID,
+        p_item_value => g_environment.cgr_id);
+      adc.set_item(
+        p_cpi_id => C_ITEM_CAA_CGR_ID,
+        p_item_value => g_environment.cgr_id);
       adc.refresh_item(
         p_cpi_id => C_REGION_RULES,
         p_set_item => adc_util.C_FALSE);
-      adc.refresh_item(C_ITEM_CRA_CAT_ID);
+      adc.refresh_item(
+        p_cpi_id => C_REGION_FINDINGS,
+        p_set_item => adc_util.C_FALSE);
     end if;
     
     -- Set ID of the selected mode if not CGR and set SELECTD_NODE to enable the tree to remember its state
@@ -740,6 +758,9 @@ as
       adc.refresh_item(
         p_cpi_id => C_REGION_HIERARCHY,
         p_set_item => adc_util.C_FALSE);
+      adc.refresh_item(
+        p_cpi_id => C_REGION_FINDINGS,
+        p_set_item => adc_util.C_FALSE);
     when substr(adc_api.get_event_data, 1, 1) = '{' then
       -- Event data is JSON. Indicates that an APEX Action has called the method. Extract node type and -id
       g_environment.target_mode := adc_api.get_event_data('targetMode');
@@ -752,7 +773,7 @@ as
       -- Method was called due to a changed selection in hierarchy or rule report. ID is passed in directly
       g_environment.selected_node := adc_api.get_event_data;
       g_environment.target_mode := substr(g_environment.selected_node, 1, 3);
-      g_environment.node_id := to_number(substr(g_environment.selected_node, 5));
+      g_environment.node_id := to_number(substr(g_environment.selected_node, 5), 'fm99999990');
       g_environment.form_id := C_REGION_PREFIX || g_environment.target_mode || '_FORM';
       g_environment.action := C_ACTION_SHOW;
       -- Harmonize with page state

@@ -92,6 +92,7 @@ as
   g_json_error_template adc_util.sql_char;
   g_js_script_frame_template adc_util.sql_char;
   
+  
   /**
     Group: Private methods
    */  

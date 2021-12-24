@@ -7,7 +7,7 @@ create table adc_action_item_focus(
   cif_active &FLAG_TYPE. default &C_TRUE. constraint chk_cif_active check(cif_active in (&C_TRUE., &C_FALSE.)),
   constraint pk_adc_action_item_focus primary key(cif_id),
   constraint fk_cif_pti_id foreign key(cif_pti_id, cif_pmg_name)
-    references &PIT_OWNER..pit_translatable_item(pti_uid, pti_upmg) on delete cascade
+    references pit_translatable_item(pti_uid, pti_upmg) on delete cascade
 ) 
 organization index;
 

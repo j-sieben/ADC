@@ -6,7 +6,7 @@ create table adc_action_param_types(
   cpt_active &FLAG_TYPE. default &C_TRUE. constraint chk_cpt_active check(cpt_active in (&C_TRUE., &C_FALSE.)),
   constraint pk_adc_action_param_types primary key(cpt_id),
   constraint fk_pti_id foreign key(cpt_pti_id, cpt_pmg_name)
-    references &PIT_OWNER..pit_translatable_item(pti_uid, pti_upmg) on delete cascade
+    references pit_translatable_item(pti_uid, pti_upmg) on delete cascade
 ) 
 organization index;
 

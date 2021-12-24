@@ -5,7 +5,7 @@ create table adc_apex_action_types(
 	cty_active &FLAG_TYPE. default &C_TRUE.,
   constraint pk_adc_apex_action_types primary key(cty_id),
   constraint fk_cty_pti_id foreign key(cty_pti_id, cty_pmg_name)
-    references &PIT_OWNER..pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
+    references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
   constraint chk_cty_active check (cty_active in (&C_FALSE., &C_TRUE.))
 ) organization index;
 

@@ -9,7 +9,7 @@ declare
   pragma exception_init(synonym_does_not_exist, -1434);
   cursor delete_object_cur is
           select object_name name, object_type type
-            from all_objects
+            from user_objects
            where object_name in (
                  '', -- Typen
                  'ADC_UI', 'SPLITTER_PLUGIN', -- Packages
@@ -26,7 +26,6 @@ declare
                  '' -- Sequenzen
                  )
              and object_type not like '%BODY'
-             and owner = upper('&INSTALL_USER.')
            order by object_type, object_name;
 begin
   for obj in delete_object_cur loop
@@ -77,14 +76,13 @@ prompt &h3.Checking whether app exists.
 declare
   l_app_id number;
   l_ws number;
-  c_app_alias constant varchar2(30 byte) := '&APEX_ALIAS.';  
+  c_app_alias constant varchar2(30 byte) := 'ADC';  
 begin
   if c_app_alias is not null then
     select application_id, workspace_id
       into l_app_id, l_ws
       from apex_applications
-     where alias = c_app_alias
-       and owner = '&INSTALL_USER.';
+     where alias = c_app_alias;
      
     dbms_output.put_line('&s1.Remove application ' || c_app_alias);
     wwv_flow_api.set_security_group_id(l_ws);

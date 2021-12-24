@@ -11,7 +11,7 @@ select cat_name || case cat_active when adc_util.C_FALSE then ' (deprecated)' en
        select /*+ no_merge(p) */ null
          from adc_action_item_focus
          join adc_page_items
-           on instr(cif_item_types, cpi_cit_id) > 0
+           on instr(cif_item_types, case when instr(cpi_cit_id, 'ITEM') > 0 then 'ELEMENT' else cpi_cit_id end) > 0
          join params p
            on cpi_cgr_id = c_cgr_id
         where cif_id = cat_cif_id);

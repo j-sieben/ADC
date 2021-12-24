@@ -1,6 +1,11 @@
 create or replace editionable view adc_ui_lov_cgr_page_items
 as
-select distinct lpi.item_name d, lpi.item_id r, cgr.cgr_id, cat_id, cit_name grp
+with params as(
+       select utl_apex.get_number('CGR_ID') p_cgr_id,
+              utl_apex.get_string('CRA_CAT_ID') p_cat_id
+         from dual)
+select /*+ no_merge (p) */
+       distinct lpi.item_name d, lpi.item_id r, cit_name grp
   from adc_bl_page_items lpi
   join adc_bl_page_targets lpt
     on lpi.item_id = lpt.cpi_id
@@ -12,4 +17,9 @@ select distinct lpi.item_name d, lpi.item_id r, cgr.cgr_id, cat_id, cit_name grp
   join adc_action_types
     on cif_id = cat_cif_id
   join adc_page_item_types_v
-    on cpi_cit_id = cit_id;
+    on cpi_cit_id = cit_id
+  join params p
+    on cgr_id = p_cgr_id
+   and cat_id = p_cat_id;
+    
+comment on table adc_ui_lov_cgr_page_items is 'Collection of all page items that are usable for the selected ADC action type';

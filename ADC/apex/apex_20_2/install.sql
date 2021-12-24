@@ -1,8 +1,3 @@
-define apex_dir=apex/
-define apex_version_dir=&apex_dir.&APEX_PATH./
-define app_dir=&apex_version_dir.application/
-define script_dir=&apex_version_dir.scripts/
-
 prompt &s1.Install action types
 --@&script_dir.merge_action_types.sql
 

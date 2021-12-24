@@ -5,43 +5,21 @@ set feedback off
 set lines 120
 set pages 9999
 whenever sqlerror exit
-clear screen
 
 set termout off
-col sys_user new_val SYS_USER format a30
-col install_user new_val INSTALL_USER format a30
 col apex_ws new_val APEX_WS format a30
-col apex_alias new_val APEX_ALIAS format a30
-col apex_sample_alias new_val APEX_SAMPLE_ALIAS format a30
 col apex_path new_val APEX_PATH format a20
 col app_id new_val APP_ID format a30
 col default_language new_val DEFAULT_LANGUAGE format a30
-col pit_owner new_val PIT_OWNER format a30
 
 -- Common directory paths
 define core_dir=core/
 define plugin_dir=plugin/
 
-select user sys_user,
-       upper('&1.') install_user,
-       upper('&2.') apex_ws, 
-       upper('&3.') apex_alias, 
-       upper('&3.') apex_sample_alias, 
-       '&4.' app_id,
-       upper('&5.') default_language
-  from V$NLS_VALID_VALUES
- where parameter = 'LANGUAGE'
-   and value = upper('&5.');
-   
-select owner pit_owner
-  from dba_tab_privs
- where grantee = '&INSTALL_USER.'
-   and table_name = 'PIT'
- fetch first 1 row only;
-
--- Determine Apex path based on installed APEX user
-select case 
-       when &INSTALL_USER..utl_apex.get_apex_version >= 20.2 then 'apex_20_2' end apex_path
+select upper('&1.') apex_ws, 
+       coalesce((select application_id from apex_applications where alias = '&3.'), &2.) app_id,
+       pit.get_default_language default_language,
+       case when utl_apex.get_apex_version >= 20.2 then 'apex_20_2' end apex_path
   from dual;
 
 @settings.sql
@@ -57,9 +35,6 @@ define h1="*** "
 define h2="**  "
 define h3="*   "
 define s1=".    - "
-
-
-alter session set current_schema=&INSTALL_USER.;
 
 set termout on
 begin

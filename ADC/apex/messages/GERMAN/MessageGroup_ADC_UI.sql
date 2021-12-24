@@ -52,6 +52,30 @@ begin
     p_pms_pse_id => 70,
     p_pms_pml_name => 'GERMAN');
 
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_UI_CHK_REGISTER_OBSERVER',
+    p_pms_pmg_name => 'ADC_UI',
+    p_pms_text => q'^Das Element #1# muss nicht beobachtet werden, da eine technische Bedingung das Element referenziert.^',
+    p_pms_description => q'^Die Aktion kann entfernt werden, ohne das Verhalten der dynamischen Seite zu ändern.^',
+    p_pms_pse_id => 70,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_UI_CHK_DEPRECATED',
+    p_pms_pmg_name => 'ADC_UI',
+    p_pms_text => q'^Die Aktion #1# ist deprecated und sollte durch ein anderes Verfahren ersetzt werden.^',
+    p_pms_description => q'^Bitte folgen Sie den Anweisungen im Hilfetext des Aktionstyps.^',
+    p_pms_pse_id => 70,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_UI_CHK_MISSING',
+    p_pms_pmg_name => 'ADC_UI',
+    p_pms_text => q'^Das Element #1# existiert auf der Seite nicht.^',
+    p_pms_description => q'^Eventuell wurde das Element gelöscht oder umbenannt. Bitte kontrollieren Sie dies, da ansonsten JavaScript-Fehler auf der Seite auftauchen.^',
+    p_pms_pse_id => 70,
+    p_pms_pml_name => 'GERMAN');
+
   commit;
   pit_admin.create_message_package;
 end;

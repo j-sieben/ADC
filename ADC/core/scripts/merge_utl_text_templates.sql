@@ -18,13 +18,10 @@ q'^  dbms_output.put_line('Rulegroup page #CGR_PAGE_ID#');\CR\^' ||
 q'^\CR\^' || 
 q'^  adc_admin.prepare_rule_group_import(\CR\^' || 
 q'^    p_cgr_app_id => l_app_id,\CR\^' || 
-q'^    p_cgr_page_id => #CGR_PAGE_ID#,\CR\^' || 
-q'^    p_cgr_name => '#CGR_NAME#');\CR\^' || 
+q'^    p_cgr_page_id => #CGR_PAGE_ID#);\CR\^' || 
 q'^\CR\^' || 
 q'^  adc_admin.merge_rule_group(\CR\^' || 
 q'^    p_cgr_id => adc_admin.map_id(#CGR_ID#),\CR\^' || 
-q'^    p_cgr_name => '#CGR_NAME#',\CR\^' || 
-q'^    p_cgr_description => q'|#CGR_DESCRIPTION#|',\CR\^' || 
 q'^    p_cgr_app_id => l_app_id,\CR\^' || 
 q'^    p_cgr_page_id => #CGR_PAGE_ID#,\CR\^' || 
 q'^    p_cgr_with_recursion => #CGR_WITH_RECURSION#,\CR\^' || 

@@ -9,14 +9,11 @@ begin
    where workspace = '&APEX_WS.';
     
   apex_application_install.generate_application_id;
-  apex_application_install.set_application_id(&APP_ID.);
-  apex_application_install.set_application_alias('&APEX_ALIAS.');
+  if &APP_ID. is not null then
+    apex_application_install.set_application_id(&APP_ID.);
+  end if;
   apex_application_install.set_workspace_id(l_workspace_id);
   apex_application_install.generate_offset;
-  apex_application_install.set_schema( '&INSTALL_USER.' );
-exception 
-  when no_data_found then 
-    dbms_output.put_line('No workspace found named &APEX_WS.');
-    raise;
+  apex_application_install.set_schema(user);
 end;
 /
