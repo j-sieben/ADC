@@ -13965,7 +13965,7 @@ wwv_flow_api.create_page_process(
 end;
 /
 set define ^
-alter session set current_schema=^INSTALL_USER.;
+
 declare
   l_foo number;
   l_app_id number;

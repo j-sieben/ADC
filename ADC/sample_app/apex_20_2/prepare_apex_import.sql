@@ -1,5 +1,3 @@
-alter session set current_schema=sys;
-
 declare
   l_workspace_id number;
 begin

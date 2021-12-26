@@ -11,7 +11,7 @@ declare
   pragma exception_init(synonym_does_not_exist, -1434);
   cursor delete_object_cur is
           select object_name name, object_type type
-            from all_objects
+            from user_objects
            where object_name in (
                  '', -- Typen
                  'SADC_UI', '', -- Packages
@@ -22,7 +22,6 @@ declare
                  'LOCATIONS_SEQ', 'DEPARTMENTS_SEQ', 'EMPLOYEES_SEQ' -- Sequenzen
                  )
              and object_type not like '%BODY'
-             and owner = upper('&INSTALL_USER.')
            order by object_type, object_name;
 begin
   for obj in delete_object_cur loop
@@ -54,17 +53,14 @@ declare
      where cgr_app_id = (
            select application_id
              from apex_applications
-            where alias = '&APEX_SAMPLE_ALIAS.'
-              and workspace = '&APEX_WS.');
+            where alias = 'SADC');
 begin
-  if '&APEX_SAMPLE_ALIAS.' is not null then
-    for r in adc_cur loop
-      adc_admin.delete_rule_group(r.cgr_id);
-    end loop;
-  end if;
+  for r in adc_cur loop
+    adc_admin.delete_rule_group(r.cgr_id);
+  end loop;
 exception
   when others then
-    dbms_output.put_line('Error when removing ADC groups: ' || sqlerrm);
+    dbms_output.put_line('Error when removing SADC groups: ' || sqlerrm);
 end;
 /
 
@@ -73,19 +69,16 @@ prompt &h3.Checking whether app exists.
 declare
   l_app_id number;
   l_ws number;
-  c_app_alias constant varchar2(30 byte) := '&APEX_SAMPLE_ALIAS.';  
+  c_app_alias constant varchar2(30 byte) := 'SADC';  
 begin
-  if c_app_alias is not null then
-    select application_id, workspace_id
-      into l_app_id, l_ws
-      from apex_applications
-     where alias = c_app_alias
-       and workspace = '&APEX_WS.';
-   
-    dbms_output.put_line('&s1.Remove application ' || c_app_alias);
-    wwv_flow_api.set_security_group_id(l_ws);
-    wwv_flow_api.remove_flow(l_app_id);
-  end if;
+  select application_id, workspace_id
+    into l_app_id, l_ws
+    from apex_applications
+   where alias = c_app_alias;
+ 
+  dbms_output.put_line('&s1.Remove application ' || c_app_alias);
+  wwv_flow_api.set_security_group_id(l_ws);
+  wwv_flow_api.remove_flow(l_app_id);
 exception
   when others then
     dbms_output.put_line('&s1.Application ' || c_app_alias || ' does not exist');

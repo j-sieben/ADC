@@ -3,6 +3,7 @@
 -- 2: Optional APP-ID
 
 define tool_dir=tools/
+clear screen
 
 @&tool_dir.init_apex.sql &1. &2. ADC
 

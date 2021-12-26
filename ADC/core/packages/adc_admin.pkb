@@ -450,7 +450,7 @@ as
         l_amount := l_amount + 1000;
         dbms_lob.read(l_export_file(1).contents, l_amount, l_offset, l_buffer);
         dbms_lob.append(l_script, substr(l_buffer, 1, instr(l_buffer, C_END_COMMENT) - 1));
-        dbms_lob.append(l_script, 'set define ^' || chr(13) || 'alter session set current_schema=^INSTALL_USER.;' || chr(13));
+        dbms_lob.append(l_script, 'set define ^' || chr(13));
         dbms_lob.append(l_script, p_rule_group);
         dbms_lob.append(l_script, 'set define on' || chr(13));
         dbms_lob.append(l_script, substr(l_buffer, instr(l_buffer, C_END_COMMENT)));

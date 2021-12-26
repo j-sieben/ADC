@@ -1,11 +1,4 @@
-define UT_DIR=unit_test/
-define pkg_dir=&UT_DIR.packages/
-define script_dir=&UT_DIR.scripts/
-define type_dir=&UT_DIR.types/
-define view_dir=&UT_DIR.views/
-define table_dir=&UT_DIR.tables/
-define msg_dir=&UT_DIR.messages/&DEFAULT_LANGUAGE./
-define apex_dir=&UT_DIR.apex/
+@tools/set_folder unit_test
 
 prompt
 prompt &section.
@@ -59,15 +52,7 @@ prompt &s1.Package Body ADC_APEX
 --@&APEX_DIR.utl_apex.sql
 
 -- After APEX installation, reset output settings
-set define on
-set verify off
-set serveroutput on
-set echo off
-set feedback off
-set lines 120
-set pages 9999
-whenever sqlerror exit
-alter session set current_schema=&INSTALL_USER.;
+@&tool_dir.re_init_apex.sql
 
 prompt
 prompt &section.

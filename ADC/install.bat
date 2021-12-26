@@ -10,7 +10,7 @@ for /f "tokens=*" %%a in ('%PWD%') do set PWD=%%a
 set /p SID=Enter service name for the database or PDB:
 
 set /p ApexWorkspace=Enter name of APEX workspace:
-set /p AppId=Optionally enter a new application ID:
+set /p AppId=Optionally enter a new admin application ID:
 
 set nls_lang=GERMAN_GERMANY.AL32UTF8
 

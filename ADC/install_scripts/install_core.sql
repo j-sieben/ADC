@@ -1,19 +1,25 @@
 -- Parameters:
 -- None
 define tool_dir=tools/
-
 @&tool_dir.init.sql
+
+clear screen
 
 prompt
 prompt &section.
 prompt &h1.Checking prerequisites
-@install_scripts/check_prerequisites.sql
-
 @&tool_dir.set_compiler_flags.sql
+@install_scripts/check_prerequisites.sql
 
 prompt
 prompt &section.
-prompt &h1.APEX Dynamic Controller (ADC) Installation at user &INSTALL_USER.
+prompt &h1.Removing existing installation
+@&plugin_dir.uninstall.sql
+@core/uninstall.sql
+
+prompt
+prompt &section.
+prompt &h1.APEX Dynamic Controller (ADC) Installation
 @&core_dir.install.sql
 
 prompt
