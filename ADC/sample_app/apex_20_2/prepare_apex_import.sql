@@ -7,7 +7,7 @@ begin
    where workspace = '&APEX_WS.';
     
   apex_application_install.generate_application_id;
-  if &APP_ID. is not null then
+  if '&APP_ID.' is not null then
     apex_application_install.set_application_id(&APP_ID.);
   end if;
   apex_application_install.set_workspace_id(l_workspace_id);

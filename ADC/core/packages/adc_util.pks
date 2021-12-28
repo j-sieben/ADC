@@ -85,6 +85,7 @@ as
   C_JS_VERBOSE constant binary_integer := pit.LEVEL_ALL;
   
   C_PARAM_ITEM_VALUE constant adc_util.ora_name_type := 'ITEM_VALUE';
+  C_PARAM_EVENT_DATA constant adc_util.ora_name_type := 'EVENT_DATA';
   
   C_DELIMITER constant varchar2(1 byte) := ',';
   C_CR constant varchar2(2 byte) := chr(10);

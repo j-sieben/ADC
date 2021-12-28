@@ -1260,7 +1260,7 @@ select null #PRE#CRU_ID, '#CGR_ID#' #PRE#CRU_CGR_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
 
     read_environment;
 
-      -- Execute DML if required
+    -- Execute DML if required
     case g_environment.action 
       when C_ACTION_UPDATE then
         validate_page;
@@ -1278,7 +1278,6 @@ select null #PRE#CRU_ID, '#CGR_ID#' #PRE#CRU_CGR_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
     loop
       maintain_actions(act);
 
-      
       case act.mda_actual_mode
       when C_MODE_CGR then
         show_form_cgr;

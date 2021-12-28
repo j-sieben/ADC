@@ -167,6 +167,8 @@ as
     case 
       when p_param = adc_util.C_PARAM_ITEM_VALUE then
         l_result := adc_page_state.get_string(g_param.cgr_id, p_cpi_id);
+      when p_param = adc_util.C_PARAM_EVENT_DATA then
+        l_result := get_event_data(null);
       when p_param is null then
         l_result := null;
       else

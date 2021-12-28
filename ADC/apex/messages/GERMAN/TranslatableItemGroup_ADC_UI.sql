@@ -250,6 +250,24 @@ begin
     p_pti_display_name => q'^^',
     p_pti_description => q'^^'
   );
+  
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'CGR_EXPORT_LABEL_APP',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^ADC_UI^',
+    p_pti_name => q'^Anwendung #1# exportieren^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^^'
+  );
+  
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'CGR_EXPORT_LABEL_NO_APP',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^ADC_UI^',
+    p_pti_name => q'^Bitte Anwendung wählen^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^^'
+  );
 
   commit;
 end;

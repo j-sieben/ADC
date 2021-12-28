@@ -9,8 +9,14 @@ as
       Juergen Sieben, ConDeS GmbH
   */
 
+
   /**
-    Group: Private package ariables
+    Group: Private package constants
+   */
+  C_PTI_PMG constant adc_util.ora_name_type := 'ADC_UI';
+
+  /**
+    Group: Private package variables
    */
   /**
     Variables: State variables
@@ -544,10 +550,11 @@ as
     adc_apex_action.action_init('export-rule-group');
 
     if l_cgr_app_id is not null then
-      adc_apex_action.set_label(adc_util.get_trans_item_name('CGR_EXPORT_LABEL_APP', msg_args(to_char(l_cgr_app_id))));
+      adc_apex_action.set_label(pit.get_trans_item_name(C_PTI_PMG, 'CGR_EXPORT_LABEL_APP', msg_args(to_char(l_cgr_app_id))));
       adc_apex_action.set_disabled(false);
       adc_apex_action.set_action(l_action);
     else
+      adc_apex_action.set_label(pit.get_trans_item_name(C_PTI_PMG, 'CGR_EXPORT_LABEL_NO_APP'));
       adc_apex_action.set_action(null);
       adc_apex_action.set_disabled(true);
     end if;
@@ -558,7 +565,6 @@ as
   exception
     when others then
       adc.register_error('DOCUMENT', sqlerrm, pit_util.get_call_stack);
-
       pit.leave_optional;
   end set_action_export_cgr;
 

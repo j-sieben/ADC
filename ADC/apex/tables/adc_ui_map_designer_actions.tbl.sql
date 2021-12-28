@@ -1,5 +1,3 @@
-drop table adc_ui_map_designer_actions;
-
 create table adc_ui_map_designer_actions(
   mda_alm_id varchar2(3 byte), 
 	mda_ald_id varchar2(128 byte),
@@ -30,3 +28,16 @@ create table adc_ui_map_designer_actions(
 ) organization index;
 
 comment on table adc_ui_map_designer_actions is 'Decision table for the page state of the ADC designer in response to a combination of Mode and APEX action raised by the user';
+comment on column adc_ui_map_designer_actions.mda_alm_id is 'Reference to ADC_LU_DESIGNER_MODES, part of PK';
+comment on column adc_ui_map_designer_actions.mda_ald_id is 'Reference to ADC_LU_DESIGNER_ACTIONSS, part of PK';
+comment on column adc_ui_map_designer_actions.mda_comment is 'Optional comment for the mapping';
+comment on column adc_ui_map_designer_actions.mda_id_value is 'Target mode for create operations';
+comment on column adc_ui_map_designer_actions.mda_remember_page_state is 'Flag to indicate whether switching to this mode requires the actual page state to be saved';
+comment on column adc_ui_map_designer_actions.mda_create_button_visible is 'Flag to indicate whether CREATE action is visible';
+comment on column adc_ui_map_designer_actions.mda_create_target_mode is 'Mode the designer switches to after performing a CREATE';
+comment on column adc_ui_map_designer_actions.mda_update_button_visible is 'Flag to indicate whether UPDATE action is visible';
+comment on column adc_ui_map_designer_actions.mda_delete_button_visible is 'Flag to indicate whether DELETE action is visible';
+comment on column adc_ui_map_designer_actions.mda_delete_mode is 'Mode the designer uses when performing a DELETE';
+comment on column adc_ui_map_designer_actions.mda_delete_target_mode is 'Mode the designer switches to after performing a DELETE';
+comment on column adc_ui_map_designer_actions.mda_cancel_button_active is 'Flag to indicate whether CANCEL action is visible';
+comment on column adc_ui_map_designer_actions.mda_cancel_target_mode is 'Mode the designer switches to after performing a CANCEL';
