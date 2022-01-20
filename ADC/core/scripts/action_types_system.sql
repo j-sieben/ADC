@@ -691,7 +691,7 @@ begin
     p_cat_display_name => q'{<p><strong>zeige Hinweis </strong>“#PARAM_1#”</p>}',
     p_cat_description => q'{<p>Zeigt eine Nachricht auf der Anwendungsseite</p>}',
     p_cat_pl_sql => q'{}',
-    p_cat_js => q'{de.condes.plugin.adc.notify(#PARAM_1#);}',
+    p_cat_js => q'{de.condes.plugin.adc.notify('#METHOD#');}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_TRUE);
 
@@ -767,7 +767,7 @@ begin
     p_cat_display_name => q'{<p><strong>aktualisiere</strong> Feld “#ITEM#” und <strong>setze Feldwert </strong>auf #PARAM_1|Wert “|”|aktuellen Sessionstatus#</p>}',
     p_cat_description => q'{<p>Aktualisiert ein Seitenelement und setzt das Feld auf den Sessionstatus</p>}',
     p_cat_pl_sql => q'{}',
-    p_cat_js => q'{de.condes.plugin.adc.refreshAndSetValue('#ITEM#', #PARAM_1#);}',
+    p_cat_js => q'{de.condes.plugin.adc.refreshAndSetValue('#ITEM#', '#METHOD#');}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_TRUE);
 

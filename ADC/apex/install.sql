@@ -25,6 +25,7 @@ prompt &h3.Create views
 @&tool_dir.create_view adc_ui_lov_cgr_page_items
 @&tool_dir.create_view adc_ui_lov_export_cat
 @&tool_dir.create_view adc_ui_lov_export_types
+@&tool_dir.create_view adc_ui_lov_item_types
 @&tool_dir.create_view adc_ui_lov_page_item_type
 @&tool_dir.create_view adc_ui_lov_page_items_p11
 @&tool_dir.create_view adc_ui_lov_page_items
@@ -61,11 +62,10 @@ prompt &h3.Create package bodies
 @&tool_dir.create_package_body splitter_plugin
 
 prompt &h2.Scripts
-@script_dir.action_types_system.sql
-@script_dir.adc_lu_designer_modes.sql
-@script_dir.adc_lu_designer_actions.sql
-@script_dir.adc_ui_map_designer_actions.sql
-@script_dir.splitter_plugin.sql
+@&tool_dir.run_script adc_lu_designer_modes
+@&tool_dir.run_script adc_lu_designer_actions
+@&tool_dir.run_script adc_ui_map_designer_actions
+--@&tool_dir.run_script splitter_plugin
 
 prompt &h2.Version specific installation
 @&apex_version_dir.install.sql

@@ -12,7 +12,7 @@ q'^  l_foo number;\CR\^' ||
 q'^  l_app_id number;\CR\^' || 
 q'^begin\CR\^' || 
 q'^  l_foo := adc_admin.map_id;\CR\^' || 
-q'^  l_app_id := coalesce(apex_application_install.get_application_id, #APP_ID.);\CR\^' || 
+q'^  l_app_id := apex_application_install.get_application_id;\CR\^' || 
 q'^\CR\^' || 
 q'^  dbms_output.put_line('Rulegroup page #CGR_PAGE_ID#');\CR\^' || 
 q'^\CR\^' || 

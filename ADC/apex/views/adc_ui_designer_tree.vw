@@ -15,7 +15,7 @@ with session_state as(
               'fa-user-graduate' icon_cru,
               'fa-arrow-circle-o-right' icon_cra
          from adc_rule_groups
-        where cgr_app_id = 117),--(select utl_apex.get_number('CGR_APP_ID') from dual)),
+        where cgr_app_id = (select utl_apex.get_number('CGR_APP_ID') from dual)),
      data as(
        select /*+ no_merge (session_state) */
               'CGR_' || cgr_id node_id, 'P_' || cgr_page_id node_parent_id, cgr_page_id || ': ' || page_name || ' (' || page_alias || ')' node_name, cgr_page_id node_sort_seq, icon_cgr || color_cgr node_icon, 'RULE_GROUP' node_type,
@@ -27,7 +27,7 @@ with session_state as(
          join session_state s
            on cgr_id = p_cgr_id
         union all
-       select 'CAG_' || cgr_id, 'CGR_' || cgr_id, 'Seitenkommandos', cgr_id, icon_cag || color_cag, 'CAA_GROUP',
+       select 'CAG_' || cgr_id, 'CGR_' || cgr_id, 'Seitenkommandos', 99999, icon_cag || color_cag, 'CAA_GROUP',
               '' menu_action_list
          from adc_rule_groups
          join session_state s

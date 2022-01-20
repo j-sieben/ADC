@@ -49,7 +49,7 @@ prompt &h3.Create views
 
 prompt &h2.Merge default data
 prompt &h3.Create ADC parameters
-@&script_dir.ParameterGroup_ADC.sql
+@&tool_dir.run_script ParameterGroup_ADC
 
 prompt &h3.Create ADC messages
 @&msg_dir.MessageGroup_ADC.sql
@@ -61,7 +61,7 @@ prompt &h3.Create ADC translatable items
 @&msg_dir.TranslatableItemGroup_ADC.sql
 
 prompt &h3.Create UTL_TEXT templates
-@&script_dir.merge_utl_text_templates.sql
+@&tool_dir.run_script merge_utl_text_templates
 
 
 prompt &h2.Create PL/SQL objects
@@ -91,11 +91,11 @@ prompt &h3.Create package bodies
 
 prompt &h2.Create parameters
 prompt &s1.Create ADC parameters
-@&script_dir.ParameterGroup_ADC.sql
+@&tool_dir.run_script ParameterGroup_ADC
 
 prompt &h2.Merge initial data
 prompt &s1.Create ADC Action types
-@&script_dir.action_types_system.sql
+@&tool_dir.run_script action_types_system
 
 -- Additional installation for pecific APEX versions
 prompt &h2.Installation for specific APEX versions

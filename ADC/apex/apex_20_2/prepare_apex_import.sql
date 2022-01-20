@@ -11,7 +11,18 @@ begin
     apex_application_install.set_application_id(&APP_ID.);
   end if;
   apex_application_install.set_workspace_id(l_workspace_id);
+  apex_util.set_security_group_id(l_workspace_id);
   apex_application_install.generate_offset;
   apex_application_install.set_schema(user);
+end;
+/
+
+
+  select workspace_id 
+    from apex_workspaces
+   where workspace = 'B3M';
+   
+begin
+  apex_util.set_security_group_id(9217271833098715);
 end;
 /

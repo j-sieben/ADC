@@ -2,7 +2,7 @@ create table adc_lu_designer_modes(
   alm_id varchar2(128 byte), 
 	alm_name varchar2(128 byte), 
 	alm_active char(1 byte), 
-	constraint adc_lu_designer_modes primary key (alm_id) enable
+	constraint adc_lu_designer_modes_pk primary key (alm_id) enable
 ) organization index;
 
 comment on table adc_lu_designer_modes is 'Lookup for modes the ADC designer can be at';
