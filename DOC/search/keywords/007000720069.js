@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("pri",["Function"],[["print_help_text",,[["ADC_UI",,,,0,"File:sample_app/packages/sadc_ui.pks:ADC_UI.print_help_text","SQLClass:ADC_UI:print_help_text"]]],["print_text",,[["ADC_UI",,,,0,"File:sample_app/packages/sadc_ui.pks:ADC_UI.print_text","SQLClass:ADC_UI:print_text"]]]]);

@@ -12,3 +12,5 @@ select ctg_id, ctg_name, ctg_description, ctg_active,
          else 'UD'
        end allowed_operations
   from adc_action_type_groups_v;
+
+comment on table adc_ui_edit_ctg is 'View for APEX page EDIT_CTG';

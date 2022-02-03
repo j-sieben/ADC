@@ -92,11 +92,18 @@ as
   begin
     pit.enter_mandatory(p_params => msg_params(msg_param('p_cmd', substr(p_plsql, 1, 4000))));
 
-    l_plsql := rtrim(p_plsql, ';') || ';';
+    
+    l_plsql := rtrim(trim(p_plsql), ';') || ';';
+    pit.assert(l_plsql != ';');
     execute immediate replace(C_CMD_TEMPLATE, '#COMMAND#', l_plsql);
 
     pit.leave_mandatory;
   exception
+    when msg.ASSERT_TRUE_ERR then
+      pit.handle_exception;
+      adc_internal.register_error(adc_util.C_NO_FIRING_ITEM, msg.ASSERT_TRUE);
+      -- surpress recursion
+      adc_internal.stop_rule;
     when others then
       pit.handle_exception(msg.ADC_UNHANDLED_EXCEPTION, msg_args(l_plsql));
       adc_internal.register_error(adc_util.C_NO_FIRING_ITEM, msg.ADC_UNHANDLED_EXCEPTION, msg_args(apex_escape.json(l_plsql)));

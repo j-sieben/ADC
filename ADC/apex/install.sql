@@ -14,6 +14,7 @@ prompt &h3.Create views
 @&tool_dir.create_view adc_bl_designer_action_v
 @&tool_dir.create_view adc_ui_lov_action_item_focus
 @&tool_dir.create_view adc_ui_lov_action_param_type
+@&tool_dir.create_view adc_ui_lov_action_param_isual_type
 @&tool_dir.create_view adc_ui_lov_action_type_group
 @&tool_dir.create_view adc_ui_lov_apex_action_items
 @&tool_dir.create_view adc_ui_lov_apex_action_type
@@ -42,6 +43,8 @@ prompt &h3.Create views
 @&tool_dir.create_view adc_ui_edit_cat
 @&tool_dir.create_view adc_ui_edit_cif
 @&tool_dir.create_view adc_ui_edit_ctg
+@&tool_dir.create_view adc_ui_edit_cpt
+@&tool_dir.create_view adc_ui_edit_cpt_static_list
 @&tool_dir.create_view adc_ui_list_action_type
 
 prompt &h3.Create ADC_UI messages

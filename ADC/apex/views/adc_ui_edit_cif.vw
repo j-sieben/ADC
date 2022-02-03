@@ -14,4 +14,4 @@ select cif_id, cif_name, cif_description, cif_actual_page_only, cif_item_types, 
   left join cif_references
     on cif_id = cat_cif_id;
 
-comment on table adc_ui_edit_cif is 'View for APEX page EDIT_SIF';
+comment on table adc_ui_edit_cif is 'View for APEX page EDIT_CIF';

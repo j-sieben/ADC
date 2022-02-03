@@ -10,6 +10,19 @@ as
     Author::
       Juergen Sieben, ConDeS GmbH
    */
+   
+  /**
+    Group: Public constants
+   */
+  /**
+    Constants: Visual State Constants
+      C_SHOW_ENABLE - Page item is visible and enabled
+      C_SHOW_DISABLE - Page item is visible but disabled
+      C_HIDE - Status to indicate that a page item will be hidden
+   */
+  C_SHOW_ENABLE constant adc_util.ora_name_type := 'SHOW_ENABLE';
+  C_SHOW_DISABLE constant adc_util.ora_name_type := 'SHOW_DISABLE';
+  C_HIDE constant adc_util.ora_name_type := 'HIDE';
   
   /**
     Group: Public methods
@@ -90,19 +103,6 @@ as
    */
   procedure handle_bulk_errors(
     p_mapping in char_table default null);
-
-
-  /**
-    Procedure: hide_item
-      Hides the referenced page element or all page elements referenced by a jQuery expression
-                 
-    Parameters:
-      p_cpi_id - Optional element to be hidden, defaults to <ADC_UTIL>.<C_NO_FIRING_ITEM>, if p_jquery_selector filled
-      p_jquery_selector - Optional jQuery expression to edit multiple elements, defaults to NULL, if p_cpi_id filled
-   */
-  procedure hide_item(
-    p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
-    p_jquery_selector in varchar2 default null);
     
     
   /** 
@@ -393,6 +393,21 @@ as
 
 
   /** 
+    Procedure: set_visual_state
+      Controls the visibility of a page item
+   
+    Parameters:
+      p_cpi_id - Optional element ID to be set (defaults to adc_util.C_NO_FIRING_ITEM, if <p_jquery_selector> is set)
+      p_visual_state - One of the visual state constants <C_SHOW_ENABLE>, <SHOW_DISABLE>, <HIDE>
+      p_jquery_selector - Optional jQuery expression to edit multiple elements. (Defaults to NULL, if <p_cpi_id> is set)
+   */
+  procedure set_visual_state(
+    p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
+    p_visual_state in varchar2,
+    p_jquery_selector in varchar2 default null);
+
+
+  /** 
     Procedure: show_hide_item
       Hides the element from P_JQUERY_SEL_SHOW on the page and the elements from P_JQUERY_SEL_HIDE
    
@@ -403,19 +418,6 @@ as
   procedure show_hide_item(
     p_jquery_sel_show in varchar2,
     p_jquery_sel_hide in varchar2);
-
-
-  /** 
-    Procedure: show_item
-      Displays the referenced page element
-   
-    Parameters:
-      p_cpi_id - Optional element ID to be set (defaults to adc_util.C_NO_FIRING_ITEM, if <p_jquery_selector> is set)
-      p_jquery_selector - Optional jQuery expression to edit multiple elements. (Defaults to NULL, if <p_cpi_id> is set)
-   */
-  procedure show_item(
-    p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
-    p_jquery_selector in varchar2 default null);
 
 
   /** 

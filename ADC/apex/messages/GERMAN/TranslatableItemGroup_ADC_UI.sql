@@ -268,6 +268,33 @@ begin
     p_pti_display_name => q'^^',
     p_pti_description => q'^^'
   );
+  
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'CAT_EXPORT_ALL',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^ADC_UI^',
+    p_pti_name => q'^Alle Aktionstypen^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^^'
+  );
+  
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'CAT_EXPORT_USER',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^ADC_UI^',
+    p_pti_name => q'^Alle selbserstellten Aktionstypen^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^^'
+  );
+  
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'CAT_EXPORT_SYSTEM',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^ADC_UI^',
+    p_pti_name => q'^Alle mitgelieferten Aktionstypen^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^^'
+  );
 
   commit;
 end;

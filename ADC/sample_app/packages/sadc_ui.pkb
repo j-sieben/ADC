@@ -6,23 +6,23 @@ as
   
   /* Global Variables */
   g_page_values utl_apex.page_value_t;
-  g_edpti_row pit_translatable_item%rowtype;
   
   
   /* Helper method to copy session state values from an APEX page 
    * %usage  Is called to copy the actual session state of an APEX page into a PL/SQL table
    */
-  procedure copy_edpti
+  procedure copy_edpti(
+    p_row in out nocopy pit_translatable_item%rowtype)
   as
   begin
     pit.enter_detailed('copy_edpti');
   
     g_page_values := utl_apex.get_page_values('EDPTI_FORM');
-    g_edpti_row.pti_id := utl_apex.get(g_page_values, 'pti_id');
-    g_edpti_row.pti_pmg_name := utl_apex.get(g_page_values, 'pti_pmg_name');
-    g_edpti_row.pti_name := utl_apex.get(g_page_values, 'pti_name');
-    g_edpti_row.pti_display_name := utl_apex.get(g_page_values, 'pti_display_name');
-    g_edpti_row.pti_description := utl_apex.get(g_page_values, 'pti_description');
+    p_row.pti_id := utl_apex.get(g_page_values, 'pti_id');
+    p_row.pti_pmg_name := utl_apex.get(g_page_values, 'pti_pmg_name');
+    p_row.pti_name := utl_apex.get(g_page_values, 'pti_name');
+    p_row.pti_display_name := utl_apex.get(g_page_values, 'pti_display_name');
+    p_row.pti_description := utl_apex.get(g_page_values, 'pti_description');
   
     pit.leave_detailed;
   end copy_edpti;
@@ -73,7 +73,7 @@ as
                on application_id = p_app_id
              join apex_ui_list_menu
                   -- Extrahiere Zielseite aus Navigationsmenue und joine ueber Seiten-ID oder -Alias
-               on substr(target_value, instr(target_value, ':') + 1, instr(target_value, ':', 1, 2) - instr(target_value, ':') - 1) in (to_char(page_id), page_alias)
+               on lower(substr(target_value, instr(target_value, ':') + 1, instr(target_value, ':', 1, 2) - instr(target_value, ':') - 1)) in (to_char(page_id), lower(page_alias))
             where list_name = 'Desktop Navigation Menu'
               and level_value = 3
               and parent_page_alias = 'tutorial')
@@ -102,6 +102,36 @@ as
     when no_data_found then
       pit.leave_mandatory;
   end calculate_prev_next;
+  
+  
+  function get_adc_admin_url
+  return varchar2
+  as
+    l_url adc_util.sql_char;
+    l_cgr_id adc_rule_groups.cgr_id%type;
+    C_URL_TEMPLATE constant adc_util.sql_char := q'^javascript:apex.navigation.openInNewWindow('#URL#', 'ADC');^';
+  begin
+    with params as (
+           select utl_apex.get_application_id(adc_util.C_FALSE) p_app_id,
+                  utl_apex.get_page_id p_page_id
+             from dual)
+    select /*+ no_merge (p) */ cgr_id
+      into l_cgr_id
+      from adc_rule_groups
+      join params p
+        on cgr_app_id = p_app_id
+       and cgr_page_id = p_page_id;
+       
+    l_url := apex_page.get_url(
+               p_application => 'ADC',
+               p_page => 'DESIGNER',
+               p_items => 'P13_CGR_ID,P13_CGR_APP_ID,P13_SELECTED_NODE',
+               p_values => l_cgr_id || ',' || utl_apex.get_application_id(adc_util.C_FALSE) || ', CGR_' || l_cgr_id);
+    return replace(C_URL_TEMPLATE, '#URL#', l_url);
+  exception
+    when NO_DATA_FOUND then
+      return null;
+  end get_adc_admin_url;
   
   
   procedure validate_p6_date
@@ -182,13 +212,14 @@ as
   function validate_edpti
   return boolean
   as
+    l_row pit_translatable_item%rowtype;
   begin
     pit.enter_mandatory;
   
-    copy_edpti;
+    copy_edpti(l_row);
     
     pit.start_message_collection;
-    pit_admin.validate_translatable_item(g_edpti_row);
+    pit_admin.validate_translatable_item(l_row);
     pit.stop_message_collection;
   
     pit.leave_mandatory;
@@ -202,14 +233,17 @@ as
   
   procedure process_edpti
   as
+    l_row pit_translatable_item%rowtype;
   begin
     pit.enter_mandatory;
     
-    copy_edpti;
+    copy_edpti(l_row);
     case when utl_apex.inserting or utl_apex.updating then
-      pit_admin.merge_translatable_item(g_edpti_row);
+      pit_admin.merge_translatable_item(l_row);
     else
-      pit_admin.delete_translatable_item(g_edpti_row.pti_id);
+      pit_admin.delete_translatable_item(
+        l_row.pti_id,
+        l_row.pti_pmg_name);
     end case;
     
     pit.leave_mandatory;

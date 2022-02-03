@@ -28,3 +28,5 @@ select cat_id, cat_ctg_id, cat_cif_id, cat_name, cat_display_name, cat_descripti
           from adc_action_parameters_v
          group by cap_cat_id)
     on cat_id = cap_cat_id;
+
+comment on table adc_ui_edit_cat is 'View for APEX page EDIT_CAF';

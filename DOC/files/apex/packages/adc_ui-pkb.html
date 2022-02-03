@@ -8,120 +8,148 @@
 
 <body onload="NDLoader.OnLoad('Content');" class="NDPage NDContentPage">
 
-<a name="ADC_UI_Body"></a><a name="Topic29"></a><div class="CTopic TClass LSQL first">
+<a name="ADC_UI_Body"></a><a name="Topic46"></a><div class="CTopic TClass LSQL first">
  <div class="CTitle">ADC_UI Body</div>
  <div class="CBody"><p>Implementation of the GUI logic of the ADC APEX application</p><div class="CHeading">Author</div><p>Juergen Sieben, ConDeS GmbH</p></div>
 </div>
 
-<a name="ADC_UI_Body.Private_package_ariables"></a><a name="Topic12"></a><div class="CTopic TGroup LSQL">
- <div class="CTitle">Private package ariables</div>
+<a name="ADC_UI_Body.Private_package_constants"></a><a name="Topic47"></a><div class="CTopic TGroup LSQL">
+ <div class="CTitle">Private package constants</div>
 </div>
 
-<a name="ADC_UI_Body.State_variables"></a><a name="Topic13"></a><div class="CTopic TVariable LSQL">
+<a name="ADC_UI_Body.Private_package_variables"></a><a name="Topic48"></a><div class="CTopic TGroup LSQL">
+ <div class="CTitle">Private package variables</div>
+</div>
+
+<a name="ADC_UI_Body.State_variables"></a><a name="Topic49"></a><div class="CTopic TVariable LSQL">
  <div class="CTitle">State variables</div>
- <div class="CBody"><table class="CDefinitionList"><tr><td class="CDLEntry"><a name="ADC_UI_Body.g_page_values"></a><a name="Topic65"></a>g_page_values</td><td class="CDLDefinition"><p>PL/SQL table to hold key value pairs for page items (key) and their values</p></td></tr><tr><td class="CDLEntry"><a name="ADC_UI_Body.g_edit_cat_row"></a><a name="Topic220"></a>g_edit_cat_row</td><td class="CDLDefinition"><p>type save record for a Action Type</p></td></tr><tr><td class="CDLEntry"><a name="ADC_UI_Body.g_edit_cif_row"></a><a name="Topic253"></a>g_edit_cif_row</td><td class="CDLDefinition"><p>type save record for a Item Focus</p></td></tr><tr><td class="CDLEntry"><a name="ADC_UI_Body.g_edit_ctg_row"></a><a name="Topic499"></a>g_edit_ctg_row</td><td class="CDLDefinition"><p>type safe record for an Action Type Group</p></td></tr></table></div>
+ <div class="CBody"><table class="CDefinitionList"><tr><td class="CDLEntry"><a name="ADC_UI_Body.g_page_values"></a><a name="Topic50"></a>g_page_values</td><td class="CDLDefinition"><p>PL/SQL table to hold key value pairs for page items (key) and their values</p></td></tr></table></div>
 </div>
 
-<a name="ADC_UI_Body.Type_definitions"></a><a name="Topic35"></a><div class="CTopic TGroup LSQL">
+<a name="ADC_UI_Body.Type_definitions"></a><a name="Topic51"></a><div class="CTopic TGroup LSQL">
  <div class="CTitle">Type definitions</div>
 </div>
 
-<a name="ADC_UI_Body.Private_Methods"></a><a name="Topic37"></a><div class="CTopic TGroup LSQL">
+<a name="ADC_UI_Body.Private_Methods"></a><a name="Topic52"></a><div class="CTopic TGroup LSQL">
  <div class="CTitle">Private Methods</div>
 </div>
 
-<a name="ADC_UI_Body.copy_row_to_cat_record"></a><a name="Topic40"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_UI_Body.copy_row_to_cat_record"></a><a name="Topic53"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">copy_row_to_cat_record</div>
- <div id="NDPrototype40" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> copy_row_to_cat_record(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_row&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_ui_edit_cat<span class="SHKeyword">%rowtype</span>,</td></tr><tr><td class="PName first">p_rec&nbsp;</td><td class="PType last"><span class="SHKeyword">out nocopy</span> adc_action_types_v<span class="SHKeyword">%rowtype</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>Helper method to cast the complex view ADC_UI_EDIT_CAT to a record of type ADC_ACTION_TYPE%ROWTYPE</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">p_row<div class="CDLParameterType"><span class="SHKeyword">in</span> adc_ui_edit_cat<span class="SHKeyword">%rowtype</span></div></td><td class="CDLDefinition"><p>Instance of the collection</p></td></tr><tr><td class="CDLEntry">p_rec<div class="CDLParameterType"><span class="SHKeyword">out nocopy</span> adc_action_types_v<span class="SHKeyword">%rowtype</span></div></td><td class="CDLDefinition"><p>Output record</p></td></tr></table></div>
+ <div id="NDPrototype53" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> copy_row_to_cat_record(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_row&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_ui_edit_cat<span class="SHKeyword">%rowtype</span>,</td></tr><tr><td class="PName first">p_rec&nbsp;</td><td class="PType last"><span class="SHKeyword">out nocopy</span> adc_action_types_v<span class="SHKeyword">%rowtype</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Helper method to cast the complex view &lt;ADC_UI_EDIT_CAT&gt; to a record of type &lt;ADC_ACTION_TYPES&gt;%ROWTYPE</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">p_row<div class="CDLParameterType"><span class="SHKeyword">in</span> adc_ui_edit_cat<span class="SHKeyword">%rowtype</span></div></td><td class="CDLDefinition"><p>Instance of the collection</p></td></tr><tr><td class="CDLEntry">p_rec<div class="CDLParameterType"><span class="SHKeyword">out nocopy</span> adc_action_types_v<span class="SHKeyword">%rowtype</span></div></td><td class="CDLDefinition"><p>Output record</p></td></tr></table></div>
 </div>
 
-<a name="ADC_UI_Body.copy_row_to_cap_records"></a><a name="Topic41"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_UI_Body.copy_row_to_cap_records"></a><a name="Topic54"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">copy_row_to_cap_records</div>
- <div id="NDPrototype41" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> copy_row_to_cap_records(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_row&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_ui_edit_cat<span class="SHKeyword">%rowtype</span>,</td></tr><tr><td class="PName first">p_rec_<span class="SHNumber">1</span>&nbsp;</td><td class="PType last"><span class="SHKeyword">out nocopy</span> adc_action_parameters_v<span class="SHKeyword">%rowtype</span>,</td></tr><tr><td class="PName first">p_rec_<span class="SHNumber">2</span>&nbsp;</td><td class="PType last"><span class="SHKeyword">out nocopy</span> adc_action_parameters_v<span class="SHKeyword">%rowtype</span>,</td></tr><tr><td class="PName first">p_rec_<span class="SHNumber">3</span>&nbsp;</td><td class="PType last"><span class="SHKeyword">out nocopy</span> adc_action_parameters_v<span class="SHKeyword">%rowtype</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype54" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> copy_row_to_cap_records(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_row&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_ui_edit_cat<span class="SHKeyword">%rowtype</span>,</td></tr><tr><td class="PName first">p_rec_<span class="SHNumber">1</span>&nbsp;</td><td class="PType last"><span class="SHKeyword">out nocopy</span> adc_action_parameters_v<span class="SHKeyword">%rowtype</span>,</td></tr><tr><td class="PName first">p_rec_<span class="SHNumber">2</span>&nbsp;</td><td class="PType last"><span class="SHKeyword">out nocopy</span> adc_action_parameters_v<span class="SHKeyword">%rowtype</span>,</td></tr><tr><td class="PName first">p_rec_<span class="SHNumber">3</span>&nbsp;</td><td class="PType last"><span class="SHKeyword">out nocopy</span> adc_action_parameters_v<span class="SHKeyword">%rowtype</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Helper method to cast the complex view ADC_UI_EDIT_CAT to three record instances of type adc_action_parameters_v%ROWTYPE</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">p_row<div class="CDLParameterType"><span class="SHKeyword">in</span> adc_ui_edit_cat<span class="SHKeyword">%rowtype</span></div></td><td class="CDLDefinition"><p>Record with the pivoted param_1 .. param_3 values</p></td></tr><tr><td class="CDLEntry">p_rec</td><td class="CDLDefinition"><p>Output record</p></td></tr></table></div>
 </div>
 
-<a name="ADC_UI_Body.initialize"></a><a name="Topic49"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_UI_Body.initialize"></a><a name="Topic55"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">initialize</div>
- <div id="NDPrototype49" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> initialize</div></div>
+ <div id="NDPrototype55" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> initialize</div></div>
  <div class="CBody"><p>Method to initialize the ADC_UI package</p><p>Initially collects the name of all ADC Desginer page items per form region and persists them in an internal data structure for convenient access when working with the page designer.</p></div>
 </div>
 
-<a name="ADC_UI_Body.Public_Methods"></a><a name="Topic50"></a><div class="CTopic TGroup LSQL">
+<a name="ADC_UI_Body.Public_Methods"></a><a name="Topic56"></a><div class="CTopic TGroup LSQL">
  <div class="CTitle">Public Methods</div>
 </div>
 
-<a name="ADC_UI_Body.C_TRUE"></a><a name="Topic51"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_UI_Body.C_TRUE"></a><a name="Topic57"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">C_TRUE</div>
- <div id="NDPrototype51" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> c_true</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.flag_type" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,262);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_util.flag_type</a></div></div>
- <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.C_TRUE" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,7);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.C_TRUE</a></p></div>
+ <div id="NDPrototype57" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> c_true</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.flag_type" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,438);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_util.flag_type</a></div></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.C_TRUE" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,30);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.C_TRUE</a></p></div>
 </div>
 
-<a name="ADC_UI_Body.C_FALSE"></a><a name="Topic52"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_UI_Body.C_FALSE"></a><a name="Topic58"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">C_FALSE</div>
- <div id="NDPrototype52" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> c_false</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.flag_type" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,262);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_util.flag_type</a></div></div>
- <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.C_FALSE" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,8);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.C_FALSE</a></p></div>
+ <div id="NDPrototype58" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> c_false</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.flag_type" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,438);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_util.flag_type</a></div></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.C_FALSE" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,31);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.C_FALSE</a></p></div>
 </div>
 
 <a name="ADC_UI_Body.process_export_cat"></a><a name="Topic59"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">process_export_cat</div>
  <div id="NDPrototype59" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_export_cat</div></div>
- <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.process_export_cat" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,16);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.process_export_cat</a></p></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.process_export_cat" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,33);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.process_export_cat</a></p></div>
 </div>
 
 <a name="ADC_UI_Body.process_export_cgr"></a><a name="Topic60"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">process_export_cgr</div>
  <div id="NDPrototype60" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_export_cgr</div></div>
- <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.process_export_cgr" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,15);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.process_export_cgr</a></p></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.process_export_cgr" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,32);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.process_export_cgr</a></p></div>
 </div>
 
 <a name="ADC_UI_Body.get_export_type"></a><a name="Topic61"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">get_export_type</div>
  <div id="NDPrototype61" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> get_export_type</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">varchar2</span></div></div>
- <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.get_export_type" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,17);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.get_export_type</a></p></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.get_export_type" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,34);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.get_export_type</a></p></div>
 </div>
 
-<a name="ADC_UI_Body.validate_edit_cif"></a><a name="Topic63"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_UI_Body.validate_edit_cif"></a><a name="Topic62"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">validate_edit_cif</div>
- <div id="NDPrototype63" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_cif</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
- <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.validate_edit_cif" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,22);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.validate_edit_cif</a></p></div>
+ <div id="NDPrototype62" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_cif</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.validate_edit_cif" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,37);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.validate_edit_cif</a></p></div>
 </div>
 
-<a name="ADC_UI_Body.process_edit_cif"></a><a name="Topic64"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_UI_Body.process_edit_cif"></a><a name="Topic63"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">process_edit_cif</div>
- <div id="NDPrototype64" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_cif</div></div>
- <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.process_edit_cif" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,23);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.process_edit_cif</a></p></div>
+ <div id="NDPrototype63" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_cif</div></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.process_edit_cif" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,38);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.process_edit_cif</a></p></div>
 </div>
 
-<a name="ADC_UI_Body.validate_edit_cat"></a><a name="Topic66"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_UI_Body.validate_edit_cat"></a><a name="Topic64"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">validate_edit_cat</div>
- <div id="NDPrototype66" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_cat</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
- <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.validate_edit_cat" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,20);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.validate_edit_cat</a></p></div>
+ <div id="NDPrototype64" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_cat</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.validate_edit_cat" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,35);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.validate_edit_cat</a></p></div>
 </div>
 
-<a name="ADC_UI_Body.process_edit_cat"></a><a name="Topic67"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_UI_Body.process_edit_cat"></a><a name="Topic65"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">process_edit_cat</div>
- <div id="NDPrototype67" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_cat</div></div>
- <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.process_edit_cat" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,21);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.process_edit_cat</a></p></div>
+ <div id="NDPrototype65" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_cat</div></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.process_edit_cat" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,36);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.process_edit_cat</a></p></div>
 </div>
 
-<a name="ADC_UI_Body.validate_edit_ctg"></a><a name="Topic68"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_UI_Body.validate_edit_ctg"></a><a name="Topic66"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">validate_edit_ctg</div>
- <div id="NDPrototype68" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_ctg</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
- <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.validate_edit_ctg" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,24);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.validate_edit_ctg</a></p></div>
+ <div id="NDPrototype66" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_ctg</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.validate_edit_ctg" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,39);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.validate_edit_ctg</a></p></div>
 </div>
 
-<a name="ADC_UI_Body.process_edit_ctg"></a><a name="Topic69"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_UI_Body.process_edit_ctg"></a><a name="Topic67"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">process_edit_ctg</div>
- <div id="NDPrototype69" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_ctg</div></div>
- <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.process_edit_ctg" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,25);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.process_edit_ctg</a></p></div>
+ <div id="NDPrototype67" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_ctg</div></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.process_edit_ctg" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,43);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.process_edit_ctg</a></p></div>
+</div>
+
+<a name="ADC_UI_Body.handle_cpv_changed"></a><a name="Topic68"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">handle_cpv_changed</div>
+ <div id="NDPrototype68" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> handle_cpv_changed</div></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.handle_cpv_changed" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,41);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.handle_cpv_changed</a></p></div>
+</div>
+
+<a name="ADC_UI_Body.validate_edit_cpt"></a><a name="Topic69"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">validate_edit_cpt</div>
+ <div id="NDPrototype69" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_cpt</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.validate_edit_cpt" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,42);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.validate_edit_cpt</a></p></div>
+</div>
+
+<a name="ADC_UI_Body.process_edit_cpt"></a><a name="Topic70"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">process_edit_cpt</div>
+ <div id="NDPrototype70" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_cpt</div></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.process_edit_cpt" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,40);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.process_edit_cpt</a></p></div>
+</div>
+
+<a name="ADC_UI_Body.process_edit_cpt_static_list"></a><a name="Topic71"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">process_edit_cpt_static_list</div>
+ <div id="NDPrototype71" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_cpt_static_list</div></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.process_edit_cpt_static_list" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,44);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.process_edit_cpt_static_list</a></p></div>
 </div>
 
 <a name="ADC_UI_Body.set_action_export_cgr"></a><a name="Topic72"></a><div class="CTopic TFunction LSQL last">
  <div class="CTitle">set_action_export_cgr</div>
  <div id="NDPrototype72" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> set_action_export_cgr</div></div>
- <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.set_action_export_cgr" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,28);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.set_action_export_cgr</a></p></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:apex/packages/adc_ui.pks:ADC_UI.set_action_export_cgr" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,45);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UI.set_action_export_cgr</a></p></div>
 </div>
 
 </body></html>

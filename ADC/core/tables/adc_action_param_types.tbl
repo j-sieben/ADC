@@ -2,11 +2,14 @@ create table adc_action_param_types(
   cpt_id varchar2(50 char),
   cpt_pti_id varchar2(50 char) constraint nn_cpt_pti_id not null,
   cpt_pmg_name varchar2(3 byte) default 'ADC' constraint chk_cpt_pmg_name check(cpt_pmg_name = 'ADC'),
-  cpt_item_type varchar2(50 char),
-  cpt_active &FLAG_TYPE. default &C_TRUE. constraint chk_cpt_active check(cpt_active in (&C_TRUE., &C_FALSE.)),
+  cpt_cpv_id varchar2(50 char) default 'TEXT' constraint chk_cpt_item_type check(cpt_item_type in ('TEXT', 'TEXT_AREA', 'SELECT_LIST', 'SWITCH')),
+  cpt_sort_seq number default on null 10 constraint nn_cpt_soprt_seq not null,
+  cpt_active &FLAG_TYPE. default on null &C_TRUE. constraint chk_cpt_active check(cpt_active in (&C_TRUE., &C_FALSE.)),
   constraint pk_adc_action_param_types primary key(cpt_id),
   constraint fk_pti_id foreign key(cpt_pti_id, cpt_pmg_name)
-    references pit_translatable_item(pti_uid, pti_upmg) on delete cascade
+    references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
+  constraint fk_cpt_cpv_id foreign key(cpt_cpv_id)
+    references adc_action_param_visual_types(cpv_id)
 ) 
 organization index;
 
@@ -16,6 +19,6 @@ comment on table adc_action_param_types is 'Table to store ADC Action Parameter 
 comment on column adc_action_param_types.cpt_id is 'PK, technical key';
 comment on column adc_action_param_types.cpt_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
 comment on column adc_action_param_types.cpt_pmg_name is 'Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC';
-comment on column adc_action_param_types.cpt_item_type is 'TODO: Klären, wozu das gebraucht wird';
+comment on column adc_action_param_types.cpt_cpv_id is 'Reference to ADC_ACTION_PARAM_VISUAL_TYPES, type of visual control to use for this parameter type';
+comment on column adc_action_param_types.cpt_sort_seq is 'Sort criteria';
 comment on column adc_action_param_types.cpt_active is 'Flag to indicate whether parameter type is in use';
-

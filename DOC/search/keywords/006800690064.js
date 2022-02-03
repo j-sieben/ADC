@@ -1,1 +1,0 @@
-﻿NDSearch.OnPrefixDataLoaded("hid",["Function"],[["hide_item",,[["ADC",,,,0,"File:core/packages/adc.pks:ADC.hide_item","SQLClass:ADC:hide_item"]]]]);

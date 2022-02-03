@@ -13,7 +13,17 @@ as
   /**
     Group: Private package constants
    */
+  C_PAGE_PREFIX constant adc_util.ora_name_type := utl_apex.get_page_prefix;
+  C_REGION_PREFIX constant adc_util.ora_name_type := replace(C_PAGE_PREFIX, 'P', 'R');
+  C_BUTTON_PREFIX constant adc_util.ora_name_type := replace(C_PAGE_PREFIX, 'P', 'B');
   C_PTI_PMG constant adc_util.ora_name_type := 'ADC_UI';
+  C_ADC constant adc_util.ora_name_type := 'ADC';
+  C_REGION_CPT_FORM constant adc_util.ora_name_type := C_REGION_PREFIX || 'EDIT_CPT_FORM';
+  C_REGION_CPT_STATIC_LIST_FORM constant adc_util.ora_name_type := C_REGION_PREFIX || 'EDIT_CPT_STATIC_LIST_FORM';
+  C_REGION_CPT_SELECT_LIST constant adc_util.ora_name_type := C_REGION_PREFIX || 'EDIT_CPT_SELECT_LIST'; 
+  
+  C_VISUAL_TYPE_SELECT constant adc_util.ora_name_type := 'SELECT_LIST';
+  C_VISUAL_TYPE_STATIC constant adc_util.ora_name_type := 'STATIC_LIST';
 
   /**
     Group: Private package variables
@@ -21,14 +31,8 @@ as
   /**
     Variables: State variables
       g_page_values - PL/SQL table to hold key value pairs for page items (key) and their values
-      g_edit_cat_row - type save record for a Action Type
-      g_edit_cif_row - type save record for a Item Focus
-      g_edit_ctg_row - type safe record for an Action Type Group
   */
   g_page_values utl_apex.page_value_t;
-  g_edit_cat_row adc_ui_edit_cat%rowtype;
-  g_edit_cif_row adc_action_item_focus_v%rowtype;
-  g_edit_ctg_row adc_action_type_groups_v%rowtype;
     
   /**
     Group: Type definitions
@@ -37,82 +41,120 @@ as
   /**
     Group: Private Methods
    */
-  procedure copy_edit_cat
+  procedure copy_edit_cat(
+    p_row in out nocopy adc_ui_edit_cat%rowtype)
   as
   begin
     pit.enter_detailed('copy_edit_cat');
     
     g_page_values := utl_apex.get_page_values('EDIT_CAT_FORM');
-    g_edit_cat_row.cat_id := adc_util.clean_adc_name(utl_apex.get(g_page_values, 'CAT_ID'));
-    g_edit_cat_row.cat_ctg_id := adc_util.clean_adc_name(utl_apex.get(g_page_values, 'CAT_CTG_ID'));
-    g_edit_cat_row.cat_cif_id := adc_util.clean_adc_name(utl_apex.get(g_page_values, 'CAT_CIF_ID'));
-    g_edit_cat_row.cat_name := utl_apex.get(g_page_values, 'CAT_NAME');
-    g_edit_cat_row.cat_display_name := utl_apex.get(g_page_values, 'CAT_DISPLAY_NAME');
-    g_edit_cat_row.cat_description := utl_apex.get(g_page_values, 'CAT_DESCRIPTION');
-    g_edit_cat_row.cat_pl_sql := utl_apex.get(g_page_values, 'CAT_PL_SQL');
-    g_edit_cat_row.cat_js := utl_apex.get(g_page_values, 'CAT_JS');
-    g_edit_cat_row.cat_is_editable := utl_apex.get(g_page_values, 'CAT_IS_EDITABLE');
-    g_edit_cat_row.cat_raise_recursive := utl_apex.get(g_page_values, 'CAT_RAISE_RECURSIVE');
-    g_edit_cat_row.cat_active := utl_apex.get(g_page_values, 'CAT_ACTIVE');
-    g_edit_cat_row.cap_cpt_id_1 := utl_apex.get(g_page_values, 'CAP_CPT_ID_1');
-    g_edit_cat_row.cap_display_name_1 := utl_apex.get(g_page_values, 'CAP_DISPLAY_NAME_1');
-    g_edit_cat_row.cap_description_1 := utl_apex.get(g_page_values, 'CAP_DESCRIPTION_1');
-    g_edit_cat_row.cap_default_1 := utl_apex.get(g_page_values, 'CAP_DEFAULT_1');
-    g_edit_cat_row.cap_mandatory_1 := utl_apex.get(g_page_values, 'CAP_MANDATORY_1');
-    g_edit_cat_row.cap_active_1 := utl_apex.get(g_page_values, 'CAP_ACTIVE_1');
-    g_edit_cat_row.cap_cpt_id_2 := utl_apex.get(g_page_values, 'CAP_CPT_ID_2');
-    g_edit_cat_row.cap_display_name_2 := utl_apex.get(g_page_values, 'CAP_DISPLAY_NAME_2');
-    g_edit_cat_row.cap_description_2 := utl_apex.get(g_page_values, 'CAP_DESCRIPTION_2');
-    g_edit_cat_row.cap_default_2 := utl_apex.get(g_page_values, 'CAP_DEFAULT_2');
-    g_edit_cat_row.cap_mandatory_2 := utl_apex.get(g_page_values, 'CAP_MANDATORY_2');
-    g_edit_cat_row.cap_active_2 := utl_apex.get(g_page_values, 'CAP_ACTIVE_2');
-    g_edit_cat_row.cap_cpt_id_3 := utl_apex.get(g_page_values, 'CAP_CPT_ID_3');
-    g_edit_cat_row.cap_display_name_3 := utl_apex.get(g_page_values, 'CAP_DISPLAY_NAME_3');
-    g_edit_cat_row.cap_description_3 := utl_apex.get(g_page_values, 'CAP_DESCRIPTION_3');
-    g_edit_cat_row.cap_default_3 := utl_apex.get(g_page_values, 'CAP_DEFAULT_3');
-    g_edit_cat_row.cap_mandatory_3 := utl_apex.get(g_page_values, 'CAP_MANDATORY_3');
-    g_edit_cat_row.cap_active_3 := utl_apex.get(g_page_values, 'CAP_ACTIVE_3');
+    p_row.cat_id := adc_util.clean_adc_name(utl_apex.get(g_page_values, 'CAT_ID'));
+    p_row.cat_ctg_id := adc_util.clean_adc_name(utl_apex.get(g_page_values, 'CAT_CTG_ID'));
+    p_row.cat_cif_id := adc_util.clean_adc_name(utl_apex.get(g_page_values, 'CAT_CIF_ID'));
+    p_row.cat_name := utl_apex.get(g_page_values, 'CAT_NAME');
+    p_row.cat_display_name := utl_apex.get(g_page_values, 'CAT_DISPLAY_NAME');
+    p_row.cat_description := utl_apex.get(g_page_values, 'CAT_DESCRIPTION');
+    p_row.cat_pl_sql := utl_apex.get(g_page_values, 'CAT_PL_SQL');
+    p_row.cat_js := utl_apex.get(g_page_values, 'CAT_JS');
+    p_row.cat_is_editable := utl_apex.get(g_page_values, 'CAT_IS_EDITABLE');
+    p_row.cat_raise_recursive := utl_apex.get(g_page_values, 'CAT_RAISE_RECURSIVE');
+    p_row.cat_active := utl_apex.get(g_page_values, 'CAT_ACTIVE');
+    p_row.cap_cpt_id_1 := utl_apex.get(g_page_values, 'CAP_CPT_ID_1');
+    p_row.cap_display_name_1 := utl_apex.get(g_page_values, 'CAP_DISPLAY_NAME_1');
+    p_row.cap_description_1 := utl_apex.get(g_page_values, 'CAP_DESCRIPTION_1');
+    p_row.cap_default_1 := utl_apex.get(g_page_values, 'CAP_DEFAULT_1');
+    p_row.cap_mandatory_1 := utl_apex.get(g_page_values, 'CAP_MANDATORY_1');
+    p_row.cap_active_1 := utl_apex.get(g_page_values, 'CAP_ACTIVE_1');
+    p_row.cap_cpt_id_2 := utl_apex.get(g_page_values, 'CAP_CPT_ID_2');
+    p_row.cap_display_name_2 := utl_apex.get(g_page_values, 'CAP_DISPLAY_NAME_2');
+    p_row.cap_description_2 := utl_apex.get(g_page_values, 'CAP_DESCRIPTION_2');
+    p_row.cap_default_2 := utl_apex.get(g_page_values, 'CAP_DEFAULT_2');
+    p_row.cap_mandatory_2 := utl_apex.get(g_page_values, 'CAP_MANDATORY_2');
+    p_row.cap_active_2 := utl_apex.get(g_page_values, 'CAP_ACTIVE_2');
+    p_row.cap_cpt_id_3 := utl_apex.get(g_page_values, 'CAP_CPT_ID_3');
+    p_row.cap_display_name_3 := utl_apex.get(g_page_values, 'CAP_DISPLAY_NAME_3');
+    p_row.cap_description_3 := utl_apex.get(g_page_values, 'CAP_DESCRIPTION_3');
+    p_row.cap_default_3 := utl_apex.get(g_page_values, 'CAP_DEFAULT_3');
+    p_row.cap_mandatory_3 := utl_apex.get(g_page_values, 'CAP_MANDATORY_3');
+    p_row.cap_active_3 := utl_apex.get(g_page_values, 'CAP_ACTIVE_3');
     
     pit.leave_detailed;
   end copy_edit_cat;
 
 
-  procedure copy_edit_cif
+  procedure copy_edit_cif(
+    p_row in out nocopy adc_action_item_focus_v%rowtype)
   as
   begin
     pit.enter_detailed('copy_edit_cif');
   
     g_page_values := utl_apex.get_page_values('EDIT_CIF_FORM');
-    g_edit_cif_row.cif_id := utl_apex.get(g_page_values, 'cif_id');
-    g_edit_cif_row.cif_name := utl_apex.get(g_page_values, 'cif_name');
-    g_edit_cif_row.cif_description := utl_apex.get(g_page_values, 'cif_description');
-    g_edit_cif_row.cif_item_types := utl_apex.get(g_page_values, 'cif_item_types');
-    --g_edit_cif_row.cif_default := utl_apex.get(g_page_values, 'cif_default');
-    g_edit_cif_row.cif_actual_page_only := utl_apex.get(g_page_values, 'cif_actual_page_only');
-    g_edit_cif_row.cif_active := utl_apex.get(g_page_values, 'cif_active');
+    p_row.cif_id := utl_apex.get(g_page_values, 'cif_id');
+    p_row.cif_name := utl_apex.get(g_page_values, 'cif_name');
+    p_row.cif_description := utl_apex.get(g_page_values, 'cif_description');
+    p_row.cif_item_types := utl_apex.get(g_page_values, 'cif_item_types');
+    --p_row.cif_default := utl_apex.get(g_page_values, 'cif_default');
+    p_row.cif_actual_page_only := utl_apex.get(g_page_values, 'cif_actual_page_only');
+    p_row.cif_active := utl_apex.get(g_page_values, 'cif_active');
   
     pit.leave_detailed;
   end copy_edit_cif;
   
 
-  procedure copy_edit_ctg
+  procedure copy_edit_ctg(
+    p_row in out nocopy adc_action_type_groups_v%rowtype)
   as
   begin
     pit.enter_detailed('copy_edit_ctg');
   
     g_page_values := utl_apex.get_page_values('EDIT_CTG_FORM');
-    g_edit_ctg_row.ctg_id := utl_apex.get(g_page_values, 'ctg_id');
-    g_edit_ctg_row.ctg_name := utl_apex.get(g_page_values, 'ctg_name');
-    g_edit_ctg_row.ctg_description := utl_apex.get(g_page_values, 'ctg_description');
-    g_edit_ctg_row.ctg_active := utl_apex.get(g_page_values, 'ctg_active');
+    p_row.ctg_id := utl_apex.get(g_page_values, 'ctg_id');
+    p_row.ctg_name := utl_apex.get(g_page_values, 'ctg_name');
+    p_row.ctg_description := utl_apex.get(g_page_values, 'ctg_description');
+    p_row.ctg_active := utl_apex.get(g_page_values, 'ctg_active');
   
     pit.leave_detailed;
   end copy_edit_ctg;
   
+
+  procedure copy_edit_cpt(
+    p_row in out nocopy adc_action_param_types_v%rowtype)
+  as
+  begin
+    pit.enter_detailed('copy_edit_cpt');
+  
+    g_page_values := utl_apex.get_page_values(C_REGION_CPT_FORM);
+    p_row.cpt_id := adc_util.clean_adc_name(utl_apex.get(g_page_values, 'cpt_id'));
+    p_row.cpt_name := utl_apex.get(g_page_values, 'cpt_name');
+    p_row.cpt_description := utl_apex.get(g_page_values, 'cpt_description');
+    p_row.cpt_cpv_id := utl_apex.get(g_page_values, 'cpt_cpv_id');
+    p_row.cpt_select_list_query := utl_apex.get_string('cpt_select_list_query');
+    p_row.cpt_select_view_comment := utl_apex.get_string('cpt_select_view_comment');
+    p_row.cpt_sort_seq := utl_apex.get(g_page_values, 'cpt_sort_seq');
+    p_row.cpt_active := utl_apex.get(g_page_values, 'cpt_active');
+  
+    pit.leave_detailed;
+  end copy_edit_cpt;
+    
+
+  procedure copy_edit_cpt_static_list(
+    p_row in out nocopy adc_ui_edit_cpt_static_list%rowtype)
+  as
+  begin
+    pit.enter_detailed('copy_edit_cpt_static_list');
+  
+    g_page_values := utl_apex.get_page_values(C_REGION_CPT_STATIC_LIST_FORM);
+    p_row.csl_cpt_id := utl_apex.get_string('P5_CPT_ID');
+    p_row.csl_pti_id := p_row.csl_cpt_id || '_' || adc_util.clean_adc_name(utl_apex.get(g_page_values, 'csl_pti_id'));
+    p_row.csl_name := utl_apex.get(g_page_values, 'csl_name');
+  
+    pit.leave_detailed;
+  end copy_edit_cpt_static_list;
+  
   
   /** 
     Procedure: copy_row_to_cat_record
-      Helper method to cast the complex view ADC_UI_EDIT_CAT to a record of type ADC_ACTION_TYPE%ROWTYPE
+      Helper method to cast the complex view <ADC_UI_EDIT_CAT> to a record of type <ADC_ACTION_TYPES>%ROWTYPE
     
     Parameters:
       p_row - Instance of the collection
@@ -348,13 +390,14 @@ as
   function validate_edit_cif
     return boolean
   as
+    l_row adc_action_item_focus_v%rowtype;
   begin
     pit.enter_mandatory;
     
-    copy_edit_cif;
+    copy_edit_cif(l_row);
     
     pit.start_message_collection;
-    adc_admin.validate_action_item_focus(g_edit_cif_row);
+    adc_admin.validate_action_item_focus(l_row);
     pit.stop_message_collection;
   
     pit.leave_mandatory;
@@ -373,14 +416,15 @@ as
    */
   procedure process_edit_cif
   as
+    l_row adc_action_item_focus_v%rowtype;
   begin
     pit.enter_mandatory;
     
-    copy_edit_cif;
+    copy_edit_cif(l_row);
     case when utl_apex.inserting or utl_apex.updating then
-      adc_admin.merge_action_item_focus(g_edit_cif_row);
+      adc_admin.merge_action_item_focus(l_row);
     else
-      adc_admin.delete_action_item_focus(g_edit_cif_row);
+      adc_admin.delete_action_item_focus(l_row);
     end case;
     
     pit.leave_mandatory;
@@ -394,14 +438,15 @@ as
   function validate_edit_cat
     return boolean
   as
+    l_row adc_ui_edit_cat%rowtype;
     l_cat_rec adc_action_types_v%rowtype;
   begin
     pit.enter_mandatory;
     
-    copy_edit_cat;
+    copy_edit_cat(l_row);
 
     pit.start_message_collection;
-    copy_row_to_cat_record(g_edit_cat_row, l_cat_rec);
+    copy_row_to_cat_record(l_row, l_cat_rec);
     adc_admin.validate_action_type(l_cat_rec);
     pit.stop_message_collection;
 
@@ -426,6 +471,7 @@ as
    */
   procedure process_edit_cat
   as
+    l_row adc_ui_edit_cat%rowtype;
     l_cat_rec adc_action_types_v%rowtype;
     l_cap_rec_1 adc_action_parameters_v%rowtype;
     l_cap_rec_2 adc_action_parameters_v%rowtype;
@@ -433,10 +479,10 @@ as
   begin
     pit.enter_mandatory;
     
-    copy_edit_cat;
+    copy_edit_cat(l_row);
 
-    copy_row_to_cat_record(g_edit_cat_row, l_cat_rec);
-    copy_row_to_cap_records(g_edit_cat_row, l_cap_rec_1, l_cap_rec_2, l_cap_rec_3);
+    copy_row_to_cat_record(l_row, l_cat_rec);
+    copy_row_to_cap_records(l_row, l_cap_rec_1, l_cap_rec_2, l_cap_rec_3);
 
     case
     when utl_apex.inserting or utl_apex.updating then
@@ -479,13 +525,14 @@ as
   function validate_edit_ctg
     return boolean
   as
+    l_row adc_action_type_groups_v%rowtype;
   begin
     pit.enter_mandatory;
     
-    copy_edit_ctg;
+    copy_edit_ctg(l_row);
     
     pit.start_message_collection;
-    adc_admin.validate_action_type_group(g_edit_ctg_row);
+    adc_admin.validate_action_type_group(l_row);
     pit.stop_message_collection;
     
     pit.leave_mandatory;
@@ -506,18 +553,139 @@ as
    */
   procedure process_edit_ctg
   as
+    l_row adc_action_type_groups_v%rowtype;
   begin
     pit.enter_mandatory;
     
-    copy_edit_ctg;
+    copy_edit_ctg(l_row);
     case when utl_apex.inserting or utl_apex.updating then
-      adc_admin.merge_action_type_group(g_edit_ctg_row);
+      adc_admin.merge_action_type_group(l_row);
     else
-      adc_admin.delete_action_type_group(g_edit_ctg_row);
+      adc_admin.delete_action_type_group(l_row);
     end case;
     
     pit.leave_mandatory;
   end process_edit_ctg;
+  
+  
+  /** 
+    Function: handle_cpv_changed
+      See <ADC_UI.handle_cpv_changed>
+   */
+  procedure handle_cpv_changed
+  as
+    l_cpt_cpv_id adc_action_param_types.cpt_cpv_id%type;
+    l_select_list_status adc_util.ora_name_type := adc.C_HIDE;
+    l_static_list_status adc_util.ora_name_type := adc.C_HIDE;
+  begin
+    pit.enter_mandatory;
+    
+    l_cpt_cpv_id := utl_apex.get_string('CPT_CPV_ID');
+    
+    case l_cpt_cpv_id
+      when C_VISUAL_TYPE_SELECT then
+        adc.refresh_item(C_REGION_CPT_SELECT_LIST);
+        l_select_list_status := adc.C_SHOW_ENABLE;
+      when C_VISUAL_TYPE_STATIC then
+        adc.set_item(
+          p_cpi_id => 'P5_CPT_SELECT_LIST_QUERY', 
+          p_item_value => to_char(null));
+        adc.refresh_item(C_REGION_CPT_STATIC_LIST_FORM);
+        l_static_list_status := adc.C_SHOW_ENABLE;
+      else
+        null;
+    end case;
+    
+    adc.set_visual_state(
+      p_cpi_id => C_REGION_CPT_SELECT_LIST,
+      p_visual_state => l_select_list_status);
+    adc.set_visual_state(
+      p_cpi_id => C_REGION_CPT_STATIC_LIST_FORM,
+      p_visual_state => l_static_list_status);
+    
+    pit.leave_mandatory;
+  end handle_cpv_changed;
+  
+    
+  /** 
+    Function: validate_edit_cpt
+      See <ADC_UI.validate_edit_cpt>
+   */
+  function validate_edit_cpt
+    return boolean
+  as
+    l_row adc_action_param_types_v%rowtype;
+  begin
+    pit.enter_mandatory;
+    
+    copy_edit_cpt(l_row);
+    
+    pit.start_message_collection;
+    adc_admin.validate_action_param_type(l_row);
+    pit.stop_message_collection;
+    
+    pit.leave_mandatory;
+    return true;
+  exception
+    when others then
+      utl_apex.handle_bulk_errors(char_table(
+        'CPT_ID_MISSING', 'CPT_ID',
+        'CPT_NAME_MISSING', 'CPT_NAME',
+        'CPT_CPV_ID_MISSING', 'CPT_CPV_ID',
+        'CPV_VIEW_STATEMENT_MISSING', 'CPT_SELECT_LIST_QUERY'
+        ));
+      return true;
+  end validate_edit_cpt;
+  
+    
+  /** 
+    Function: process_edit_cpt
+      See <ADC_UI.process_edit_cpt>
+   */
+  procedure process_edit_cpt
+  as
+    l_row adc_action_param_types_v%rowtype;
+  begin
+    pit.enter_mandatory;
+        
+    copy_edit_cpt(l_row);
+    
+    case when utl_apex.inserting or utl_apex.updating then
+      adc_admin.merge_action_param_type(l_row);
+    else
+      adc_admin.delete_action_param_type(l_row);
+    end case;
+    
+    pit.leave_mandatory;
+  end process_edit_cpt;
+  
+    
+  /** 
+    Function: process_edit_cpt_static_list
+      See <ADC_UI.process_edit_cpt_static_list>
+   */
+  procedure process_edit_cpt_static_list
+  as
+    l_row adc_ui_edit_cpt_static_list%rowtype;
+  begin
+    pit.enter_mandatory;
+        
+    copy_edit_cpt_static_list(l_row);
+    
+    case when utl_apex.inserting or utl_apex.updating then
+      pit_admin.merge_translatable_item(
+        p_pti_id => l_row.csl_pti_id,
+        p_pti_pmg_name => C_ADC,
+        p_pti_pml_name => pit.get_default_language,
+        p_pti_name => l_row.csl_name);
+    else
+      pit_admin.delete_translatable_item(
+        p_pti_id => l_row.csl_pti_id,
+        p_pti_pmg_name => C_ADC);
+    end case;
+    
+    pit.leave_mandatory;
+  end process_edit_cpt_static_list;
   
   
   /** 
@@ -532,7 +700,7 @@ as
     
     C_SUCCESS_COMMAND constant varchar2(100) := q'^apex.submit('EXPORT_#TYPE#');^';
   begin
-    pit.enter_optional;
+    pit.enter_mandatory;
     
     -- Initialization
     l_cgr_app_id := utl_apex.get_number('CGR_APP_ID');
@@ -561,11 +729,11 @@ as
     
     adc.add_javascript(adc_apex_action.get_action_script);
 
-    pit.leave_optional;
+    pit.leave_mandatory;
   exception
     when others then
       adc.register_error('DOCUMENT', sqlerrm, pit_util.get_call_stack);
-      pit.leave_optional;
+      pit.leave_mandatory;
   end set_action_export_cgr;
 
 begin

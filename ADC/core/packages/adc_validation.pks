@@ -34,7 +34,7 @@ as
                  
     Parameters:
       p_cpt_id - Parameter Type
-      p_cpt_item_type - Item type
+      p_cpt_cpv_id - Item type
       
     Errors:
       msg.ADC_PARAM_LOV_MISSING - if LOV view is required but missing
@@ -42,7 +42,7 @@ as
    */
   procedure validate_param_lov(
     p_cpt_id in adc_action_param_types.cpt_id%type,
-    p_cpt_item_type in adc_action_param_types.cpt_item_type%type);
+    p_cpt_cpv_id in adc_action_param_types.cpt_cpv_id%type);
   
   /**
     Procedure: validate_parameter

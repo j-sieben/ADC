@@ -2,7 +2,7 @@ merge into adc_lu_designer_actions t
 using (select 'cancel-action'	ald_id, 'cancel-action' ald_name,	adc_util.C_TRUE ald_active 
          from dual
        union all
-       select 'create-action', 'Ccreate-actionAG',	adc_util.C_TRUE from dual union all
+       select 'create-action', 'create-action',	adc_util.C_TRUE from dual union all
        select 'delete-action', 'delete-action',	adc_util.C_TRUE from dual union all
        select 'show', 'show',	adc_util.C_TRUE from dual union all
        select 'update-action', 'update-action',	adc_util.C_TRUE from dual) s

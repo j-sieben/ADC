@@ -1,0 +1,21 @@
+create table adc_action_param_visual_types(
+  cpv_id varchar2(50 char),
+  cpv_pti_id varchar2(50 char) constraint nn_cpv_pti_id not null,
+  cpv_pmg_name varchar2(3 byte) default on null 'ADC' constraint chk_cpv_pmg_name check(cpv_pmg_name = 'ADC'),
+  cpv_sort_seq number default on null 10 constraint nn_cpv_sort_seq not null,
+  cpv_active &FLAG_TYPE. default on null &C_TRUE. constraint nn_cpt_active not null,
+  constraint pk_adc_action_param_visual_types primary key(cpv_id),
+  constraint fk_cpv_pti_id foreign key(cpv_pti_id, cpv_pmg_name)
+    references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
+  constraint chk_cpv_active check(cpv_active in (&C_FALSE., &C_TRUE.))
+) 
+organization index;
+
+create unique index idx_cpv_pti_pmg_name on adc_action_param_visual_types(cpv_pti_id, cpv_pmg_name);
+
+comment on table adc_action_param_visual_types is 'Table to store how a parameter type has to be displayed. Options are TEXT, TEXT_AREA, SELECT/STATIC_LIST and SWITCH';
+comment on column adc_action_param_visual_types.cpv_id is 'PK, technical key';
+comment on column adc_action_param_visual_types.cpv_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
+comment on column adc_action_param_visual_types.cpv_pmg_name is 'Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC';
+comment on column adc_action_param_visual_types.cpv_sort_seq is 'Sort criteria';
+comment on column adc_action_param_visual_types.cpv_active is 'Flag to indicate whether visual type is in use';

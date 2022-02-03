@@ -30,7 +30,7 @@ as
   C_ITEM_TEST_DATE constant utl_apex.ora_name_type := 'P98_TEST_DATE';
   C_ITEM_TEST_NUMBER constant utl_apex.ora_name_type := 'P98_TEST_NUMBER';
   
-  g_cgr_id adc_rule_group.cgr_id%type;
+  g_cgr_id adc_rule_groups.cgr_id%type;
   g_application_id number;  
   g_da_type apex_plugin.t_dynamic_action;
   g_plugin_type apex_plugin.t_plugin;

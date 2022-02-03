@@ -2,13 +2,54 @@ set define off
 set sqlblanklines on
 
 begin
+  -- ACTION_PARAM_VISUAL_TYPES
+  adc_admin.merge_action_param_visual_type(
+    p_cpv_id => 'SELECT_LIST',
+    p_cpv_name => 'Dynamische Auswahlliste',
+    p_cpv_display_name => '',
+    p_cpv_description => q'{Wird für die Auswahl einer berechneten Menge Optionen verwendet.}',
+    p_cpv_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_visual_type(
+    p_cpv_id => 'STATIC_LIST',
+    p_cpv_name => 'Statische Auswahlliste',
+    p_cpv_display_name => '',
+    p_cpv_description => q'{Wird für die Auswahl einer vorgegebenen Menge Optionen verwendet.}',
+    p_cpv_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_visual_type(
+    p_cpv_id => 'SWITCH',
+    p_cpv_name => 'Schalter',
+    p_cpv_display_name => '',
+    p_cpv_description => q'{Wird für die Ja/Nein oder An/Aus-Entscheidungen verwendet.}',
+    p_cpv_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_visual_type(
+    p_cpv_id => 'TEXT',
+    p_cpv_name => 'Textfeld',
+    p_cpv_display_name => '',
+    p_cpv_description => q'{Wird für kürzere Freitexte verwendet.}',
+    p_cpv_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_visual_type(
+    p_cpv_id => 'TEXT_AREA',
+    p_cpv_name => 'Textbereich',
+    p_cpv_display_name => '',
+    p_cpv_description => q'{Wird für umfangreiche Textmengen verwendet.}',
+    p_cpv_active => adc_util.C_TRUE);
+
+
   -- ACTION_PARAM_TYPES
   adc_admin.merge_action_param_type(
     p_cpt_id => 'APEX_ACTION',
     p_cpt_name => 'APEX-Aktion',
     p_cpt_display_name => '',
     p_cpt_description => q'{<p>Existierende APEX-Aktion der Regelgruppe.</p>}',
-    p_cpt_item_type => 'SELECT_LIST',
+    p_cpt_cpv_id => 'SELECT_LIST',
+    p_cpt_select_list_query => q'{select caa_name d, caa_id r, caa_cgr_id cgr_id\CR\}' || 
+q'{  from adc_apex_actions_v}',
+    p_cpt_select_view_comment => q'{List of apex actions, grouped by CGR_ID}',
+    p_cpt_sort_seq => 10,
     p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
@@ -16,15 +57,13 @@ begin
     p_cpt_name => 'Zusätzliche JavaScript-Events',
     p_cpt_display_name => '',
     p_cpt_description => q'{<p>Liste der JavaScript-Events, die durch ADC überwacht werden können.</p>}',
-    p_cpt_item_type => 'SELECT_LIST',
-    p_cpt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_cpt_id => 'FUNCTION',
-    p_cpt_name => 'PL/SQL-Funktion',
-    p_cpt_display_name => '',
-    p_cpt_description => q'{<p>Eine bestehende PL/SQL-Funktion oder eine Package-Funktion<br>Es muss kein abschliessendes Semikolon angegeben werden.</p>}',
-    p_cpt_item_type => 'TEXT',
+    p_cpt_cpv_id => 'SELECT_LIST',
+    p_cpt_select_list_query => q'{select cit_name d, cit_id r, null cgr_id\CR\}' || 
+q'{  from adc_page_item_types_v\CR\}' || 
+q'{ where cit_is_custom_event = (select adc_util.c_true from dual)\CR\}' || 
+q'{ order by cit_id}',
+    p_cpt_select_view_comment => q'{Parameterview to display all custom events}',
+    p_cpt_sort_seq => 10,
     p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
@@ -32,31 +71,13 @@ begin
     p_cpt_name => 'Anzeigestatus',
     p_cpt_display_name => '',
     p_cpt_description => q'{<p>Option zur Anzeige eines Seitenelements auf der Seite</p>}',
-    p_cpt_item_type => 'SELECT_LIST',
-    p_cpt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_cpt_id => 'JAVA_SCRIPT',
-    p_cpt_name => 'JavaScript-Ausdruck',
-    p_cpt_display_name => '',
-    p_cpt_description => q'{<p>Ausführbarer JavaScript-Ausdruck, keine Funktionsdefinition</p>}',
-    p_cpt_item_type => 'TEXT',
-    p_cpt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_cpt_id => 'JAVA_SCRIPT_FUNCTION',
-    p_cpt_name => 'JavaScript-Funktion',
-    p_cpt_display_name => '',
-    p_cpt_description => q'{<p>Name einer JavaScript-Funktion oder anonyme Funktionsdefinition/IIFE</p>}',
-    p_cpt_item_type => 'TEXT',
-    p_cpt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_cpt_id => 'JQUERY_SELECTOR',
-    p_cpt_name => 'jQuery-Selektor',
-    p_cpt_display_name => '',
-    p_cpt_description => q'{<p>jQuery-Ausdruck, um mehrere Elemente zu bearbeiten. Wird dieser Parameter verwendet, muss als ausl&ouml;sendes Element <code>DOCUMENT</code> eingetragen werden.</p>}',
-    p_cpt_item_type => 'TEXT',
+    p_cpt_cpv_id => 'STATIC_LIST',
+    p_cpt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null cgr_id\CR\}' || 
+q'{  from pit_translatable_item_v\CR\}' || 
+q'{ where pti_pmg_name = 'ADC'\CR\}' || 
+q'{   and pti_id like 'ITEM_STATUS%'}',
+    p_cpt_select_view_comment => q'{List of translatable items of for that parameter type}',
+    p_cpt_sort_seq => 10,
     p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
@@ -64,7 +85,12 @@ begin
     p_cpt_name => 'Seitenelement',
     p_cpt_display_name => '',
     p_cpt_description => q'{<p>Seitenelement oder Region der aktuellen Seite</p>}',
-    p_cpt_item_type => 'SELECT_LIST',
+    p_cpt_cpv_id => 'SELECT_LIST',
+    p_cpt_select_list_query => q'{select case cpi_id when 'ALL' then ' Document' else cpi_id end d, cpi_id r, cpi_cgr_id cgr_id\CR\}' || 
+q'{  from adc_page_items\CR\}' || 
+q'{ where cpi_cit_id in ('DATE_ITEM', 'ITEM', 'NUMBER_ITEM')}',
+    p_cpt_select_view_comment => q'{List of page items, limited to input fields, grouped by CGR_ID}',
+    p_cpt_sort_seq => 10,
     p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
@@ -72,15 +98,14 @@ begin
     p_cpt_name => 'Name der Meldung',
     p_cpt_display_name => '',
     p_cpt_description => q'{<p>Bezeichner einer PIT-Meldung in der Form msg.NAME oder 'NAME', muss eine existierende Meldung sein.</p>}',
-    p_cpt_item_type => 'SELECT_LIST',
-    p_cpt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_cpt_id => 'PROCEDURE',
-    p_cpt_name => 'PL/SQL-Prozedur',
-    p_cpt_display_name => '',
-    p_cpt_description => q'{<p>Eine bestehende PL/SQL-Prozedur oder eine Package-Prozedur<br>Es muss kein abschliessendes Semikolon angegeben werden.</p>}',
-    p_cpt_item_type => 'TEXT',
+    p_cpt_cpv_id => 'SELECT_LIST',
+    p_cpt_select_list_query => q'{select pms_name d, 'msg.' || pms_name r, null cgr_id\CR\}' || 
+q'{  from pit_message\CR\}' || 
+q'{  join pit_message_language_v\CR\}' || 
+q'{    on pms_pml_name = pml_name\CR\}' || 
+q'{ where pml_default_order = 10}',
+    p_cpt_select_view_comment => q'{List of PIT messages}',
+    p_cpt_sort_seq => 10,
     p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
@@ -88,47 +113,13 @@ begin
     p_cpt_name => 'Sequenz',
     p_cpt_display_name => '',
     p_cpt_description => q'{<p>Name einer existierenden Sequenz</p>}',
-    p_cpt_item_type => 'SELECT_LIST',
-    p_cpt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_cpt_id => 'SQL_STATEMENT',
-    p_cpt_name => 'SQL-Anweisung',
-    p_cpt_display_name => '',
-    p_cpt_description => q'{<p>Ausführbare SELECT-Anweisung, die Eingabe erfolgt, wie im SQL-Developer &uuml;blich, es ist keine Angabe eines Semikolons erforderlich.</p>}',
-    p_cpt_item_type => 'TEXT_AREA',
-    p_cpt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_cpt_id => 'STRING',
-    p_cpt_name => 'Zeichenkette',
-    p_cpt_display_name => '',
-    p_cpt_description => q'{<p>Einfache Zeichenkette.<br>Die Zeichenkette wird mit Hochkommata umgeben, daher ist die Eingabe dieser Zeichen nicht erforderlich.</p>}',
-    p_cpt_item_type => 'TEXT',
-    p_cpt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_cpt_id => 'STRING_OR_FUNCTION',
-    p_cpt_name => 'Zeichenkette oder PL/SQL-Funktion',
-    p_cpt_display_name => '',
-    p_cpt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein PL/SQL-Funktionsaufruf, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
-    p_cpt_item_type => 'TEXT',
-    p_cpt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_cpt_id => 'STRING_OR_JAVASCRIPT',
-    p_cpt_name => 'Zeichenkette oder JS-Ausdruck',
-    p_cpt_display_name => '',
-    p_cpt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein JavaScript-Ausdruck, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
-    p_cpt_item_type => 'TEXT',
-    p_cpt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_cpt_id => 'STRING_OR_PIT_MESSAGE',
-    p_cpt_name => 'Zeichenkette oder Meldungsname',
-    p_cpt_display_name => '',
-    p_cpt_description => q'{<p>Falls nicht mit Hochkommata eingeschlossen, ein PIT-Meldungsname der Form msg.NAME</p>}',
-    p_cpt_item_type => 'TEXT',
+    p_cpt_cpv_id => 'SELECT_LIST',
+    p_cpt_select_list_query => q'{select sequence_name d, sequence_name r, null cgr_id\CR\}' || 
+q'{  from user_sequences\CR\}' || 
+q'{       -- exclude column identity sequences\CR\}' || 
+q'{ where sequence_name not like 'ISEQ$$%'}',
+    p_cpt_select_view_comment => q'{List of sequences owned by the user}',
+    p_cpt_sort_seq => 10,
     p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
@@ -136,7 +127,123 @@ begin
     p_cpt_name => 'Submit und/oder Validierung',
     p_cpt_display_name => '',
     p_cpt_description => q'{<p>Typen der Seitenweiterleitung</p>}',
-    p_cpt_item_type => 'SELECT_LIST',
+    p_cpt_cpv_id => 'STATIC_LIST',
+    p_cpt_select_list_query => q'{select pti_name d, substr(pti_id, 12) r, null cgr_id\CR\}' || 
+q'{  from pit_translatable_item_v\CR\}' || 
+q'{ where pti_pmg_name = 'ADC'\CR\}' || 
+q'{   and pti_id like 'SUBMIT_TYPE%'}',
+    p_cpt_select_view_comment => q'{List of translatable items of type ADC, related to the SUBMIT_TYPE}',
+    p_cpt_sort_seq => 10,
+    p_cpt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_cpt_id => 'FUNCTION',
+    p_cpt_name => 'PL/SQL-Funktion',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Eine bestehende PL/SQL-Funktion oder eine Package-Funktion<br>Es muss kein abschliessendes Semikolon angegeben werden.</p>}',
+    p_cpt_cpv_id => 'TEXT',
+    p_cpt_select_list_query => q'{}',
+    p_cpt_select_view_comment => q'{}',
+    p_cpt_sort_seq => 10,
+    p_cpt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_cpt_id => 'STRING_OR_JAVASCRIPT',
+    p_cpt_name => 'Zeichenkette oder JS-Ausdruck',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein JavaScript-Ausdruck, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
+    p_cpt_cpv_id => 'TEXT',
+    p_cpt_select_list_query => q'{}',
+    p_cpt_select_view_comment => q'{}',
+    p_cpt_sort_seq => 10,
+    p_cpt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_cpt_id => 'JAVA_SCRIPT_FUNCTION',
+    p_cpt_name => 'JavaScript-Funktion',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Name einer JavaScript-Funktion oder anonyme Funktionsdefinition/IIFE</p>}',
+    p_cpt_cpv_id => 'TEXT',
+    p_cpt_select_list_query => q'{}',
+    p_cpt_select_view_comment => q'{}',
+    p_cpt_sort_seq => 10,
+    p_cpt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_cpt_id => 'STRING',
+    p_cpt_name => 'Zeichenkette',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Einfache Zeichenkette.<br>Die Zeichenkette wird mit Hochkommata umgeben, daher ist die Eingabe dieser Zeichen nicht erforderlich.</p>}',
+    p_cpt_cpv_id => 'TEXT',
+    p_cpt_select_list_query => q'{}',
+    p_cpt_select_view_comment => q'{}',
+    p_cpt_sort_seq => 10,
+    p_cpt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_cpt_id => 'PROCEDURE',
+    p_cpt_name => 'PL/SQL-Prozedur',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Eine bestehende PL/SQL-Prozedur oder eine Package-Prozedur<br>Es muss kein abschliessendes Semikolon angegeben werden.</p>}',
+    p_cpt_cpv_id => 'TEXT',
+    p_cpt_select_list_query => q'{}',
+    p_cpt_select_view_comment => q'{}',
+    p_cpt_sort_seq => 10,
+    p_cpt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_cpt_id => 'STRING_OR_PIT_MESSAGE',
+    p_cpt_name => 'Zeichenkette oder Meldungsname',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Falls nicht mit Hochkommata eingeschlossen, ein PIT-Meldungsname der Form msg.NAME</p>}',
+    p_cpt_cpv_id => 'TEXT',
+    p_cpt_select_list_query => q'{}',
+    p_cpt_select_view_comment => q'{}',
+    p_cpt_sort_seq => 10,
+    p_cpt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_cpt_id => 'STRING_OR_FUNCTION',
+    p_cpt_name => 'Zeichenkette oder PL/SQL-Funktion',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein PL/SQL-Funktionsaufruf, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
+    p_cpt_cpv_id => 'TEXT',
+    p_cpt_select_list_query => q'{}',
+    p_cpt_select_view_comment => q'{}',
+    p_cpt_sort_seq => 10,
+    p_cpt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_cpt_id => 'SQL_STATEMENT',
+    p_cpt_name => 'SQL-Anweisung',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Ausführbare SELECT-Anweisung, die Eingabe erfolgt, wie im SQL-Developer &uuml;blich, es ist keine Angabe eines Semikolons erforderlich.</p>}',
+    p_cpt_cpv_id => 'TEXT_AREA',
+    p_cpt_select_list_query => q'{}',
+    p_cpt_select_view_comment => q'{}',
+    p_cpt_sort_seq => 10,
+    p_cpt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_cpt_id => 'JAVA_SCRIPT',
+    p_cpt_name => 'JavaScript-Ausdruck',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>Ausführbarer JavaScript-Ausdruck, keine Funktionsdefinition</p>}',
+    p_cpt_cpv_id => 'TEXT',
+    p_cpt_select_list_query => q'{}',
+    p_cpt_select_view_comment => q'{}',
+    p_cpt_sort_seq => 10,
+    p_cpt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_cpt_id => 'JQUERY_SELECTOR',
+    p_cpt_name => 'jQuery-Selektor',
+    p_cpt_display_name => '',
+    p_cpt_description => q'{<p>jQuery-Ausdruck, um mehrere Elemente zu bearbeiten. Wird dieser Parameter verwendet, muss als ausl&ouml;sendes Element <code>DOCUMENT</code> eingetragen werden.</p>}',
+    p_cpt_cpv_id => 'TEXT',
+    p_cpt_select_list_query => q'{}',
+    p_cpt_select_view_comment => q'{}',
+    p_cpt_sort_seq => 10,
     p_cpt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
@@ -144,7 +251,10 @@ begin
     p_cpt_name => 'Schalter',
     p_cpt_display_name => '',
     p_cpt_description => q'{<p>Wahrheitswert</p>}',
-    p_cpt_item_type => 'SWITCH',
+    p_cpt_cpv_id => 'SWITCH',
+    p_cpt_select_list_query => q'{}',
+    p_cpt_select_view_comment => q'{}',
+    p_cpt_sort_seq => 10,
     p_cpt_active => adc_util.C_TRUE);
 
 
@@ -310,7 +420,7 @@ begin
     p_cif_name => 'Alle Seitenelemente',
     p_cif_description => q'{Alle Seitenelemente der Anwendung}',
     p_cif_actual_page_only => adc_util.C_FALSE,
-    p_cif_item_types => 'DOCUMENT:APP_ELEMENT:BUTTON:REGION:ELEMENT',
+    p_cif_item_types => 'DOCUMENT:APP_ELEMENT:BUTTON:FORM_REGION:REGION:ELEMENT',
     p_cif_default => 'DOCUMENT',
     p_cif_active => adc_util.C_TRUE);
 
@@ -328,7 +438,7 @@ begin
     p_cif_name => 'Seitenelemente, die aktiviert und deaktiviert werden können',
     p_cif_description => q'{Alle Seitenelemente, die aktiviert und deaktiviert werden können}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'ELEMENT:DOCUMENT:BUTTON:REGION',
+    p_cif_item_types => 'ELEMENT:DOCUMENT:BUTTON:REGION:FORM_REGION',
     p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
@@ -355,7 +465,7 @@ begin
     p_cif_name => 'Alle Seitenelemente der aktuellen Seite',
     p_cif_description => q'{Alle Seitenelemente der aktuellen Anwendungsseite}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'BUTTON:REGION:ELEMENT',
+    p_cif_item_types => 'BUTTON:FORM_REGION:REGION:ELEMENT',
     p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
@@ -373,14 +483,14 @@ begin
     p_cif_name => 'Seitenelement oder jQuery-Selektor',
     p_cif_description => q'{Ermöglicht die Auswahl eines Seitenelements oder die Angabe eines jQuery-Selektors zur Auswahl mehrerer Seitenelemente.}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'BUTTON:DOCUMENT:ELEMENT:REGION',
+    p_cif_item_types => 'BUTTON:DOCUMENT:ELEMENT:FORM_REGION:REGION',
     p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
     p_cif_id => 'PAGE_ITEM',
-    p_cif_name => 'Eingabefelder der aktuellen Seite',
-    p_cif_description => q'{Alle Anwendungs- und Seitenelemente der aktuellen Anwendungsseite}',
+    p_cif_name => 'Seitenelement',
+    p_cif_description => q'{<p>Alle Anwendungs- und Seitenelemente der aktuellen Anwendungsseite</p>}',
     p_cif_actual_page_only => adc_util.C_TRUE,
     p_cif_item_types => 'ELEMENT',
     p_cif_default => '',
@@ -400,7 +510,7 @@ begin
     p_cif_name => 'Regionen der aktuellen Seite',
     p_cif_description => q'{Alle Regionen der aktuellen Anwendungsseite}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'REGION',
+    p_cif_item_types => 'FORM_REGION:REGION',
     p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
@@ -589,7 +699,7 @@ begin
     p_cat_ctg_id => 'PAGE_ITEM',
     p_cat_cif_id => 'PAGE_ITEM_OR_DOCUMENT',
     p_cat_name => 'Feld ist Pflichtfeld',
-    p_cat_display_name => q'{<p><strong>mache </strong>#PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“^ITEM^#” zum <strong>Pflichtfeld</strong></p>}',
+    p_cat_display_name => q'{<p><strong>mache </strong>#PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“#ITEM##” zum <strong>Pflichtfeld</strong></p>}',
     p_cat_description => q'{<p>Macht ein Seitenelement zu einem Pflichtfeld inkl. Validierung.</p>}',
     p_cat_pl_sql => q'{adc_api.register_mandatory('#ITEM#', adc_util.C_TRUE, '#PARAM_1#', '#PARAM_2#');}',
     p_cat_js => q'{de.condes.plugin.adc.setMandatory('#SELECTOR#', true);de.condes.plugin.adc.setDisplayState('#SELECTOR#', 'SHOW_ENABLE');}',
@@ -621,7 +731,7 @@ begin
     p_cat_ctg_id => 'PAGE_ITEM',
     p_cat_cif_id => 'PAGE_ITEM_OR_DOCUMENT',
     p_cat_name => 'Feld ist optional',
-    p_cat_display_name => q'{<p><strong>mache </strong>#PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“^ITEM^#” <strong>optional</strong></p>}',
+    p_cat_display_name => q'{<p><strong>mache </strong>#PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“#ITEM##” <strong>optional</strong></p>}',
     p_cat_description => q'{<p>Macht ein Seitenelement zu einem optionalen Element und setzt Pflichtfeld-Validierung aus.</p>}',
     p_cat_pl_sql => q'{adc_api.register_mandatory('#ITEM#', adc_util.C_FALSE, null, '#PARAM_2#');}',
     p_cat_js => q'{de.condes.plugin.adc.setMandatory('#SELECTOR#',false);}',
@@ -760,6 +870,19 @@ begin
     p_cap_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_type(
+    p_cat_id => 'RAISE_ITEM_EVENT',
+    p_cat_ctg_id => 'PAGE_ITEM',
+    p_cat_cif_id => 'PAGE_ITEM',
+    p_cat_name => 'Feld-Event auslösen',
+    p_cat_display_name => q'{<p><strong>führe Anwendungsfälle </strong>des Elements “#ITEM#” aus</p>}',
+    p_cat_description => q'{<p>Löst den zugehörigen Event auf das angegebene Seitenelement aus und sorgt für die Abarbeitung der zugehörigen Regeln</p>}',
+    p_cat_pl_sql => q'{adc_api.raise_item_event('#ITEM#');}',
+    p_cat_js => q'{}',
+    p_cat_is_editable => adc_util.C_FALSE,
+    p_cat_raise_recursive => adc_util.C_TRUE);
+
+
+  adc_admin.merge_action_type(
     p_cat_id => 'REFRESH_AND_SET_VALUE',
     p_cat_ctg_id => 'PAGE_ITEM',
     p_cat_cif_id => 'PAGE_ITEM',
@@ -790,19 +913,6 @@ begin
     p_cat_description => q'{<p>Löst auf dem referenzierten Seitenelement einen APEX-Refresh aus.</p>}',
     p_cat_pl_sql => q'{}',
     p_cat_js => q'{de.condes.plugin.adc.refresh('#ITEM#');}',
-    p_cat_is_editable => adc_util.C_FALSE,
-    p_cat_raise_recursive => adc_util.C_TRUE);
-
-
-  adc_admin.merge_action_type(
-    p_cat_id => 'RAISE_ITEM_EVENT',
-    p_cat_ctg_id => 'PAGE_ITEM',
-    p_cat_cif_id => 'PAGE_ITEM',
-    p_cat_name => 'Feld-Event auslösen',
-    p_cat_display_name => q'{<p><strong>führe Anwendungsfälle </strong>des Elements “#ITEM#” aus</p>}',
-    p_cat_description => q'{<p>Löst den zugehörigen Event auf das angegebene Seitenelement aus und sorgt für die Abarbeitung der zugehörigen Regeln</p>}',
-    p_cat_pl_sql => q'{adc_api.raise_item_event('#ITEM#');}',
-    p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_TRUE);
 
@@ -850,7 +960,7 @@ begin
     p_cat_display_name => q'{<p><strong>wähle Zeile</strong> ‘#PARAM_1#' <strong>in Bericht</strong> #ITEM#</p>}',
     p_cat_description => q'{<p>Wählt eine Zeile in einem Bericht (klassisch, Interactive Region oder Interactive Grid) oder einem Tree.</p>}',
     p_cat_pl_sql => q'{}',
-    p_cat_js => q'{de.condes.plugin.adc.selectEntry('#ITEM#', '#PARAM_1#', true);}',
+    p_cat_js => q'{de.condes.plugin.adc.selectEntry('#ITEM#', '#METHOD#', true);}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
 
@@ -946,7 +1056,7 @@ begin
     p_cat_ctg_id => 'PAGE_ITEM',
     p_cat_cif_id => 'PAGE_ITEM_OR_DOCUMENT',
     p_cat_name => 'Feld auf Wert setzen',
-    p_cat_display_name => q'{<p><strong>setze </strong>#PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“^ITEM^#” auf #PARAM_1|Wert “|”|NULL#, Status #PARAM_3#</p>}',
+    p_cat_display_name => q'{<p><strong>setze </strong>#PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“#ITEM##” auf #PARAM_1|Wert “|”|NULL#, Status #PARAM_3#</p>}',
     p_cat_description => q'{<p>Setzt das referenzierte Seitenelement auf den als Parameter übergebenen Wert und kontrolliert den Anzeigestatus.</p>}',
     p_cat_pl_sql => q'{adc_api.set_session_state(p_cpi_id => '#ITEM#', p_value => #PARAM_1|||null#, p_allow_recursion => '#ALLOW_RECURSION#', p_jquery_selector => '#PARAM_2#');}',
     p_cat_js => q'{de.condes.plugin.adc.setDisplayState('#SELECTOR#', '#PARAM_3#');}',
@@ -991,7 +1101,7 @@ begin
     p_cat_display_name => q'{<p><strong>setze Feldbezeichner</strong> auf “#PARAM_1#”</p>}',
     p_cat_description => q'{<p>Setzt den Bezeichner des referenzierten Seitenelements auf den als Parameter übergebenen Wert.</p><p>Ein Pflichtfeld wird immer auch sichtbar und aktiv geschaltet, um eine Eingabe durch den Anwender zu ermöglichen.</p>}',
     p_cat_pl_sql => q'{}',
-    p_cat_js => q'{de.condes.plugin.adc.setDisplayState('#ITEM#', '', '#PARAM_1#');}',
+    p_cat_js => q'{de.condes.plugin.adc.setDisplayState('#SELECTOR#', '', '#PARAM_1#');}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_FALSE);
 

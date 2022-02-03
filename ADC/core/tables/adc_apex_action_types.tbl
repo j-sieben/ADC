@@ -2,7 +2,7 @@ create table adc_apex_action_types(
   cty_id varchar2(50 char),
   cty_pti_id varchar2(50 char) constraint nn_cty_pti_id not null,
   cty_pmg_name varchar2(3 byte) default 'ADC' constraint chk_cty_pmg_name check(cty_pmg_name = 'ADC'),
-	cty_active &FLAG_TYPE. default &C_TRUE.,
+	cty_active &FLAG_TYPE. default on null &C_TRUE. constraint nn_cty_active not null,
   constraint pk_adc_apex_action_types primary key(cty_id),
   constraint fk_cty_pti_id foreign key(cty_pti_id, cty_pmg_name)
     references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,

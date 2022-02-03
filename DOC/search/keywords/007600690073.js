@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("vis",["Constant"],[["Visual",,[["ADC","Visual State Constants",,,0,"File:core/packages/adc.pks:ADC.Visual_State_Constants","SQLClass:ADC:Visual_State_Constants"]]]]);

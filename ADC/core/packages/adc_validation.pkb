@@ -564,7 +564,7 @@ end;~';
    */
   procedure validate_param_lov(
     p_cpt_id in adc_action_param_types.cpt_id%type,
-    p_cpt_item_type in adc_action_param_types.cpt_item_type%type)
+    p_cpt_cpv_id in adc_action_param_types.cpt_cpv_id%type)
   as
     C_SELECT_LIST constant utl_apex.ora_name_type := 'SELECT_LIST';
     C_VIEW_PATTERN constant utl_apex.ora_name_type := 'ADC_PARAM_LOV_';
@@ -576,9 +576,9 @@ end;~';
     pit.enter_optional(
       p_params => msg_params(
                     msg_param('p_cpt_id', p_cpt_id),
-                    msg_param('p_sp_cpt_item_typept_id', p_cpt_item_type)));
+                    msg_param('p_sp_cpt_cpv_idpt_id', p_cpt_cpv_id)));
 
-    if p_cpt_item_type = C_SELECT_LIST then
+    if p_cpt_cpv_id = C_SELECT_LIST then
       select count(distinct table_name) view_exists, count(*) column_count
         into l_view_exists, l_column_count
         from user_tab_columns

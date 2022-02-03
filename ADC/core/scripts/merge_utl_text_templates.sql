@@ -646,6 +646,9 @@ q'^^',
 q'^set sqlblanklines on\CR\^' || 
 q'^\CR\^' || 
 q'^begin\CR\^' || 
+q'^  -- ACTION_PARAM_VISUAL_TYPES\CR\^' || 
+q'^#ACTION_PARAM_VISUAL_TYPES#\CR\^' || 
+q'^\CR\^' || 
 q'^  -- ACTION_PARAM_TYPES\CR\^' || 
 q'^#ACTION_PARAM_TYPES#\CR\^' || 
 q'^\CR\^' || 
@@ -677,13 +680,31 @@ q'^^',
   utl_text.merge_template(
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
+    p_uttm_mode => 'PARAM_VISUAL_TYPE',
+    p_uttm_text => q'^  adc_admin.merge_action_param_visual_type(\CR\^' || 
+q'^    p_cpv_id => '#CPV_ID#',\CR\^' || 
+q'^    p_cpv_name => '#CPV_NAME#',\CR\^' || 
+q'^    p_cpv_display_name => '#CPV_DISPLAY_NAME#',\CR\^' || 
+q'^    p_cpv_description => #CPV_DESCRIPTION#,\CR\^' || 
+q'^    p_cpv_active => #CPV_ACTIVE#);\CR\^' || 
+q'^^',
+    p_uttm_log_text => q'^^',
+    p_uttm_log_severity => 70
+  );
+
+  utl_text.merge_template(
+    p_uttm_name => 'EXPORT_ACTION_TYPE',
+    p_uttm_type => 'ADC',
     p_uttm_mode => 'PARAM_TYPE',
     p_uttm_text => q'^  adc_admin.merge_action_param_type(\CR\^' || 
 q'^    p_cpt_id => '#CPT_ID#',\CR\^' || 
 q'^    p_cpt_name => '#CPT_NAME#',\CR\^' || 
 q'^    p_cpt_display_name => '#CPT_DISPLAY_NAME#',\CR\^' || 
 q'^    p_cpt_description => #CPT_DESCRIPTION#,\CR\^' || 
-q'^    p_cpt_item_type => '#CPT_ITEM_TYPE#',\CR\^' || 
+q'^    p_cpt_cpv_id => '#CPT_CPV_ID#',\CR\^' || 
+q'^    p_cpt_select_list_query => #CPT_SELECT_LIST_QUERY#,\CR\^' || 
+q'^    p_cpt_select_view_comment => #CPT_SELECT_VIEW_COMMENT#,\CR\^' || 
+q'^    p_cpt_sort_seq => #CPT_SORT_SEQ#,\CR\^' || 
 q'^    p_cpt_active => #CPT_ACTIVE#);\CR\^' || 
 q'^^',
     p_uttm_log_text => q'^^',

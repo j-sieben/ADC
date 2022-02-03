@@ -122,7 +122,7 @@ as
       p_params => msg_params(
                     msg_param('p_cpi_id', p_cpi_id)));       
        
-    select coalesce(cgs_cpi_mandatory_message, to_char(pit.get_message_text(msg.ADC_ITEM_IS_MANDATORY_DEFAULT, msg_args(cgs_cpi_label))))
+    select coalesce(cgs_cpi_mandatory_message, to_char(pit.get_message_text(msg.ADC_ITEM_IS_MANDATORY, msg_args(cgs_cpi_label))))
       into l_mandatory_message
       from adc_rule_group_status
      where cgs_cgr_id = p_cgr_id
@@ -537,7 +537,7 @@ as
     if g_session_values.count > 0 then
       l_item := g_session_values.first;
       while l_item is not null loop
-        l_what := htf.escape_sc(g_session_values(l_item).string_value);
+        l_what := trim('''' from apex_escape.js_literal(g_session_values(l_item).string_value)); --htf.escape_sc(g_session_values(l_item).string_value);
         utl_text.append(
           p_text => l_json, 
           p_chunk => replace(replace(C_PAGE_JSON_ELEMENT, 

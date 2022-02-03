@@ -308,7 +308,9 @@ as
     l_error_json adc_util.max_char;
     l_error_hash binary_integer;
   begin
-    pit.enter_optional;
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_error', p_error.message)));
   
     l_error := p_error;
     begin
@@ -344,7 +346,7 @@ as
       g_param.error_stack(l_error_hash) := l_error_json;
     end if;
     
-    pit.leave_optional;
+    pit.leave_mandatory;
   end add_error;
   
   

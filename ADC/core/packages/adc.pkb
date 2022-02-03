@@ -129,26 +129,6 @@ as
   end handle_bulk_errors;
   
   
-  procedure hide_item(
-    p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
-    p_jquery_selector in varchar2 default null)
-  as
-  begin
-    pit.enter_optional(
-      p_params => msg_params(
-                    msg_param('p_cpi_id', p_cpi_id),
-                    msg_param('p_jquery_selector', p_jquery_selector)));
-    
-    adc_api.execute_action(
-      p_cat_id => 'SET_VISUAL_STATE',
-      p_cpi_id => p_cpi_id,
-      p_param_1 => 'HIDE',
-      p_param_2 => p_jquery_selector);
-      
-    pit.leave_optional;
-  end hide_item;
-  
-  
   procedure initialize_form_region(
     p_static_id in adc_util.ora_name_type)
   as
@@ -526,6 +506,27 @@ as
   end set_region_content;
   
   
+  procedure set_visual_state(
+    p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
+    p_visual_state in varchar2,
+    p_jquery_selector in varchar2 default null)
+  as
+  begin
+    pit.enter_optional(
+      p_params => msg_params(
+                    msg_param('p_cpi_id', p_cpi_id),
+                    msg_param('p_jquery_selector', p_jquery_selector)));
+    
+    adc_api.execute_action(
+      p_cat_id => 'SET_VISUAL_STATE',
+      p_cpi_id => p_cpi_id,
+      p_param_1 => p_visual_state,
+      p_param_2 => p_jquery_selector);
+      
+    pit.leave_optional;
+  end set_visual_state;
+  
+  
   procedure show_hide_item(
     p_jquery_sel_show in varchar2,
     p_jquery_sel_hide in varchar2)
@@ -544,26 +545,6 @@ as
       
     pit.leave_optional;
   end show_hide_item;
-  
-  
-  procedure show_item(
-    p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
-    p_jquery_selector in varchar2 default null)
-  as
-  begin
-    pit.enter_optional(
-      p_params => msg_params(
-                    msg_param('p_cpi_id', p_cpi_id),
-                    msg_param('p_jquery_selector', p_jquery_selector)));
-    
-    adc_api.execute_action(
-      p_cat_id => 'SET_VISUAL_STATE',
-      p_cpi_id => p_cpi_id,
-      p_param_1 => 'SHOW_ENABLE',
-      p_param_2 => p_jquery_selector);
-      
-    pit.leave_optional;
-  end show_item;
   
   
   procedure show_notification(

@@ -498,6 +498,74 @@ as
 
 
   /**
+    Procedure: merge_action_param_visual_type
+      Administration of ACTION PARAMETER VISUAL TYPES.
+      
+      The visual types control how the parameter is displayed on the UI, whether it
+      is shown as a text input field, a select list or a switch.
+                 
+    Parameters:
+      p_cpv_id - ID of the action visual type
+      p_cpv_name - Name of the action visual type
+      p_cpv_display_name - Display name of the action visual type
+      p_cpv_description - Optional description
+      p_cpt_sort_seq - Optional sort criteria
+      p_cpv_active - Flag to indicate whether this action parameter type is used. Defaults to ADC_UTIL.C_TRUE
+   */
+  procedure merge_action_param_visual_type(
+    p_cpv_id in adc_action_param_visual_types_v.cpv_id%type,
+    p_cpv_name in adc_action_param_visual_types_v.cpv_name%type,
+    p_cpv_display_name in adc_action_param_visual_types_v.cpv_display_name%type default null,
+    p_cpv_description in adc_action_param_visual_types_v.cpv_description%type default null,
+    p_cpv_sort_seq in adc_action_param_visual_types_v.cpv_sort_seq%type default 10,
+    p_cpv_active in adc_action_param_visual_types_v.cpv_active%type default ADC_UTIL.C_TRUE);
+
+  /**
+    Procedure: merge_action_param_visual_type
+      Overload with a row record
+                 
+    Parameter:
+      p_row - Row record
+   */
+  procedure merge_action_param_visual_type(
+    p_row in out nocopy adc_action_param_visual_types_v%rowtype);
+
+  /**
+    Procedure: delete_action_param_visual_type
+      Overload with a row record
+                 
+    Parameter:
+      p_cpv_id - ID of the Action Parameter Type to delete
+   */
+  procedure delete_action_param_visual_type(
+    p_cpv_id in adc_action_param_visual_types_v.cpv_id%type);
+
+  /**
+    Procedure: delete_action_param_visual_type
+      Overload with a row record
+                 
+    Parameter:
+      p_row - Row record
+   */
+  procedure delete_action_param_visual_type(
+    p_row in adc_action_param_visual_types_v%rowtype);
+    
+  /**
+    Procedure: validate_action_param_visual_type
+      Validates and Action Parameter Type
+                 
+    Errors:
+      msg.ADC_PARAM_LOV_MISSING - if LOV view is required but missing
+      msg.ADC_PARAM_LOV_INCORRECT - if required LOV view exists but with the wrong structure
+      cpv_ID_MISSING - if parameter P_cpv_ID is NULL
+      cpv_NAME_MISSING - if parameter P_cpv_NAME is NULL
+      cpv_ITEM_TYPE_MISSING - if parameter p_cpv_cpv_id is NULL
+   */
+  procedure validate_action_param_visual_type(
+    p_row in adc_action_param_visual_types_v%rowtype);
+    
+
+  /**
     Procedure: merge_action_param_type
       Administration of ACTION PARAMETER TYPES
                  
@@ -506,9 +574,13 @@ as
       p_cpt_name - Name of the action parameter type
       p_cpt_display_name - Display name of the action parameter type
       p_cpt_description - Optional description
-      p_cpt_item_type - Choice of input item type for this parameter type, one of SELECT_LIST|TEXT_AREA|TEXT
-                        If set to SELECT_LIST, a view of name ADC_PARAM_LOV_<CPT_ID> must be provided to calculate
-                        the available values. This list may be filtered using CGR_ID.
+      p_cpt_cpv_id - Reference to <ADC_ACTION_PARAM_VISUAL_TYPES>, controls how the parameter is displayed visually.
+                     
+                     If set to SELECT_LIST or STATIC_LIST, a view of name ADC_PARAM_LOV_<CPT_ID> must be provided to calculate
+                     the available values. This list may be filtered using CGR_ID.
+      p_cpt_select_list_query - Optional select statement for the parameter value list
+      p_cpt_select_view_comment - Optional comment for the select/static_list view
+      p_cpt_sort_seq - Optional sort criteria
       p_cpt_active - Flag to indicate whether this action parameter type is used. Defaults to ADC_UTIL.C_TRUE
    */
   procedure merge_action_param_type(
@@ -516,7 +588,10 @@ as
     p_cpt_name in adc_action_param_types_v.cpt_name%type,
     p_cpt_display_name in adc_action_param_types_v.cpt_display_name%type default null,
     p_cpt_description in adc_action_param_types_v.cpt_description%type default null,
-    p_cpt_item_type in adc_action_param_types_v.cpt_item_type%type,
+    p_cpt_cpv_id in adc_action_param_types_v.cpt_cpv_id%type,
+    p_cpt_select_list_query in adc_action_param_types_v.cpt_select_list_query%type default null, 
+    p_cpt_select_view_comment in adc_action_param_types_v.cpt_select_view_comment%type default null,
+    p_cpt_sort_seq in adc_action_param_types_v.cpt_sort_seq%type default 10,
     p_cpt_active in adc_action_param_types_v.cpt_active%type default ADC_UTIL.C_TRUE);
 
   /**
@@ -558,7 +633,7 @@ as
       msg.ADC_PARAM_LOV_INCORRECT - if required LOV view exists but with the wrong structure
       CPT_ID_MISSING - if parameter P_CPT_ID is NULL
       CPT_NAME_MISSING - if parameter P_CPT_NAME is NULL
-      CPT_ITEM_TYPE_MISSING - if parameter P_CPT_ITEM_TYPE is NULL
+      CPT_ITEM_TYPE_MISSING - if parameter p_cpt_cpv_id is NULL
    */
   procedure validate_action_param_type(
     p_row in adc_action_param_types_v%rowtype);

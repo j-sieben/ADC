@@ -7,4 +7,4 @@ select cif_id, cif_name, cif_description, a.d cif_actual_page_only, b.d cif_acti
   join adc_ui_lov_yes_no b
     on cif_active = b.r;
 
-comment on table adc_ui_admin_cif is 'View for APEX report page ADMIN_SIF';
+comment on table adc_ui_admin_cif is 'View for APEX report page ADMIN_CIF';

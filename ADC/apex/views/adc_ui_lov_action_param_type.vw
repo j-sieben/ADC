@@ -1,4 +1,4 @@
-create or replace force view ADC_UI_LOV_ACTION_PARAM_TYPE
+create or replace force view adc_ui_lov_action_param_type
 as 
-select CPT_NAME d, CPT_ID r, CPT_ACTIVE
-  from ADC_ACTION_PARAM_TYPES_V;
+select cpt_name d, cpt_id r, cpt_active, cpt_sort_seq
+  from adc_action_param_types_v;

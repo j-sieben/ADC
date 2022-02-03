@@ -100,12 +100,51 @@ as
 
 
   /** 
+    Procedure: process_edit_cpt
+      Method to process page EDIT_cpt
+      
+      Is called to persist user data if the page is submitted. (cpt = ADC Action Parameter Value Type).
+   */
+  procedure process_edit_ctg;
+  
+  
+  /**
+    Procedure: handle_cpv_changed
+      Method is called if the user changes the Action Parameter Visual Type of a Action Parameter.
+      
+      It checks whether the parameter requires a select list or a static list. If so, it 
+      shows and initializes these regions, otherwise it hides the regions.
+   */
+  procedure handle_cpv_changed;
+  
+  
+  /** 
+    Procedure: validate_edit_cpt
+      Method to validate page EDIT_cpt
+      
+      Is called to validate user data if the page is submitted. (cpt = ADC Action Parameter Value Type).
+   */
+  function validate_edit_cpt
+    return boolean;
+
+
+  /** 
     Procedure: process_edit_ctg
       Method to process page EDIT_CTG
       
       Is called to persist user data if the page is submitted. (CTG = ADC Action Type Groups).
    */
-  procedure process_edit_ctg;
+  procedure process_edit_cpt;
+
+
+  /** 
+    Procedure: process_edit_cpt_static_list
+      Method to process page detail form R5_CPT_STATIC_LIST_FORM
+      
+      Is called to persist user data if the page is submitted. (CTG = ADC Action Type Groups).
+   */
+  procedure process_edit_cpt_static_list;
+
 
   /** 
     Procedure: set_action_export_cgr

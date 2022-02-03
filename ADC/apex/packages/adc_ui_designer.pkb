@@ -136,16 +136,10 @@ as
     Variables: State variables
       g_environment - Variable of type <environment_rec> to hold all relevant attributes of the actual designer state.
       g_page_values - PL/SQL table to hold key value pairs for page items (key) and their values
-      g_rule_row - type save record for a Rule
-      g_rule_action_row - type save record for a Rule Action
-      g_apex_action_row - type safe record for an APEX Action
    */
   g_environment environment_rec;
   
   g_page_values utl_apex.page_value_t;
-  g_apex_action_row adc_apex_actions_v%rowtype;
-  g_rule_action_row adc_rule_actions%rowtype;
-  g_rule_row adc_rules%rowtype;
 
   g_cai_list char_table;
   g_form_item_list form_item_list_tab;
@@ -167,35 +161,36 @@ as
       Please note that the use of a form region or an editable interactive grid requires the 
       mandatory identification with a static ID so that the method can uniquely identify the region.
    */
-  procedure copy_apex_action
+  procedure copy_apex_action(
+    p_row in out nocopy adc_apex_actions_v%rowtype)
   as
   begin
     pit.enter_detailed('copy_apex_action');
     
     g_page_values := utl_apex.get_page_values(C_REGION_CAA_FORM);
-    g_apex_action_row.caa_id := to_number(utl_apex.get(g_page_values, 'CAA_ID'), 'fm9999999999990');
-    g_apex_action_row.caa_cgr_id := to_number(utl_apex.get(g_page_values, 'CAA_CGR_ID'), 'fm9999999999990');
-    g_apex_action_row.caa_cty_id := utl_apex.get(g_page_values, 'CAA_CTY_ID');
-    g_apex_action_row.caa_name := utl_apex.get(g_page_values, 'CAA_NAME');
-    g_apex_action_row.caa_label := utl_apex.get(g_page_values, 'CAA_LABEL');
-    g_apex_action_row.caa_context_label := utl_apex.get(g_page_values, 'CAA_CONTEXT_LABEL');
-    g_apex_action_row.caa_icon := utl_apex.get(g_page_values, 'CAA_ICON');
-    g_apex_action_row.caa_icon_type := utl_apex.get(g_page_values, 'CAA_ICON_TYPE');
-    g_apex_action_row.caa_title := utl_apex.get(g_page_values, 'CAA_TITLE');
-    g_apex_action_row.caa_shortcut := utl_apex.get(g_page_values, 'CAA_SHORTCUT');
-    g_apex_action_row.caa_initially_disabled := utl_apex.get(g_page_values, 'CAA_INITIALLY_DISABLED');
-    g_apex_action_row.caa_initially_hidden := utl_apex.get(g_page_values, 'CAA_INITIALLY_HIDDEN');
-    g_apex_action_row.caa_href := utl_apex.get(g_page_values, 'CAA_HREF');
-    g_apex_action_row.caa_action := utl_apex.get(g_page_values, 'CAA_ACTION');
-    g_apex_action_row.caa_on_label := utl_apex.get(g_page_values, 'CAA_ON_LABEL');
-    g_apex_action_row.caa_off_label := utl_apex.get(g_page_values, 'CAA_OFF_LABEL');
-    g_apex_action_row.caa_get := utl_apex.get(g_page_values, 'CAA_GET');
-    g_apex_action_row.caa_set := utl_apex.get(g_page_values, 'CAA_SET');
-    g_apex_action_row.caa_choices := utl_apex.get(g_page_values, 'CAA_CHOICES');
-    g_apex_action_row.caa_label_classes := utl_apex.get(g_page_values, 'CAA_LABEL_CLASSES');
-    g_apex_action_row.caa_label_start_classes := utl_apex.get(g_page_values, 'CAA_LABEL_START_CLASSES');
-    g_apex_action_row.caa_label_end_classes := utl_apex.get(g_page_values, 'CAA_LABEL_END_CLASSES');
-    g_apex_action_row.caa_item_wrap_class := utl_apex.get(g_page_values, 'CAA_ITEM_WRAP_CLASS');
+    p_row.caa_id := to_number(utl_apex.get(g_page_values, 'CAA_ID'), 'fm9999999999990');
+    p_row.caa_cgr_id := to_number(utl_apex.get(g_page_values, 'CAA_CGR_ID'), 'fm9999999999990');
+    p_row.caa_cty_id := utl_apex.get(g_page_values, 'CAA_CTY_ID');
+    p_row.caa_name := utl_apex.get(g_page_values, 'CAA_NAME');
+    p_row.caa_label := utl_apex.get(g_page_values, 'CAA_LABEL');
+    p_row.caa_context_label := utl_apex.get(g_page_values, 'CAA_CONTEXT_LABEL');
+    p_row.caa_icon := utl_apex.get(g_page_values, 'CAA_ICON');
+    p_row.caa_icon_type := utl_apex.get(g_page_values, 'CAA_ICON_TYPE');
+    p_row.caa_title := utl_apex.get(g_page_values, 'CAA_TITLE');
+    p_row.caa_shortcut := utl_apex.get(g_page_values, 'CAA_SHORTCUT');
+    p_row.caa_initially_disabled := utl_apex.get(g_page_values, 'CAA_INITIALLY_DISABLED');
+    p_row.caa_initially_hidden := utl_apex.get(g_page_values, 'CAA_INITIALLY_HIDDEN');
+    p_row.caa_href := utl_apex.get(g_page_values, 'CAA_HREF');
+    p_row.caa_action := utl_apex.get(g_page_values, 'CAA_ACTION');
+    p_row.caa_on_label := utl_apex.get(g_page_values, 'CAA_ON_LABEL');
+    p_row.caa_off_label := utl_apex.get(g_page_values, 'CAA_OFF_LABEL');
+    p_row.caa_get := utl_apex.get(g_page_values, 'CAA_GET');
+    p_row.caa_set := utl_apex.get(g_page_values, 'CAA_SET');
+    p_row.caa_choices := utl_apex.get(g_page_values, 'CAA_CHOICES');
+    p_row.caa_label_classes := utl_apex.get(g_page_values, 'CAA_LABEL_CLASSES');
+    p_row.caa_label_start_classes := utl_apex.get(g_page_values, 'CAA_LABEL_START_CLASSES');
+    p_row.caa_label_end_classes := utl_apex.get(g_page_values, 'CAA_LABEL_END_CLASSES');
+    p_row.caa_item_wrap_class := utl_apex.get(g_page_values, 'CAA_ITEM_WRAP_CLASS');
 
     utl_text.string_to_table(utl_apex.get(g_page_values, 'CAA_CAI_LIST'), g_cai_list);
 
@@ -203,25 +198,27 @@ as
   end copy_apex_action;
   
   
-  procedure copy_rule
+  procedure copy_rule(
+    p_row in out nocopy adc_rules%rowtype)
   as
   begin
     pit.enter_detailed('copy_rule');
 
     g_page_values := utl_apex.get_page_values(C_REGION_CRU_FORM);
-    g_rule_row.cru_id := to_number(utl_apex.get(g_page_values, 'CRU_ID'), '999990');
-    g_rule_row.cru_cgr_id := coalesce(to_number(utl_apex.get(g_page_values, 'CRU_CGR_ID'), '999990'), g_environment.cgr_id);
-    g_rule_row.cru_sort_seq := to_number(utl_apex.get(g_page_values, 'CRU_SORT_SEQ'), '999990');
-    g_rule_row.cru_name := utl_apex.get(g_page_values, 'CRU_NAME');
-    g_rule_row.cru_condition := utl_apex.get(g_page_values, 'CRU_CONDITION');
-    g_rule_row.cru_fire_on_page_load := utl_apex.get(g_page_values, 'CRU_FIRE_ON_PAGE_LOAD');
-    g_rule_row.cru_active := utl_apex.get(g_page_values, 'CRU_ACTIVE');
+    p_row.cru_id := to_number(utl_apex.get(g_page_values, 'CRU_ID'), '999990');
+    p_row.cru_cgr_id := coalesce(to_number(utl_apex.get(g_page_values, 'CRU_CGR_ID'), '999990'), g_environment.cgr_id);
+    p_row.cru_sort_seq := to_number(utl_apex.get(g_page_values, 'CRU_SORT_SEQ'), '999990');
+    p_row.cru_name := utl_apex.get(g_page_values, 'CRU_NAME');
+    p_row.cru_condition := utl_apex.get(g_page_values, 'CRU_CONDITION');
+    p_row.cru_fire_on_page_load := utl_apex.get(g_page_values, 'CRU_FIRE_ON_PAGE_LOAD');
+    p_row.cru_active := utl_apex.get(g_page_values, 'CRU_ACTIVE');
 
     pit.leave_detailed;
   end copy_rule;
 
 
-  procedure copy_rule_action
+  procedure copy_rule_action(
+    p_row in out nocopy adc_rule_actions%rowtype)
   as
     l_param_name_1 adc_util.ora_name_type;
     l_param_name_2 adc_util.ora_name_type;
@@ -230,25 +227,26 @@ as
     pit.enter_detailed('copy_rule_action');
 
     g_page_values := utl_apex.get_page_values(C_REGION_CRA_FORM);
-    g_rule_action_row.cra_id := to_number(utl_apex.get(g_page_values, 'CRA_ID'), '999990');
-    g_rule_action_row.cra_cgr_id := coalesce(to_number(utl_apex.get(g_page_values, 'CRA_CGR_ID'), '999990'), g_environment.cgr_id);
-    g_rule_action_row.cra_cru_id := to_number(utl_apex.get(g_page_values, 'CRA_CRU_ID'), '999990');
-    g_rule_action_row.cra_sort_seq := to_number(utl_apex.get(g_page_values, 'CRA_SORT_SEQ'), '999990');
-    g_rule_action_row.cra_cpi_id := utl_apex.get(g_page_values, 'CRA_CPI_ID');
-    g_rule_action_row.cra_cat_id := utl_apex.get(g_page_values, 'CRA_CAT_ID');
-    g_rule_action_row.cra_active := utl_apex.get(g_page_values, 'CRA_ACTIVE');
-    g_rule_action_row.cra_on_error := utl_apex.get(g_page_values, 'CRA_ON_ERROR');
-    g_rule_action_row.cra_raise_recursive := utl_apex.get(g_page_values, 'CRA_RAISE_RECURSIVE');
-    g_rule_action_row.cra_comment := utl_apex.get(g_page_values, 'CRA_COMMENT');
+    p_row.cra_id := to_number(utl_apex.get(g_page_values, 'CRA_ID'), '999990');
+    p_row.cra_cgr_id := coalesce(to_number(utl_apex.get(g_page_values, 'CRA_CGR_ID'), '999990'), g_environment.cgr_id);
+    p_row.cra_cru_id := to_number(utl_apex.get(g_page_values, 'CRA_CRU_ID'), '999990');
+    p_row.cra_sort_seq := to_number(utl_apex.get(g_page_values, 'CRA_SORT_SEQ'), '999990');
+    p_row.cra_cpi_id := utl_apex.get(g_page_values, 'CRA_CPI_ID');
+    p_row.cra_cat_id := utl_apex.get(g_page_values, 'CRA_CAT_ID');
+    p_row.cra_active := utl_apex.get(g_page_values, 'CRA_ACTIVE');
+    p_row.cra_on_error := utl_apex.get(g_page_values, 'CRA_ON_ERROR');
+    p_row.cra_raise_recursive := utl_apex.get(g_page_values, 'CRA_RAISE_RECURSIVE');
+    p_row.cra_comment := utl_apex.get(g_page_values, 'CRA_COMMENT');
 
     -- Get the required parameter field
     begin
       with data as (
            select cap_cat_id, cap_sort_seq, 
                   'CRA_PARAM_' ||
-                  case cpt_item_type
+                  case cpt_cpv_id
                     when 'TEXT' then null
                     when 'SELECT_LIST' then 'LOV_'
+                    when 'STATIC_LIST' then 'LOV_'
                     when 'TEXT_AREA' then 'AREA_'
                     when 'SWITCH' then 'SWITCH_'
                   end || cap_sort_seq item_name
@@ -260,16 +258,16 @@ as
              max(decode(cap_sort_seq, 3, item_name)) item_name_3
         into l_param_name_1, l_param_name_2, l_param_name_3
         from data
-       where cap_cat_id = g_rule_action_row.cra_cat_id
+       where cap_cat_id = p_row.cra_cat_id
        group by cap_cat_id;
     exception
       when no_data_found then
         null; -- No parameter for action type, ignore
     end;
 
-    g_rule_action_row.cra_param_1 := case when l_param_name_1 is not null then utl_apex.get(g_page_values, l_param_name_1) end;
-    g_rule_action_row.cra_param_2 := case when l_param_name_2 is not null then utl_apex.get(g_page_values, l_param_name_2) end;
-    g_rule_action_row.cra_param_3 := case when l_param_name_3 is not null then utl_apex.get(g_page_values, l_param_name_3) end;    
+    p_row.cra_param_1 := case when l_param_name_1 is not null then utl_apex.get(g_page_values, l_param_name_1) end;
+    p_row.cra_param_2 := case when l_param_name_2 is not null then utl_apex.get(g_page_values, l_param_name_2) end;
+    p_row.cra_param_3 := case when l_param_name_3 is not null then utl_apex.get(g_page_values, l_param_name_3) end;    
 
     pit.leave_detailed;
   end copy_rule_action;
@@ -554,46 +552,65 @@ as
    */
   procedure process_page
   as
+    l_cgr_id adc_rule_groups.cgr_id%type := utl_apex.get_number('P13_CGR_ID');
+    l_apex_row adc_apex_actions_v%rowtype;
+    l_rule_row adc_rules%rowtype;
+    l_action_row adc_rule_actions%rowtype;
+    l_selected_id adc_util.ora_name_type;
   begin
     pit.enter_mandatory;
+    
+    case g_environment.action_mode
+      when C_MODE_CRU then
+        copy_rule(l_rule_row);
+      when C_MODE_CRA then
+        copy_rule_action(l_action_row);
+      when C_MODE_CAA then
+        copy_apex_action(l_apex_row);
+      else
+        null;
+    end case;
 
     case g_environment.action 
       when C_ACTION_UPDATE then
         pit.info(msg.ADC_UI_ACTION_REQUESTED, msg_args(C_ACTION_UPDATE, g_environment.target_mode));
         case g_environment.target_mode
           when C_MODE_CRU then
-            adc_admin.merge_rule(g_rule_row);
+            adc_admin.merge_rule(l_rule_row);
             adc.set_item(
               p_cpi_id => C_ITEM_CRU_ID,
-              p_item_value => g_rule_row.cru_id);
+              p_item_value => l_rule_row.cru_id);
+            l_selected_id := C_MODE_CRU || '_' || l_rule_row.cru_id;
           when C_MODE_CRA then
-            adc_admin.merge_rule_action(g_rule_action_row);
+            adc_admin.merge_rule_action(l_action_row);
             adc.set_item(
               p_cpi_id => C_ITEM_CRA_ID,
-              p_item_value => g_rule_action_row.cra_id);
+              p_item_value => l_action_row.cra_id);
+            l_selected_id := C_MODE_CRA || '_' || l_action_row.cra_id;
           when C_MODE_CAA then
-            adc_admin.merge_apex_action(g_apex_action_row, g_cai_list);
+            adc_admin.merge_apex_action(l_apex_row, g_cai_list);
             adc.set_item(
               p_cpi_id => C_ITEM_CAA_ID,
-              p_item_value => g_apex_action_row.caa_id);
+              p_item_value => l_apex_row.caa_id);
+            l_selected_id := C_MODE_CAA || '_' || l_apex_row.caa_id;
           else
             null;
         end case;
         -- Transaction control, because the action is called via AJAX
         adc.show_notification(msg.ADC_UI_CHANGES_SAVED);
+        adc.set_item(
+          p_cpi_id => C_ITEM_SELECTED_NODE,
+          p_item_value => l_selected_id);
         commit;
       when C_ACTION_DELETE then
         pit.info(msg.ADC_UI_ACTION_REQUESTED, msg_args(C_ACTION_DELETE, g_environment.action_mode));
         case g_environment.action_mode
           when C_MODE_CRU then
-            copy_rule;
-            adc_admin.delete_rule(g_rule_row);
+            adc_admin.delete_rule(l_rule_row);
           when C_MODE_CRA then
-            copy_rule_action;
-            adc_admin.delete_rule_action(g_rule_action_row);
+            adc_admin.delete_rule_action(l_action_row);
           when C_MODE_CAA then
-            copy_apex_action;
-            adc_admin.delete_apex_action(g_apex_action_row);
+            adc_admin.delete_apex_action(l_apex_row);
           else
             null;
         end case;
@@ -608,7 +625,14 @@ as
     end case;
 
     -- in any case, propagate rule change to reflect changes
-    adc_admin.propagate_rule_change(g_rule_row.cru_cgr_id);
+    begin
+      adc_admin.propagate_rule_change(l_cgr_id);
+    exception
+      when others then
+        -- ignore any errors here as these can occur if the page has changed
+        -- and has made a rule group invalid. Display the errors instead.
+        null;
+    end;
 
     adc.refresh_item(
       p_cpi_id => C_REGION_HIERARCHY,
@@ -648,6 +672,7 @@ as
    */
   procedure set_id_values
   as
+    l_cgr_id adc_rule_groups.cgr_id%type;
     l_cru_id adc_rules.cru_id%type;
   begin
     pit.enter_optional('set_id_values');
@@ -679,7 +704,11 @@ as
     end case;
     
     -- Compare CGR_ID with session state. If changed, refresh rule report
-    if coalesce(adc_api.get_number(C_ITEM_CGR_ID), 0) != g_environment.cgr_id then   
+    l_cgr_id := coalesce(adc_api.get_number(C_ITEM_CGR_ID), 0);
+    if l_cgr_id != g_environment.cgr_id then
+      -- Make sure that the rule group is based on actual application data
+      adc_admin.propagate_rule_change(l_cgr_id);
+      -- control page
       adc.set_item(
         p_cpi_id => C_ITEM_CGR_ID,
         p_item_value => g_environment.cgr_id);
@@ -855,7 +884,7 @@ as
                from dual)
       select /*+ no_merge (p) */
              sat.cat_id, cat_cif_id, 
-             cpt_id, cpt_item_type,
+             cpt_id, cpt_cpv_id,
              cap_sort_seq, cap_mandatory, 
              coalesce(
                case cap_sort_seq
@@ -865,8 +894,9 @@ as
                end, cap_default) cap_value,
              coalesce(cap_display_name, cpt_name) cpt_name,
              utl_apex.get_page_prefix || 'CRA_PARAM_' || 
-             case cpt_item_type
+             case cpt_cpv_id
                when 'SELECT_LIST' then 'LOV_'
+               when 'STATIC_LIST' then 'LOV_'
                when 'TEXT_AREA' then 'AREA_'
                when 'SWITCH' then 'SWITCH_'
              end || cap_sort_seq cap_page_item
@@ -900,13 +930,16 @@ as
     l_mandatory_message := pit.get_message_text(msg.ADC_ITEM_IS_MANDATORY);
 
     -- Hide all parameter regions
-    adc.hide_item(
-      p_jquery_selector => C_PARAM_SELECTOR);
+    adc.set_visual_state(
+      p_jquery_selector => C_PARAM_SELECTOR,
+      p_visual_state => adc.C_HIDE);
 
     -- Adjust Parameter settings to show only required parameters in the correct format
     for param in action_type_cur(p_cra_id, p_cat_id) loop
       -- Show parameter region
-      adc.show_item(C_REGION_PREFIX || 'PARAMETER_' || param.cap_sort_seq);   
+      adc.set_visual_state(
+        p_cpi_id => C_REGION_PREFIX || 'PARAMETER_' || param.cap_sort_seq,
+        p_visual_state => adc.C_SHOW_ENABLE);   
       adc.set_item_label(param.cap_page_item, param.cpt_name);    
 
       -- First set items mandatory to avoid endless loops if a select list refreshes
@@ -914,13 +947,15 @@ as
         adc.set_mandatory(
            p_cpi_id => param.cap_page_item,
            p_msg_text => replace(l_mandatory_message, '#LABEL#', param.cpt_name));
-       else
-         adc.set_optional(p_cpi_id => param.cap_page_item);
-         adc.show_item(param.cap_page_item);
+      else
+        adc.set_optional(p_cpi_id => param.cap_page_item);
+        adc.set_visual_state(
+          p_cpi_id => param.cap_page_item,
+          p_visual_state => adc.C_SHOW_ENABLE);   
       end if;
 
      -- set values, if required after refresh
-     if param.cpt_item_type = 'SELECT_LIST' then
+     if param.cpt_cpv_id in ('SELECT_LIST', 'STATIC_LIST') then
        adc.set_item(
          p_cpi_id => C_PAGE_PREFIX || 'CRA_LOV_PARAM_' || param.cap_sort_seq,
          p_item_value => param.cpt_id);
@@ -993,7 +1028,7 @@ select null caa_id, '#CGR_ID#' caa_cgr_id, 'ACTION' caa_cty_id, null caa_name,
 
   /** 
     Procedure: show_form_cgr
-      Method to show and populate a ADC Rule Group form of the designer and populate it with the values selected.
+      Method to show and populate an ADC Rule Group form of the designer and populate it with the values selected.
    */
   procedure show_form_cgr
   as
@@ -1114,7 +1149,7 @@ select null #PRE#CRA_ID, '#CGR_ID#' #PRE#CRA_CGR_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
   as
     l_statement adc_util.max_char := q'^
 select null #PRE#CRU_ID, '#CGR_ID#' #PRE#CRU_CGR_ID, '#SORT_SEQ#' #PRE#CRU_SORT_SEQ,
-       null #PRE#CRU_NAME, null #PRE#CCRU_CONDITION,
+       null #PRE#CRU_NAME, null #PRE#CRU_CONDITION,
        adc_util.C_TRUE #PRE#CRU_ACTIVE, adc_util.C_FALSE #PRE#CRU_FIRE_ON_PAGE_LOAD
   from dual
     ^';
@@ -1158,24 +1193,27 @@ select null #PRE#CRU_ID, '#CGR_ID#' #PRE#CRU_CGR_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
    */
   procedure validate_page
   as
+    l_apex_row adc_apex_actions_v%rowtype;
+    l_rule_row adc_rules%rowtype;
+    l_action_row adc_rule_actions%rowtype;
   begin
     pit.enter_mandatory;
 
     case g_environment.action_mode
       when C_MODE_CRU then
-        copy_rule;
+        copy_rule(l_rule_row);
         pit.start_message_collection;
-        adc_admin.validate_rule(g_rule_row);
+        adc_admin.validate_rule(l_rule_row);
         pit.stop_message_collection;
       when C_MODE_CRA then
-        copy_rule_action;
+        copy_rule_action(l_action_row);
         pit.start_message_collection;
-        adc_admin.validate_rule_action(g_rule_action_row);
+        adc_admin.validate_rule_action(l_action_row);
         pit.stop_message_collection;
       when C_MODE_CAA then
-        copy_apex_action;
+        copy_apex_action(l_apex_row);
         pit.start_message_collection;
-        adc_admin.validate_apex_action(g_apex_action_row);
+        adc_admin.validate_apex_action(l_apex_row);
         pit.stop_message_collection;
       else
         null;
@@ -1320,12 +1358,16 @@ select null #PRE#CRU_ID, '#CGR_ID#' #PRE#CRU_CGR_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
   
   /** 
     Function: hanlde_cat_changed
-      See <ADC_UI_DESIGNER.get_lov_sql>
+      See <ADC_UI_DESIGNER.handle_cat_changed>
    */
   procedure handle_cat_changed
   as
   begin
+    pit.enter_mandatory;
+    
     show_form_cra;
+    
+    pit.leave_mandatory;
   end handle_cat_changed;
 
 
@@ -1357,13 +1399,14 @@ select null #PRE#CRU_ID, '#CGR_ID#' #PRE#CRU_CGR_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
    */
   procedure validate_rule_condition
   as
+    l_rule_row adc_rules%rowtype;
   begin
     pit.enter_mandatory;
     
-    copy_rule;
+    copy_rule(l_rule_row);
 
     pit.start_message_collection;
-    adc_admin.validate_rule_condition(g_rule_row);
+    adc_admin.validate_rule_condition(l_rule_row);
     pit.stop_message_collection;
 
     pit.leave_mandatory;

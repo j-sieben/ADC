@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("c_h",["Function"],[["C_HASH",,[["ADC_UTIL",,,,0,"File:core/packages/adc_util.pks:ADC_UTIL.C_HASH","SQLClass:ADC_UTIL:C_HASH"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("c_h",["Function","Constant"],[["C_HASH",,[["ADC_UTIL",,,,0,"File:core/packages/adc_util.pks:ADC_UTIL.C_HASH","SQLClass:ADC_UTIL:C_HASH"]]],["C_HIDE",,[["ADC",,,,1,"File:core/packages/adc.pks:ADC.C_HIDE","SQLClass:ADC:C_HIDE"]]]]);

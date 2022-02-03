@@ -28,3 +28,4 @@ select mda_alm_id mda_actual_mode, mda_ald_id mda_actual_id, mda_comment,
     on case mda_delete_button_visible when adc_util.C_TRUE then mda_alm_id else 'NO' end || '_DELETE_BUTTON' = d.pti_id;
     
     
+comment on table adc_bl_designer_action_v is 'Decision table to decide upon the visual status of the apex actions of the ADC designer';

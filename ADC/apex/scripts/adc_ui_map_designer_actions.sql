@@ -14,9 +14,9 @@ using (select 'CRU' mda_alm_id, 'show' mda_ald_id, 'Rule selected from hierarchy
         select 'CGR', 'delete-action', 'Rule deleted', 'CGR_ID', 'N', 'Y', 'CRU', 'N', 'N', null, null, 'N', null from dual union all
         select 'CGR', 'cancel-action', 'Rule edit cancelled', 'CGR_ID', 'N', 'Y', 'CRU', 'N', 'N', null, null, 'N', null from dual
         union all
-        select 'CRA', 'show', 'Rule Action selected from hierarchy', 'CRA_ID', 'Y', 'N', null, 'Y', 'Y', 'CRA', 'CRU', 'Y', 'CRU' from dual union all
+        select 'CRA', 'show', 'Rule Action selected from hierarchy', 'CRA_ID', 'Y', 'Y', 'CRA', 'Y', 'Y', 'CRA', 'CRU', 'Y', 'CRU' from dual union all
         select 'CRA', 'create-action', 'Rule Action created from CRU', null, 'Y', 'N', null, 'Y', 'N', null, null, 'Y', 'CRU' from dual union all
-        select 'CRA', 'update-action', 'Rule Action saved', 'CRA_ID', 'Y', 'N', null, 'Y', 'Y', 'CRA', 'CRU', 'Y', 'CRU' from dual
+        select 'CRA', 'update-action', 'Rule Action saved', 'CRA_ID', 'Y', 'Y', 'CRA', 'Y', 'Y', 'CRA', 'CRU', 'Y', 'CRU' from dual
         union all
         select 'CAG', 'show', 'Page commands headline selected from hierarchy', 'CGR_ID', 'N', 'Y', 'CAA', 'N', 'N', null, null, 'N', null from dual union all
         select 'CAG', 'delete-action', 'Page Command deleted', 'CGR_ID', 'N', 'Y', 'CAA', 'N', 'N', null, null, 'N', null from dual union all

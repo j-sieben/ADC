@@ -861,9 +861,6 @@ as
   begin      
     pit.enter_mandatory;
     
-    adc_page_state.reset;
-    adc_response.initialize_response(g_param.initialize_mode, g_param.cgr_id);
-    
     if g_param.firing_event = adc_util.C_INITIALIZE_EVENT then
       -- Initialize session state with page item default values
       process_initialization_code;
@@ -942,7 +939,9 @@ as
     g_param.event_data := p_event_data;
     g_param.stop_flag := adc_util.C_FALSE;
     g_param.has_errors := false;
-    adc_recursion_stack.reset(g_param.cgr_id, g_param.firing_item);
+    adc_recursion_stack.reset(g_param.cgr_id, g_param.firing_item);    
+    adc_page_state.reset;
+    adc_response.initialize_response(g_param.initialize_mode, g_param.cgr_id);
     
     -- Any firing item that may have a page state value needs to be checked whether it is
     -- - possible to convert it to the required data type
@@ -971,8 +970,7 @@ as
       l_message := pit.get_active_message;
       register_error(
         p_cpi_id => g_param.firing_item, 
-        p_error_msg => l_message.message_text,
-        p_internal_error => null);
+        p_message_name => msg.ADC_ITEM_IS_MANDATORY);
       stop_rule;
       pit.leave_mandatory;
   end read_settings;

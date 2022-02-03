@@ -30,6 +30,8 @@ as
   C_APOS constant char(1 byte) := chr(39);
   C_PIPE constant char(1 byte) := '|';
   
+  C_CPT_VIEW_NAME_PREFIX constant adc_util.ora_name_type := 'ADC_PARAM_LOV_';
+  
 
   /* Globale Variablen */
   g_offset binary_integer;
@@ -1652,6 +1654,140 @@ as
   
   
   /**
+    Procedure: merge_action_param_visual_type
+      See <ADC_ADMIN.merge_action_param_visual_type>
+   */ 
+  procedure merge_action_param_visual_type(
+    p_cpv_id in adc_action_param_visual_types_v.cpv_id%type,
+    p_cpv_name in adc_action_param_visual_types_v.cpv_name%type,
+    p_cpv_display_name in adc_action_param_visual_types_v.cpv_display_name%type default null,
+    p_cpv_description in adc_action_param_visual_types_v.cpv_description%type default null,
+    p_cpv_sort_seq in adc_action_param_visual_types_v.cpv_sort_seq%type default 10,
+    p_cpv_active in adc_action_param_visual_types_v.cpv_active%type default ADC_UTIL.C_TRUE)
+  as
+    l_row adc_action_param_visual_types_v%rowtype;
+  begin
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_cpv_id', p_cpv_id),
+                    msg_param('p_cpv_name', p_cpv_name),
+                    msg_param('p_cpv_display_name', p_cpv_display_name),
+                    msg_param('p_cpv_description', p_cpv_description),
+                    msg_param('p_cpv_sort_seq', p_cpv_sort_seq),
+                    msg_param('p_cpv_active', p_cpv_active)));
+                    
+    l_row.cpv_id := p_cpv_id;
+    l_row.cpv_name := p_cpv_name;
+    l_row.cpv_display_name := p_cpv_display_name;
+    l_row.cpv_description := utl_text.unwrap_string(p_cpv_description);
+    l_row.cpv_sort_seq := p_cpv_sort_seq;
+    l_row.cpv_active := adc_util.get_boolean(p_cpv_active);
+    
+    merge_action_param_visual_type(l_row);
+          
+    pit.leave_mandatory;
+  end merge_action_param_visual_type;
+
+
+  /**
+    Procedure: merge_action_param_visual_type
+      See <ADC_ADMIN.merge_action_param_visual_type>
+   */ 
+  procedure merge_action_param_visual_type(
+    p_row in out nocopy adc_action_param_visual_types_v%rowtype)
+  as
+    l_pti_id pit_translatable_item.pti_id%type;
+  begin
+    pit.enter_mandatory;
+    
+    validate_action_param_visual_type(p_row);
+    
+    -- maintain translatable item
+    l_pti_id := 'CPV_' || p_row.cpv_id;
+    
+    pit_admin.merge_translatable_item(
+      p_pti_id => l_pti_id,
+      p_pti_pml_name => null,
+      p_pti_pmg_name => C_ADC,
+      p_pti_name => p_row.cpv_name,
+      p_pti_display_name => p_row.cpv_display_name,
+      p_pti_description => p_row.cpv_description);
+
+    -- store local data
+    merge into adc_action_param_visual_types t
+    using (select p_row.cpv_id cpv_id,
+                  l_pti_id cpv_pti_id,
+                  C_ADC cpv_pmg_name,
+                  p_row.cpv_sort_seq cpv_sort_seq,
+                  p_row.cpv_active cpv_active
+             from dual) s
+       on (t.cpv_id = s.cpv_id)
+     when matched then update set
+          t.cpv_sort_seq = s.cpv_sort_seq,
+          t.cpv_active = s.cpv_active
+     when not matched then insert(cpv_id, cpv_pti_id, cpv_pmg_name, cpv_sort_seq, cpv_active)
+          values(s.cpv_id, s.cpv_pti_id, s.cpv_pmg_name, s.cpv_sort_seq, s.cpv_active);
+    
+    pit.leave_mandatory;
+  end merge_action_param_visual_type;
+
+
+  /**
+    Procedure: delete_action_param_visual_type
+      See <ADC_ADMIN.delete_action_param_visual_type>
+   */ 
+  procedure delete_action_param_visual_type(
+    p_cpv_id in adc_action_param_visual_types_v.cpv_id%type)
+  as  
+    l_row adc_action_param_visual_types_v%rowtype;
+  begin
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_cpv_id', p_cpv_id)));
+    
+    l_row.cpv_id := p_cpv_id;
+    
+    delete_action_param_visual_type(l_row);
+    
+    pit.leave_mandatory;
+  end delete_action_param_visual_type;
+
+
+  /**
+    Procedure: delete_action_param_visual_type
+      See <ADC_ADMIN.delete_action_param_visual_type>
+   */ 
+  procedure delete_action_param_visual_type(
+    p_row in adc_action_param_visual_types_v%rowtype)
+  as
+  begin
+    pit.enter_mandatory;
+                    
+    delete from adc_action_param_visual_types
+     where cpv_id = p_row.cpv_id;
+    
+    pit.leave_mandatory;
+  end delete_action_param_visual_type;
+  
+  
+  /**
+    Procedure: validate_action_param_visual_type
+      See <ADC_ADMIN.validate_action_param_visual_type>
+   */ 
+  procedure validate_action_param_visual_type(
+    p_row in adc_action_param_visual_types_v%rowtype)
+  as
+  begin
+    pit.enter_mandatory;
+    
+    pit.assert_not_null(p_row.cpv_id, msg.ADC_PARAM_MISSING, p_error_code => 'CPV_ID_MISSING');
+    pit.assert_not_null(p_row.cpv_name, msg.ADC_PARAM_MISSING, p_error_code => 'CPV_NAME_MISSING');
+    
+    pit.leave_mandatory;
+  end validate_action_param_visual_type;
+  
+  
+  /**
     Procedure: merge_action_param_type
       See <ADC_ADMIN.merge_action_param_type>
    */ 
@@ -1660,7 +1796,10 @@ as
     p_cpt_name in adc_action_param_types_v.cpt_name%type,
     p_cpt_display_name in adc_action_param_types_v.cpt_display_name%type default null,
     p_cpt_description in adc_action_param_types_v.cpt_description%type default null,
-    p_cpt_item_type in adc_action_param_types_v.cpt_item_type%type,
+    p_cpt_cpv_id in adc_action_param_types_v.cpt_cpv_id%type,
+    p_cpt_select_list_query in adc_action_param_types_v.cpt_select_list_query%type default null, 
+    p_cpt_select_view_comment in adc_action_param_types_v.cpt_select_view_comment%type default null,
+    p_cpt_sort_seq in adc_action_param_types_v.cpt_sort_seq%type default 10,
     p_cpt_active in adc_action_param_types_v.cpt_active%type default ADC_UTIL.C_TRUE)
   as
     l_row adc_action_param_types_v%rowtype;
@@ -1671,14 +1810,20 @@ as
                     msg_param('p_cpt_name', p_cpt_name),
                     msg_param('p_cpt_display_name', p_cpt_display_name),
                     msg_param('p_cpt_description', p_cpt_description),
-                    msg_param('p_cpt_item_type', p_cpt_item_type),
+                    msg_param('p_cpt_cpv_id', p_cpt_cpv_id),
+                    msg_param('p_cpt_select_list_query', p_cpt_select_list_query),
+                    msg_param('p_cpt_select_view_comment', p_cpt_select_view_comment),
+                    msg_param('p_cpt_sort_seq', p_cpt_sort_seq),
                     msg_param('p_cpt_active', p_cpt_active)));
                     
     l_row.cpt_id := p_cpt_id;
     l_row.cpt_name := p_cpt_name;
     l_row.cpt_display_name := p_cpt_display_name;
     l_row.cpt_description := utl_text.unwrap_string(p_cpt_description);
-    l_row.cpt_item_type := p_cpt_item_type;
+    l_row.cpt_cpv_id := p_cpt_cpv_id;
+    l_row.cpt_select_list_query := utl_text.unwrap_string(p_cpt_select_list_query);
+    l_row.cpt_select_view_comment := utl_text.unwrap_string(p_cpt_select_view_comment);
+    l_row.cpt_sort_seq := p_cpt_sort_seq;
     l_row.cpt_active := adc_util.get_boolean(p_cpt_active);
     
     merge_action_param_type(l_row);
@@ -1694,6 +1839,13 @@ as
   procedure merge_action_param_type(
     p_row in out nocopy adc_action_param_types_v%rowtype)
   as
+    C_VIEW_STATEMENT_TEMPLATE constant adc_util.max_char := q'^create or replace view #VIEW_NAME# as #QUERY#^';
+    C_VIEW_STATIC_LIST_TEMPLATE constant adc_util.max_char := q'^select pti_name d, substr(pti_id, #IDX#) r, null cgr_id
+  from pit_translatable_item_v
+ where pti_pmg_name = 'ADC'
+   and pti_id like '#VIEW_NAME#%'^';
+    C_VIEW_COMMENT_TEMPLATE constant adc_util.max_char := q'^comment on table #VIEW_NAME# is '#COMMENT#'^';
+    l_stmt adc_util.max_char;
     l_pti_id pit_translatable_item.pti_id%type;
   begin
     pit.enter_mandatory;
@@ -1716,17 +1868,43 @@ as
     using (select p_row.cpt_id cpt_id,
                   l_pti_id cpt_pti_id,
                   C_ADC cpt_pmg_name,
-                  p_row.cpt_item_type cpt_item_type,
+                  p_row.cpt_cpv_id cpt_cpv_id,
+                  p_row.cpt_sort_seq cpt_sort_seq,
                   p_row.cpt_active cpt_active
              from dual) s
        on (t.cpt_id = s.cpt_id)
      when matched then update set
-          t.cpt_item_type = s.cpt_item_type,
+          t.cpt_cpv_id = s.cpt_cpv_id,
+          t.cpt_sort_seq = s.cpt_sort_seq,
           t.cpt_active = s.cpt_active
-     when not matched then insert(cpt_id, cpt_pti_id, cpt_pmg_name, cpt_item_type, cpt_active)
-          values(s.cpt_id, s.cpt_pti_id, s.cpt_pmg_name, s.cpt_item_type, s.cpt_active);
+     when not matched then insert(cpt_id, cpt_pti_id, cpt_pmg_name, cpt_cpv_id, cpt_sort_seq, cpt_active)
+          values(s.cpt_id, s.cpt_pti_id, s.cpt_pmg_name, s.cpt_cpv_id, s.cpt_sort_seq, s.cpt_active);
+    
+    -- Create generic View statement for static lists (they reference transalatable items)
+    if p_row.cpt_cpv_id = 'STATIC_LIST' then
+      p_row.cpt_select_list_query := utl_text.bulk_replace(C_VIEW_STATIC_LIST_TEMPLATE, char_table(
+                                       '#VIEW_NAME#', p_row.cpt_id,
+                                       '#IDX#', to_char((length(p_row.cpt_id) + 1))));
+    end if;
+    
+    if p_row.cpt_select_list_query is not null then
+      l_stmt := utl_text.bulk_replace(C_VIEW_STATEMENT_TEMPLATE, char_table(
+                  '#VIEW_NAME#', C_CPT_VIEW_NAME_PREFIX || p_row.cpt_id,
+                  '#QUERY#', p_row.cpt_select_list_query));
+      execute immediate l_stmt;
+    end if;
+          
+    if p_row.cpt_select_view_comment is not null then
+      l_stmt := utl_text.bulk_replace(C_VIEW_COMMENT_TEMPLATE, char_table(
+                  '#VIEW_NAME#', C_CPT_VIEW_NAME_PREFIX || p_row.cpt_id,
+                  '#COMMENT#', p_row.cpt_select_view_comment));
+      execute immediate l_stmt;
+    end if;
     
     pit.leave_mandatory;
+  exception
+    when others then
+      pit.handle_exception(msg.PIT_PASS_MESSAGE, msg_args(l_stmt));
   end merge_action_param_type;
 
 
@@ -1758,11 +1936,23 @@ as
   procedure delete_action_param_type(
     p_row in adc_action_param_types_v%rowtype)
   as
+    l_has_view binary_integer;
   begin
     pit.enter_mandatory;
                     
     delete from adc_action_param_types
      where cpt_id = p_row.cpt_id;
+     
+    select count(*)
+      into l_has_view
+      from user_views
+     where exists(
+           select null
+             from user_views
+            where view_name = C_CPT_VIEW_NAME_PREFIX || p_row.cpt_id);
+    if l_has_view = 1 then
+      execute immediate 'drop view ' || C_CPT_VIEW_NAME_PREFIX || p_row.cpt_id;
+    end if;
     
     pit.leave_mandatory;
   end delete_action_param_type;
@@ -1780,12 +1970,16 @@ as
     
     pit.assert_not_null(p_row.cpt_id, msg.ADC_PARAM_MISSING, p_error_code => 'CPT_ID_MISSING');
     pit.assert_not_null(p_row.cpt_name, msg.ADC_PARAM_MISSING, p_error_code => 'CPT_NAME_MISSING');
-    pit.assert_not_null(p_row.cpt_item_type, msg.ADC_PARAM_MISSING, p_error_code => 'CPT_ITEM_TYPE_MISSING');
+    pit.assert_not_null(p_row.cpt_cpv_id, msg.ADC_PARAM_MISSING, p_error_code => 'CPT_CPV_ID_MISSING');
     
-    adc_validation.validate_param_lov(
+    if p_row.cpt_cpv_id = 'SELECT_LIST' then
+      pit.assert_not_null(p_row.cpt_select_list_query, msg.ADC_PARAM_MISSING, p_error_code => 'CPV_VIEW_STATEMENT_MISSING');
+    end if;
+    
+    /*adc_validation.validate_param_lov(
       p_cpt_id => p_row.cpt_id,
-      p_cpt_item_type => p_row.cpt_item_type);
-    
+      p_cpt_cpv_id => p_row.cpt_cpv_id);
+    */
     pit.leave_mandatory;
   end validate_action_param_type;
 
@@ -2107,6 +2301,7 @@ as
     C_UTTM_NAME constant utl_text_templates.uttm_name%type := 'EXPORT_ACTION_TYPE';
     C_WRAP_START constant varchar2(5) := 'q''{';
     C_WRAP_END constant varchar2(5) := '}''';
+    l_action_param_visual_types clob;
     l_action_param_types clob;
     l_page_item_types clob;
     l_action_item_focus clob;
@@ -2132,9 +2327,25 @@ as
 
     select utl_text.generate_text(cursor(
             select p.uttm_text template,
+                   spt.cpv_id, spt.cpv_name, adc_util.to_bool(spt.cpv_active) cpv_active,
+                   utl_text.wrap_string(spt.cpv_description, C_WRAP_START, C_WRAP_END) cpv_description,
+                   cpv_display_name, cpv_sort_seq
+              from adc_action_param_visual_types_v spt
+           ), C_CR)
+      into l_action_param_visual_types
+      from utl_text_templates p
+     where uttm_type = C_ADC
+       and uttm_name = C_UTTM_NAME
+       and uttm_mode = 'PARAM_VISUAL_TYPE';
+
+    select utl_text.generate_text(cursor(
+            select p.uttm_text template,
                    spt.cpt_id, spt.cpt_name, adc_util.to_bool(spt.cpt_active) cpt_active,
                    utl_text.wrap_string(spt.cpt_description, C_WRAP_START, C_WRAP_END) cpt_description,
-                   cpt_item_type, cpt_display_name
+                   cpt_cpv_id,
+                   utl_text.wrap_string(spt.cpt_select_list_query, C_WRAP_START, C_WRAP_END) cpt_select_list_query,
+                   utl_text.wrap_string(spt.cpt_select_view_comment, C_WRAP_START, C_WRAP_END) cpt_select_view_comment,
+                   cpt_display_name, cpt_sort_seq
               from adc_action_param_types_v spt
            ), C_CR)
       into l_action_param_types
@@ -2240,6 +2451,7 @@ as
     -- create export statement
     select utl_text.generate_text(cursor(
              select uttm_text template,
+                    l_action_param_visual_types action_param_visual_types,
                     l_action_param_types action_param_types,
                     l_page_item_types page_item_types,
                     l_action_item_focus action_item_focus,
