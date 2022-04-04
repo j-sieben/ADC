@@ -754,24 +754,25 @@ as
     C_BIND_JSON_ELEMENT constant adc_util.sql_char := '{"id":"#ID#","event":"#EVENT#","action":"#STATIC_ACTION#"}';
     -- List of item which need to bind an event
     cursor rule_group_cpi_ids(p_cgr_id adc_rule_groups.cgr_id%type) is
-      select cpi.cpi_id, cit_event, cit_has_value, null static_action
-        from adc_page_items cpi
-        join adc_page_item_types cit
-          on cpi.cpi_cit_id = cit.cit_id
-        join adc_rule_groups cgr
-          on cpi.cpi_cgr_id = cgr.cgr_id
-        left join adc_rule_group_status c
-          on cgr.cgr_id = cgs_cgr_id
-         and cpi.cpi_id = cgs_cpi_id
-       where cit.cit_event is not null
-         and (cpi.cpi_is_required = adc_util.C_TRUE
-          or cgs_cpi_id is not null)
-         and cgr.cgr_active = adc_util.C_TRUE
-         and cgr.cgr_id = p_cgr_id
+      select cpi_id, cit_event, cit_has_value, null static_action
+        from adc_page_items    
+        join adc_page_item_types_v
+          on cpi_cit_id = cit_id
+        join adc_rule_groups
+          on cpi_cgr_id = cgr_id
+             -- List of mandatory items
+        /*left join adc_rule_group_status
+          on cgr_id = cgs_cgr_id
+         and cpi_id = cgs_cpi_id*/
+       where cit_event is not null
+         and (cpi_is_required = adc_util.C_TRUE
+          /*or cgs_cpi_id is not null*/)
+         and cgr_active = adc_util.C_TRUE
+         and cgr_id = p_cgr_id
      union all
      -- List of items which are bound by other events already
      select coalesce(to_char(cra_param_2), cra_cpi_id), cit_event, cit_has_value, cra_param_2
-       from adc_page_item_types
+       from adc_page_item_types_v
        join adc_rule_actions
             -- PARAM_1 contains the name of an event to observe in case of action type MONITOR_EVENT
          on cit_id in (cra_cat_id, cra_param_1) 
@@ -1307,6 +1308,8 @@ as
         p_error_msg => l_exception.message_text,
         p_internal_error => null);
       pit.leave_mandatory;
+    when others then
+      pit.handle_exception(msg.PIT_PASS_MESSAGE, msg_args('Error at ' || p_cpi_id || ' and value ' || p_value || ': ' || sqlerrm));
   end set_session_state;
 
 

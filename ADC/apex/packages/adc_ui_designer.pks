@@ -87,5 +87,16 @@ as
    */
   procedure validate_rule_condition;
   
+  
+  /**
+    Function: support_flows
+      Method checks whether flows has to be supported by the designer
+      
+    Returns:
+      C_TRUE, if flows is installed and C_FALSE otherwise.
+   */
+  function support_flows
+    return adc_util.flag_type;
+  
 end adc_ui_designer;
 /

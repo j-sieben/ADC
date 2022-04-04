@@ -72,8 +72,9 @@ as
   C_ADC constant ora_name_type := 'ADC_UI';
   
   C_WITH_UNIT_TESTS constant boolean := &WITH_UT.;
+  C_WITH_FLOWS constant boolean := &WITH_FLOWS.;
   
-  C_MAX_LENGTH binary_integer := 32000;
+  C_MAX_LENGTH constant binary_integer := 32000;
   C_NO_FIRING_ITEM constant varchar2(30 byte) := 'DOCUMENT';
   C_INITIALIZE_EVENT constant varchar2(25) := 'initialize';
     

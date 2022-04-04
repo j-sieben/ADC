@@ -86,7 +86,7 @@ as
                              replace(cpi_conversion, 'G') conversion,
                              cpi_id item,
                              cit_event
-                        from adc_page_item_types sit
+                        from adc_page_item_types_v sit
                         left join (
                                select *
                                  from adc_page_items
@@ -1265,7 +1265,7 @@ as
                              replace(cpi_conversion, 'G') conversion,
                              cpi_id item,
                              cit_event
-                        from adc_page_item_types sit
+                        from adc_page_item_types_v sit
                         left join (
                                select *
                                  from adc_page_items
@@ -2303,6 +2303,7 @@ as
     C_WRAP_END constant varchar2(5) := '}''';
     l_action_param_visual_types clob;
     l_action_param_types clob;
+    l_page_item_type_groups clob;
     l_page_item_types clob;
     l_action_item_focus clob;
     l_action_type_groups clob;
@@ -2353,6 +2354,19 @@ as
      where uttm_type = C_ADC
        and uttm_name = C_UTTM_NAME
        and uttm_mode = 'PARAM_TYPE';
+
+    select utl_text.generate_text(cursor(
+            select p.uttm_text template,
+                   cig_id, 
+                   adc_util.to_bool(cig_has_value) cig_has_value, 
+                   adc_util.to_bool(cig_include_in_view) cig_include_in_view
+              from adc_page_item_type_groups
+          ))
+      into l_page_item_type_groups
+      from utl_text_templates p
+     where uttm_type = C_ADC
+       and uttm_name = C_UTTM_NAME
+       and uttm_mode = 'PAGE_ITEM_TYPE_GROUP';
 
     select utl_text.generate_text(cursor(
             select p.uttm_text template,
@@ -2453,6 +2467,7 @@ as
              select uttm_text template,
                     l_action_param_visual_types action_param_visual_types,
                     l_action_param_types action_param_types,
+                    l_page_item_type_groups page_item_type_groups,
                     l_page_item_types page_item_types,
                     l_action_item_focus action_item_focus,
                     l_action_type_groups action_type_groups,
@@ -2651,6 +2666,85 @@ as
     pit.leave_mandatory;
   end validate_action_parameter;
   
+    
+  /**
+    Procedure: merge_page_item_type_group
+      See <ADC_ADMIN.merge_page_item_type_group>
+   */
+  procedure merge_page_item_type_group(
+    p_cig_id              in adc_page_item_type_groups.cig_id%type,
+    p_cig_has_value       in adc_page_item_type_groups.cig_has_value%type,
+    p_cig_include_in_view in adc_page_item_type_groups.cig_include_in_view%type)
+  as
+    l_row adc_page_item_type_groups%rowtype;
+  begin
+    pit.enter_mandatory;
+    
+    l_row.cig_id := p_cig_id;
+    l_row.cig_has_value := p_cig_has_value;
+    l_row.cig_include_in_view := p_cig_include_in_view;
+    
+    merge_page_item_type_group(l_row);
+    
+    pit.leave_mandatory;
+  end merge_page_item_type_group;
+    
+  /**
+    Procedure: merge_page_item_type_group
+      See <ADC_ADMIN.merge_page_item_type_group>
+   */
+  procedure merge_page_item_type_group(
+    p_row in out nocopy adc_page_item_type_groups%rowtype)
+  as
+  begin
+    pit.enter_mandatory;
+    
+    validate_page_item_type_group(p_row);
+    
+    merge into adc_page_item_type_groups t
+    using (select p_row.cig_id cig_id,
+                  p_row.cig_has_value cig_has_value,
+                  p_row.cig_include_in_view cig_include_in_view
+             from dual) s
+       on (t.cig_id = s.cig_id)
+     when matched then update set
+          t.cig_has_value = s.cig_has_value,
+          t.cig_include_in_view = s.cig_include_in_view
+    when not matched then insert(cig_id, cig_has_value, cig_include_in_view)
+         values(s.cig_id, s.cig_has_value, s.cig_include_in_view);
+         
+    pit.leave_mandatory;
+  end merge_page_item_type_group;
+
+  /**
+    Procedure: delete_page_item_type_group
+      See <ADC_ADMIN.delete_page_item_type_group>
+   */
+  procedure delete_page_item_type_group(
+    p_row in adc_page_item_type_groups%rowtype)
+  as
+  begin
+    pit.enter_mandatory;
+    
+    delete from adc_page_item_type_groups
+     where cig_id = p_row.cig_id;
+    
+    pit.leave_mandatory;
+  end delete_page_item_type_group;
+    
+  /**
+    Procedure: validate_page_item_type_group
+      See <ADC_ADMIN.validate_page_item_type_group>
+   */
+  procedure validate_page_item_type_group(
+    p_row in adc_page_item_type_groups%rowtype)
+  as
+  begin
+    pit.enter_mandatory;
+    
+    pit.leave_mandatory;
+  end validate_page_item_type_group;
+  
   
   /**
     Procedure: merge_page_item_type
@@ -2659,8 +2753,7 @@ as
   procedure merge_page_item_type(
     p_cit_id              in adc_page_item_types_v.cit_id%type,
     p_cit_name            in adc_page_item_types_v.cit_name%type,
-    p_cit_has_value       in adc_page_item_types_v.cit_has_value%type,
-    p_cit_include_in_view in adc_page_item_types_v.cit_include_in_view%type,
+    p_cit_cig_id          in adc_page_item_types_v.cit_cig_id%type,
     p_cit_event           in adc_page_item_types_v.cit_event%type,
     p_cit_col_template    in adc_page_item_types_v.cit_col_template%type,
     p_cit_init_template   in adc_page_item_types_v.cit_init_template%type,
@@ -2672,8 +2765,7 @@ as
 
     l_row.cit_id := p_cit_id;
     l_row.cit_name := p_cit_name;
-    l_row.cit_has_value := p_cit_has_value;
-    l_row.cit_include_in_view := p_cit_include_in_view;
+    l_row.cit_cig_id := p_cit_cig_id;
     l_row.cit_event := p_cit_event;
     l_row.cit_col_template := p_cit_col_template;
     l_row.cit_init_template := p_cit_init_template;
@@ -2711,8 +2803,7 @@ as
     using (select p_row.cit_id cit_id,
                   l_pti_id cit_pti_id,
                   C_ADC cit_pmg_name,
-                  p_row.cit_has_value cit_has_value,
-                  p_row.cit_include_in_view cit_include_in_view,
+                  p_row.cit_cig_id cit_cig_id,
                   p_row.cit_event cit_event,
                   p_row.cit_col_template cit_col_template,
                   p_row.cit_init_template cit_init_template,
@@ -2720,16 +2811,15 @@ as
              from dual) s
        on (t.cit_id = s.cit_id)
      when matched then update set
-            t.cit_has_value = s.cit_has_value,
-            t.cit_include_in_view = s.cit_include_in_view,
+            t.cit_cig_id = s.cit_cig_id,
             t.cit_event = s.cit_event,
             t.cit_col_template = s.cit_col_template,
             t.cit_init_template = s.cit_init_template,
             t.cit_is_custom_event = s.cit_is_custom_event
      when not matched then insert(
-            t.cit_id, t.cit_pti_id, t.cit_pmg_name, t.cit_has_value, t.cit_include_in_view, t.cit_event, t.cit_col_template, t.cit_init_template, t.cit_is_custom_event)
+            t.cit_id, t.cit_pti_id, t.cit_pmg_name, t.cit_cig_id, t.cit_event, t.cit_col_template, t.cit_init_template, t.cit_is_custom_event)
           values(
-            s.cit_id, s.cit_pti_id, s.cit_pmg_name, s.cit_has_value, s.cit_include_in_view, s.cit_event, s.cit_col_template, s.cit_init_template, s.cit_is_custom_event);
+            s.cit_id, s.cit_pti_id, s.cit_pmg_name, s.cit_cig_id, s.cit_event, s.cit_col_template, s.cit_init_template, s.cit_is_custom_event);
 
     pit.leave_mandatory;
   end merge_page_item_type;

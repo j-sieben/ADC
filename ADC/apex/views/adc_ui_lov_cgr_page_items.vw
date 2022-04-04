@@ -13,7 +13,8 @@ select /*+ no_merge (p) */
     on lpi.app_id = cgr.cgr_app_id
    and lpi.page_id = cgr.cgr_page_id
   join adc_action_item_focus
-    on instr(cif_item_types, lpt.item_type) > 0
+    on instr(cif_item_types, lpt.cpi_cig_id) > 0
+    or instr(cif_item_types, lpt.cpi_cit_id) > 0
   join adc_action_types
     on cif_id = cat_cif_id
   join adc_page_item_types_v

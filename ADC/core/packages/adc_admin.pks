@@ -878,14 +878,58 @@ as
 
 
   /**
+    Procedure: merge_page_item_type_group
+      Administration of PAGE ITEM TYPE GROUPS
+                 
+    Parameters:
+      p_cig_id - Technical ID of the item type
+      p_cig_has_value - Flag to indicate whether this is an item containing a session state value
+      p_cig_include_in_view - Flag to indicate whether this item has to be included in the session state view
+   */
+  procedure merge_page_item_type_group(
+    p_cig_id              in adc_page_item_type_groups.cig_id%type,
+    p_cig_has_value       in adc_page_item_type_groups.cig_has_value%type,
+    p_cig_include_in_view in adc_page_item_type_groups.cig_include_in_view%type);
+    
+  /**
+    Procedure: merge_page_item_type_group
+      Overload with a row record
+                 
+    Parameter:
+      p_row - Row record
+   */
+  procedure merge_page_item_type_group(
+    p_row in out nocopy adc_page_item_type_groups%rowtype);
+
+  /**
+    Procedure: delete_page_item_type_group
+      Deletes a Page Item Type Group
+                 
+    Parameter:
+      p_row - Row record
+   */
+  procedure delete_page_item_type_group(
+    p_row in adc_page_item_type_groups%rowtype);
+    
+  /**
+    Procedure: validate_page_item_type_group
+      Validates an Page Item Type
+                 
+    Parameter:
+      p_row - Row record
+   */
+  procedure validate_page_item_type_group(
+    p_row in adc_page_item_type_groups%rowtype);
+
+
+  /**
     Procedure: merge_page_item_type
       Administration of PAGE ITEM TYPES
                  
     Parameters:
       p_cit_id - Technical ID of the item type
       p_cit_name - Display name
-      p_cit_has_value - Flag to indicate whether this is an item containing a session state value
-      p_cit_include_in_view - Flag to indicate whether this item has to be included in the session state view
+      p_cit_cig_id - Grouping of the page item type, Reference to <PAGE_ITEM_TYPE_GROUPS>
       p_cit_event - Event thas has to be bound if a rule requires this item
       p_cit_col_template - Template for the session state view to retrieve the session state value
       p_cit_init_template . Template to get the initial session state value
@@ -894,8 +938,7 @@ as
   procedure merge_page_item_type(
     p_cit_id              in adc_page_item_types_v.cit_id%type,
     p_cit_name            in adc_page_item_types_v.cit_name%type,
-    p_cit_has_value       in adc_page_item_types_v.cit_has_value%type,
-    p_cit_include_in_view in adc_page_item_types_v.cit_include_in_view%type,
+    p_cit_cig_id          in adc_page_item_types_v.cit_cig_id%type,
     p_cit_event           in adc_page_item_types_v.cit_event%type,
     p_cit_col_template    in adc_page_item_types_v.cit_col_template%type,
     p_cit_init_template   in adc_page_item_types_v.cit_init_template%type,

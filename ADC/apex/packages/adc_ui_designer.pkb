@@ -22,6 +22,8 @@ as
       C_MODE_CRA - Hierarchical level Rule Action
       C_MODE_CAG - Hierarchical level APEX Action Group (used as a hierarchy level only to group APEX Actions)
       C_MODE_CAA - Hierarchical level APEX Action
+      C_MODE_FLG - Hierarchical level Workflow Group (used as a hierarchy level only to group Flows, if flows if installed)
+      C_MODE_FLS - Hierarchical level Workflows (if flows is installed only)
       C_ACTION_CANCEL - APEX Action to cancel an operation
       C_ACTION_CREATE - APEX Action to create a record
       C_ACTION_DELETE - APEX Action to delete a record
@@ -33,12 +35,18 @@ as
   C_MODE_CRA constant adc_util.ora_name_type := 'CRA';
   C_MODE_CAG constant adc_util.ora_name_type := 'CAG';
   C_MODE_CAA constant adc_util.ora_name_type := 'CAA';
+  C_MODE_FLG constant adc_util.ora_name_type := 'FLG';
+  C_MODE_FLS constant adc_util.ora_name_type := 'FLS';
   C_ACTION_SHOW constant adc_util.ora_name_type := 'show';
   C_ACTION_CANCEL constant adc_util.ora_name_type := 'cancel-action';
   C_ACTION_CREATE constant adc_util.ora_name_type := 'create-action';
   C_ACTION_DELETE constant adc_util.ora_name_type := 'delete-action';
   C_ACTION_UPDATE constant adc_util.ora_name_type := 'update-action';
   C_EXPORT_CGR constant adc_util.ora_name_type := 'export-rule-group';
+  
+  C_CENTRAL_TAB_REGION constant adc_util.ora_name_type := 'R13_CENTRAL';
+  C_TAB_RULES constant adc_util.ora_name_type := 'SR_R13_RULES';
+  C_TAB_WORKFLOWS constant adc_util.ora_name_type := 'SR_R13_WORKFLOWS';
   
   /**
     Constants: Item and Region constants
@@ -67,6 +75,7 @@ as
   C_ITEM_CRU_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRU_ID';
   C_ITEM_CRA_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRA_ID';
   C_ITEM_CAA_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CAA_ID';
+  C_ITEM_DIAGRAM_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'DIAGRAM_ID';
   C_ITEM_CRA_CAT_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRA_CAT_ID';
   C_ITEM_CRU_CGR_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRU_CGR_ID';
   C_ITEM_CRA_CGR_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRA_CGR_ID';
@@ -82,6 +91,8 @@ as
   C_REGION_CRU_FORM constant adc_util.ora_name_type := C_REGION_PREFIX || 'CRU_FORM';
   C_REGION_CRA_FORM constant adc_util.ora_name_type := C_REGION_PREFIX || 'CRA_FORM';
   C_REGION_CAA_FORM constant adc_util.ora_name_type := C_REGION_PREFIX || 'CAA_FORM';
+  C_REGION_FLS_FORM constant adc_util.ora_name_type := C_REGION_PREFIX || 'FLS_FORM';
+  C_REGION_FLOW_MODELER constant adc_util.ora_name_type := C_REGION_PREFIX || 'FLOW_MODELER';
   
   
   /**
@@ -271,7 +282,25 @@ as
 
     pit.leave_detailed;
   end copy_rule_action;
+  
+  
+  $IF adc_util.C_WITH_FLOWS $THEN
+  procedure copy_flow(
+    p_row in out nocopy fls_diagrams_v%rowtype)
+  as
+  begin
+    pit.enter_detailed('copy_rule');
 
+    g_page_values := utl_apex.get_page_values(C_REGION_FLS_FORM);
+    p_row.diagram_id := to_number(utl_apex.get(g_page_values, 'DIAGRAM_ID'), '999990');
+    p_row.diagram_name := utl_apex.get(g_page_values, 'DIAGRAM_NAME');
+    p_row.diagram_version := utl_apex.get(g_page_values, 'DIAGRAM_VERSION');
+    p_row.diagram_status_id := utl_apex.get(g_page_values, 'DIAGRAM_STATUS_ID');
+    p_row.diagram_category := utl_apex.get(g_page_values, 'DIAGRAM_CATEGORY');
+
+    pit.leave_detailed;
+  end copy_flow;
+  $END
 
   /**
     Group: Private Methods
@@ -503,9 +532,9 @@ as
     adc_apex_action.action_init(C_ACTION_DELETE);
     adc_apex_action.set_disabled(l_disabled);
     if not l_disabled then
-    adc_apex_action.set_action(assemble_action(C_ACTION_DELETE, p_row));
-    adc_apex_action.set_label(p_row.mda_delete_button_label);
-    adc_apex_action.set_title(p_row.mda_delete_button_label);
+      adc_apex_action.set_action(assemble_action(C_ACTION_DELETE, p_row));
+      adc_apex_action.set_label(p_row.mda_delete_button_label);
+      adc_apex_action.set_title(p_row.mda_delete_button_label);
     end if;
     adc.add_javascript(adc_apex_action.get_action_script);
 
@@ -520,21 +549,26 @@ as
     
     -- EXPORT rule group
     -- get target application id
-    select cgr_app_id
-      into l_cgr_app_id
-      from adc_rule_groups
-     where cgr_id = g_environment.cgr_id;
-    if l_cgr_app_id is not null then
-      adc_apex_action.action_init(C_EXPORT_CGR);
-      l_javascript := utl_apex.get_page_url(
-                        p_page => C_EXPORT_PAGE,
-                        p_param_items => C_EXPORT_PAGE_PREFIX || 'CGR_APP_ID',
-                        p_value_list => l_cgr_app_id,
-                        p_triggering_element => C_BUTTON_PREFIX || C_EXPORT_PAGE);
-      adc_apex_action.set_action(l_javascript);
-      adc_apex_action.set_disabled(false);
+    if p_row.mda_actual_mode not in ('FLG', 'FLS') then
+      select cgr_app_id
+        into l_cgr_app_id
+        from adc_rule_groups
+       where cgr_id = g_environment.cgr_id;
+      if l_cgr_app_id is not null then
+        adc_apex_action.action_init(C_EXPORT_CGR);
+        l_javascript := utl_apex.get_page_url(
+                          p_page => C_EXPORT_PAGE,
+                          p_param_items => C_EXPORT_PAGE_PREFIX || 'CGR_APP_ID',
+                          p_value_list => l_cgr_app_id,
+                          p_triggering_element => C_BUTTON_PREFIX || C_EXPORT_PAGE);
+        adc_apex_action.set_action(l_javascript);
+        adc_apex_action.set_disabled(false);
+      else
+        adc_apex_action.set_disabled(true);
+      end if;
     else
-      adc_apex_action.set_disabled(true);
+      -- TODO: Decide whether to add code to export workflows
+      null;
     end if;
     adc.add_javascript(adc_apex_action.get_action_script);
 
@@ -555,6 +589,9 @@ as
     l_cgr_id adc_rule_groups.cgr_id%type := utl_apex.get_number('P13_CGR_ID');
     l_apex_row adc_apex_actions_v%rowtype;
     l_rule_row adc_rules%rowtype;
+    $IF adc_util.C_WITH_FLOWS $THEN
+    l_flow_row fls_diagrams_v%rowtype;
+    $END
     l_action_row adc_rule_actions%rowtype;
     l_selected_id adc_util.ora_name_type;
   begin
@@ -567,6 +604,10 @@ as
         copy_rule_action(l_action_row);
       when C_MODE_CAA then
         copy_apex_action(l_apex_row);
+      $IF adc_util.C_WITH_FLOWS $THEN
+      when C_MODE_FLS then
+        copy_flow(l_flow_row);
+      $END
       else
         null;
     end case;
@@ -593,6 +634,16 @@ as
               p_cpi_id => C_ITEM_CAA_ID,
               p_item_value => l_apex_row.caa_id);
             l_selected_id := C_MODE_CAA || '_' || l_apex_row.caa_id;
+          $IF adc_util.C_WITH_FLOWS $THEN
+          when C_MODE_FLS then
+            fls_admin_api.merge_diagram(l_flow_row);
+            adc.set_item(
+              p_cpi_id => C_ITEM_DIAGRAM_ID,
+              p_item_value => l_flow_row.diagram_id);
+            adc.refresh_item(
+              p_cpi_id => C_REGION_FLOW_MODELER,
+              p_set_item => adc_util.C_FALSE);
+          $END
           else
             null;
         end case;
@@ -611,6 +662,12 @@ as
             adc_admin.delete_rule_action(l_action_row);
           when C_MODE_CAA then
             adc_admin.delete_apex_action(l_apex_row);
+          $IF adc_util.C_WITH_FLOWS $THEN
+          when C_MODE_FLS then
+            fls_admin_api.delete_diagram(
+              p_diagram_id => l_flow_row.diagram_id,
+              p_cascade => adc_util.C_TRUE);
+          $END
           else
             null;
         end case;
@@ -677,7 +734,7 @@ as
   begin
     pit.enter_optional('set_id_values');
     
-    -- Retrieve CGR_ID 
+    -- Retrieve CGR_ID
     case g_environment.target_mode
       when C_MODE_CAA then
         select caa_cgr_id
@@ -706,35 +763,52 @@ as
     -- Compare CGR_ID with session state. If changed, refresh rule report
     l_cgr_id := coalesce(adc_api.get_number(C_ITEM_CGR_ID), 0);
     if l_cgr_id != g_environment.cgr_id then
-      -- Make sure that the rule group is based on actual application data
-      adc_admin.propagate_rule_change(l_cgr_id);
-      -- control page
-      adc.set_item(
-        p_cpi_id => C_ITEM_CGR_ID,
-        p_item_value => g_environment.cgr_id);
-      adc.set_item(
-        p_cpi_id => C_ITEM_CRU_CGR_ID,
-        p_item_value => g_environment.cgr_id);
-      adc.set_item(
-        p_cpi_id => C_ITEM_CRA_CGR_ID,
-        p_item_value => g_environment.cgr_id);
-      adc.set_item(
-        p_cpi_id => C_ITEM_CAA_CGR_ID,
-        p_item_value => g_environment.cgr_id);
-      adc.refresh_item(
-        p_cpi_id => C_REGION_RULES,
-        p_set_item => adc_util.C_FALSE);
-      adc.refresh_item(
-        p_cpi_id => C_REGION_FINDINGS,
-        p_set_item => adc_util.C_FALSE);
+      if g_environment.target_mode not in ('FLG', 'FLS') then
+        -- Make sure that the rule group is based on actual application data
+        adc_admin.propagate_rule_change(l_cgr_id);
+        -- control page
+        adc.set_item(
+          p_cpi_id => C_ITEM_CGR_ID,
+          p_item_value => g_environment.cgr_id);
+        adc.set_item(
+          p_cpi_id => C_ITEM_CRU_CGR_ID,
+          p_item_value => g_environment.cgr_id);
+        adc.set_item(
+          p_cpi_id => C_ITEM_CRA_CGR_ID,
+          p_item_value => g_environment.cgr_id);
+        adc.set_item(
+          p_cpi_id => C_ITEM_CAA_CGR_ID,
+          p_item_value => g_environment.cgr_id);
+        adc.refresh_item(
+          p_cpi_id => C_REGION_RULES,
+          p_set_item => adc_util.C_FALSE);
+        adc.refresh_item(
+          p_cpi_id => C_REGION_FINDINGS,
+          p_set_item => adc_util.C_FALSE);
+      else
+        -- Workflow modes
+        adc.set_item(
+          p_cpi_id => C_ITEM_DIAGRAM_ID,
+          p_item_value => g_environment.node_id);
+        adc.refresh_item(
+          p_cpi_id => C_REGION_FINDINGS,
+          p_set_item => adc_util.C_FALSE);
+      end if;
     end if;
     
     -- Set ID of the selected mode if not CGR and set SELECTD_NODE to enable the tree to remember its state
-    if g_environment.target_mode != C_MODE_CGR then
-      adc.set_item(
-        p_cpi_id => C_PAGE_PREFIX || g_environment.target_mode || '_ID',
-        p_item_value => g_environment.node_id);
-    end if;
+    case 
+      when g_environment.target_mode = 'FLS' then
+        adc.set_item(
+          p_cpi_id => C_ITEM_DIAGRAM_ID,
+          p_item_value => g_environment.node_id);
+      when g_environment.target_mode != C_MODE_CGR then
+        adc.set_item(
+          p_cpi_id => C_PAGE_PREFIX || g_environment.target_mode || '_ID',
+          p_item_value => g_environment.node_id);
+      else
+        null;
+    end case;
 
     adc.set_item(
       p_cpi_id => C_PAGE_PREFIX || 'SELECTED_NODE',
@@ -780,7 +854,7 @@ as
         p_item_value => l_cgr_id);
       adc.set_item(
         p_cpi_id => C_ITEM_SELECTED_NODE,
-        p_item_value => case when l_cgr_ID is not null then 'CGR_' || l_cgr_id end);
+        p_item_value => case when l_cgr_id is not null then 'CGR_' || l_cgr_id end);
       adc.refresh_item(
         p_cpi_id => C_REGION_RULES,
         p_set_item => adc_util.C_FALSE);
@@ -1022,6 +1096,8 @@ select null caa_id, '#CGR_ID#' caa_cgr_id, 'ACTION' caa_cty_id, null caa_name,
       p_region_id => C_REGION_HELP,
       p_html_code => pit.get_trans_item_description(C_PTI_PMG, 'CAA_HELP'));
 
+    adc.select_tab(C_CENTRAL_TAB_REGION, C_TAB_RULES);
+    
     pit.leave_mandatory;
   end show_form_caa;
 
@@ -1132,6 +1208,8 @@ select null #PRE#CRA_ID, '#CGR_ID#' #PRE#CRA_CGR_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
     set_cat_help_text(
       p_cat_id => l_cat_id);
 
+    adc.select_tab(C_CENTRAL_TAB_REGION, C_TAB_RULES);
+
     pit.leave_mandatory;
   end show_form_cra;
   
@@ -1175,8 +1253,53 @@ select null #PRE#CRU_ID, '#CGR_ID#' #PRE#CRU_CGR_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
       p_region_id => C_REGION_HELP,
       p_html_code => pit.get_trans_item_description(C_PTI_PMG, 'CRU_HELP'));
 
+    adc.select_tab(C_CENTRAL_TAB_REGION, C_TAB_RULES);
+
     pit.leave_mandatory;
   end show_form_cru;
+  
+  
+  /** 
+    Procedure: show_form_fls
+      Method to show and populate a workflow form of the designer and populate it with the values selected.
+      
+      This form is rendered only if FLOWS is installed and flag <ADC_UTIL.C_WITH_FLOWS> is set to TRUE.
+   */
+  procedure show_form_fls
+  as
+    l_statement adc_util.max_char := q'^
+select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, 'draft' #PRE#DIAGRAM_STATUS_ID
+  from dual^';
+  begin
+    pit.enter_mandatory('show_form_fls');
+
+    $IF adc_util.C_WITH_FLOWS $THEN
+    case when g_environment.action = C_ACTION_CREATE then
+      -- Was called to create a new FLS, initialize default values
+      l_statement := replace(l_statement, '#PRE#', utl_apex.get_page_prefix);
+      adc.set_items_from_statement(
+        p_cpi_id => adc_util.c_no_firing_item, 
+        p_statement => l_statement);
+    else
+      -- Was called from the rule report
+      adc.initialize_form_region(C_REGION_FLS_FORM);
+    end case;
+
+    adc.show_hide_item('.adc-flows', '.adc-hide');
+    adc.set_region_content(
+      p_region_id => C_REGION_HELP,
+      p_html_code => pit.get_trans_item_description(C_PTI_PMG, 'FLS_HELP'));
+    if g_environment.node_id is not null then
+      adc.refresh_item(
+        p_cpi_id => C_REGION_FLOW_MODELER,
+        p_set_item => adc_util.C_FALSE);
+    end if;
+
+    adc.select_tab(C_CENTRAL_TAB_REGION, C_TAB_WORKFLOWS);
+    $END
+
+    pit.leave_mandatory;
+  end show_form_fls;
 
 
   /** 
@@ -1196,6 +1319,9 @@ select null #PRE#CRU_ID, '#CGR_ID#' #PRE#CRU_CGR_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
     l_apex_row adc_apex_actions_v%rowtype;
     l_rule_row adc_rules%rowtype;
     l_action_row adc_rule_actions%rowtype;
+    $IF adc_util.C_WITH_FLOWS $THEN
+    l_flow_row fls_diagrams_v%rowtype;
+    $END
   begin
     pit.enter_mandatory;
 
@@ -1215,6 +1341,13 @@ select null #PRE#CRU_ID, '#CGR_ID#' #PRE#CRU_CGR_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
         pit.start_message_collection;
         adc_admin.validate_apex_action(l_apex_row);
         pit.stop_message_collection;
+      $IF adc_util.C_WITH_FLOWS $THEN
+      when C_MODE_FLS then
+        copy_flow(l_flow_row);
+        pit.start_message_collection;
+        fls_admin_api.validate_diagram(l_flow_row);
+        pit.stop_message_collection;
+      $END
       else
         null;
     end case;
@@ -1259,6 +1392,9 @@ select null #PRE#CRU_ID, '#CGR_ID#' #PRE#CRU_CGR_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
     for frm in form_item_cur loop
       g_form_item_list(frm.form_id) := frm.item_list;
     end loop;
+  exception
+    when NO_DATA_FOUND then
+      null;
   end initialize;
 
 
@@ -1325,6 +1461,8 @@ select null #PRE#CRU_ID, '#CGR_ID#' #PRE#CRU_CGR_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
         show_form_cru;
       when C_MODE_CRA then
         show_form_cra;
+      when C_MODE_FLS then
+        show_form_fls;
       else
         adc.show_hide_item('.adc-no-attributes', '.adc-hide');
         adc.set_region_content(C_REGION_HELP, null);
@@ -1418,7 +1556,30 @@ select null #PRE#CRU_ID, '#CGR_ID#' #PRE#CRU_CGR_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
         'CRU_CONDITION_MISSING', 'CRU_CONDITION'));
     pit.leave_mandatory;
   end validate_rule_condition;
-  
+
+
+  /** 
+    Function: support_flows
+      See <ADC_UI_DESIGNER.support_flows>
+   */
+  function support_flows
+    return adc_util.flag_type
+  as
+    l_result adc_util.flag_type;
+  begin
+    pit.enter_mandatory;
+    
+    if adc_util.C_WITH_FLOWS then
+      l_result := adc_util.C_TRUE;
+    else
+      l_result := adc_util.C_FALSE;
+    end if;
+    
+    pit.leave_mandatory(
+      p_params => msg_params(
+                    msg_param('Result', l_result)));
+    return l_result;
+  end support_flows;
   
 begin
   initialize;

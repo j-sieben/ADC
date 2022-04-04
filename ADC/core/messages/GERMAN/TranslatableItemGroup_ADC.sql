@@ -1,3 +1,5 @@
+set define off
+
 begin
     
   pit_admin.merge_message_group(
@@ -181,7 +183,7 @@ begin
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
-    p_pti_description => q'^<p>Meldungsname, der ausgegeben werden soll, falls die Prüfung misslingt. Muss ein PIT-Meldungsname sein, in der Form <span style="font-family:'Courier New', Courier, monospace;">MSG.&lt;Meldungsname&gt;</span></p>^'
+    p_pti_description => q'^<p>Meldungsname, der ausgegeben werden soll, falls die Prüfung misslingt. Muss ein PIT-Meldungsname sein, in der Form <span style="font-family:'Courier New', Courier, monospace;">MSG.[Meldungsname]</span></p>^'
   );
 
   pit_admin.merge_translatable_item(
@@ -361,7 +363,7 @@ begin
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
-    p_pti_description => q'^<p>Meldungsname, der ausgegeben werden soll, falls die Prüfung misslingt. Muss ein PIT-Meldungsname sein, in der Form <span style="font-family:'Courier New', Courier, monospace;">MSG.&lt;Meldungsname&gt;</span></p>^'
+    p_pti_description => q'^<p>Meldungsname, der ausgegeben werden soll, falls die Prüfung misslingt. Muss ein PIT-Meldungsname sein, in der Form <span style="font-family:'Courier New', Courier, monospace;">MSG.[Meldungsname]</span></p>^'
   );
 
   pit_admin.merge_translatable_item(
@@ -621,7 +623,7 @@ begin
     p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Seitenlemente ein- und ausblenden^',
-    p_pti_display_name => q'^<p><strong>blende</strong> Selektoren "#PARAM_1#” &nbsp;<strong>ein und</strong> '#PARAM_2#" <strong>aus</strong></p>^',
+    p_pti_display_name => q'^<p><strong>blende</strong> Selektoren "#PARAM_1#” <strong>ein und</strong> '#PARAM_2#" <strong>aus</strong></p>^',
     p_pti_description => q'^<p>Kontrolliert die Anzeige mehrerer Seitenelemente, indem die Seitzenelemente, die durch den ersten jQuery-Ausdruck identifiziert werden, ein- und die Seitenelemente, die durch den zweiten jQuery-Ausdruck identifiziert werden, ausgeblendet werden</p>^'
   );
 
@@ -1372,6 +1374,35 @@ begin
     p_pti_description => q'^Wird für umfangreiche Textmengen verwendet.^'
   );
 
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'CAG',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^ADC^',
+    p_pti_name => q'^Seitenkommandos^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^^'
+  );
+
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'FLG',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^ADC^',
+    p_pti_name => q'^Workflows^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^^'
+  );
+
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'FLS',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^ADC^',
+    p_pti_name => q'^Workflow^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^^'
+  );
+
   commit;
 end;
 /
+
+set define on

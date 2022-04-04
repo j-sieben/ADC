@@ -38,7 +38,6 @@ begin
     p_cpv_description => q'{Wird für umfangreiche Textmengen verwendet.}',
     p_cpv_active => adc_util.C_TRUE);
 
-
   -- ACTION_PARAM_TYPES
   adc_admin.merge_action_param_type(
     p_cpt_id => 'APEX_ACTION',
@@ -257,13 +256,37 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cpt_sort_seq => 10,
     p_cpt_active => adc_util.C_TRUE);
 
+  -- PAGE_ITEM_TYPE_GROUPS
+  adc_admin.merge_page_item_type_group(
+    p_cig_id => 'FRAMEWORK',
+    p_cig_has_value => adc_util.C_FALSE,
+    p_cig_include_in_view => adc_util.C_FALSE);
+    
+  adc_admin.merge_page_item_type_group(
+    p_cig_id => 'EVENT',
+    p_cig_has_value => adc_util.C_FALSE,
+    p_cig_include_in_view => adc_util.C_TRUE);
+    
+  adc_admin.merge_page_item_type_group(
+    p_cig_id => 'REGION',
+    p_cig_has_value => adc_util.C_FALSE,
+    p_cig_include_in_view => adc_util.C_FALSE);
+    
+  adc_admin.merge_page_item_type_group(
+    p_cig_id => 'ITEM',
+    p_cig_has_value => adc_util.C_TRUE,
+    p_cig_include_in_view => adc_util.C_FALSE);
+    
+  adc_admin.merge_page_item_type_group(
+    p_cig_id => 'BUTTON',
+    p_cig_has_value => adc_util.C_FALSE,
+    p_cig_include_in_view => adc_util.C_FALSE);
 
   -- PAGE_ITEM_TYPES
   adc_admin.merge_page_item_type(
     p_cit_id => 'AFTER_REFRESH',
     p_cit_name => 'Nach Refresh',
-    p_cit_has_value => adc_util.C_FALSE,
-    p_cit_include_in_view => adc_util.C_TRUE,
+    p_cit_cig_id => 'EVENT',
     p_cit_event => 'apexafterrefresh',
     p_cit_col_template => q'{case p_event when 'apexafterrefresh' then p_firing_item end after_refresh}',
     p_cit_init_template => q'{}',
@@ -271,8 +294,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_page_item_type(
     p_cit_id => 'ALL',
     p_cit_name => 'Alle',
-    p_cit_has_value => adc_util.C_FALSE,
-    p_cit_include_in_view => adc_util.C_FALSE,
+    p_cit_cig_id => 'FRAMEWORK',
     p_cit_event => '',
     p_cit_col_template => q'{}',
     p_cit_init_template => q'{}',
@@ -280,8 +302,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_page_item_type(
     p_cit_id => 'APP_ITEM',
     p_cit_name => 'Anwendungselement',
-    p_cit_has_value => adc_util.C_TRUE,
-    p_cit_include_in_view => adc_util.C_FALSE,
+    p_cit_cig_id => 'ITEM',
     p_cit_event => 'change',
     p_cit_col_template => q'{adc_api.get_string('#ITEM#') #ITEM#}',
     p_cit_init_template => q'{itm.#ITEM#}',
@@ -289,8 +310,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_page_item_type(
     p_cit_id => 'BUTTON',
     p_cit_name => 'Schaltfläche',
-    p_cit_has_value => adc_util.C_FALSE,
-    p_cit_include_in_view => adc_util.C_FALSE,
+    p_cit_cig_id => 'BUTTON',
     p_cit_event => 'click',
     p_cit_col_template => q'{case p_firing_item when '#ITEM#' then c_true else c_false end #ITEM#}',
     p_cit_init_template => q'{}',
@@ -298,8 +318,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_page_item_type(
     p_cit_id => 'COMMAND',
     p_cit_name => 'Seitenkommando',
-    p_cit_has_value => adc_util.C_FALSE,
-    p_cit_include_in_view => adc_util.C_TRUE,
+    p_cit_cig_id => 'EVENT',
     p_cit_event => 'command',
     p_cit_col_template => q'{case p_event when 'command' then adc_api.get_event_data('command') end command}',
     p_cit_init_template => q'{}',
@@ -307,8 +326,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_page_item_type(
     p_cit_id => 'DATE_ITEM',
     p_cit_name => 'Element (Datum)',
-    p_cit_has_value => adc_util.C_TRUE,
-    p_cit_include_in_view => adc_util.C_FALSE,
+    p_cit_cig_id => 'ITEM',
     p_cit_event => 'change',
     p_cit_col_template => q'{adc_api.get_date('#ITEM#', '#CONVERSION#', c_false) #ITEM#}',
     p_cit_init_template => q'{to_char(to_date(itm.#ITEM#), '#CONVERSION#')}',
@@ -316,8 +334,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_page_item_type(
     p_cit_id => 'DIALOG_CLOSED',
     p_cit_name => 'Dialog geschlossen',
-    p_cit_has_value => adc_util.C_FALSE,
-    p_cit_include_in_view => adc_util.C_TRUE,
+    p_cit_cig_id => 'EVENT',
     p_cit_event => 'apexafterclosedialog',
     p_cit_col_template => q'{case p_event when 'apexafterclosedialog' then p_firing_item end dialog_closed}',
     p_cit_init_template => q'{}',
@@ -325,8 +342,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_page_item_type(
     p_cit_id => 'DOCUMENT',
     p_cit_name => 'Dokument',
-    p_cit_has_value => adc_util.C_FALSE,
-    p_cit_include_in_view => adc_util.C_FALSE,
+    p_cit_cig_id => 'FRAMEWORK',
     p_cit_event => '',
     p_cit_col_template => q'{null #ITEM#}',
     p_cit_init_template => q'{}',
@@ -334,8 +350,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_page_item_type(
     p_cit_id => 'DOUBLE_CLICK',
     p_cit_name => 'Doppelklick',
-    p_cit_has_value => adc_util.C_FALSE,
-    p_cit_include_in_view => adc_util.C_TRUE,
+    p_cit_cig_id => 'EVENT',
     p_cit_event => 'dblclick',
     p_cit_col_template => q'{case p_event when 'dblclick' then p_firing_item end double_click}',
     p_cit_init_template => q'{}',
@@ -343,8 +358,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_page_item_type(
     p_cit_id => 'ENTER_KEY',
     p_cit_name => 'Enter-Taste',
-    p_cit_has_value => adc_util.C_FALSE,
-    p_cit_include_in_view => adc_util.C_TRUE,
+    p_cit_cig_id => 'EVENT',
     p_cit_event => 'enter',
     p_cit_col_template => q'{case p_event when 'enter' then p_firing_item end enter_key}',
     p_cit_init_template => q'{}',
@@ -352,8 +366,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_page_item_type(
     p_cit_id => 'FIRING_ITEM',
     p_cit_name => 'Firing Item',
-    p_cit_has_value => adc_util.C_FALSE,
-    p_cit_include_in_view => adc_util.C_TRUE,
+    p_cit_cig_id => 'EVENT',
     p_cit_event => '',
     p_cit_col_template => q'{p_firing_item firing_item}',
     p_cit_init_template => q'{}',
@@ -361,8 +374,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_page_item_type(
     p_cit_id => 'FORM_REGION',
     p_cit_name => 'Formularregion',
-    p_cit_has_value => adc_util.C_FALSE,
-    p_cit_include_in_view => adc_util.C_FALSE,
+    p_cit_cig_id => 'REGION',
     p_cit_event => '',
     p_cit_col_template => q'{null #ITEM#}',
     p_cit_init_template => q'{}',
@@ -370,8 +382,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_page_item_type(
     p_cit_id => 'INITIALIZING',
     p_cit_name => 'Initialize Flag',
-    p_cit_has_value => adc_util.C_FALSE,
-    p_cit_include_in_view => adc_util.C_TRUE,
+    p_cit_cig_id => 'EVENT',
     p_cit_event => '',
     p_cit_col_template => q'{case p_firing_item when 'DOCUMENT' then c_true else c_false end initializing}',
     p_cit_init_template => q'{}',
@@ -379,8 +390,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_page_item_type(
     p_cit_id => 'ITEM',
     p_cit_name => 'Element',
-    p_cit_has_value => adc_util.C_TRUE,
-    p_cit_include_in_view => adc_util.C_FALSE,
+    p_cit_cig_id => 'ITEM',
     p_cit_event => 'change',
     p_cit_col_template => q'{adc_api.get_string('#ITEM#') #ITEM#}',
     p_cit_init_template => q'{itm.#ITEM#}',
@@ -388,17 +398,47 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_page_item_type(
     p_cit_id => 'NUMBER_ITEM',
     p_cit_name => 'Element (Zahl)',
-    p_cit_has_value => adc_util.C_TRUE,
-    p_cit_include_in_view => adc_util.C_FALSE,
+    p_cit_cig_id => 'ITEM',
     p_cit_event => 'change',
     p_cit_col_template => q'{adc_api.get_number('#ITEM#', '#CONVERSION#', c_false) #ITEM#}',
     p_cit_init_template => q'{to_char(itm.#ITEM#, '#CONVERSION#')}',
     p_cit_is_custom_event => adc_util.C_FALSE);
   adc_admin.merge_page_item_type(
+    p_cit_id => 'ROWID_ITEM',
+    p_cit_name => 'Zeilen-ID (RowID)',
+    p_cit_cig_id => 'ITEM',
+    p_cit_event => 'change',
+    p_cit_col_template => q'{adc_api.get_string('#ITEM#') #ITEM#}',
+    p_cit_init_template => q'{to_char(itm.#ITEM#, '#CONVERSION#')}',
+    p_cit_is_custom_event => adc_util.C_FALSE);
+  adc_admin.merge_page_item_type(
     p_cit_id => 'REGION',
     p_cit_name => 'Region',
-    p_cit_has_value => adc_util.C_FALSE,
-    p_cit_include_in_view => adc_util.C_FALSE,
+    p_cit_cig_id => 'REGION',
+    p_cit_event => '',
+    p_cit_col_template => q'{null #ITEM#}',
+    p_cit_init_template => q'{}',
+    p_cit_is_custom_event => adc_util.C_FALSE);
+  adc_admin.merge_page_item_type(
+    p_cit_id => 'REPORT_REGION',
+    p_cit_name => 'Klassischer Bericht',
+    p_cit_cig_id => 'REGION',
+    p_cit_event => '',
+    p_cit_col_template => q'{null #ITEM#}',
+    p_cit_init_template => q'{}',
+    p_cit_is_custom_event => adc_util.C_FALSE);
+  adc_admin.merge_page_item_type(
+    p_cit_id => 'INTERACTIVE_REPORT_REGION',
+    p_cit_name => 'Interaktiver Bericht',
+    p_cit_cig_id => 'REGION',
+    p_cit_event => '',
+    p_cit_col_template => q'{null #ITEM#}',
+    p_cit_init_template => q'{}',
+    p_cit_is_custom_event => adc_util.C_FALSE);
+  adc_admin.merge_page_item_type(
+    p_cit_id => 'INTERACTIVE_GRID_REGION',
+    p_cit_name => 'Interaktives Grid',
+    p_cit_cig_id => 'REGION',
     p_cit_event => '',
     p_cit_col_template => q'{null #ITEM#}',
     p_cit_init_template => q'{}',
@@ -406,8 +446,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_page_item_type(
     p_cit_id => 'SELECTION_CHANGED',
     p_cit_name => 'Zeile in Bericht gewählt',
-    p_cit_has_value => adc_util.C_FALSE,
-    p_cit_include_in_view => adc_util.C_TRUE,
+    p_cit_cig_id => 'EVENT',
     p_cit_event => 'adcselectionchange',
     p_cit_col_template => q'{case p_event when 'adcselectionchange' then p_firing_item end selection_changed}',
     p_cit_init_template => q'{}',

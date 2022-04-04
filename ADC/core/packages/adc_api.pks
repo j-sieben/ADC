@@ -267,6 +267,25 @@ as
     p_cpi_id in adc_page_items.cpi_id%type)
     return varchar2;
 
+  
+  /** 
+    Procedure: handle_bulk_errors
+      Method to encapsulate PIT collection mode error treatment
+      
+      Is used to retrieve the collection of messages collected during validation of a use case in PIT collect mode.
+      The method retrieves the messages and maps the error codes to page items passed in via <P_MAPPING>.
+      If found, it shows the exception inline with field and notification to those items, otherwise it shows the
+      message without item reference in the notification area only.
+      Supports #LABEL# replacement, page item name may be passed in with or without page prefix.
+      Similar to UTL_APEX.HANDLE_BULK_ERRORS, but uses SCT to show the messages dynamically as opposed to UTL_APEX
+      that encapsulates the messages in the validation life cycle step of APEX.
+                 
+     Parameter: 
+       p_mapping - CHAR_TABLE instance with error code - page item names couples, according to DECODE function
+   */
+  procedure handle_bulk_errors(
+    p_mapping in char_table default null);
+
 
   /**
     Function: has_errors

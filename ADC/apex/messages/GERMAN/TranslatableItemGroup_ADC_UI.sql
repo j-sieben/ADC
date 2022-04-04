@@ -117,6 +117,15 @@ begin
   );
 
   pit_admin.merge_translatable_item(
+    p_pti_id => 'FLS_HELP',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^ADC_UI^',
+    p_pti_name => q'^^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^<h2>Workflow</h2><p>Ein Workflow ist eine, auf BPMN beruhende Visualisierung eines Arbeitsablaufs.</p><p>Zu einem Workflow kann ein Bezeichner, eine Version und ein Status erfasst werden.</p>^'
+  );
+
+  pit_admin.merge_translatable_item(
     p_pti_id => 'CGR_HELP',
     p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^ADC_UI^',
@@ -180,10 +189,28 @@ begin
   );
   
   pit_admin.merge_translatable_item(
+    p_pti_id => 'FLS_SAVE_BUTTON',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^ADC_UI^',
+    p_pti_name => q'^Workflow speichern^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^^'
+  );
+  
+  pit_admin.merge_translatable_item(
     p_pti_id => 'CRU_DELETE_BUTTON',
     p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^ADC_UI^',
     p_pti_name => q'^Anwendungsfall löschen^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^^'
+  );
+  
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'FLS_DELETE_BUTTON',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^ADC_UI^',
+    p_pti_name => q'^Workflow löschen^',
     p_pti_display_name => q'^^',
     p_pti_description => q'^^'
   );
@@ -229,6 +256,33 @@ begin
     p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^ADC_UI^',
     p_pti_name => q'^Seitenkommando erstellen^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^^'
+  );
+  
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'FLG_CREATE_BUTTON',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^ADC_UI^',
+    p_pti_name => q'^Workflow erstellen^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^^'
+  );
+  
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'FLG_DELETE_BUTTON',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^ADC_UI^',
+    p_pti_name => q'^Workflow löschen^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^^'
+  );
+  
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'FLS_CREATE_BUTTON',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^ADC_UI^',
+    p_pti_name => q'^Workflow erstellen^',
     p_pti_display_name => q'^^',
     p_pti_description => q'^^'
   );

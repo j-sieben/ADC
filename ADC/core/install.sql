@@ -60,7 +60,6 @@ prompt &h3.Create UTL_TEXT templates
 
 prompt &h2.Create PL/SQL objects
 prompt &h3.Create packages
-@&tool_dir.create_package adc
 @&tool_dir.create_package adc_admin
 @&tool_dir.create_package adc_apex_action
 @&tool_dir.create_package adc_api
@@ -72,7 +71,6 @@ prompt &h3.Create packages
 @&tool_dir.create_package adc_validation
 
 prompt &h3.Create package bodies
-@&tool_dir.create_package_body adc
 @&tool_dir.create_package_body adc_admin
 @&tool_dir.create_package_body adc_apex_action
 @&tool_dir.create_package_body adc_api
@@ -82,6 +80,12 @@ prompt &h3.Create package bodies
 @&tool_dir.create_package_body adc_response
 @&tool_dir.create_package_body adc_util
 @&tool_dir.create_package_body adc_validation
+
+prompt &h3.Access types
+@&tool_dir.create_type adc_basic
+@&tool_dir.check_type_exists adc
+
+@&tool_dir.create_type_body adc_basic
 
 prompt &h2.Create parameters
 prompt &s1.Create ADC parameters

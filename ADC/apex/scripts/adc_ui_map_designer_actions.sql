@@ -24,7 +24,15 @@ using (select 'CRU' mda_alm_id, 'show' mda_ald_id, 'Rule selected from hierarchy
         union all
         select 'CAA', 'show', 'Page Command selected from hierarchy', 'CAA_ID', 'Y', 'N', null, 'Y', 'Y', 'CAA', 'CAG', 'Y', 'CAG' from dual union all
         select 'CAA', 'create-action', 'Page Command created from CAG', null, 'Y', 'N', null, 'N', 'Y', 'CAA', 'CAG', 'Y', 'CAG' from dual union all
-        select 'CAA', 'update-action', 'Page Command saved', 'CAA_ID', 'Y', 'N', null, 'Y', 'Y', 'CAA', 'CAG', 'Y', 'CAG' from dual) s
+        select 'CAA', 'update-action', 'Page Command saved', 'CAA_ID', 'Y', 'N', null, 'Y', 'Y', 'CAA', 'CAG', 'Y', 'CAG' from dual
+        union all
+        select 'FLG', 'show', 'Flows headline selected from hierarchy', 'DIAGRAM_ID', 'N', 'Y', 'FLS', 'N', 'N', null, null, 'N', null from dual union all
+        select 'FLG', 'delete-action', 'Flow deleted', 'DIAGRAM_ID', 'N', 'Y', 'FLS', 'N', 'N', null, null, 'N', null from dual union all
+        select 'FLG', 'cancel-action', 'Flow edit cancelled', 'DIAGRAM_ID', 'N', 'Y', 'FLS', 'N', 'N', null, null, 'N', null from dual
+        union all
+        select 'FLS', 'show', 'Flow selected from hierarchy', 'DIAGRAM_ID', 'Y', 'N', null, 'Y', 'Y', 'FLS', 'FLG', 'Y', 'FLG' from dual union all
+        select 'FLS', 'create-action', 'Flow created from FLG', null, 'Y', 'N', null, 'N', 'Y', 'FLS', 'FLG', 'Y', 'FLG' from dual union all
+        select 'FLS', 'update-action', 'Flow saved', 'DIAGRAM_ID', 'Y', 'N', null, 'Y', 'Y', 'FLS', 'FLG', 'Y', 'FLG' from dual) s
    on (t.mda_alm_id = s.mda_alm_id
    and t.mda_ald_id = s.mda_ald_id)
  when matched then update set
