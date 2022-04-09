@@ -65,7 +65,12 @@ with page_state as(
         cross join pit_translatable_item_v
         where pti_pmg_name = 'ADC'
           and pti_id = 'FLG'
-          and C_SUPPORT_FLOWS = C_TRUE)
+          and C_SUPPORT_FLOWS = C_TRUE
+        union all
+        select 'FLS_' || diagram_id, 'FLG_' || p_app_id, diagram_name, diagram_id, icon_fls || color_fls
+          from fls_diagrams_v
+         cross join page_state
+         where diagram_id > 0)
  select case when connect_by_isleaf = 1 then 0 when level = 1 then 1 else -1 end as status,
         level lvl,
         node_name as title,

@@ -2,7 +2,7 @@ create table adc_action_param_types(
   cpt_id varchar2(50 char),
   cpt_pti_id varchar2(50 char) constraint nn_cpt_pti_id not null,
   cpt_pmg_name varchar2(3 byte) default 'ADC' constraint chk_cpt_pmg_name check(cpt_pmg_name = 'ADC'),
-  cpt_cpv_id varchar2(50 char) default 'TEXT' constraint chk_cpt_item_type check(cpt_item_type in ('TEXT', 'TEXT_AREA', 'SELECT_LIST', 'SWITCH')),
+  cpt_cpv_id varchar2(50 char) default 'TEXT'constraint nn_cpt_cpv_id not null,
   cpt_sort_seq number default on null 10 constraint nn_cpt_soprt_seq not null,
   cpt_active &FLAG_TYPE. default on null &C_TRUE. constraint chk_cpt_active check(cpt_active in (&C_TRUE., &C_FALSE.)),
   constraint pk_adc_action_param_types primary key(cpt_id),

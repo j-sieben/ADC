@@ -1,6 +1,5 @@
 create or replace editionable view adc_bl_page_targets
 as
--- PAGE ITEMS
 select cgr_id cpi_cgr_id,
        item_name cpi_id,
        case 

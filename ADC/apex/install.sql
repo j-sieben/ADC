@@ -1,4 +1,4 @@
-@tools/set_folder apex
+@&tool_dir.set_folder apex
 
 prompt &h2.Remove existing installation
 @&install_dir.uninstall.sql
@@ -14,7 +14,7 @@ prompt &h3.Create views
 @&tool_dir.create_view adc_bl_designer_action_v
 @&tool_dir.create_view adc_ui_lov_action_item_focus
 @&tool_dir.create_view adc_ui_lov_action_param_type
-@&tool_dir.create_view adc_ui_lov_action_param_isual_type
+@&tool_dir.create_view adc_ui_lov_action_param_visual_type
 @&tool_dir.create_view adc_ui_lov_action_type_group
 @&tool_dir.create_view adc_ui_lov_apex_action_items
 @&tool_dir.create_view adc_ui_lov_apex_action_type
@@ -75,3 +75,6 @@ prompt &h2.Version specific installation
 
 -- Re-Init after APEX install
 @tools/re_init_apex.sql
+
+-- Install Flows extension if necessary
+@&tool_dir.check_flow_exists flows_extension/install.sql

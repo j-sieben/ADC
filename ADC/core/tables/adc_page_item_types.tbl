@@ -2,7 +2,7 @@ create table adc_page_item_types(
   cit_id varchar2(50 char), 
   cit_pti_id varchar2(50 char) constraint nn_cit_pti_id not null,
   cit_pmg_name varchar2(3 byte) default 'ADC' constraint chk_cit_pmg_name check(cit_pmg_name = 'ADC'),
-	cit_ig_id varchar2(50 char), 
+	cit_cig_id varchar2(50 char), 
 	cit_event varchar2(30 byte), 
 	cit_col_template varchar2(100 char), 
 	cit_init_template varchar2(100 char), 

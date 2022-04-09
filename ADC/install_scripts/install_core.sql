@@ -1,9 +1,10 @@
 -- Parameters:
 -- None
+clear screen
+
 define tool_dir=tools/
 @&tool_dir.init.sql
 
-clear screen
 
 prompt
 prompt &section.

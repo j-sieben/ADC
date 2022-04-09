@@ -3,7 +3,6 @@
 -- 2: Optional APP-ID
 
 define tool_dir=tools/
-clear screen
 
 @&tool_dir.init_apex.sql &1. &2. ADC
 
@@ -12,18 +11,6 @@ prompt &section.
 prompt &h1.Checking prerequisites
 @&tool_dir.set_compiler_flags.sql
 @install_scripts/check_prerequisites.sql &1.
-
-prompt
-prompt &section.
-prompt &h1.Removing existing installation
---@apex/uninstall.sql
-@&plugin_dir.uninstall.sql
-@core/uninstall.sql
-
-prompt
-prompt &section.
-prompt &h1.APEX Dynamic Controller (ADC) Installation
-@&core_dir.install.sql
 
 prompt
 prompt &section.

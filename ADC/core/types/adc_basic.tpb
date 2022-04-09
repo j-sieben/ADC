@@ -607,5 +607,5 @@ as
     pit.leave_optional;
   end validate_page;  
   
-end adc_basic;
+end;
 /
