@@ -16,13 +16,3 @@ begin
   apex_application_install.set_schema(user);
 end;
 /
-
-
-  select workspace_id 
-    from apex_workspaces
-   where workspace = 'B3M';
-   
-begin
-  apex_util.set_security_group_id(9217271833098715);
-end;
-/
