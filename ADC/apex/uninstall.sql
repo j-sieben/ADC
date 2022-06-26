@@ -58,16 +58,25 @@ end;
 
 prompt &h3.Removing ADC groups
 declare
-  cursor adc_cur is
-    select cgr_id
-      from adc_rule_groups
-     where cgr_app_id = &APP_ID.;
+  c_stmt varchar2(100o byte) := 'select cgr_id from adc_rule_groups where cgr_app_id = &APP_ID.';
+  l_cur sys_refcursor;
+  l_cgr_id binary_integer;
 begin
   if &APP_ID. is not null then
-    for r in adc_cur loop
-      adc_admin.delete_rule_group(r.cgr_id);
+    open l_cur for c_stmt;
+    fetch l_cur into l_cgr_id;
+    while l_cur%found loop
+      adc_admin.delete_rule_group(l_cgr_id);
+      fetch l_cur into l_cgr_id;
     end loop;
   end if;
+exception
+  when others then
+    -- ignore, if ADC_RULE_GROUPS does not exist yet
+    if l_cur%isopen then
+      close l_cur;
+    end if;
+    dbms_output.put_line('&s1.ADC does not exist, ignored.');
 end;
 /
 
