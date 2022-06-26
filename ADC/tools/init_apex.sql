@@ -6,7 +6,7 @@ set lines 120
 set pages 9999
 whenever sqlerror exit
 
-set termout on
+set termout off
 col apex_ws new_val APEX_WS format a30
 col apex_path new_val APEX_PATH format a20
 col app_id new_val APP_ID format a30

@@ -1,6 +1,6 @@
 -- Parameters:
 -- None
-clear screen
+-- clear screen
 
 define tool_dir=tools/
 @&tool_dir.init.sql
