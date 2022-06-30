@@ -1,7 +1,7 @@
 create or replace force view adc_ui_designer_tree as
 with page_state as(
        select /*+ no_merge */
-              coalesce(utl_apex.get_number('CGR_APP_ID'), 117) p_app_id,
+              utl_apex.get_number('CGR_APP_ID') p_app_id,
               adc_util.C_TRUE c_true,
               adc_ui_designer.support_flows c_support_flows,
               '' color_deactive,
@@ -20,8 +20,8 @@ with page_state as(
               'fa-tree-org' icon_fls
          from dual),
      data as(
-       select /*+ no_merge (page_state) */
-              'CGR_' || cgr_id node_id, 'PAGE' node_parent_id, cgr_page_id || ': ' || page_name || ' (' || page_alias || ')' node_name, cgr_page_id node_sort_seq, icon_cgr || color_cgr node_icon
+              -- Rule Groups
+       select 'CGR_' || cgr_id node_id, 'PAGE' node_parent_id, cgr_page_id || ': ' || page_name || ' (' || page_alias || ')' node_name, cgr_page_id node_sort_seq, icon_cgr || color_cgr node_icon
          from adc_rule_groups
          join apex_application_pages
            on cgr_app_id = application_id
@@ -29,6 +29,7 @@ with page_state as(
          join page_state
            on cgr_app_id = p_app_id
         union all
+              
        select 'CAG_' || cgr_id, 'CGR_' || cgr_id, pti_name, 99999, icon_cag || color_cag
          from adc_rule_groups
          join page_state

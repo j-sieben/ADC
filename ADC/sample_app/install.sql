@@ -18,9 +18,14 @@ prompt &h3.Create views
 @&tool_dir.create_view sadc_lov_job
 @&tool_dir.create_view sadc_ui_adact
 @&tool_dir.create_view sadc_ui_adpti
+@&tool_dir.create_view sadc_ui_adrep
 @&tool_dir.create_view sadc_ui_adsta
+@&tool_dir.create_view sadc_ui_doc
 @&tool_dir.create_view sadc_ui_edemp
 @&tool_dir.create_view sadc_ui_home
+@&tool_dir.create_view sadc_ui_menu_cat
+@&tool_dir.create_view sadc_ui_menu_cat_items
+@&tool_dir.create_view sadc_ui_tutorial
 
 prompt &h2.Create Translatable items
 @&msg_dir.TranslatableItemGroup_SADC.sql
