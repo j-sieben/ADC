@@ -2370,7 +2370,7 @@ as
 
     select utl_text.generate_text(cursor(
             select p.uttm_text template,
-                   cit_id, cit_name, 
+                   cit_id, cit_cig_id, cit_name, 
                    adc_util.to_bool(cit_has_value) cit_has_value, 
                    adc_util.to_bool(cit_include_in_view) cit_include_in_view, 
                    cit_event, 

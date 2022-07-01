@@ -29,7 +29,6 @@ with page_state as(
          join page_state
            on cgr_app_id = p_app_id
         union all
-              
        select 'CAG_' || cgr_id, 'CGR_' || cgr_id, pti_name, 99999, icon_cag || color_cag
          from adc_rule_groups
          join page_state

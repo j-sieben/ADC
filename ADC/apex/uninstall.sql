@@ -58,7 +58,7 @@ end;
 
 prompt &h3.Removing ADC groups
 declare
-  c_stmt varchar2(100o byte) := 'select cgr_id from adc_rule_groups where cgr_app_id = &APP_ID.';
+  c_stmt varchar2(1000 byte) := 'select cgr_id from adc_rule_groups where cgr_app_id = &APP_ID.';
   l_cur sys_refcursor;
   l_cgr_id binary_integer;
 begin

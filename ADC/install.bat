@@ -1,3 +1,4 @@
+cls
 @echo off
 set /p InstallUser=Enter owner schema for ADC:
 

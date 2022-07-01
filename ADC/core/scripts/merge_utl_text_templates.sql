@@ -231,13 +231,13 @@ q'^^',
   );
 
   utl_text.merge_template(
-    p_uttm_name => 'EXPORT_ACTION_TYPE_GROUP',
+    p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
-    p_uttm_mode => 'PAGE_ITEM_TYPE',
+    p_uttm_mode => 'PAGE_ITEM_TYPE_GROUP',
     p_uttm_text => q'^  adc_admin.merge_page_item_type_group(\CR\^' || 
-q'^    p_cig_id => '#CIT_ID#',\CR\^' || 
-q'^    p_cig_has_value => #CIT_HAS_VALUE#,\CR\^' || 
-q'^    p_cig_include_in_view => #CIT_INCLUDE_IN_VIEW#);\CR\^' || 
+q'^    p_cig_id => '#CIG_ID#',\CR\^' || 
+q'^    p_cig_has_value => #CIG_HAS_VALUE#,\CR\^' || 
+q'^    p_cig_include_in_view => #CIG_INCLUDE_IN_VIEW#);\CR\^' || 
 q'^^',
     p_uttm_log_text => q'^^',
     p_uttm_log_severity => 70
@@ -250,25 +250,7 @@ q'^^',
     p_uttm_text => q'^  adc_admin.merge_page_item_type(\CR\^' || 
 q'^    p_cit_id => '#CIT_ID#',\CR\^' || 
 q'^    p_cit_name => '#CIT_NAME#',\CR\^' || 
-q'^    p_cit_cig_id => #CIT_CIG_ID#,\CR\^' || 
-q'^    p_cit_event => '#CIT_EVENT#',\CR\^' || 
-q'^    p_cit_col_template => #CIT_COL_TEMPLATE#,\CR\^' || 
-q'^    p_cit_init_template => #CIT_INIT_TEMPLATE#,\CR\^' || 
-q'^    p_cit_is_custom_event => #CIT_IS_CUSTOM_EVENT#);\CR\^' || 
-q'^^',
-    p_uttm_log_text => q'^^',
-    p_uttm_log_severity => 70
-  );
-
-  utl_text.merge_template(
-    p_uttm_name => 'EXPORT_ACTION_TYPE',
-    p_uttm_type => 'ADC',
-    p_uttm_mode => 'PAGE_ITEM_TYPE',
-    p_uttm_text => q'^  adc_admin.merge_page_item_type(\CR\^' || 
-q'^    p_cit_id => '#CIT_ID#',\CR\^' || 
-q'^    p_cit_name => '#CIT_NAME#',\CR\^' || 
-q'^    p_cit_has_value => #CIT_HAS_VALUE#,\CR\^' || 
-q'^    p_cit_include_in_view => #CIT_INCLUDE_IN_VIEW#,\CR\^' || 
+q'^    p_cit_cig_id => '#CIT_CIG_ID#',\CR\^' || 
 q'^    p_cit_event => '#CIT_EVENT#',\CR\^' || 
 q'^    p_cit_col_template => #CIT_COL_TEMPLATE#,\CR\^' || 
 q'^    p_cit_init_template => #CIT_INIT_TEMPLATE#,\CR\^' || 

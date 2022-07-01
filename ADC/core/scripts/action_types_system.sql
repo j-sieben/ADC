@@ -38,6 +38,7 @@ begin
     p_cpv_description => q'{Wird für umfangreiche Textmengen verwendet.}',
     p_cpv_active => adc_util.C_TRUE);
 
+
   -- ACTION_PARAM_TYPES
   adc_admin.merge_action_param_type(
     p_cpt_id => 'APEX_ACTION',
@@ -256,31 +257,29 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cpt_sort_seq => 10,
     p_cpt_active => adc_util.C_TRUE);
 
+
   -- PAGE_ITEM_TYPE_GROUPS
-  adc_admin.merge_page_item_type_group(
-    p_cig_id => 'FRAMEWORK',
-    p_cig_has_value => adc_util.C_FALSE,
-    p_cig_include_in_view => adc_util.C_FALSE);
-    
-  adc_admin.merge_page_item_type_group(
-    p_cig_id => 'EVENT',
-    p_cig_has_value => adc_util.C_FALSE,
-    p_cig_include_in_view => adc_util.C_TRUE);
-    
-  adc_admin.merge_page_item_type_group(
-    p_cig_id => 'REGION',
-    p_cig_has_value => adc_util.C_FALSE,
-    p_cig_include_in_view => adc_util.C_FALSE);
-    
-  adc_admin.merge_page_item_type_group(
-    p_cig_id => 'ITEM',
-    p_cig_has_value => adc_util.C_TRUE,
-    p_cig_include_in_view => adc_util.C_FALSE);
-    
   adc_admin.merge_page_item_type_group(
     p_cig_id => 'BUTTON',
     p_cig_has_value => adc_util.C_FALSE,
     p_cig_include_in_view => adc_util.C_FALSE);
+  adc_admin.merge_page_item_type_group(
+    p_cig_id => 'EVENT',
+    p_cig_has_value => adc_util.C_FALSE,
+    p_cig_include_in_view => adc_util.C_TRUE);
+  adc_admin.merge_page_item_type_group(
+    p_cig_id => 'FRAMEWORK',
+    p_cig_has_value => adc_util.C_FALSE,
+    p_cig_include_in_view => adc_util.C_FALSE);
+  adc_admin.merge_page_item_type_group(
+    p_cig_id => 'ITEM',
+    p_cig_has_value => adc_util.C_TRUE,
+    p_cig_include_in_view => adc_util.C_FALSE);
+  adc_admin.merge_page_item_type_group(
+    p_cig_id => 'REGION',
+    p_cig_has_value => adc_util.C_FALSE,
+    p_cig_include_in_view => adc_util.C_FALSE);
+
 
   -- PAGE_ITEM_TYPES
   adc_admin.merge_page_item_type(
@@ -388,6 +387,22 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cit_init_template => q'{}',
     p_cit_is_custom_event => adc_util.C_FALSE);
   adc_admin.merge_page_item_type(
+    p_cit_id => 'INTERACTIVE_GRID_REGION',
+    p_cit_name => 'Interaktives Grid',
+    p_cit_cig_id => 'REGION',
+    p_cit_event => '',
+    p_cit_col_template => q'{null #ITEM#}',
+    p_cit_init_template => q'{}',
+    p_cit_is_custom_event => adc_util.C_FALSE);
+  adc_admin.merge_page_item_type(
+    p_cit_id => 'INTERACTIVE_REPORT_REGION',
+    p_cit_name => 'Interaktiver Bericht',
+    p_cit_cig_id => 'REGION',
+    p_cit_event => '',
+    p_cit_col_template => q'{null #ITEM#}',
+    p_cit_init_template => q'{}',
+    p_cit_is_custom_event => adc_util.C_FALSE);
+  adc_admin.merge_page_item_type(
     p_cit_id => 'ITEM',
     p_cit_name => 'Element',
     p_cit_cig_id => 'ITEM',
@@ -401,14 +416,6 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cit_cig_id => 'ITEM',
     p_cit_event => 'change',
     p_cit_col_template => q'{adc_api.get_number('#ITEM#', '#CONVERSION#', c_false) #ITEM#}',
-    p_cit_init_template => q'{to_char(itm.#ITEM#, '#CONVERSION#')}',
-    p_cit_is_custom_event => adc_util.C_FALSE);
-  adc_admin.merge_page_item_type(
-    p_cit_id => 'ROWID_ITEM',
-    p_cit_name => 'Zeilen-ID (RowID)',
-    p_cit_cig_id => 'ITEM',
-    p_cit_event => 'change',
-    p_cit_col_template => q'{adc_api.get_string('#ITEM#') #ITEM#}',
     p_cit_init_template => q'{to_char(itm.#ITEM#, '#CONVERSION#')}',
     p_cit_is_custom_event => adc_util.C_FALSE);
   adc_admin.merge_page_item_type(
@@ -428,20 +435,12 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cit_init_template => q'{}',
     p_cit_is_custom_event => adc_util.C_FALSE);
   adc_admin.merge_page_item_type(
-    p_cit_id => 'INTERACTIVE_REPORT_REGION',
-    p_cit_name => 'Interaktiver Bericht',
-    p_cit_cig_id => 'REGION',
-    p_cit_event => '',
-    p_cit_col_template => q'{null #ITEM#}',
-    p_cit_init_template => q'{}',
-    p_cit_is_custom_event => adc_util.C_FALSE);
-  adc_admin.merge_page_item_type(
-    p_cit_id => 'INTERACTIVE_GRID_REGION',
-    p_cit_name => 'Interaktives Grid',
-    p_cit_cig_id => 'REGION',
-    p_cit_event => '',
-    p_cit_col_template => q'{null #ITEM#}',
-    p_cit_init_template => q'{}',
+    p_cit_id => 'ROWID_ITEM',
+    p_cit_name => 'Zeilen-ID (RowID)',
+    p_cit_cig_id => 'ITEM',
+    p_cit_event => 'change',
+    p_cit_col_template => q'{adc_api.get_string('#ITEM#') #ITEM#}',
+    p_cit_init_template => q'{to_char(itm.#ITEM#, '#CONVERSION#')}',
     p_cit_is_custom_event => adc_util.C_FALSE);
   adc_admin.merge_page_item_type(
     p_cit_id => 'SELECTION_CHANGED',
@@ -459,7 +458,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Alle Seitenelemente',
     p_cif_description => q'{Alle Seitenelemente der Anwendung}',
     p_cif_actual_page_only => adc_util.C_FALSE,
-    p_cif_item_types => 'DOCUMENT:APP_ELEMENT:BUTTON:FORM_REGION:REGION:ELEMENT',
+    p_cif_item_types => 'DOCUMENT:APP_ITEM:BUTTON:REGION:ITEM',
     p_cif_default => 'DOCUMENT',
     p_cif_active => adc_util.C_TRUE);
 
@@ -477,7 +476,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Seitenelemente, die aktiviert und deaktiviert werden können',
     p_cif_description => q'{Alle Seitenelemente, die aktiviert und deaktiviert werden können}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'ELEMENT:DOCUMENT:BUTTON:REGION:FORM_REGION',
+    p_cif_item_types => 'ITEM:DOCUMENT:BUTTON:REGION',
     p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
@@ -486,7 +485,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Seitenelemente, die einen Focus erhalten können',
     p_cif_description => q'{Alle Seitenelemente, die einen Fokus erhalten können}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'BUTTON:ELEMENT',
+    p_cif_item_types => 'BUTTON:ITEM',
     p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
@@ -504,7 +503,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Alle Seitenelemente der aktuellen Seite',
     p_cif_description => q'{Alle Seitenelemente der aktuellen Anwendungsseite}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'BUTTON:FORM_REGION:REGION:ELEMENT',
+    p_cif_item_types => 'BUTTON:REGION:ITEM',
     p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
@@ -522,7 +521,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Seitenelement oder jQuery-Selektor',
     p_cif_description => q'{Ermöglicht die Auswahl eines Seitenelements oder die Angabe eines jQuery-Selektors zur Auswahl mehrerer Seitenelemente.}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'BUTTON:DOCUMENT:ELEMENT:FORM_REGION:REGION',
+    p_cif_item_types => 'BUTTON:DOCUMENT:ITEM:REGION',
     p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
@@ -531,7 +530,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Seitenelement',
     p_cif_description => q'{<p>Alle Anwendungs- und Seitenelemente der aktuellen Anwendungsseite</p>}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'ELEMENT',
+    p_cif_item_types => 'ITEM',
     p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
@@ -540,7 +539,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Eingabefeld oder Dokument',
     p_cif_description => q'{Alle Eingabefelder oder keine spezifische Angabe}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'DOCUMENT:ELEMENT',
+    p_cif_item_types => 'DOCUMENT:ITEM',
     p_cif_default => 'DOCUMENT',
     p_cif_active => adc_util.C_TRUE);
 
@@ -549,7 +548,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Regionen der aktuellen Seite',
     p_cif_description => q'{Alle Regionen der aktuellen Anwendungsseite}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'FORM_REGION:REGION',
+    p_cif_item_types => 'REGION',
     p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
@@ -558,7 +557,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Seitenelemente, die aktualisiert werden können',
     p_cif_description => q'{Alle Seitenelemente, die aktualisiert werden können}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'REGION:ELEMENT',
+    p_cif_item_types => 'REGION:ITEM',
     p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
@@ -722,7 +721,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
 
   adc_admin.merge_action_type(
     p_cat_id => 'INITIALIZE_FORM_REGION',
-    p_cat_ctg_id => 'PAGE_ITEM',
+    p_cat_ctg_id => 'ADC',
     p_cat_cif_id => 'FORM_REGION',
     p_cat_name => 'Formularregion initialiisieren',
     p_cat_display_name => q'{<p><strong>initialisiere Formular</strong> #PARAM_1#</p>}',
@@ -739,7 +738,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cat_cif_id => 'PAGE_ITEM_OR_DOCUMENT',
     p_cat_name => 'Feld ist Pflichtfeld',
     p_cat_display_name => q'{<p><strong>mache </strong>#PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“#ITEM##” zum <strong>Pflichtfeld</strong></p>}',
-    p_cat_description => q'{<p>Macht ein Seitenelement zu einem Pflichtfeld inkl. Validierung.</p>}',
+    p_cat_description => q'{<p>Macht ein Seitenelement zu einem Pflichtfeld inkl. Validierung. Ein Pflichtfeld wird immer auch sichtbar und aktiv geschaltet, um eine Eingabe durch den Anwender zu ermöglichen.</p>}',
     p_cat_pl_sql => q'{adc_api.register_mandatory('#ITEM#', adc_util.C_TRUE, '#PARAM_1#', '#PARAM_2#');}',
     p_cat_js => q'{de.condes.plugin.adc.setMandatory('#SELECTOR#', true);de.condes.plugin.adc.setDisplayState('#SELECTOR#', 'SHOW_ENABLE');}',
     p_cat_is_editable => adc_util.C_FALSE,
@@ -773,7 +772,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cat_display_name => q'{<p><strong>mache </strong>#PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“#ITEM##” <strong>optional</strong></p>}',
     p_cat_description => q'{<p>Macht ein Seitenelement zu einem optionalen Element und setzt Pflichtfeld-Validierung aus.</p>}',
     p_cat_pl_sql => q'{adc_api.register_mandatory('#ITEM#', adc_util.C_FALSE, null, '#PARAM_2#');}',
-    p_cat_js => q'{de.condes.plugin.adc.setMandatory('#SELECTOR#',false);}',
+    p_cat_js => q'{de.condes.plugin.adc.setMandatory('#SELECTOR#',false);de.condes.plugin.adc.setDisplayState('#SELECTOR#', '#PARAM_3#');}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_TRUE);
 
@@ -785,6 +784,16 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_description => q'{}',
     p_cap_display_name => '',
     p_cap_mandatory => adc_util.C_FALSE,
+    p_cap_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'IS_OPTIONAL',
+    p_cap_cpt_id => 'ITEM_STATUS',
+    p_cap_sort_seq => 3,
+    p_cap_default => q'{SHOW_ENABLE}',
+    p_cap_description => q'{<p>Kontrolliert den Anzeigestatus des Elements. Wird ein Feld optional geschaltet, kann es auch ausgeblendet oder deaktiviert werden.</p>}',
+    p_cap_display_name => '',
+    p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_type(
@@ -881,7 +890,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_cpt_id => 'PIT_MESSAGE',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
-    p_cap_description => q'{<p>Meldungsname, der ausgegeben werden soll, falls die Prüfung misslingt. Muss ein PIT-Meldungsname sein, in der Form <span style="font-family:'Courier New', Courier, monospace;">MSG.&lt;Meldungsname&gt;</span></p>}',
+    p_cap_description => q'{<p>Meldungsname, der ausgegeben werden soll, falls die Prüfung misslingt. Muss ein PIT-Meldungsname sein, in der Form <span style="font-family:'Courier New', Courier, monospace;">MSG.[Meldungsname]</span></p>}',
     p_cap_display_name => '',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
@@ -1014,6 +1023,28 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_type(
+    p_cat_id => 'SELECT_TAB',
+    p_cat_ctg_id => 'ADC',
+    p_cat_cif_id => 'PAGE_REGION',
+    p_cat_name => 'Tabulator auswählen',
+    p_cat_display_name => q'{<p><strong>wähle</strong> Tabulator<strong> #ITEM#</strong></p>}',
+    p_cat_description => q'{<p>Macht einen Tabulator in einem Tabulator-Widget aktiv.</p>}',
+    p_cat_pl_sql => q'{}',
+    p_cat_js => q'{de.condes.plugin.adc.selectTab('#PARAM_1#', '#ITEM#');}',
+    p_cat_is_editable => adc_util.C_TRUE,
+    p_cat_raise_recursive => adc_util.C_FALSE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'SELECT_TAB',
+    p_cap_cpt_id => 'STRING',
+    p_cap_sort_seq => 1,
+    p_cap_default => q'{}',
+    p_cap_description => q'{<p>Tragen Sie hier die ID der Region ein, die den Tabulator-Eintrag enthält.</p>}',
+    p_cap_display_name => 'ID der Tabulator-Region',
+    p_cap_mandatory => adc_util.C_TRUE,
+    p_cap_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_type(
     p_cat_id => 'SEND_VALIDATE_PAGE',
     p_cat_ctg_id => 'ADC',
     p_cat_cif_id => 'DOCUMENT',
@@ -1138,7 +1169,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cat_cif_id => 'PAGE_ITEM',
     p_cat_name => 'Feldbezeichner auf Wert setzen',
     p_cat_display_name => q'{<p><strong>setze Feldbezeichner</strong> auf “#PARAM_1#”</p>}',
-    p_cat_description => q'{<p>Setzt den Bezeichner des referenzierten Seitenelements auf den als Parameter übergebenen Wert.</p><p>Ein Pflichtfeld wird immer auch sichtbar und aktiv geschaltet, um eine Eingabe durch den Anwender zu ermöglichen.</p>}',
+    p_cat_description => q'{<p>Setzt den Bezeichner des referenzierten Seitenelements auf den als Parameter übergebenen Wert.</p>}',
     p_cat_pl_sql => q'{}',
     p_cat_js => q'{de.condes.plugin.adc.setDisplayState('#SELECTOR#', '', '#PARAM_1#');}',
     p_cat_is_editable => adc_util.C_FALSE,
@@ -1226,7 +1257,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cat_ctg_id => 'ITEM',
     p_cat_cif_id => 'DOCUMENT',
     p_cat_name => 'Seitenlemente ein- und ausblenden',
-    p_cat_display_name => q'{<p><strong>blende</strong> Selektoren "#PARAM_1#” &nbsp;<strong>ein und</strong> '#PARAM_2#" <strong>aus</strong></p>}',
+    p_cat_display_name => q'{<p><strong>blende</strong> Selektoren "#PARAM_1#” <strong>ein und</strong> '#PARAM_2#" <strong>aus</strong></p>}',
     p_cat_description => q'{<p>Kontrolliert die Anzeige mehrerer Seitenelemente, indem die Seitzenelemente, die durch den ersten jQuery-Ausdruck identifiziert werden, ein- und die Seitenelemente, die durch den zweiten jQuery-Ausdruck identifiziert werden, ausgeblendet werden</p>}',
     p_cat_pl_sql => q'{}',
     p_cat_js => q'{de.condes.plugin.adc.setDisplayState('#PARAM_2#', 'HIDE');  de.condes.plugin.adc.setDisplayState('#PARAM_1#', 'SHOW_ENABLE');}',
@@ -1315,7 +1346,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_cpt_id => 'PIT_MESSAGE',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
-    p_cap_description => q'{<p>Meldungsname, der ausgegeben werden soll, falls die Prüfung misslingt. Muss ein PIT-Meldungsname sein, in der Form <span style="font-family:'Courier New', Courier, monospace;">MSG.&lt;Meldungsname&gt;</span></p>}',
+    p_cap_description => q'{<p>Meldungsname, der ausgegeben werden soll, falls die Prüfung misslingt. Muss ein PIT-Meldungsname sein, in der Form <span style="font-family:'Courier New', Courier, monospace;">MSG.[Meldungsname]</span></p>}',
     p_cap_display_name => '',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
