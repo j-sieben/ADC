@@ -42,6 +42,15 @@ prompt &h3.Create views
 @&tool_dir.create_view adc_bl_cat_help
 @&tool_dir.create_view adc_rule_group_status
 
+prompt &h3.Create parameter lov views
+@&tool_dir.create_view adc_param_lov_apex_action
+@&tool_dir.create_view adc_param_lov_event
+@&tool_dir.create_view adc_param_lov_item_status
+@&tool_dir.create_view adc_param_lov_page_item
+@&tool_dir.create_view adc_param_lov_pit_message
+@&tool_dir.create_view adc_param_lov_sequence
+@&tool_dir.create_view adc_param_lov_submit_type
+
 prompt &h2.Merge default data
 prompt &h3.Create ADC parameters
 @&tool_dir.run_script ParameterGroup_ADC
