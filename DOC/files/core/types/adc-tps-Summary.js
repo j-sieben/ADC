@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("File:core/types/adc.tps","adc.tps");NDSummary.OnSummaryLoaded("File:core/types/adc.tps",[["SQL","SQL"]],[["Groups","Group"],["Types","Type"]],[[140,0,0,"Types","Types"],[141,0,1,"ADC","ADC"]]);

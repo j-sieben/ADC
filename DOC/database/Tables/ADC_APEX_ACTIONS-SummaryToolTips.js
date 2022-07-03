@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:Tables.ADC_APEX_ACTIONS",{791:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store apex actions to be maintained by ADC</div></div>"});

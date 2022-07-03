@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:Tables.ADC_LU_DESIGNER_MODES","ADC_LU_DESIGNER_MODES");NDSummary.OnSummaryLoaded("Database:Tables.ADC_LU_DESIGNER_MODES",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[787,0,0,"<span class=\"Qualifier\">Tables.</span>&#8203;ADC_LU_DESIGNER_MODES"]]);

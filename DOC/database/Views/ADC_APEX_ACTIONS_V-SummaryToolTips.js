@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_APEX_ACTIONS_V",{});

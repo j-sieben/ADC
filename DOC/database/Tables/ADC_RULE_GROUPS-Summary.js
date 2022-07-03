@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:Tables.ADC_RULE_GROUPS","ADC_RULE_GROUPS");NDSummary.OnSummaryLoaded("Database:Tables.ADC_RULE_GROUPS",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[781,0,0,"<span class=\"Qualifier\">Tables.</span>&#8203;ADC_RULE_GROUPS"]]);

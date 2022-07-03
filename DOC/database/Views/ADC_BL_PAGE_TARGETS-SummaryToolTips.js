@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_BL_PAGE_TARGETS",{808:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">View to collect all page components that are accessible by ADC, along with an item type categorization for grouping in ITEM_FOCUS etc.</div></div>"});

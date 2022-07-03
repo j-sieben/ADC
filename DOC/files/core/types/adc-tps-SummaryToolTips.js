@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("File:core/types/adc.tps",{141:"<div class=\"NDToolTip TType LSQL\"><div class=\"TTSummary\">This type inherits from ADC_BASIC, exposing the system delivered action types via this type. It is meant as an empty hull for your custom action types you want to make available through PL/SQL.</div></div>"});

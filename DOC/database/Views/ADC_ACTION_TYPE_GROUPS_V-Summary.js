@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_ACTION_TYPE_GROUPS_V","ADC_ACTION_TYPE_GROUPS_V");NDSummary.OnSummaryLoaded("Database:Views.ADC_ACTION_TYPE_GROUPS_V",[["SQL","SQL"]],[["Views","DatabaseView"]],[[802,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_ACTION_TYPE_GROUPS_V"]]);

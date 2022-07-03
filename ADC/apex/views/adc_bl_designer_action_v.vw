@@ -1,3 +1,4 @@
+
 create or replace view adc_bl_designer_action_v as
 with session_state as(
        select utl_apex.get_page_prefix p_page_prefix,
@@ -28,4 +29,33 @@ select mda_alm_id mda_actual_mode, mda_ald_id mda_actual_id, mda_comment,
     on case mda_delete_button_visible when adc_util.C_TRUE then mda_alm_id else 'NO' end || '_DELETE_BUTTON' = d.pti_id;
     
     
-comment on table adc_bl_designer_action_v is 'Decision table to decide upon the visual status of the apex actions of the ADC designer';
+comment on table adc_bl_designer_action_v is '    This view enriches the data from the decision table <Tables.ADC_UI_MAP_DESIGNER_ACTIONS> with translated label data and
+    session state information, such as the actual page and region prefix.    
+    The decision is based on a mode the ADC Designer is actually in and the command to execute. As an example, if the
+    designer shows a rule group, because the user clicked on a dynamic page in the tree control, The mode is CGR and the
+    command is SHOW. Based on this information, this view is queried and the status and labels of the respective buttons
+    are taken and sent to the page. The decision table also defines the target mode to switch to if a button is clicked.    
+    If the user decides to click the CREATE button in the ADC Designer, this then is interpreted as target mode CRU and
+    the command is CREATE-ACTION. This again filters this view, controling the state of the buttons and labels as well
+    as the target modes of the buttons.';
+comment on column adc_bl_designer_action_v.mda_actual_mode is 'Mode the designer has to move to, fi. when showing a rule, the mode is CRU.';
+comment on column adc_bl_designer_action_v.mda_actual_id is 'Name of the command that was executed (either an apex action name or SHOW) Together with MDA_ACTUAL_MODE, this decides on the row to execute.';
+comment on column adc_bl_designer_action_v.mda_comment is 'Comment explaining the use case of the specific row.';
+comment on column adc_bl_designer_action_v.mda_id_value is 'Actual ID of the asset shown.';
+comment on column adc_bl_designer_action_v.mda_form_id is 'ID of the form to show next.';
+comment on column adc_bl_designer_action_v.mda_remember_page_state is 'Flag to indicate whether the form to show next needs to survey element changes.';
+comment on column adc_bl_designer_action_v.mda_create_button_visible is 'Flag to indicate whether the create button is visible.';
+comment on column adc_bl_designer_action_v.mda_create_button_label is 'Label fo the create button, translated.';
+comment on column adc_bl_designer_action_v.mda_create_target_mode is 'Mode to enter if the create button is pressed.';
+comment on column adc_bl_designer_action_v.mda_update_button_visible is 'Flag to indicate whether the upddate button is visible.';
+comment on column adc_bl_designer_action_v.mda_update_button_label is 'Label fo the update button, translated.';
+comment on column adc_bl_designer_action_v.mda_update_target_mode is 'Mode to enter if the update button is pressed.';
+comment on column adc_bl_designer_action_v.mda_update_value is 'ID of the asset to update.';
+comment on column adc_bl_designer_action_v.mda_delete_button_visible is 'Flag to indicate whether the delete button is visible.';
+comment on column adc_bl_designer_action_v.mda_delete_button_label is 'Label fo the delete button, translated.';
+comment on column adc_bl_designer_action_v.mda_delete_mode is 'Actual mode when the delete button was pressed.';
+comment on column adc_bl_designer_action_v.mda_delete_target_mode is 'Mode to enter if the delete button is pressed.';
+comment on column adc_bl_designer_action_v.mda_delete_value is 'ID of the asset to delete.';
+comment on column adc_bl_designer_action_v.mda_cancel_button_active is 'Flag to indicate whether the cancel button is visible.';
+comment on column adc_bl_designer_action_v.mda_cancel_target_mode is 'Mode to enter if the cancel button is pressed.';
+comment on column adc_bl_designer_action_v.mda_cancel_value is 'ID of the asset to return to after the dialog was canceled.';

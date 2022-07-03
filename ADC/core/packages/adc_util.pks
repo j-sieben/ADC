@@ -224,6 +224,19 @@ as
   procedure monitor_loop(
     p_counter in number default null,
     p_loop_name in varchar2 default null);
+    
+    
+  /**
+    Function: get_additional_nd_comments
+      Method collects additional comments in NaturalDocs syntax and returns them
+      as CLOB. The content of the comments describes tables and views and picks up
+      their comments and column names.
+      
+      Add the resulting comments to a sql file that is not executed or commented out
+      to make these available for NaturalDocs.
+   */
+  function get_additional_nd_comments
+    return clob;
 
 end adc_util;
 /

@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_PARAM_LOV_APEX_ACTION","ADC_PARAM_LOV_APEX_ACTION");NDSummary.OnSummaryLoaded("Database:Views.ADC_PARAM_LOV_APEX_ACTION",[["SQL","SQL"]],[["Views","DatabaseView"]],[[811,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_PARAM_LOV_APEX_ACTION"]]);

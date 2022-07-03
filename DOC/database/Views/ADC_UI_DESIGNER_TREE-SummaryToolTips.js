@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_UI_DESIGNER_TREE",{829:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Hierarchical representation of rule groups with their related rules and rule actions</div></div>"});

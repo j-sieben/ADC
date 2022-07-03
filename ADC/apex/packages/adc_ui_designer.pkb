@@ -763,7 +763,7 @@ as
     -- Compare CGR_ID with session state. If changed, refresh rule report
     l_cgr_id := coalesce(adc_api.get_number(C_ITEM_CGR_ID), 0);
     if l_cgr_id != g_environment.cgr_id then
-      if g_environment.target_mode not in ('FLG', 'FLS') then
+      if g_environment.target_mode not in (C_MODE_FLG, C_MODE_FLS) then
         -- Make sure that the rule group is based on actual application data
         adc_admin.propagate_rule_change(l_cgr_id);
         -- control page
@@ -798,7 +798,7 @@ as
     
     -- Set ID of the selected mode if not CGR and set SELECTD_NODE to enable the tree to remember its state
     case 
-      when g_environment.target_mode = 'FLS' then
+      when g_environment.target_mode = C_MODE_FLS then
         adc.set_item(
           p_cpi_id => C_ITEM_DIAGRAM_ID,
           p_item_value => g_environment.node_id);
@@ -811,7 +811,7 @@ as
     end case;
 
     adc.set_item(
-      p_cpi_id => C_PAGE_PREFIX || 'SELECTED_NODE',
+      p_cpi_id => C_ITEM_SELECTED_NODE,
       p_item_value => g_environment.selected_node); 
       
     pit.leave_optional;

@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_UI_DESIGNER_RULE","ADC_UI_DESIGNER_RULE");NDSummary.OnSummaryLoaded("Database:Views.ADC_UI_DESIGNER_RULE",[["SQL","SQL"]],[["Views","DatabaseView"]],[[825,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_UI_DESIGNER_RULE"]]);

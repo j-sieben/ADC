@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:Tables.ADC_ACTION_PARAMETERS",{796:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store ADC Action Parameters</div></div>"});

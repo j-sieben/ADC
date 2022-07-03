@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("rem",["Function"],[["remember_page_status",,[["ADC",,,,0,"File:core/packages/adc.pks:ADC.remember_page_status","SQLClass:ADC:remember_page_status"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("rem",["Function"],[["remember_page_status",,[[,,,,0,"File:core/types/adc_basic.tps:remember_page_status"]]]]);

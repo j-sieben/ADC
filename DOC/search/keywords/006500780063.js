@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("exc",["Function"],[["exclusive_or",,[["ADC",,,,0,"File:core/packages/adc.pks:ADC.exclusive_or","SQLClass:ADC:exclusive_or"],["ADC_API",,,,0,"File:core/packages/adc_api.pks:ADC_API.exclusive_or","SQLClass:ADC_API:exclusive_or"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("exc",["Function"],[["exclusive_or",,[[,,,,0,"File:core/types/adc_basic.tps:exclusive_or"],["ADC_API",,,,0,"File:core/packages/adc_api.pks:ADC_API.exclusive_or","SQLClass:ADC_API:exclusive_or"]]]]);

@@ -1,1 +1,0 @@
-﻿NDSearch.OnPrefixDataLoaded("c_s",["Constant"],[["C_SHOW_DISABLE",,[["ADC",,,,0,"File:core/packages/adc.pks:ADC.C_SHOW_DISABLE","SQLClass:ADC:C_SHOW_DISABLE"]]],["C_SHOW_ENABLE",,[["ADC",,,,0,"File:core/packages/adc.pks:ADC.C_SHOW_ENABLE","SQLClass:ADC:C_SHOW_ENABLE"]]]]);

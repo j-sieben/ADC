@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_UI_DESIGNER_FINDINGS",{823:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Analysis of the actually selected rule group. Displays violations of quality assurance rules</div></div>"});

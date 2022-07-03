@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_ACTION_ITEM_FOCUS_V","ADC_ACTION_ITEM_FOCUS_V");NDSummary.OnSummaryLoaded("Database:Views.ADC_ACTION_ITEM_FOCUS_V",[["SQL","SQL"]],[["Views","DatabaseView"]],[[797,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_ACTION_ITEM_FOCUS_V"]]);

@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:Tables.ADC_ACTION_PARAMETERS","ADC_ACTION_PARAMETERS");NDSummary.OnSummaryLoaded("Database:Tables.ADC_ACTION_PARAMETERS",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[796,0,0,"<span class=\"Qualifier\">Tables.</span>&#8203;ADC_ACTION_PARAMETERS"]]);

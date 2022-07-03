@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("sub",["Function"],[["submit_page",,[["ADC",,,,0,"File:core/packages/adc.pks:ADC.submit_page","SQLClass:ADC:submit_page"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("sub",["Function"],[["submit_page",,[[,,,,0,"File:core/types/adc_basic.tps:submit_page"]]]]);

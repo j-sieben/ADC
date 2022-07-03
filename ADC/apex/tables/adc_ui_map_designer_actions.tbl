@@ -27,7 +27,7 @@ create table adc_ui_map_designer_actions(
 	  references adc_lu_designer_modes (alm_id)
 ) organization index;
 
-comment on table adc_ui_map_designer_actions is 'Decision table for the page state of the ADC designer in response to a combination of Mode and APEX action raised by the user';
+comment on table adc_ui_map_designer_actions is 'Decision table for the page state of the ADC designer in response to a combination of Mode and APEX action raised by the user. See <Views.ADC_BL_DESIGNER_ACTION_V>';
 comment on column adc_ui_map_designer_actions.mda_alm_id is 'Reference to ADC_LU_DESIGNER_MODES, part of PK';
 comment on column adc_ui_map_designer_actions.mda_ald_id is 'Reference to ADC_LU_DESIGNER_ACTIONSS, part of PK';
 comment on column adc_ui_map_designer_actions.mda_comment is 'Optional comment for the mapping';

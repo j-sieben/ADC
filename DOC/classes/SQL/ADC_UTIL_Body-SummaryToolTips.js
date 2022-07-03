@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("SQLClass:ADC_UTIL_Body",{143:"<div class=\"NDToolTip TClass LSQL\"><div class=\"TTSummary\">Provides data types, constants and generic helper functions for ADC.</div></div>"});

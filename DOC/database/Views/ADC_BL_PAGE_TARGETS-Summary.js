@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_BL_PAGE_TARGETS","ADC_BL_PAGE_TARGETS");NDSummary.OnSummaryLoaded("Database:Views.ADC_BL_PAGE_TARGETS",[["SQL","SQL"]],[["Views","DatabaseView"]],[[808,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_BL_PAGE_TARGETS"]]);

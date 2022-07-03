@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_UI_ADMIN_CAT",{819:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">View for page ADMIN_CAT</div></div>"});

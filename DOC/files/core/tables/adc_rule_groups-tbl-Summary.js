@@ -1,1 +1,1 @@
-﻿NDFramePage.OnPageTitleLoaded("File:core/tables/adc_rule_groups.tbl","adc_rule_groups.tbl");NDSummary.OnSummaryLoaded("File:core/tables/adc_rule_groups.tbl",[["SQL","SQL"]],[["Groups","Group"],["Variables","Variable"]],[[133,0,0,"Variables","Variables"],[134,0,1,"ADC_RULE_GROUPS","ADC_RULE_GROUPS"]]);
+﻿NDFramePage.OnPageTitleLoaded("File:core/tables/adc_rule_groups.tbl","adc_rule_groups.tbl");NDSummary.OnSummaryLoaded("File:core/tables/adc_rule_groups.tbl",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[138,0,0,"ADC_RULE_GROUPS","ADC_RULE_GROUPS"]]);

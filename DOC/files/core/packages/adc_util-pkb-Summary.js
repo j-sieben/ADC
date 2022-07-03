@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("File:core/packages/adc_util.pkb","adc_util.pkb");NDSummary.OnSummaryLoaded("File:core/packages/adc_util.pkb",[["SQL","SQL"]],[["Classes","Class"],["Groups","Group"]],[[143,0,0,"ADC_UTIL Body","ADC_UTIL_Body"],[144,0,1,"Public Methods","ADC_UTIL_Body.Public_Methods"]]);

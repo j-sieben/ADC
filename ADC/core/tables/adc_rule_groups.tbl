@@ -9,6 +9,9 @@
     cgr_initialization_code - Generated code to calculate the initial data of page items
     cgr_with_recursion - Flag to indicate whether rule group allows recursive execution
     cgr_active - Flag to indicate whether rule group is in use
+    
+  --- Prototype ---
+  cgr_id number default on null adc_seq.netxval constraint nn_cgr_id not null
  */
 
 create table adc_rule_groups(

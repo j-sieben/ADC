@@ -17,9 +17,9 @@ as
       behavior. The behavior is to inform ADC that they were invoked, but based on the environment, they pass different
       values back to the database that helps in deciding upon the next steps to perform.
       
-      At the center of the logic is table <ADC_UI_MAP_DESIGNER_ACTIONS>. It persists information required to calculate 
+      At the center of the logic is table <Tables.ADC_UI_MAP_DESIGNER_ACTIONS>. It persists information required to calculate 
       the next status of the ADC Designer. 
-      The persisted data is enriched with actual session data in view <ADC_BL_DESIGNER_ACTION_V>. 
+      The persisted data is enriched with actual session data in view <Views.ADC_BL_DESIGNER_ACTION_V>. 
       This view is used as a decision table for the package, making the decision logic data driven.
       
       Based on the actual situation the ADC designer is in, a row of this view is selected. The attributes of this

@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_ACTION_PARAMETERS_V","ADC_ACTION_PARAMETERS_V");NDSummary.OnSummaryLoaded("Database:Views.ADC_ACTION_PARAMETERS_V",[["SQL","SQL"]],[["Views","DatabaseView"]],[[798,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_ACTION_PARAMETERS_V"]]);

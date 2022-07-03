@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("File:core/types/adc_basic.tpb","adc_basic.tpb");NDSummary.OnSummaryLoaded("File:core/types/adc_basic.tpb",[["SQL","SQL"]],[["Classes","Class"]],[[142,0,0,"ADC_BASIC body","ADC_BASIC_body"]]);

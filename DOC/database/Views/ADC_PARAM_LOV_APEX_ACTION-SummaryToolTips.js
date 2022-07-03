@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_PARAM_LOV_APEX_ACTION",{811:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">List of apex actions, grouped by CGR_ID</div></div>"});

@@ -148,7 +148,7 @@ as
 
   
   /**
-    Function monitor_loop
+    Procedure monitor_loop
       See <ADC_UTIL.monitor_loop>
    */
   procedure monitor_loop(
@@ -162,6 +162,40 @@ as
       pit.error(msg.ADC_INFINITE_LOOP, msg_args(p_loop_name));
     end if;
   end monitor_loop;
+  
+  
+  /**
+    Function get_additional_nd_comments
+      See <ADC_UTIL.get_additional_nd_comments>
+   */
+  function get_additional_nd_comments
+    return clob
+  as
+    l_comments clob;
+  begin
+    select utl_text.generate_text(cursor(
+             select '#OBJECT_TYPE#: #OBJECT_TYPE#s.#OBJECT_NAME##CR#  #COMMENTS##CR##CR#Fields:#CR#  #COLUMNS#' template, initcap(object_type) object_type, object_name, comments, chr(10) cr,
+                    utl_text.generate_text(cursor(
+                      select '#COLUMN_NAME# - #COMMENTS#' template, lower(t.column_name) column_name, 
+                             coalesce(c.comments, case t.column_name when 'D' then 'Display value' when 'R' then 'Return value' else 'no comment available' end) comments, chr(10) cr
+                        from user_tab_columns t
+                        join user_col_comments c
+                          on t.table_name = c.table_name
+                         and t.column_name = c.column_name
+                       where t.table_name = o.object_name
+                       order by t.table_name, t.column_id
+                    ), chr(10), 2) columns
+               from user_objects o
+               join user_tab_comments
+                 on object_name = table_name
+              where object_type in ('TABLE', 'VIEW')
+                and object_name like 'ADC%'
+              order by 1, 2), chr(10) || chr(10)) resultat
+      into l_comments
+      from dual;
+      
+    return l_comments;
+  end get_additional_nd_comments;
 
 end adc_util;
 /

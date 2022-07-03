@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_ACTION_PARAM_TYPES_V","ADC_ACTION_PARAM_TYPES_V");NDSummary.OnSummaryLoaded("Database:Views.ADC_ACTION_PARAM_TYPES_V",[["SQL","SQL"]],[["Views","DatabaseView"]],[[799,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_ACTION_PARAM_TYPES_V"]]);

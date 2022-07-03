@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_PARAM_LOV_ITEM_STATUS",{813:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">List of translatable items of for that parameter type</div></div>"});

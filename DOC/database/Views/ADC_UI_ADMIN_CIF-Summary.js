@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_UI_ADMIN_CIF","ADC_UI_ADMIN_CIF");NDSummary.OnSummaryLoaded("Database:Views.ADC_UI_ADMIN_CIF",[["SQL","SQL"]],[["Views","DatabaseView"]],[[820,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_UI_ADMIN_CIF"]]);

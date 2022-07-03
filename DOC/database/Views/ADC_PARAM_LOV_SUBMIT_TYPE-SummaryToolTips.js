@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_PARAM_LOV_SUBMIT_TYPE",{817:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">List of translatable items of type ADC, related to the SUBMIT_TYPE</div></div>"});

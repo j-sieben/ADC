@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("SQLClass:ADC_UTIL_Body","ADC_UTIL Body");NDSummary.OnSummaryLoaded("SQLClass:ADC_UTIL_Body",[["SQL","SQL"]],[["Classes","Class"]],[[143,0,0,"ADC_UTIL Body"]]);

@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("ref",["Function"],[["refresh_item",,[["ADC",,,,0,"File:core/packages/adc.pks:ADC.refresh_item","SQLClass:ADC:refresh_item"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("ref",["Function"],[["refresh_item",,[[,,,,0,"File:core/types/adc_basic.tps:refresh_item"]]]]);
