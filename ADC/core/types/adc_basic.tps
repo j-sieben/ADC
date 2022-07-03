@@ -22,7 +22,12 @@ as object (
   foo char(1 byte),
      
   /**
-    Group: Public constants
+    Group: Public constants 
+      Implemented as function to be available for SQL
+      
+      C_HIDE - Status to hide a page item
+      C_SHOW_ENABLE - Status to show and enable a page item
+      C_SHOW_DISABLE - Status to show and disable a page item
    */
   static function C_HIDE
   return varchar2,
@@ -70,7 +75,7 @@ as object (
       p_error_on_null - Optional flag to indicate whether an error has to be thrown if all page items are NULL. Defaults to C_FALSE
       
     Errors:
-      'ASSERTION_FAILED'_ERR - more than one page item is NOT NULL or all page items are NULL and P_ERROR_ON_NULL is set to C_TRUE
+      ASSERTION_FAILED_ERR - more than one page item is NOT NULL or all page items are NULL and P_ERROR_ON_NULL is set to C_TRUE
       MSG.<P_MESSAGE>_ERR - same as before, but here the custom message passed in as a parameter is thrown
    */
   static procedure exclusive_or(
@@ -87,8 +92,8 @@ as object (
       p_value_list - colon-separated list of page item IDs to check
       
     Returns:
-    - 'Y' if rule is satisfied
-    - adc_util.C_F if rule is not satisfied
+    - adc_util.C_TRUE if rule is satisfied
+    - adc_util.C_FALSE if rule is not satisfied
     - NULL if all page item values are null
    */
   static function exclusive_or(
@@ -105,7 +110,7 @@ as object (
       If found, it shows the exception inline with field and notification to those items, otherwise it shows the
       message without item reference in the notification area only.
       Supports #LABEL# replacement, page item name may be passed in with or without page prefix.
-      Similar to UTL_APEX.HANDLE_BULK_ERRORS, but uses SCT to show the messages dynamically as opposed to UTL_APEX
+      Similar to UTL_APEX.HANDLE_BULK_ERRORS, but uses ADC to show the messages dynamically as opposed to UTL_APEX
       that encapsulates the messages in the validation life cycle step of APEX.
                  
      Parameter: 
@@ -121,7 +126,7 @@ as object (
       Is used to dynamically initialize the values of a form region.
       It requires
       
-      - A ID for the form region, as it is possible to have more than one form region on a page
+      - An ID for the form region, as it is possible to have more than one form region on a page
       - At least one page item that is flagged as the primary key column
       - Flag EDITABLE of the form region set to true
                 
@@ -160,7 +165,7 @@ as object (
       p_value_list - List of page item IDs to check
       
     Returns:
-      - <'Y'> if rule is satisfied
+      - <adc_util.C_TRUE> if rule is satisfied
       - <adc_util.C_FALSE> if rule is not satisfied
       - NULL if all page item values are null
    */
@@ -206,8 +211,8 @@ as object (
                      - constant in quotation marks or 
                      - JavaScript expression, which is calculated at runtime or 
                      - NULL In this case the value of the session state is used (this can be calculated in advance)
-      p_set_item - Optional flag to indicate whether the value of the item must be set after refresh  ('Y') or not (adc_util.C_FALSE). 
-                   Defaults to 'Y'
+      p_set_item - Optional flag to indicate whether the value of the item must be set after refresh  (adc_util.C_TRUE) or not (adc_util.C_FALSE). 
+                   Defaults to adc_util.C_TRUE
    */
   static procedure refresh_item(
     p_cpi_id in varchar2,
@@ -299,7 +304,7 @@ as object (
       p_cpi_id - Optional element ID to be set, defaults to 'DOCUMENT' if <p_jquery_selector> is set
       p_item_value - Value of the element in quotation marks or function that returns value. Overloaded versions for String, Number or Date
       p_jquery_selector - Optional jQuery expression to edit multiple elements. (Defaults to NULL, if <p_cpi_id> is set)
-      p_allow_recursion - Optional flag indicating whether a Change Event should be triggered. (Defaults to 'Y', event is triggered)
+      p_allow_recursion - Optional flag indicating whether a Change Event should be triggered. (Defaults to adc_util.C_TRUE, event is triggered)
    */
   static procedure set_item(
     p_cpi_id in varchar2 default 'DOCUMENT',
@@ -432,7 +437,7 @@ as object (
 
   /** 
     Procedure: show_hide_item
-      Hides the element from P_JQUERY_SEL_SHOW on the page and the elements from P_JQUERY_SEL_HIDE
+      Shows the element(s) from P_JQUERY_SEL_SHOW and hides the element(s) from P_JQUERY_SEL_HIDE
    
     Parameters:
       p_jquery_sel_show - jQuery expression to display multiple elements
@@ -461,7 +466,7 @@ as object (
                  Method to submit the actual page. Allows ADC to determine on whether the actual page has to be processed or not
    
     Parameter:
-      p_execute_validations - Optional flag to indicate whether all validations should be performed. Defaults to 'Y'
+      p_execute_validations - Optional flag to indicate whether all validations should be performed. Defaults to adc_util.C_TRUE
    */
   static procedure submit_page(
     p_execute_validations in varchar2 default 'Y'),
@@ -478,12 +483,14 @@ as object (
     Procedure: validate_page
       static procedure for preparing the submit of the page.
       This procedure should be used only when ADC fully manages a page.
-      fully manages a page. The procedure checks all page elements,
-      set by ADC to MANDATORY against the session state.
-      If a mandatory field is NULL, an error is registered and the page is prevented from being sent.
-      the page is prevented.
-      If a rule action is marked as a validation, this action gets executed by this method as well, 
-      preventing that a page is submitted while still errors are on the page.
+      
+      The following checks are performed:
+      
+      Mandatory items - all page elements set to MANDATORY are checked against the session state.
+      Invalid format - Date and number fields are checked for proper datatype
+      Validation actions - If a rule action is marked as a validation, this action gets executed by this method as well, 
+      
+      If any error occurs, that will prevent the page from submitting.
    */
   static procedure validate_page
 ) not instantiable not final;

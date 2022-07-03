@@ -2,7 +2,7 @@ create or replace type body adc_basic
 as
 
   /**
-    Package: ADC_BASIC body
+    Type: ADC_BASIC Body
       Implements the public interface of ADC and a wrapper around ADC_API.EXECUTE_ACTION for system defined action types.
       Is called by ADC dynamic pages declaratively and directly from PL/SQL.
 
@@ -57,7 +57,7 @@ as
     p_cpi_id in varchar2,
     p_value_list in varchar2,
     p_message in varchar2 default 'ASSERTION_FAILED',
-    p_error_on_null in varchar2 default 'Y')
+    p_error_on_null in varchar2 default &C_TRUE.)
   as
     l_result adc_util.flag_type;
   begin
@@ -203,7 +203,7 @@ as
   static procedure refresh_item(
     p_cpi_id in varchar2,
     p_item_value in varchar2 default null,
-    p_set_item in varchar2 default 'Y')
+    p_set_item in varchar2 default &C_TRUE.)
   as
   begin
     pit.enter_optional(
@@ -272,7 +272,7 @@ as
   static procedure select_region_entry(
     p_region_id in varchar2,
     p_entry_id in varchar2,
-    p_notify in varchar2 default 'Y')
+    p_notify in varchar2 default &C_TRUE.)
   as
   begin
     pit.enter_optional(
@@ -330,7 +330,7 @@ as
     p_cpi_id in varchar2 default 'DOCUMENT',
     p_item_value in varchar2 default null,
     p_jquery_selector in varchar2 default null,
-    p_allow_recursion in varchar2 default 'Y')
+    p_allow_recursion in varchar2 default &C_TRUE.)
   as
   begin
     pit.enter_optional(
@@ -354,7 +354,7 @@ as
     p_cpi_id in varchar2 default 'DOCUMENT',
     p_item_value in number,
     p_jquery_selector in varchar2 default null,
-    p_allow_recursion in varchar2 default 'Y')
+    p_allow_recursion in varchar2 default &C_TRUE.)
   as
   begin
     pit.enter_optional(
@@ -378,7 +378,7 @@ as
     p_cpi_id in varchar2 default 'DOCUMENT',
     p_item_value in date,
     p_jquery_selector in varchar2 default null,
-    p_allow_recursion in varchar2 default 'Y')
+    p_allow_recursion in varchar2 default &C_TRUE.)
   as
   begin
     pit.enter_optional(
@@ -571,7 +571,7 @@ as
 
 
   static procedure submit_page(
-    p_execute_validations in varchar2 default 'Y')
+    p_execute_validations in varchar2 default &C_TRUE.)
   as
   begin
     pit.enter_optional(

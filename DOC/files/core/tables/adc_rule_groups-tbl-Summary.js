@@ -1,1 +1,0 @@
-﻿NDFramePage.OnPageTitleLoaded("File:core/tables/adc_rule_groups.tbl","adc_rule_groups.tbl");NDSummary.OnSummaryLoaded("File:core/tables/adc_rule_groups.tbl",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[138,0,0,"ADC_RULE_GROUPS","ADC_RULE_GROUPS"]]);
