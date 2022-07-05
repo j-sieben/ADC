@@ -15,10 +15,8 @@ as
    */
   C_PAGE_PREFIX constant adc_util.ora_name_type := utl_apex.get_page_prefix;
   C_REGION_PREFIX constant adc_util.ora_name_type := replace(C_PAGE_PREFIX, 'P', 'R');
-  C_BUTTON_PREFIX constant adc_util.ora_name_type := replace(C_PAGE_PREFIX, 'P', 'B');
   C_PTI_PMG constant adc_util.ora_name_type := 'ADC_UI';
   C_ADC constant adc_util.ora_name_type := 'ADC';
-  C_REGION_CPT_FORM constant adc_util.ora_name_type := C_REGION_PREFIX || 'EDIT_CPT_FORM';
   C_REGION_CPT_STATIC_LIST_FORM constant adc_util.ora_name_type := C_REGION_PREFIX || 'EDIT_CPT_STATIC_LIST_FORM';
   C_REGION_CPT_SELECT_LIST constant adc_util.ora_name_type := C_REGION_PREFIX || 'EDIT_CPT_SELECT_LIST'; 
   
@@ -47,36 +45,35 @@ as
   begin
     pit.enter_detailed('copy_edit_cat');
     
-    g_page_values := utl_apex.get_page_values('EDIT_CAT_FORM');
-    p_row.cat_id := adc_util.clean_adc_name(utl_apex.get(g_page_values, 'CAT_ID'));
-    p_row.cat_ctg_id := adc_util.clean_adc_name(utl_apex.get(g_page_values, 'CAT_CTG_ID'));
-    p_row.cat_cif_id := adc_util.clean_adc_name(utl_apex.get(g_page_values, 'CAT_CIF_ID'));
-    p_row.cat_name := utl_apex.get(g_page_values, 'CAT_NAME');
-    p_row.cat_display_name := utl_apex.get(g_page_values, 'CAT_DISPLAY_NAME');
-    p_row.cat_description := utl_apex.get(g_page_values, 'CAT_DESCRIPTION');
-    p_row.cat_pl_sql := utl_apex.get(g_page_values, 'CAT_PL_SQL');
-    p_row.cat_js := utl_apex.get(g_page_values, 'CAT_JS');
-    p_row.cat_is_editable := utl_apex.get(g_page_values, 'CAT_IS_EDITABLE');
-    p_row.cat_raise_recursive := utl_apex.get(g_page_values, 'CAT_RAISE_RECURSIVE');
-    p_row.cat_active := utl_apex.get(g_page_values, 'CAT_ACTIVE');
-    p_row.cap_cpt_id_1 := utl_apex.get(g_page_values, 'CAP_CPT_ID_1');
-    p_row.cap_display_name_1 := utl_apex.get(g_page_values, 'CAP_DISPLAY_NAME_1');
-    p_row.cap_description_1 := utl_apex.get(g_page_values, 'CAP_DESCRIPTION_1');
-    p_row.cap_default_1 := utl_apex.get(g_page_values, 'CAP_DEFAULT_1');
-    p_row.cap_mandatory_1 := utl_apex.get(g_page_values, 'CAP_MANDATORY_1');
-    p_row.cap_active_1 := utl_apex.get(g_page_values, 'CAP_ACTIVE_1');
-    p_row.cap_cpt_id_2 := utl_apex.get(g_page_values, 'CAP_CPT_ID_2');
-    p_row.cap_display_name_2 := utl_apex.get(g_page_values, 'CAP_DISPLAY_NAME_2');
-    p_row.cap_description_2 := utl_apex.get(g_page_values, 'CAP_DESCRIPTION_2');
-    p_row.cap_default_2 := utl_apex.get(g_page_values, 'CAP_DEFAULT_2');
-    p_row.cap_mandatory_2 := utl_apex.get(g_page_values, 'CAP_MANDATORY_2');
-    p_row.cap_active_2 := utl_apex.get(g_page_values, 'CAP_ACTIVE_2');
-    p_row.cap_cpt_id_3 := utl_apex.get(g_page_values, 'CAP_CPT_ID_3');
-    p_row.cap_display_name_3 := utl_apex.get(g_page_values, 'CAP_DISPLAY_NAME_3');
-    p_row.cap_description_3 := utl_apex.get(g_page_values, 'CAP_DESCRIPTION_3');
-    p_row.cap_default_3 := utl_apex.get(g_page_values, 'CAP_DEFAULT_3');
-    p_row.cap_mandatory_3 := utl_apex.get(g_page_values, 'CAP_MANDATORY_3');
-    p_row.cap_active_3 := utl_apex.get(g_page_values, 'CAP_ACTIVE_3');
+    p_row.cat_id := adc_util.clean_adc_name(utl_apex.get_string('cat_id'));
+    p_row.cat_ctg_id := adc_util.clean_adc_name(utl_apex.get_string('cat_ctg_id'));
+    p_row.cat_cif_id := adc_util.clean_adc_name(utl_apex.get_string('cat_cif_id'));
+    p_row.cat_name := utl_apex.get_string('cat_name');
+    p_row.cat_display_name := utl_apex.get_string('cat_display_name');
+    p_row.cat_description := utl_apex.get_string('cat_description');
+    p_row.cat_pl_sql := utl_apex.get_string('cat_pl_sql');
+    p_row.cat_js := utl_apex.get_string('cat_js');
+    p_row.cat_is_editable := utl_apex.get_string('cat_is_editable');
+    p_row.cat_raise_recursive := utl_apex.get_string('cat_raise_recursive');
+    p_row.cat_active := utl_apex.get_string('cat_active');
+    p_row.cap_cpt_id_1 := utl_apex.get_string('cap_cpt_id_1');
+    p_row.cap_display_name_1 := utl_apex.get_string('cap_display_name_1');
+    p_row.cap_description_1 := utl_apex.get_string('cap_description_1');
+    p_row.cap_default_1 := utl_apex.get_string('cap_default_1');
+    p_row.cap_mandatory_1 := utl_apex.get_string('cap_mandatory_1');
+    p_row.cap_active_1 := utl_apex.get_string('cap_active_1');
+    p_row.cap_cpt_id_2 := utl_apex.get_string('cap_cpt_id_2');
+    p_row.cap_display_name_2 := utl_apex.get_string('cap_display_name_2');
+    p_row.cap_description_2 := utl_apex.get_string('cap_description_2');
+    p_row.cap_default_2 := utl_apex.get_string('cap_default_2');
+    p_row.cap_mandatory_2 := utl_apex.get_string('cap_mandatory_2');
+    p_row.cap_active_2 := utl_apex.get_string('cap_active_2');
+    p_row.cap_cpt_id_3 := utl_apex.get_string('cap_cpt_id_3');
+    p_row.cap_display_name_3 := utl_apex.get_string('cap_display_name_3');
+    p_row.cap_description_3 := utl_apex.get_string('cap_description_3');
+    p_row.cap_default_3 := utl_apex.get_string('cap_default_3');
+    p_row.cap_mandatory_3 := utl_apex.get_string('cap_mandatory_3');
+    p_row.cap_active_3 := utl_apex.get_string('cap_active_3');
     
     pit.leave_detailed;
   end copy_edit_cat;
@@ -88,14 +85,12 @@ as
   begin
     pit.enter_detailed('copy_edit_cif');
   
-    g_page_values := utl_apex.get_page_values('EDIT_CIF_FORM');
-    p_row.cif_id := utl_apex.get(g_page_values, 'cif_id');
-    p_row.cif_name := utl_apex.get(g_page_values, 'cif_name');
-    p_row.cif_description := utl_apex.get(g_page_values, 'cif_description');
-    p_row.cif_item_types := utl_apex.get(g_page_values, 'cif_item_types');
-    --p_row.cif_default := utl_apex.get(g_page_values, 'cif_default');
-    p_row.cif_actual_page_only := utl_apex.get(g_page_values, 'cif_actual_page_only');
-    p_row.cif_active := utl_apex.get(g_page_values, 'cif_active');
+    p_row.cif_id := adc_util.clean_adc_name(utl_apex.get_string('cif_id'));
+    p_row.cif_name := utl_apex.get_string('cif_name');
+    p_row.cif_description := utl_apex.get_string('cif_description');
+    p_row.cif_item_types := utl_apex.get_string('cif_item_types');
+    p_row.cif_actual_page_only := utl_apex.get_string('cif_actual_page_only');
+    p_row.cif_active := utl_apex.get_string('cif_active');
   
     pit.leave_detailed;
   end copy_edit_cif;
@@ -107,11 +102,10 @@ as
   begin
     pit.enter_detailed('copy_edit_ctg');
   
-    g_page_values := utl_apex.get_page_values('EDIT_CTG_FORM');
-    p_row.ctg_id := utl_apex.get(g_page_values, 'ctg_id');
-    p_row.ctg_name := utl_apex.get(g_page_values, 'ctg_name');
-    p_row.ctg_description := utl_apex.get(g_page_values, 'ctg_description');
-    p_row.ctg_active := utl_apex.get(g_page_values, 'ctg_active');
+    p_row.ctg_id := adc_util.clean_adc_name(utl_apex.get_string('ctg_id'));
+    p_row.ctg_name := utl_apex.get_string('ctg_name');
+    p_row.ctg_description := utl_apex.get_string('ctg_description');
+    p_row.ctg_active := utl_apex.get_string('ctg_active');
   
     pit.leave_detailed;
   end copy_edit_ctg;
@@ -123,15 +117,14 @@ as
   begin
     pit.enter_detailed('copy_edit_cpt');
   
-    g_page_values := utl_apex.get_page_values(C_REGION_CPT_FORM);
-    p_row.cpt_id := adc_util.clean_adc_name(utl_apex.get(g_page_values, 'cpt_id'));
-    p_row.cpt_name := utl_apex.get(g_page_values, 'cpt_name');
-    p_row.cpt_description := utl_apex.get(g_page_values, 'cpt_description');
-    p_row.cpt_cpv_id := utl_apex.get(g_page_values, 'cpt_cpv_id');
+    p_row.cpt_id := adc_util.clean_adc_name(utl_apex.get_string('cpt_id'));
+    p_row.cpt_name := utl_apex.get_string('cpt_name');
+    p_row.cpt_description := utl_apex.get_string('cpt_description');
+    p_row.cpt_cpv_id := utl_apex.get_string('cpt_cpv_id');
     p_row.cpt_select_list_query := utl_apex.get_string('cpt_select_list_query');
     p_row.cpt_select_view_comment := utl_apex.get_string('cpt_select_view_comment');
-    p_row.cpt_sort_seq := utl_apex.get(g_page_values, 'cpt_sort_seq');
-    p_row.cpt_active := utl_apex.get(g_page_values, 'cpt_active');
+    p_row.cpt_sort_seq := utl_apex.get_number('cpt_sort_seq');
+    p_row.cpt_active := utl_apex.get_string('cpt_active');
   
     pit.leave_detailed;
   end copy_edit_cpt;
@@ -143,10 +136,9 @@ as
   begin
     pit.enter_detailed('copy_edit_cpt_static_list');
   
-    g_page_values := utl_apex.get_page_values(C_REGION_CPT_STATIC_LIST_FORM);
-    p_row.csl_cpt_id := utl_apex.get_string('P5_CPT_ID');
-    p_row.csl_pti_id := p_row.csl_cpt_id || '_' || adc_util.clean_adc_name(utl_apex.get(g_page_values, 'csl_pti_id'));
-    p_row.csl_name := utl_apex.get(g_page_values, 'csl_name');
+    p_row.csl_cpt_id := utl_apex.get_string('csl_cpt_id');
+    p_row.csl_pti_id := p_row.csl_cpt_id || '_' || adc_util.clean_adc_name(utl_apex.get_string('csl_pti_id'));
+    p_row.csl_name := utl_apex.get_string('csl_name');
   
     pit.leave_detailed;
   end copy_edit_cpt_static_list;
@@ -231,21 +223,6 @@ as
     pit.leave_detailed;
   end copy_row_to_cap_records;
   
-  
-  /**
-    Procedure: initialize
-      Method to initialize the ADC_UI package
-      
-      Initially collects the name of all ADC Desginer page items per
-      form region and persists them in an internal data structure for
-      convenient access when working with the page designer.
-   */
-  procedure initialize
-  as
-  begin
-    null;
-  end initialize;
-  
 
   /* 
     Group: Public Methods
@@ -302,7 +279,10 @@ as
     when C_EXPORT_SYSTEM then
       l_cat_is_editable := C_FALSE;
     else
-      null;
+      adc.register_error(
+        p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
+        p_message_name => msg.ADC_UI_UNKNOWN_ACTION,
+        p_msg_args => msg_args(l_export_type));
     end case;
     
     -- generate ZIP with the requested action types and download.
@@ -325,7 +305,6 @@ as
     l_zip_file_name adc_util.sql_char;
     l_zip_file blob;
 
-    C_ZIP_CGR_FILE_NAME constant adc_util.ora_name_type := 'single_rule_group_#CGR_ID#.zip';
     C_ZIP_APEX_APP_NAME constant adc_util.ora_name_type := 'application_#APP_ID#.zip';
     C_ZIP_APP_RULES_NAME constant adc_util.ora_name_type := 'application_#APP_ID#_rule_groups.zip';
   begin
@@ -423,8 +402,13 @@ as
     copy_edit_cif(l_row);
     case when utl_apex.inserting or utl_apex.updating then
       adc_admin.merge_action_item_focus(l_row);
-    else
+    when utl_apex.deleting then
       adc_admin.delete_action_item_focus(l_row);
+    else
+      adc.register_error(
+        p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
+        p_message_name => msg.ADC_UI_UNKNOWN_ACTION,
+        p_msg_args => msg_args(utl_apex.get_request));
     end case;
     
     pit.leave_mandatory;
@@ -511,7 +495,10 @@ as
     when utl_apex.deleting then
       adc_admin.delete_action_type(l_cat_rec);
     else
-      null;
+      adc.register_error(
+        p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
+        p_message_name => msg.ADC_UI_UNKNOWN_ACTION,
+        p_msg_args => msg_args(utl_apex.get_request));
     end case;
     
     pit.leave_mandatory;
@@ -560,8 +547,13 @@ as
     copy_edit_ctg(l_row);
     case when utl_apex.inserting or utl_apex.updating then
       adc_admin.merge_action_type_group(l_row);
-    else
+    when utl_apex.deleting then
       adc_admin.delete_action_type_group(l_row);
+    else
+      adc.register_error(
+        p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
+        p_message_name => msg.ADC_UI_UNKNOWN_ACTION,
+        p_msg_args => msg_args(utl_apex.get_request));
     end case;
     
     pit.leave_mandatory;
@@ -593,7 +585,10 @@ as
         adc.refresh_item(C_REGION_CPT_STATIC_LIST_FORM);
         l_static_list_status := adc.C_SHOW_ENABLE;
       else
-        null;
+        adc.register_error(
+          p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
+          p_message_name => msg.ADC_UI_UNKNOWN_ACTION,
+          p_msg_args => msg_args(l_cpt_cpv_id));
     end case;
     
     adc.set_visual_state(
@@ -652,8 +647,13 @@ as
     
     case when utl_apex.inserting or utl_apex.updating then
       adc_admin.merge_action_param_type(l_row);
-    else
+    when utl_apex.deleting then
       adc_admin.delete_action_param_type(l_row);
+    else
+      adc.register_error(
+        p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
+        p_message_name => msg.ADC_UI_UNKNOWN_ACTION,
+        p_msg_args => msg_args(utl_apex.get_request));
     end case;
     
     pit.leave_mandatory;
@@ -678,10 +678,15 @@ as
         p_pti_pmg_name => C_ADC,
         p_pti_pml_name => pit.get_default_language,
         p_pti_name => l_row.csl_name);
-    else
+    when utl_apex.deleting then
       pit_admin.delete_translatable_item(
         p_pti_id => l_row.csl_pti_id,
         p_pti_pmg_name => C_ADC);
+    else
+      adc.register_error(
+        p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
+        p_message_name => msg.ADC_UI_UNKNOWN_ACTION,
+        p_msg_args => msg_args(utl_apex.get_request));
     end case;
     
     pit.leave_mandatory;
@@ -706,13 +711,7 @@ as
     l_cgr_app_id := utl_apex.get_number('CGR_APP_ID');
     l_include_app := utl_apex.get_string('INCLUDE_APP');
     
-    -- If select list values change, set dependent select lists to null and refresh
-    if l_include_app = c_true then 
-      l_action := adc_admin.C_APEX_APP;
-    else
-      l_action := adc_admin.C_APP_GROUPS;
-    end if;
-    l_action := replace(C_SUCCESS_COMMAND, '#TYPE#', l_action);
+    l_action := replace(C_SUCCESS_COMMAND, '#TYPE#', case l_include_app when C_TRUE then adc_admin.C_APEX_APP else adc_admin.C_APP_GROUPS end);
     
     -- harmonize apex action
     adc_apex_action.action_init('export-rule-group');
@@ -736,7 +735,5 @@ as
       pit.leave_mandatory;
   end set_action_export_cgr;
 
-begin
-  initialize;
 end adc_ui;
 /

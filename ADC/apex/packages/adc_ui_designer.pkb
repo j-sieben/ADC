@@ -109,7 +109,7 @@ as
       action_mode - Type of the node (CGR, CRU, CRA or CAA and others) that controls on what form the actual
                     APEX Action is to be performed. If fi <C_ACTION_DELETE> is invoked, the delete must be processed
                     for mode identified by this attribute. If this is done, target_mode controls which form to display next.
-      node_id - ID of the selected node as used in the data model. Normally, the ID is taken based on the mode.
+      node_id - ID of the selected node as used in the data model. Normally, the ID is taken based from the mode.
                 It is possible though that not all modes have a correlated ID, fi the APEX Action group (CAG) which will
                 reference the Rule Group (CGR) ID instead.
       form_id - Static ID of the actually selected form
@@ -149,8 +149,6 @@ as
       g_page_values - PL/SQL table to hold key value pairs for page items (key) and their values
    */
   g_environment environment_rec;
-  
-  g_page_values utl_apex.page_value_t;
 
   g_cai_list char_table;
   g_form_item_list form_item_list_tab;
@@ -178,32 +176,31 @@ as
   begin
     pit.enter_detailed('copy_apex_action');
     
-    g_page_values := utl_apex.get_page_values(C_REGION_CAA_FORM);
-    p_row.caa_id := to_number(utl_apex.get(g_page_values, 'CAA_ID'), 'fm9999999999990');
-    p_row.caa_cgr_id := to_number(utl_apex.get(g_page_values, 'CAA_CGR_ID'), 'fm9999999999990');
-    p_row.caa_cty_id := utl_apex.get(g_page_values, 'CAA_CTY_ID');
-    p_row.caa_name := utl_apex.get(g_page_values, 'CAA_NAME');
-    p_row.caa_label := utl_apex.get(g_page_values, 'CAA_LABEL');
-    p_row.caa_context_label := utl_apex.get(g_page_values, 'CAA_CONTEXT_LABEL');
-    p_row.caa_icon := utl_apex.get(g_page_values, 'CAA_ICON');
-    p_row.caa_icon_type := utl_apex.get(g_page_values, 'CAA_ICON_TYPE');
-    p_row.caa_title := utl_apex.get(g_page_values, 'CAA_TITLE');
-    p_row.caa_shortcut := utl_apex.get(g_page_values, 'CAA_SHORTCUT');
-    p_row.caa_initially_disabled := utl_apex.get(g_page_values, 'CAA_INITIALLY_DISABLED');
-    p_row.caa_initially_hidden := utl_apex.get(g_page_values, 'CAA_INITIALLY_HIDDEN');
-    p_row.caa_href := utl_apex.get(g_page_values, 'CAA_HREF');
-    p_row.caa_action := utl_apex.get(g_page_values, 'CAA_ACTION');
-    p_row.caa_on_label := utl_apex.get(g_page_values, 'CAA_ON_LABEL');
-    p_row.caa_off_label := utl_apex.get(g_page_values, 'CAA_OFF_LABEL');
-    p_row.caa_get := utl_apex.get(g_page_values, 'CAA_GET');
-    p_row.caa_set := utl_apex.get(g_page_values, 'CAA_SET');
-    p_row.caa_choices := utl_apex.get(g_page_values, 'CAA_CHOICES');
-    p_row.caa_label_classes := utl_apex.get(g_page_values, 'CAA_LABEL_CLASSES');
-    p_row.caa_label_start_classes := utl_apex.get(g_page_values, 'CAA_LABEL_START_CLASSES');
-    p_row.caa_label_end_classes := utl_apex.get(g_page_values, 'CAA_LABEL_END_CLASSES');
-    p_row.caa_item_wrap_class := utl_apex.get(g_page_values, 'CAA_ITEM_WRAP_CLASS');
+    p_row.caa_id := utl_apex.get_number('caa_id');
+    p_row.caa_cgr_id := utl_apex.get_number('caa_cgr_id');
+    p_row.caa_cty_id := utl_apex.get_string('caa_cty_id');
+    p_row.caa_name := utl_apex.get_string('caa_name');
+    p_row.caa_label := utl_apex.get_string('caa_label');
+    p_row.caa_context_label := utl_apex.get_string('caa_context_label');
+    p_row.caa_icon := utl_apex.get_string('caa_icon');
+    p_row.caa_icon_type := utl_apex.get_string('caa_icon_type');
+    p_row.caa_title := utl_apex.get_string('caa_title');
+    p_row.caa_shortcut := utl_apex.get_string('caa_shortcut');
+    p_row.caa_initially_disabled := utl_apex.get_string('caa_initially_disabled');
+    p_row.caa_initially_hidden := utl_apex.get_string('caa_initially_hidden');
+    p_row.caa_href := utl_apex.get_string('caa_href');
+    p_row.caa_action := utl_apex.get_string('caa_action');
+    p_row.caa_on_label := utl_apex.get_string('caa_on_label');
+    p_row.caa_off_label := utl_apex.get_string('caa_off_label');
+    p_row.caa_get := utl_apex.get_string('caa_get');
+    p_row.caa_set := utl_apex.get_string('caa_set');
+    p_row.caa_choices := utl_apex.get_string('caa_choices');
+    p_row.caa_label_classes := utl_apex.get_string('caa_label_classes');
+    p_row.caa_label_start_classes := utl_apex.get_string('caa_label_start_classes');
+    p_row.caa_label_end_classes := utl_apex.get_string('caa_label_end_classes');
+    p_row.caa_item_wrap_class := utl_apex.get_string('caa_item_wrap_class');
 
-    utl_text.string_to_table(utl_apex.get(g_page_values, 'CAA_CAI_LIST'), g_cai_list);
+    utl_text.string_to_table(utl_apex.get_string('caa_cai_list'), g_cai_list);
 
     pit.leave_detailed;
   end copy_apex_action;
@@ -215,14 +212,13 @@ as
   begin
     pit.enter_detailed('copy_rule');
 
-    g_page_values := utl_apex.get_page_values(C_REGION_CRU_FORM);
-    p_row.cru_id := to_number(utl_apex.get(g_page_values, 'CRU_ID'), '999990');
-    p_row.cru_cgr_id := coalesce(to_number(utl_apex.get(g_page_values, 'CRU_CGR_ID'), '999990'), g_environment.cgr_id);
-    p_row.cru_sort_seq := to_number(utl_apex.get(g_page_values, 'CRU_SORT_SEQ'), '999990');
-    p_row.cru_name := utl_apex.get(g_page_values, 'CRU_NAME');
-    p_row.cru_condition := utl_apex.get(g_page_values, 'CRU_CONDITION');
-    p_row.cru_fire_on_page_load := utl_apex.get(g_page_values, 'CRU_FIRE_ON_PAGE_LOAD');
-    p_row.cru_active := utl_apex.get(g_page_values, 'CRU_ACTIVE');
+    p_row.cru_id := utl_apex.get_number('cru_id');
+    p_row.cru_cgr_id := coalesce(utl_apex.get_number('cru_cgr_id'), g_environment.cgr_id);
+    p_row.cru_sort_seq := utl_apex.get_number('cru_sort_seq');
+    p_row.cru_name := utl_apex.get_string('cru_name');
+    p_row.cru_condition := utl_apex.get_string('cru_condition');
+    p_row.cru_fire_on_page_load := utl_apex.get_string('cru_fire_on_page_load');
+    p_row.cru_active := utl_apex.get_string('cru_active');
 
     pit.leave_detailed;
   end copy_rule;
@@ -237,17 +233,16 @@ as
   begin
     pit.enter_detailed('copy_rule_action');
 
-    g_page_values := utl_apex.get_page_values(C_REGION_CRA_FORM);
-    p_row.cra_id := to_number(utl_apex.get(g_page_values, 'CRA_ID'), '999990');
-    p_row.cra_cgr_id := coalesce(to_number(utl_apex.get(g_page_values, 'CRA_CGR_ID'), '999990'), g_environment.cgr_id);
-    p_row.cra_cru_id := to_number(utl_apex.get(g_page_values, 'CRA_CRU_ID'), '999990');
-    p_row.cra_sort_seq := to_number(utl_apex.get(g_page_values, 'CRA_SORT_SEQ'), '999990');
-    p_row.cra_cpi_id := utl_apex.get(g_page_values, 'CRA_CPI_ID');
-    p_row.cra_cat_id := utl_apex.get(g_page_values, 'CRA_CAT_ID');
-    p_row.cra_active := utl_apex.get(g_page_values, 'CRA_ACTIVE');
-    p_row.cra_on_error := utl_apex.get(g_page_values, 'CRA_ON_ERROR');
-    p_row.cra_raise_recursive := utl_apex.get(g_page_values, 'CRA_RAISE_RECURSIVE');
-    p_row.cra_comment := utl_apex.get(g_page_values, 'CRA_COMMENT');
+    p_row.cra_id := utl_apex.get_number('cra_id');
+    p_row.cra_cgr_id := coalesce(utl_apex.get_number('cra_cgr_id'), g_environment.cgr_id);
+    p_row.cra_cru_id := utl_apex.get_number('cra_cru_id');
+    p_row.cra_sort_seq := utl_apex.get_number('cra_sort_seq');
+    p_row.cra_cpi_id := utl_apex.get_string('cra_cpi_id');
+    p_row.cra_cat_id := utl_apex.get_string('cra_cat_id');
+    p_row.cra_active := utl_apex.get_string('cra_active');
+    p_row.cra_on_error := utl_apex.get_string('cra_on_error');
+    p_row.cra_raise_recursive := utl_apex.get_string('cra_raise_recursive');
+    p_row.cra_comment := utl_apex.get_string('cra_comment');
 
     -- Get the required parameter field
     begin
@@ -276,9 +271,9 @@ as
         null; -- No parameter for action type, ignore
     end;
 
-    p_row.cra_param_1 := case when l_param_name_1 is not null then utl_apex.get(g_page_values, l_param_name_1) end;
-    p_row.cra_param_2 := case when l_param_name_2 is not null then utl_apex.get(g_page_values, l_param_name_2) end;
-    p_row.cra_param_3 := case when l_param_name_3 is not null then utl_apex.get(g_page_values, l_param_name_3) end;    
+    p_row.cra_param_1 := case when l_param_name_1 is not null then utl_apex.get_string(l_param_name_1) end;
+    p_row.cra_param_2 := case when l_param_name_2 is not null then utl_apex.get_string(l_param_name_2) end;
+    p_row.cra_param_3 := case when l_param_name_3 is not null then utl_apex.get_string(l_param_name_3) end;    
 
     pit.leave_detailed;
   end copy_rule_action;
@@ -291,12 +286,11 @@ as
   begin
     pit.enter_detailed('copy_rule');
 
-    g_page_values := utl_apex.get_page_values(C_REGION_FLS_FORM);
-    p_row.diagram_id := to_number(utl_apex.get(g_page_values, 'DIAGRAM_ID'), '999990');
-    p_row.diagram_name := utl_apex.get(g_page_values, 'DIAGRAM_NAME');
-    p_row.diagram_version := utl_apex.get(g_page_values, 'DIAGRAM_VERSION');
-    p_row.diagram_status_id := utl_apex.get(g_page_values, 'DIAGRAM_STATUS_ID');
-    p_row.diagram_category := utl_apex.get(g_page_values, 'DIAGRAM_CATEGORY');
+    p_row.diagram_id := utl_apex.get_number('diagram_id');
+    p_row.diagram_name := utl_apex.get_string('diagram_name');
+    p_row.diagram_version := utl_apex.get_string('diagram_version');
+    p_row.diagram_status_id := utl_apex.get_string('diagram_status_id');
+    p_row.diagram_category := utl_apex.get_string('diagram_category');
 
     pit.leave_detailed;
   end copy_flow;
@@ -647,6 +641,7 @@ as
           else
             null;
         end case;
+        
         -- Transaction control, because the action is called via AJAX
         adc.show_notification(msg.ADC_UI_CHANGES_SAVED);
         adc.set_item(
@@ -671,6 +666,7 @@ as
           else
             null;
         end case;
+        
         -- Transaction control, because the action is called via AJAX
         adc.show_notification(msg.ADC_UI_DATA_DELETED);
         commit;
@@ -1158,11 +1154,11 @@ select null #PRE#CRA_ID, '#CGR_ID#' #PRE#CRA_CGR_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
       -- Was called to create a new CRA, initialize default values
       l_cru_id := adc_api.get_number(C_ITEM_CRU_ID);
       utl_text.bulk_replace(l_statement, char_table(
-        '#PRE#', utl_apex.get_page_prefix,
-        '#CGR_ID#', g_environment.cgr_id,
-        '#CRU_ID#', l_cru_id,
-        '#NO_FIRING_ITEM#', adc_util.c_no_firing_item,
-        '#SORT_SEQ#', get_cra_sort_seq(l_cru_id)));
+        'PRE', utl_apex.get_page_prefix,
+        'CGR_ID', g_environment.cgr_id,
+        'CRU_ID', l_cru_id,
+        'NO_FIRING_ITEM', adc_util.c_no_firing_item,
+        'SORT_SEQ', get_cra_sort_seq(l_cru_id)));
       adc.set_items_from_statement(
         p_cpi_id => adc_util.c_no_firing_item, 
         p_statement => l_statement);
@@ -1237,9 +1233,9 @@ select null #PRE#CRU_ID, '#CGR_ID#' #PRE#CRU_CGR_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
     case when g_environment.action = C_ACTION_CREATE then
       -- Was called to create a new CRA, initialize default values
       utl_text.bulk_replace(l_statement, char_table(
-        '#PRE#', utl_apex.get_page_prefix,
-        '#CGR_ID#', g_environment.cgr_id,
-        '#SORT_SEQ#', get_cru_sort_seq(g_environment.cgr_id)));
+        'PRE', utl_apex.get_page_prefix,
+        'CGR_ID', g_environment.cgr_id,
+        'SORT_SEQ', get_cru_sort_seq(g_environment.cgr_id)));
       adc.set_items_from_statement(
         p_cpi_id => adc_util.c_no_firing_item, 
         p_statement => l_statement);
@@ -1442,6 +1438,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
       when C_ACTION_DELETE then
         process_page;
       else
+        -- Action could be CANCEL, ignore
         null;
     end case;
 
@@ -1519,7 +1516,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
   begin
     pit.enter_mandatory;
 
-    l_cgr_id := utl_apex.get_number('CGR_ID');
+    l_cgr_id := utl_apex.get_number('cgr_id');
 
     update adc_rule_groups
        set cgr_active = case cgr_active when adc_util.c_true then adc_util.c_false else adc_util.c_true end

@@ -29,22 +29,6 @@ begin
     raise_application_error(-20000, 'UTL_APEX is required to install ADC.');
   end if;
   
-  with required_privs as(
-         select 'CREATE PROCEDURE' p_privilege
-           from dual
-          union all
-         select 'CREATE VIEW' from dual)
-  select listagg(p_privilege, ', ') within group (order by p_privilege) missing_privs
-    into l_missing_privs
-    from required_privs
-    left join user_sys_privs
-      on p_privilege = privilege
-   where privilege is null;
-  
-  if l_missing_privs is not null then
-    dbms_output.put_line('ATTENTION: The owner of ADC lacks the directly granted privilege(s) ' || l_missing_privs || ', the functionality is reduced.');
-  end if;
-  
   dbms_output.put_line('&s1.Checked.');
 end;
 /

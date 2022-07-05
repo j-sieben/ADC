@@ -53,6 +53,7 @@ select cgr_id, static_id,
          when 'NATIVE_IR' then 'INTERACTIVE_REPORT_REGION'
          when 'NATIVE_IG' then 'INTERACTIVE_GRID_REGION'
          when 'NATIVE_FORM' then 'FORM_REGION' 
+         when 'JSTREE' then 'TREE_REGION' 
          else 'REGION' end, 
        'REGION', null, region_name, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
   from apex_application_page_regions

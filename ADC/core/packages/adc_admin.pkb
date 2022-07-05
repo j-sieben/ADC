@@ -30,8 +30,8 @@ as
   C_APOS constant char(1 byte) := chr(39);
   C_PIPE constant char(1 byte) := '|';
   
-  C_CPT_VIEW_NAME_PREFIX constant adc_util.ora_name_type := 'ADC_PARAM_LOV_';
-  
+  C_CPT_VIEW_NAME_PREFIX constant adc_util.ora_name_type := 'ADC_PARAM_LOV_';  
+  C_STATIC_LIST constant adc_util.ora_name_type := 'STATIC_LIST';
 
   /* Globale Variablen */
   g_offset binary_integer;
@@ -565,7 +565,79 @@ as
     when others then
       pit.stop;
   end validate_export_rule_groups;
-
+  
+  
+  /**
+    Function: get_param_lov_query
+      Method to caculate a query for a parameter in case its type mandates for a LOV.
+      
+      Is called when create a new parameter typ from within the ADC app as well as
+      when exporting. The statement must be present in the export file to circumvent
+      then necessity of having a direct CREATE VIEW grant for any user working with ADC.
+      
+    Parameters:
+      p_row - Instance of <ADC_ACTION_PARAM_TYPES_V>
+      
+    Returns:
+      A create view statement, if the parameter type includes a LOV and NULL otherwise
+   */
+  function get_param_lov_query(
+    p_row in out nocopy adc_action_param_types_v%rowtype,
+    p_for_immediate in boolean default false)
+    return varchar2
+  as
+    C_VIEW_STATEMENT_TEMPLATE constant adc_util.max_char := q'^create or replace view #VIEW_NAME# as #QUERY#^';
+    C_VIEW_STATIC_LIST_TEMPLATE constant adc_util.max_char := q'^
+  select pti_name d, substr(pti_id, #IDX#) r, null cgr_id
+    from pit_translatable_item_v
+   where pti_pmg_name = 'ADC'
+     and pti_id like '#VIEW_NAME#%'^';
+    C_VIEW_COMMENT_TEMPLATE constant adc_util.max_char := q'^comment on table #VIEW_NAME# is '#COMMENT#'^';
+    l_stmt adc_util.max_char;
+    l_delimiter varchar2(10 byte);
+    l_idx binary_integer;
+  begin
+    pit.enter_optional('get_param_lov_query');
+    
+    if not p_for_immediate then
+      l_delimiter := ';' || C_CR;
+    end if;
+  
+    if p_row.cpt_cpv_id = C_STATIC_LIST then
+    
+      with params as (
+             select length(p_row.cpt_id) p_position,
+                    p_row.cpt_id || '%' p_cpt_id_pattern
+               from dual)
+      select p_position + case when substr(pti_id, p_position + 3, 1) = '_' then 4 else 2 end
+        into l_idx
+        from pit_translatable_item_v
+        join params
+          on pti_id like p_cpt_id_pattern
+       where pti_pmg_name = 'ADC'
+         and rownum = 1;
+         
+      p_row.cpt_select_list_query := utl_text.bulk_replace(C_VIEW_STATIC_LIST_TEMPLATE, char_table(
+                                       '#VIEW_NAME#', p_row.cpt_id,
+                                       '#IDX#', to_char(l_idx)));
+    end if;
+    
+    if p_row.cpt_select_list_query is not null then
+      l_stmt := utl_text.bulk_replace(C_VIEW_STATEMENT_TEMPLATE || l_delimiter, char_table(
+                  '#VIEW_NAME#', C_CPT_VIEW_NAME_PREFIX || p_row.cpt_id,
+                  '#QUERY#', p_row.cpt_select_list_query));
+    end if;
+          
+    if p_row.cpt_select_view_comment is not null then
+      l_stmt := l_stmt || C_CR || 
+                utl_text.bulk_replace(C_VIEW_COMMENT_TEMPLATE || l_delimiter, char_table(
+                  '#VIEW_NAME#', C_CPT_VIEW_NAME_PREFIX || p_row.cpt_id,
+                  '#COMMENT#', p_row.cpt_select_view_comment));
+    end if;
+    return l_stmt;
+    
+  end get_param_lov_query;
+  
 
   /**
     Procedure: initialize
@@ -1839,12 +1911,6 @@ as
   procedure merge_action_param_type(
     p_row in out nocopy adc_action_param_types_v%rowtype)
   as
-    C_VIEW_STATEMENT_TEMPLATE constant adc_util.max_char := q'^create or replace view #VIEW_NAME# as #QUERY#^';
-    C_VIEW_STATIC_LIST_TEMPLATE constant adc_util.max_char := q'^select pti_name d, substr(pti_id, #IDX#) r, null cgr_id
-  from pit_translatable_item_v
- where pti_pmg_name = 'ADC'
-   and pti_id like '#VIEW_NAME#%'^';
-    C_VIEW_COMMENT_TEMPLATE constant adc_util.max_char := q'^comment on table #VIEW_NAME# is '#COMMENT#'^';
     l_stmt adc_util.max_char;
     l_pti_id pit_translatable_item.pti_id%type;
   begin
@@ -1881,30 +1947,15 @@ as
           values(s.cpt_id, s.cpt_pti_id, s.cpt_pmg_name, s.cpt_cpv_id, s.cpt_sort_seq, s.cpt_active);
     
     -- Create generic View statement for static lists (they reference transalatable items)
-    if p_row.cpt_cpv_id = 'STATIC_LIST' then
-      p_row.cpt_select_list_query := utl_text.bulk_replace(C_VIEW_STATIC_LIST_TEMPLATE, char_table(
-                                       '#VIEW_NAME#', p_row.cpt_id,
-                                       '#IDX#', to_char((length(p_row.cpt_id) + 1))));
-    end if;
-    
-    if p_row.cpt_select_list_query is not null then
-      l_stmt := utl_text.bulk_replace(C_VIEW_STATEMENT_TEMPLATE, char_table(
-                  '#VIEW_NAME#', C_CPT_VIEW_NAME_PREFIX || p_row.cpt_id,
-                  '#QUERY#', p_row.cpt_select_list_query));
+    l_stmt := get_param_lov_query(p_row, true);
+    if l_stmt is not null then
       execute immediate l_stmt;
-    end if;
-          
-    if p_row.cpt_select_view_comment is not null then
-      l_stmt := utl_text.bulk_replace(C_VIEW_COMMENT_TEMPLATE, char_table(
-                  '#VIEW_NAME#', C_CPT_VIEW_NAME_PREFIX || p_row.cpt_id,
-                  '#COMMENT#', p_row.cpt_select_view_comment));
-      execute immediate l_stmt;
-    end if;
+    end if;    
     
     pit.leave_mandatory;
   exception
     when others then
-      pit.handle_exception(msg.PIT_PASS_MESSAGE, msg_args(l_stmt));
+      pit.handle_exception(msg.PIT_PASS_MESSAGE, msg_args(sqlerrm || ': ' || l_stmt));
   end merge_action_param_type;
 
 
@@ -2316,6 +2367,8 @@ as
     l_zip_file_name adc_util.ora_name_type;
   begin
     pit.enter_mandatory(p_params => msg_params(msg_param('p_cat_is_editable', p_cat_is_editable)));
+    -- prevent unwanted escapings on nested anchors
+    utl_text.set_secondary_anchor_char('§');
     
     case p_cat_is_editable
     when adc_util.C_TRUE then
@@ -2328,10 +2381,10 @@ as
 
     select utl_text.generate_text(cursor(
             select p.uttm_text template,
-                   spt.cpv_id, spt.cpv_name, adc_util.to_bool(spt.cpv_active) cpv_active,
-                   utl_text.wrap_string(spt.cpv_description, C_WRAP_START, C_WRAP_END) cpv_description,
+                   cpt.cpv_id, cpt.cpv_name, adc_util.to_bool(cpt.cpv_active) cpv_active,
+                   utl_text.wrap_string(cpt.cpv_description, C_WRAP_START, C_WRAP_END) cpv_description,
                    cpv_display_name, cpv_sort_seq
-              from adc_action_param_visual_types_v spt
+              from adc_action_param_visual_types_v cpt
            ), C_CR)
       into l_action_param_visual_types
       from utl_text_templates p
@@ -2341,20 +2394,20 @@ as
 
     select utl_text.generate_text(cursor(
             select p.uttm_text template,
-                   spt.cpt_id, spt.cpt_name, adc_util.to_bool(spt.cpt_active) cpt_active,
-                   utl_text.wrap_string(spt.cpt_description, C_WRAP_START, C_WRAP_END) cpt_description,
+                   cpt.cpt_id, cpt.cpt_name, adc_util.to_bool(cpt.cpt_active) cpt_active,
+                   utl_text.wrap_string(cpt.cpt_description, C_WRAP_START, C_WRAP_END) cpt_description,
                    cpt_cpv_id,
-                   utl_text.wrap_string(spt.cpt_select_list_query, C_WRAP_START, C_WRAP_END) cpt_select_list_query,
-                   utl_text.wrap_string(spt.cpt_select_view_comment, C_WRAP_START, C_WRAP_END) cpt_select_view_comment,
+                   utl_text.wrap_string(cpt.cpt_select_list_query, C_WRAP_START, C_WRAP_END) cpt_select_list_query,
+                   utl_text.wrap_string(cpt.cpt_select_view_comment, C_WRAP_START, C_WRAP_END) cpt_select_view_comment,
                    cpt_display_name, cpt_sort_seq
-              from adc_action_param_types_v spt
+              from adc_action_param_types_v cpt
            ), C_CR)
       into l_action_param_types
       from utl_text_templates p
      where uttm_type = C_ADC
        and uttm_name = C_UTTM_NAME
        and uttm_mode = 'PARAM_TYPE';
-
+       
     select utl_text.generate_text(cursor(
             select p.uttm_text template,
                    cig_id, 
@@ -2481,6 +2534,13 @@ as
        and uttm_name = C_UTTM_NAME
        and uttm_mode = C_FRAME;
        
+    -- Finally, add all create view statements for LOV-based parameter types
+    for cpt in (select *
+                  from adc_action_param_types_v
+                 where cpt_cpv_id = C_STATIC_LIST
+                    or cpt_select_list_query is not null) loop
+      dbms_lob.append(l_stmt, C_CR || get_param_lov_query(cpt) || C_CR);
+    end loop; 
     
     apex_zip.add_file(
       p_zipped_blob => l_zip_file,
@@ -2489,8 +2549,14 @@ as
 
     apex_zip.finish(l_zip_file);
 
+    -- reset utl_text to standard values
+    utl_text.initialize;   
     pit.leave_mandatory(p_params => msg_params(msg_param('ZIP file size', dbms_lob.getlength(l_zip_file))));
     return l_zip_file;
+  exception
+    when others then
+      pit.handle_exception;
+      raise;
   end export_action_types;
 
 

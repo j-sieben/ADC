@@ -4,6 +4,13 @@ set sqlblanklines on
 begin
   -- ACTION_PARAM_VISUAL_TYPES
   adc_admin.merge_action_param_visual_type(
+    p_cpv_id => 'CONTROL_LIST',
+    p_cpv_name => 'Kontrollkästchen',
+    p_cpv_display_name => '',
+    p_cpv_description => q'{Wird für die Auswahl mehrerer Optionen verwendet.}',
+    p_cpv_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_visual_type(
     p_cpv_id => 'SELECT_LIST',
     p_cpv_name => 'Dynamische Auswahlliste',
     p_cpv_display_name => '',
@@ -48,7 +55,7 @@ begin
     p_cpt_cpv_id => 'SELECT_LIST',
     p_cpt_select_list_query => q'{select caa_name d, caa_id r, caa_cgr_id cgr_id\CR\}' || 
 q'{  from adc_apex_actions_v}',
-    p_cpt_select_view_comment => q'{List of apex actions, grouped by CGR_ID}',
+    p_cpt_select_view_comment => q'{}',
     p_cpt_sort_seq => 10,
     p_cpt_active => adc_util.C_TRUE);
 
@@ -71,7 +78,7 @@ q'{ order by cit_id}',
     p_cpt_name => 'Anzeigestatus',
     p_cpt_display_name => '',
     p_cpt_description => q'{<p>Option zur Anzeige eines Seitenelements auf der Seite</p>}',
-    p_cpt_cpv_id => 'STATIC_LIST',
+    p_cpt_cpv_id => 'SELECT_LIST',
     p_cpt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null cgr_id\CR\}' || 
 q'{  from pit_translatable_item_v\CR\}' || 
 q'{ where pti_pmg_name = 'ADC'\CR\}' || 
@@ -128,10 +135,10 @@ q'{ where sequence_name not like 'ISEQ$$%'}',
     p_cpt_display_name => '',
     p_cpt_description => q'{<p>Typen der Seitenweiterleitung</p>}',
     p_cpt_cpv_id => 'STATIC_LIST',
-    p_cpt_select_list_query => q'{select pti_name d, substr(pti_id, 12) r, null cgr_id\CR\}' || 
-q'{  from pit_translatable_item_v\CR\}' || 
-q'{ where pti_pmg_name = 'ADC'\CR\}' || 
-q'{   and pti_id like 'SUBMIT_TYPE%'}',
+    p_cpt_select_list_query => q'{select pti_name d, substr(pti_id, 13) r, null cgr_id\CR\}' || 
+q'{    from pit_translatable_item_v\CR\}' || 
+q'{   where pti_pmg_name = 'ADC'\CR\}' || 
+q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cpt_select_view_comment => q'{List of translatable items of type ADC, related to the SUBMIT_TYPE}',
     p_cpt_sort_seq => 10,
     p_cpt_active => adc_util.C_TRUE);
@@ -1388,3 +1395,55 @@ end;
 
 set define on
 set sqlblanklines off
+
+create or replace view ADC_PARAM_LOV_EVENT as select cit_name d, cit_id r, null cgr_id
+  from adc_page_item_types_v
+ where cit_is_custom_event = (select adc_util.c_true from dual)
+ order by cit_id;
+
+comment on table ADC_PARAM_LOV_EVENT is 'Parameterview to display all custom events';
+
+
+create or replace view ADC_PARAM_LOV_PIT_MESSAGE as select pms_name d, 'msg.' || pms_name r, null cgr_id
+  from pit_message
+  join pit_message_language_v
+    on pms_pml_name = pml_name
+ where pml_default_order = 10;
+
+comment on table ADC_PARAM_LOV_PIT_MESSAGE is 'List of PIT messages';
+
+
+create or replace view ADC_PARAM_LOV_APEX_ACTION as select caa_name d, caa_id r, caa_cgr_id cgr_id
+  from adc_apex_actions_v;
+
+
+create or replace view ADC_PARAM_LOV_PAGE_ITEM as select case cpi_id when 'ALL' then ' Document' else cpi_id end d, cpi_id r, cpi_cgr_id cgr_id
+  from adc_page_items
+ where cpi_cit_id in ('DATE_ITEM', 'ITEM', 'NUMBER_ITEM');
+
+comment on table ADC_PARAM_LOV_PAGE_ITEM is 'List of page items, limited to input fields, grouped by CGR_ID';
+
+
+create or replace view ADC_PARAM_LOV_ITEM_STATUS as select pti_name d, substr(pti_id, 15) r, null cgr_id
+  from pit_translatable_item_v
+ where pti_pmg_name = 'ADC'
+   and pti_id like 'ITEM_STATUS%';
+
+comment on table ADC_PARAM_LOV_ITEM_STATUS is 'List of translatable items of for that parameter type';
+
+
+create or replace view ADC_PARAM_LOV_SEQUENCE as select sequence_name d, sequence_name r, null cgr_id
+  from user_sequences
+       -- exclude column identity sequences
+ where sequence_name not like 'ISEQ$$%';
+
+comment on table ADC_PARAM_LOV_SEQUENCE is 'List of sequences owned by the user';
+
+
+create or replace view ADC_PARAM_LOV_SUBMIT_TYPE as select pti_name d, substr(pti_id, 13) r, null cgr_id
+    from pit_translatable_item_v
+   where pti_pmg_name = 'ADC'
+     and pti_id like 'SUBMIT_TYPE%';
+
+comment on table ADC_PARAM_LOV_SUBMIT_TYPE is 'List of translatable items of type ADC, related to the SUBMIT_TYPE';
+
