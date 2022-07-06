@@ -31,3 +31,11 @@ select ' ' || pti_name, item_type,
        application_id, page_id, item_type
   from apex_application_pages
   join pti on item_type = 'DOCUMENT';
+
+
+comment on table adc_bl_page_items is 'View to collect metadata from the APEX dictionary for all ADC supported kinds of page items';
+comment on column adc_bl_page_items.item_name is 'Name of the page item, along with its translated item type';
+comment on column adc_bl_page_items.item_id is 'Static ID of the page item';
+comment on column adc_bl_page_items.app_id is 'APEX application ID';
+comment on column adc_bl_page_items.page_id is 'APEX application page ID';
+comment on column adc_bl_page_items.item_type is 'Type of the page ITEM';

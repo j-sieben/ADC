@@ -11,7 +11,8 @@ prompt &h3.Create tables
 @&tool_dir.create_table adc_ui_map_designer_actions
 
 prompt &h3.Create views
-@&tool_dir.create_view adc_bl_designer_action_v
+@&tool_dir.create_view adc_bl_cat_help
+@&tool_dir.create_view adc_bl_designer_actions
 @&tool_dir.create_view adc_ui_lov_action_item_focus
 @&tool_dir.create_view adc_ui_lov_action_param_type
 @&tool_dir.create_view adc_ui_lov_action_param_visual_type

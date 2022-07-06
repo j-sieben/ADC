@@ -89,12 +89,12 @@ Table: Tables.ADC_PAGE_ITEM_TYPES
 Fields:
   cit_id - PK, alphanumerical key
   cit_pti_id - Reference to PIT_TRANSLATABLE_ITEM, translatable NAME
-  cit_pmg_name - Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC
+  cit_pmg_name - no comment available
+  cit_cig_id - Group of the page item type, reference to ADC_PAGE_ITEM_TYPE_GROUPS
   cit_event - JavaScript event to be bound to this element type by the plugin. If null, ADC won't react on changes.
   cit_col_template - Template for creating a column in the decision table.
   cit_init_template - Flag to indicate whether this event has to be observed explicitly by a rule action.
   cit_is_custom_event - no comment available
-  cit_cig_id - Group of the item type, reference to ADC_PAGE_ITEM_TYPE_GROUPS
 
 Table: Tables.ADC_PAGE_ITEMS
   Table to store all page items of the referenced page
@@ -199,14 +199,14 @@ Fields:
   cat_active - Flag to indicate whether data is actually in use
 
 Table: Tables.ADC_ACTION_PARAM_VISUAL_TYPES
-  Table to store how a parameter type has to be displayed. Options are TEXT, TEXT_AREA, SELECT_LIST and SWITCH
+  Table to store how a parameter type has to be displayed. Options are TEXT, TEXT_AREA, SELECT/STATIC_LIST and SWITCH
 
 Fields:
   cpv_id - PK, technical key
   cpv_pti_id - Reference to PIT_TRANSLATABLE_ITEM, translatable NAME
   cpv_pmg_name - Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC
+  cpv_sort_seq - Sort criteria
   cpv_active - Flag to indicate whether visual type is in use
-  cpv_sort_seq - no comment available
 
 Table: Tables.ADC_ACTION_PARAM_TYPES
   Table to store ADC Action Parameter types. Is not maintained by the UI, as entries require package methods for validation
@@ -216,8 +216,8 @@ Fields:
   cpt_pti_id - Reference to PIT_TRANSLATABLE_ITEM, translatable NAME
   cpt_pmg_name - Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC
   cpt_cpv_id - Reference to ADC_ACTION_PARAM_VISUAL_TYPES, type of visual control to use for this parameter type
-  cpt_active - Flag to indicate whether parameter type is in use
   cpt_sort_seq - Sort criteria
+  cpt_active - Flag to indicate whether parameter type is in use
 
 Table: Tables.ADC_ACTION_PARAMETERS
   Table to store ADC Action Parameters
@@ -346,13 +346,13 @@ Fields:
   cty_active - no comment available
 
 View: Views.ADC_BL_CAT_HELP
-  
+  Business logic view to put together a help text for the UI Designer
 
 Fields:
-  cat_id - no comment available
-  help_text - no comment available
+  cat_id - ID of the action type, reference to <Tables.ADC_ACTION_TYPES>
+  help_text - Translated and combined help text from the action type, their parameters and other sources.
 
-View: Views.ADC_BL_DESIGNER_ACTION_V
+View: Views.ADC_BL_DESIGNER_ACTIONS
       This view enriches the data from the decision table <Tables.ADC_UI_MAP_DESIGNER_ACTIONS> with translated label data and
     session state information, such as the actual page and region prefix.    
     The decision is based on a mode the ADC Designer is actually in and the command to execute. As an example, if the
@@ -364,8 +364,42 @@ View: Views.ADC_BL_DESIGNER_ACTION_V
     as the target modes of the buttons.
 
 Fields:
-  mda_actual_mode - Mode the designer is in actually, fi. when showing a rule, the mode is CRU.
-  mda_actual_id - Name of the command to execute (or show) Together with MDA_ACTUAL_MODE, this decides on the row to execute.
+  mda_actual_mode - Mode the designer has to move to, fi. when showing a rule, the mode is CRU.
+  mda_actual_id - Name of the command that was executed (either an apex action name or SHOW) Together with MDA_ACTUAL_MODE, this decides on the row to execute.
+  mda_comment - Comment explaining the use case of the specific row.
+  mda_id_value - Actual ID of the asset shown.
+  mda_form_id - ID of the form to show next.
+  mda_remember_page_state - Flag to indicate whether the form to show next needs to survey element changes.
+  mda_create_button_visible - Flag to indicate whether the create button is visible.
+  mda_create_button_label - Label fo the create button, translated.
+  mda_create_target_mode - Mode to enter if the create button is pressed.
+  mda_update_button_visible - Flag to indicate whether the upddate button is visible.
+  mda_update_button_label - Label fo the update button, translated.
+  mda_update_target_mode - Mode to enter if the update button is pressed.
+  mda_update_value - ID of the asset to update.
+  mda_delete_button_visible - Flag to indicate whether the delete button is visible.
+  mda_delete_button_label - Label fo the delete button, translated.
+  mda_delete_mode - Actual mode when the delete button was pressed.
+  mda_delete_target_mode - Mode to enter if the delete button is pressed.
+  mda_delete_value - ID of the asset to delete.
+  mda_cancel_button_active - Flag to indicate whether the cancel button is visible.
+  mda_cancel_target_mode - Mode to enter if the cancel button is pressed.
+  mda_cancel_value - ID of the asset to return to after the dialog was canceled.
+
+View: Views.ADC_BL_DESIGNER_ACTION_V
+      This view enriches the data from the decision table <Tables.ADC_UI_MAP_DESIGNER_ACTIONS> with translated label data and
+    session state information, such as the actual page and region prefix.
+    The decision is based on a mode the ADC Designer is actually in and the command to execute. As an example, if the
+    designer shows a rule group, because the user clicked on a dynamic page in the tree control, The mode is CGR and the
+    command is SHOW. Based on this information, this view is queried and the status and labels of the respective buttons
+    are taken and sent to the page. The decision table also defines the target mode to switch to if a button is clicked.
+    If the user decides to click the CREATE button in the ADC Designer, this then is interpreted as target mode CRU and
+    the command is CREATE-ACTION. This again filters this view, controling the state of the buttons and labels as well
+    as the target modes of the buttons.
+
+Fields:
+  mda_actual_mode - Mode the designer has to move to, fi. when showing a rule, the mode is CRU.
+  mda_actual_id - Name of the command that was executed (either an apex action name or SHOW) Together with MDA_ACTUAL_MODE, this decides on the row to execute.
   mda_comment - Comment explaining the use case of the specific row.
   mda_id_value - Actual ID of the asset shown.
   mda_form_id - ID of the form to show next.
@@ -387,14 +421,14 @@ Fields:
   mda_cancel_value - ID of the asset to return to after the dialog was canceled.
 
 View: Views.ADC_BL_PAGE_ITEMS
-  
+  View to collect metadata from the APEX dictionary for all ADC supported kinds of page items
 
 Fields:
-  item_name - no comment available
-  item_id - no comment available
-  app_id - no comment available
-  page_id - no comment available
-  item_type - no comment available
+  item_name - Name of the page item, along with its translated item type
+  item_id - Static ID of the page item
+  app_id - APEX application ID
+  page_id - APEX application page ID
+  item_type - Type of the page ITEM
 
 View: Views.ADC_BL_PAGE_TARGETS
   View to collect all page components that are accessible by ADC, along with an item type categorization for grouping in ITEM_FOCUS etc.
@@ -402,35 +436,35 @@ View: Views.ADC_BL_PAGE_TARGETS
 Fields:
   cpi_cgr_id - no comment available
   cpi_id - no comment available
-  cpi_cit_id - no comment available
-  cpi_cig_id - no comment available
-  cpi_cty_id - no comment available
-  cpi_label - no comment available
-  cpi_conversion - no comment available
-  cpi_item_default - no comment available
-  cpi_css - no comment available
-  cpi_is_mandatory - no comment available
-  cpi_is_required - no comment available
+  cpi_cit_id - Item type of the page item, reference to ADC_PAGE_ITEM_TYPES
+  cpi_cig_id - Item group of the page item, reference to ADC_PAGE_ITEM_TYPE_GROUPS
+  cpi_cty_id - Optional APEX action type of the page item, if an APEX action, reference to ADC_APEX_ACTION_TYPES
+  cpi_label - Label of the page item
+  cpi_conversion - Optional format mask of the page item
+  cpi_item_default - Optional default item value for a mandatory item
+  cpi_css - Any CSS class attatched to the page item, separated by |-signs
+  cpi_is_mandatory - Flag to indicate whether this page item is initially mandatory. Taken from the APEX metadata
+  cpi_is_required - Flag to indicate whether this page item is necessary for ADC. A page item is necessary, if ADC has to react on item value changes
 
 View: Views.ADC_BL_RULES
-  
+  View to collect common data for rules and their respective actions. Is used as the basis for ADC to execute the rule logic
 
 Fields:
-  cru_id - no comment available
-  cgr_id - no comment available
-  cru_sort_seq - no comment available
-  cru_name - no comment available
-  cru_firing_items - no comment available
-  cru_fire_on_page_load - no comment available
-  cra_raise_recursive - no comment available
-  cra_cpi_id - no comment available
-  item_css - no comment available
-  cra_cat_id - no comment available
-  cra_param_1 - no comment available
-  cra_param_2 - no comment available
-  cra_param_3 - no comment available
-  cra_on_error - no comment available
-  cra_sort_seq - no comment available
+  cru_id - ID of the rule, reference to <Tables.ADC_RULES>
+  cgr_id - ID of the rule group, reference to <Tables.ADC_RULE_GROUPS>
+  cru_sort_seq - Sort criteria of the rule
+  cru_name - Name of the rule
+  cru_firing_items - List of page items that are considered firing, separated by comma
+  cru_fire_on_page_load - Flag to indicate whether this rule should be considere upon page initialization additionally to the initialize rule
+  cra_raise_recursive - Flag to indicate whether this rule allows for recursive execution
+  cra_cpi_id - Page item the rule action refers to, reference to <Tables.ADC_PAGE_ITEMS>
+  item_css - All CSS classes attached to the page item
+  cra_cat_id - ADC action type of the action. Reference to <Tables.ADC_ACTION_TYPES>
+  cra_param_1 - Actual value of parameter 1 of the action
+  cra_param_2 - Actual value of parameter 2 of the action
+  cra_param_3 - Actual value of parameter 3 of the action
+  cra_on_error - Flag to indicate whether this action is an error handler
+  cra_sort_seq - Sort criteria of the action
 
 View: Views.ADC_PAGE_ITEM_TYPES_V
   Transated view on ADC_PAGE_ITEM_TYPES
@@ -447,7 +481,7 @@ Fields:
   cit_is_custom_event - no comment available
 
 View: Views.ADC_PARAM_LOV_APEX_ACTION
-  List of apex actions, grouped by CGR_ID
+  
 
 Fields:
   d - Display value
@@ -506,11 +540,11 @@ View: Views.ADC_RULE_GROUP_STATUS
   Wrapper view around the apex collection containing the list of mandatory items
 
 Fields:
-  cgs_cgr_id - no comment available
-  cgs_id - no comment available
-  cgs_cpi_id - no comment available
-  cgs_cpi_label - no comment available
-  cgs_cpi_mandatory_message - no comment available
+  cgs_cgr_id - CGR_ID of the mandatory items list
+  cgs_id - Collection PK (SEQ_ID)
+  cgs_cpi_id - ID of the page item
+  cgs_cpi_label - Label of the page item
+  cgs_cpi_mandatory_message - Message to display if the page item violates the mandatory rule
 
 View: Views.ADC_UI_ADMIN_CAT
   View for page ADMIN_CAT
@@ -527,7 +561,7 @@ Fields:
   link_target - no comment available
 
 View: Views.ADC_UI_ADMIN_CIF
-  View for APEX report page ADMIN_SIF
+  View for APEX report page ADMIN_CIF
 
 Fields:
   cif_id - no comment available
@@ -707,7 +741,7 @@ Fields:
   cap_active_3 - no comment available
 
 View: Views.ADC_UI_EDIT_CIF
-  View for APEX page EDIT_SIF
+  View for APEX page EDIT_CIF
 
 Fields:
   cif_id - no comment available

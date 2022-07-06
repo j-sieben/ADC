@@ -40,7 +40,6 @@ prompt &h3.Create views
 @&tool_dir.create_view adc_bl_page_targets
 @&tool_dir.create_view adc_bl_rules
 @&tool_dir.create_view adc_bl_page_targets
-@&tool_dir.create_view adc_bl_cat_help
 @&tool_dir.create_view adc_rule_group_status
 
 prompt &h3.Create parameter lov views

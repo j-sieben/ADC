@@ -24,3 +24,7 @@ select cat_id,
           where s.cat_id = sat.cat_id
             and uttm_mode = 'FRAME')) help_text
   from adc_action_types_v sat;
+
+comment on table adc_bl_cat_help is 'Business logic view to put together a help text for the UI Designer';
+comment on column adc_bl_cat_help.cat_id is 'ID of the action type, reference to <Tables.ADC_ACTION_TYPES>';
+comment on column adc_bl_cat_help.help_text is 'Translated and combined help text from the action type, their parameters and other sources.';

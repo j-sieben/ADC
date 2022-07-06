@@ -314,7 +314,7 @@ as
    */
   function assemble_action(
     p_action in adc_util.ora_name_type,
-    p_row in adc_bl_designer_action_v%rowtype)
+    p_row in adc_bl_designer_actions%rowtype)
   return varchar2
   as
     /**
@@ -487,7 +487,7 @@ as
       The attributes of the selected row control the outcome of this method.
    */
   procedure maintain_actions(
-    p_row in adc_bl_designer_action_v%rowtype)
+    p_row in adc_bl_designer_actions%rowtype)
   as
     l_cancel_pti pit_translatable_item_v.pti_name%type;
     l_disabled boolean;
@@ -1422,7 +1422,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
       p_mda_actual_id adc_ui_map_designer_actions.mda_ald_id%type) 
     is
       select *
-        from adc_bl_designer_action_v
+        from adc_bl_designer_actions
        where mda_actual_mode = p_mda_actual_mode
          and mda_actual_id = p_mda_actual_id;
   begin

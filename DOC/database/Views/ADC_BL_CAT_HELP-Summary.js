@@ -1,1 +1,1 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_BL_CAT_HELP","ADC_BL_CAT_HELP");NDSummary.OnSummaryLoaded("Database:Views.ADC_BL_CAT_HELP",[["SQL","SQL"]],[["Views","DatabaseView"]],[[805,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_BL_CAT_HELP"]]);
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_BL_CAT_HELP","ADC_BL_CAT_HELP");NDSummary.OnSummaryLoaded("Database:Views.ADC_BL_CAT_HELP",[["SQL","SQL"]],[["Views","DatabaseView"]],[[194,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_BL_CAT_HELP"]]);
