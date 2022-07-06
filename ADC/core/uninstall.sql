@@ -13,7 +13,7 @@ declare
           select object_name name, object_type type
             from user_objects
            where object_name in (
-                 'ADC_BASIC', -- Typen
+                 'ADC_BASIC', 'ADC', -- Typen
                  'ADC_ADMIN', 'ADC_INTERNAL', 'ADC_UTIL', 'ADC_VALIDATION', 'ADC_API', 'ADC_APEX_ACTION', 'ADC_UT', 
                  'ADC_RECURSION_STACK', 'ADC_PAGE_STATE', -- Packages
                  'ADC_RULE_GROUP_STATUS', 'ADC_BL_PAGE_ITEMS', 'ADC_BL_PAGE_TARGETS', 'ADC_BL_RULES', 'ADC_BL_CAT_HELP', 'ADC_ACTION_PARAM_VISUAL_TYPES_V', 

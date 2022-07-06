@@ -259,7 +259,7 @@ as
     pit.enter_mandatory;
     
     -- Initialization
-    l_employee_id := to_number(adc_api.get_event_data);
+    l_employee_id := adc_api.get_event_data;
     adc_apex_action.action_init('edit-employee');
     
     select j.is_manager, substr(e.first_name, 1, 1) || '. ' || e.last_name || ' bearbeiten'
@@ -286,6 +286,9 @@ as
     adc.add_javascript(adc_apex_action.get_action_script);
     
     pit.leave_mandatory;
+  exception
+    when others then
+      pit.handle_exception(msg.PIT_PASS_MESSAGE, msg_args(adc_api.get_event_data));
   end adact_control_action;
   
   

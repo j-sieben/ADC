@@ -196,7 +196,7 @@ as
        and cpi_id = p_cpi_id
        and cpi_cit_id in (C_ITEM, C_APP_ITEM, C_NUMBER_ITEM, C_DATE_ITEM);
        
-    if l_is_value_item = 0 then
+    if l_is_value_item = 0 and g_session_values.exists(p_cpi_id)then
       -- Adding a non item to the session values collection prevents further checks
       g_session_values(p_cpi_id) := null;
     end if;
