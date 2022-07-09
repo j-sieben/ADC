@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Tables.ADC_ACTION_TYPE_GROUPS",{792:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store ADC Action Type groups</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Tables.ADC_ACTION_TYPE_GROUPS",{400:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store ADC Action Type groups</div></div>"});

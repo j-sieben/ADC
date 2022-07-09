@@ -1,16 +1,7 @@
 @&tool_dir.set_folder sample_app
 
 prompt create HR tables
-@&script_dir.hr_drop_new.sql
-@&script_dir.hr_cre.sql
-@&script_dir.hr_comnt.sql
-@&script_dir.hr_idx.sql
-
-prompt populate HR data
-@&script_dir.hr_popul.sql
-
-prompt modify HR schema
-@&script_dir.modify_hr_schema.sql
+@&script_dir.install_hr.sql
 
 prompt &h2.Create database objects
 prompt &h3.Create views

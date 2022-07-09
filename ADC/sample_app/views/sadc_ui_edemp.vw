@@ -1,3 +1,4 @@
 create or replace view sadc_ui_edemp as
-select employee_id, first_name, last_name, email, phone_number, hire_date, job_id, salary, commission_pct, manager_id, department_id
-  from employees;
+select emp_id, emp_first_name, emp_last_name, emp_email, emp_phone_number, 
+       emp_hire_date, emp_job_id, emp_salary, emp_commission_pct, emp_mgr_id, emp_dep_id
+  from hr_employees;

@@ -112,10 +112,10 @@ as
     C_URL_TEMPLATE constant adc_util.sql_char := q'^javascript:apex.navigation.openInNewWindow('#URL#', 'ADC');^';
   begin
     with params as (
-           select utl_apex.get_application_id(adc_util.C_FALSE) p_app_id,
+           select /*+ no_merge */utl_apex.get_application_id(adc_util.C_FALSE) p_app_id,
                   utl_apex.get_page_id p_page_id
              from dual)
-    select /*+ no_merge (p) */ cgr_id
+    select cgr_id
       into l_cgr_id
       from adc_rule_groups
       join params p
@@ -170,18 +170,18 @@ as
   
 
   function is_comm_eligible(
-    p_job_id in jobs.job_id%type)
+    p_job_id in hr_jobs.job_id%type)
   return adc_util.flag_type 
   as
-    l_comm_eligible pls_integer;
+    l_is_commission_eligible pls_integer;
   begin
   
-    select comm_eligible
-      into l_comm_eligible
-      from jobs
+    select job_is_commission_eligible
+      into l_is_commission_eligible
+      from hr_jobs
      where job_id = p_job_id;
      
-    return case l_comm_eligible when 1 then adc_util.C_TRUE else adc_util.C_FALSE end;
+    return case l_is_commission_eligible when 1 then adc_util.C_TRUE else adc_util.C_FALSE end;
     
   end is_comm_eligible;
   
@@ -252,22 +252,22 @@ as
   
   procedure adact_control_action
   as
-    l_employee_id sadc_ui_adact.employee_id%type;
+    l_emp_id sadc_ui_adact.emp_id%type;
     l_is_manager pls_integer;
     l_label varchar2(100 byte);
   begin
     pit.enter_mandatory;
     
     -- Initialization
-    l_employee_id := adc_api.get_event_data;
+    l_emp_id := adc_api.get_event_data;
     adc_apex_action.action_init('edit-employee');
     
-    select j.is_manager, substr(e.first_name, 1, 1) || '. ' || e.last_name || ' bearbeiten'
+    select emp_is_manager, substr(emp_first_name, 1, 1) || '. ' || emp_last_name || ' bearbeiten'
       into l_is_manager, l_label
-      from jobs j
-      join employees e
-        on j.job_id = e.job_id
-     where e.employee_id = l_employee_id;
+      from hr_jobs
+      join hr_employees
+        on job_id = emp_job_id
+     where emp_id = l_emp_id;
      
     if l_is_manager = 1 then
       adc_apex_action.set_label('Nicht bearbeitbar');
@@ -279,7 +279,7 @@ as
         utl_apex.get_page_url(
           p_page => 'edemp',
           p_param_items => 'P9_EMPLOYEE_ID',
-          p_value_list => l_employee_id,
+          p_value_list => l_emp_id,
           p_triggering_element => 'B8_EDIT_EMP',
           p_clear_cache => 9));
     end if;

@@ -1,1 +1,1 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_UI_DESIGNER_FLOWS","ADC_UI_DESIGNER_FLOWS");NDSummary.OnSummaryLoaded("Database:Views.ADC_UI_DESIGNER_FLOWS",[["SQL","SQL"]],[["Views","DatabaseView"]],[[824,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_UI_DESIGNER_FLOWS"]]);
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_UI_DESIGNER_FLOWS","ADC_UI_DESIGNER_FLOWS");NDSummary.OnSummaryLoaded("Database:Views.ADC_UI_DESIGNER_FLOWS",[["SQL","SQL"]],[["Views","DatabaseView"]],[[433,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_UI_DESIGNER_FLOWS"]]);

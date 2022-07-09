@@ -1,1 +1,1 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_UI_LOV_EXPORT_CAT","ADC_UI_LOV_EXPORT_CAT");NDSummary.OnSummaryLoaded("Database:Views.ADC_UI_LOV_EXPORT_CAT",[["SQL","SQL"]],[["Views","DatabaseView"]],[[850,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_UI_LOV_EXPORT_CAT"]]);
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_UI_LOV_EXPORT_CAT","ADC_UI_LOV_EXPORT_CAT");NDSummary.OnSummaryLoaded("Database:Views.ADC_UI_LOV_EXPORT_CAT",[["SQL","SQL"]],[["Views","DatabaseView"]],[[459,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_UI_LOV_EXPORT_CAT"]]);

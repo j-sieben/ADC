@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Tables.ADC_APEX_ACTION_ITEMS",{790:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store initial references between page items and apex actions</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Tables.ADC_APEX_ACTION_ITEMS",{398:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store initial references between page items and apex actions</div></div>"});

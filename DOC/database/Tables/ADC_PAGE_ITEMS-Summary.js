@@ -1,1 +1,1 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Tables.ADC_PAGE_ITEMS","ADC_PAGE_ITEMS");NDSummary.OnSummaryLoaded("Database:Tables.ADC_PAGE_ITEMS",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[786,0,0,"<span class=\"Qualifier\">Tables.</span>&#8203;ADC_PAGE_ITEMS"]]);
+﻿NDFramePage.OnPageTitleLoaded("Database:Tables.ADC_PAGE_ITEMS","ADC_PAGE_ITEMS");NDSummary.OnSummaryLoaded("Database:Tables.ADC_PAGE_ITEMS",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[394,0,0,"<span class=\"Qualifier\">Tables.</span>&#8203;ADC_PAGE_ITEMS"]]);

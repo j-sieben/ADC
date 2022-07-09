@@ -1,1 +1,1 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_RULE_GROUP_STATUS","ADC_RULE_GROUP_STATUS");NDSummary.OnSummaryLoaded("Database:Views.ADC_RULE_GROUP_STATUS",[["SQL","SQL"]],[["Views","DatabaseView"]],[[868,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_RULE_GROUP_STATUS"]]);
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_RULE_GROUP_STATUS","ADC_RULE_GROUP_STATUS");NDSummary.OnSummaryLoaded("Database:Views.ADC_RULE_GROUP_STATUS",[["SQL","SQL"]],[["Views","DatabaseView"]],[[427,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_RULE_GROUP_STATUS"]]);

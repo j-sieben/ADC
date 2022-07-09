@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_PAGE_ITEM_TYPES_V",{810:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Transated view on ADC_PAGE_ITEM_TYPES</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_PAGE_ITEM_TYPES_V",{419:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Transated view on ADC_PAGE_ITEM_TYPES</div></div>"});

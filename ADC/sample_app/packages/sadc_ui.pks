@@ -75,7 +75,7 @@ as
       This is detected by queriying column JOBS.COMM_ELIGIBLE
    */
   function is_comm_eligible(
-    p_job_id in jobs.job_id%type)
+    p_job_id in hr_jobs.job_id%type)
   return adc_util.flag_type;
     
   

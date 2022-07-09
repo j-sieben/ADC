@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_PARAM_LOV_PAGE_ITEM",{814:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">List of page items, limited to input fields, grouped by CGR_ID</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_PARAM_LOV_PAGE_ITEM",{423:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">List of page items, limited to input fields, grouped by CGR_ID</div></div>"});

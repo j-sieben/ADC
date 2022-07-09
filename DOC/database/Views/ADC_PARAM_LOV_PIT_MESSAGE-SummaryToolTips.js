@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_PARAM_LOV_PIT_MESSAGE",{815:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">List of PIT messages</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_PARAM_LOV_PIT_MESSAGE",{424:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">List of PIT messages</div></div>"});

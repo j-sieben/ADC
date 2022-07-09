@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_UI_DESIGNER_RULES",{826:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Overview over all rules of a rule group including a summary of the rule actions</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_UI_DESIGNER_RULES",{435:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Overview over all rules of a rule group including a summary of the rule actions</div></div>"});

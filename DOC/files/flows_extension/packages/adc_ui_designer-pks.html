@@ -8,48 +8,48 @@
 
 <body onload="NDLoader.OnLoad('Content');" class="NDPage NDContentPage">
 
-<a name="ADC_UI_DESIGNER"></a><a name="Topic681"></a><div class="CTopic TClass LSQL first">
+<a name="ADC_UI_DESIGNER"></a><a name="Topic760"></a><div class="CTopic TClass LSQL first">
  <div class="CTitle">ADC_UI_DESIGNER</div>
- <div class="CBody"><p>Maintain ADC rules via an APEX frontend.&nbsp; This package implements the methods required to maintain ADC rule groups via an APEX applications ADC designer.</p><p>Flow: The ADC Designer is a one pager that allows to administer a complete set of ADC rules. Its design is inspired by the APEX page designer and completely controled by ADC. No additional JavaScript libraries are required.</p><p>The <a href="../../../index.html#File:apex/packages/splitter_plugin.pks:SPLITTER_PLUGIN" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,9);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >splitter_plugin</a> used on the page is a plugin published by FOS.</p><p>The ADC designer is controlled mainly by APEX Actions. They control the buttons on the page and are used for the sub menu in the hierarchy tree. This package controls the visible aspects of the APEX Actions as well as their behavior. The behavior is to inform ADC that they were invoked, but based on the environment, they pass different values back to the database that helps in deciding upon the next steps to perform.</p><p>At the center of the logic is table &lt;ADC_UI_MAP_DESIGNER_ACTIONS&gt;. It persists information required to calculate the next status of the ADC Designer.&nbsp; The persisted data is enriched with actual session data in view &lt;ADC_BL_DESIGNER_ACTION_V&gt;.&nbsp; This view is used as a decision table for the package, making the decision logic data driven.</p><p>Based on the actual situation the ADC designer is in, a row of this view is selected. The attributes of this row are taken to calculate the action to perform and to decide opon the next status of the APEX Actions.</p><p>Because of this architectur, this package is mainly focusing on putting together the code for the next cycle of the APEX Actions and to collect the required data and pass it to the XAPI methods of <a href="../../../index.html#File:core/packages/adc_admin.pks:ADC_ADMIN" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,321);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_ADMIN</a>.</p><div class="CHeading">Author</div><p>Juergen Sieben, ConDeS GmbH</p></div>
+ <div class="CBody"><p>Maintain ADC rules via an APEX frontend.&nbsp; This package implements the methods required to maintain ADC rule groups via an APEX applications ADC designer.</p><p>Flow: The ADC Designer is a one pager that allows to administer a complete set of ADC rules. Its design is inspired by the APEX page designer and completely controled by ADC. No additional JavaScript libraries are required.</p><p>The <a href="../../../index.html#File:apex/packages/splitter_plugin.pks:SPLITTER_PLUGIN" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,17);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >splitter_plugin</a> used on the page is a plugin published by FOS.</p><p>The ADC designer is controlled mainly by APEX Actions. They control the buttons on the page and are used for the sub menu in the hierarchy tree. This package controls the visible aspects of the APEX Actions as well as their behavior. The behavior is to inform ADC that they were invoked, but based on the environment, they pass different values back to the database that helps in deciding upon the next steps to perform.</p><p>At the center of the logic is table &lt;ADC_UI_MAP_DESIGNER_ACTIONS&gt;. It persists information required to calculate the next status of the ADC Designer.&nbsp; The persisted data is enriched with actual session data in view &lt;ADC_BL_DESIGNER_ACTION_V&gt;.&nbsp; This view is used as a decision table for the package, making the decision logic data driven.</p><p>Based on the actual situation the ADC designer is in, a row of this view is selected. The attributes of this row are taken to calculate the action to perform and to decide opon the next status of the APEX Actions.</p><p>Because of this architectur, this package is mainly focusing on putting together the code for the next cycle of the APEX Actions and to collect the required data and pass it to the XAPI methods of <a href="../../../index.html#File:core/packages/adc_admin.pks:ADC_ADMIN" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,276);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_ADMIN</a>.</p><div class="CHeading">Author</div><p>Juergen Sieben, ConDeS GmbH</p></div>
 </div>
 
-<a name="ADC_UI_DESIGNER.Functions"></a><a name="Topic682"></a><div class="CTopic TGroup LSQL">
+<a name="ADC_UI_DESIGNER.Functions"></a><a name="Topic761"></a><div class="CTopic TGroup LSQL">
  <div class="CTitle">Functions</div>
 </div>
 
-<a name="ADC_UI_DESIGNER.get_lov_sql"></a><a name="Topic683"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_UI_DESIGNER.get_lov_sql"></a><a name="Topic762"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">get_lov_sql</div>
- <div id="NDPrototype683" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> get_lov_sql(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_cpt_id&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_action_param_types.cpt_id<span class="SHKeyword">%type</span>,</td></tr><tr><td class="PName first">p_cgr_id&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_rule_groups.cgr_id<span class="SHKeyword">%type</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">varchar2</span></div></div>
+ <div id="NDPrototype762" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> get_lov_sql(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_cpt_id&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_action_param_types.cpt_id<span class="SHKeyword">%type</span>,</td></tr><tr><td class="PName first">p_cgr_id&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_rule_groups.cgr_id<span class="SHKeyword">%type</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">varchar2</span></div></div>
  <div class="CBody"><p>Method to retrieve a select statement that reads values for a given Action Parameter of type SELECT_LIST</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">p_cpt_id<div class="CDLParameterType"><span class="SHKeyword">in</span> adc_action_param_types.cpt_id<span class="SHKeyword">%type</span></div></td><td class="CDLDefinition"><p>Type of the Action Parameter</p></td></tr><tr><td class="CDLEntry">p_cgr_id<div class="CDLParameterType"><span class="SHKeyword">in</span> adc_rule_groups.cgr_id<span class="SHKeyword">%type</span></div></td><td class="CDLDefinition"><p>ID of the rule group. Is used to filter the LOV statement</p></td></tr></table><div class="CHeading">Returns</div><p>Select statement to be executed by the ADC_UI to retrieve values for an Action Parameter# of type SELECT_LIST</p></div>
 </div>
 
-<a name="ADC_UI_DESIGNER.handle_activity"></a><a name="Topic684"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_UI_DESIGNER.handle_activity"></a><a name="Topic763"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">handle_activity</div>
- <div id="NDPrototype684" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> handle_activity</div></div>
+ <div id="NDPrototype763" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> handle_activity</div></div>
  <div class="CBody"><p>Handles selection changes in the hierarchy tree to control the visual appearance of the page.</p><p>Is used to deduct the cgr from the selected entry in the designer tree.&nbsp; It then sets the value and refreshes the rule group report if the value has changed.&nbsp; Plus, it analyzes which level has been selected and calls the respective SHOW_FORM method</p></div>
 </div>
 
-<a name="ADC_UI_DESIGNER.handle_cat_changed"></a><a name="Topic685"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_UI_DESIGNER.handle_cat_changed"></a><a name="Topic764"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">handle_cat_changed</div>
- <div id="NDPrototype685" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> handle_cat_changed</div></div>
+ <div id="NDPrototype764" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> handle_cat_changed</div></div>
  <div class="CBody"><p>Method is called if the user changes the Action Type of a Rule Action.</p><p>It adjust the parameter settings of the CRA form accordingly</p></div>
 </div>
 
-<a name="ADC_UI_DESIGNER.toggle_cgr_active"></a><a name="Topic686"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_UI_DESIGNER.toggle_cgr_active"></a><a name="Topic765"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">toggle_cgr_active</div>
- <div id="NDPrototype686" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> toggle_cgr_active</div></div>
+ <div id="NDPrototype765" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> toggle_cgr_active</div></div>
  <div class="CBody"><p>Is called to activate or deactivate a rule group</p></div>
 </div>
 
-<a name="ADC_UI_DESIGNER.validate_rule_condition"></a><a name="Topic687"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_UI_DESIGNER.validate_rule_condition"></a><a name="Topic766"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">validate_rule_condition</div>
- <div id="NDPrototype687" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> validate_rule_condition</div></div>
+ <div id="NDPrototype766" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> validate_rule_condition</div></div>
  <div class="CBody"><p>Method to check a technical rule condition</p><p>Is used to validate only the rule condition dynamically if it is changed by the user</p></div>
 </div>
 
-<a name="ADC_UI_DESIGNER.support_flows"></a><a name="Topic688"></a><div class="CTopic TFunction LSQL last">
+<a name="ADC_UI_DESIGNER.support_flows"></a><a name="Topic767"></a><div class="CTopic TFunction LSQL last">
  <div class="CTitle">support_flows</div>
- <div id="NDPrototype688" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> support_flows</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.flag_type" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,420);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_util.flag_type</a></div></div>
+ <div id="NDPrototype767" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> support_flows</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.flag_type" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,497);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_util.flag_type</a></div></div>
  <div class="CBody"><p>Method checks whether flows has to be supported by the designer</p><div class="CHeading">Returns</div><p>C_TRUE, if flows is installed and C_FALSE otherwise.</p></div>
 </div>
 

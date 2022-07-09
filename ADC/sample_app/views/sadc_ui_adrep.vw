@@ -1,7 +1,7 @@
 create or replace view sadc_ui_adrep as
-select employee_id, first_name, last_name, department_name, job_title
-  from employees e
-  join departments d
-    on e.department_id = d.department_id
-  join jobs j
-    on e.job_id = j.job_id;
+select emp_id, emp_first_name, emp_last_name, dep_name, job_title
+  from hr_employees
+  join hr_departments
+    on emp_dep_id = dep_id
+  join hr_jobs
+    on emp_job_id = job_id;

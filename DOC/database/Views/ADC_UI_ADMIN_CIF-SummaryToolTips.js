@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_UI_ADMIN_CIF",{869:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">View for APEX report page ADMIN_CIF</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_UI_ADMIN_CIF",{429:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">View for APEX report page ADMIN_CIF</div></div>"});

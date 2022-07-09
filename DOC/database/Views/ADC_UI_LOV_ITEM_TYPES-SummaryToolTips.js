@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_UI_LOV_ITEM_TYPES",{852:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">LOV View for the item types referenced in ADC_ACTION_ITEM_FOCUS</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_UI_LOV_ITEM_TYPES",{461:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">LOV View for the item types referenced in ADC_ACTION_ITEM_FOCUS</div></div>"});

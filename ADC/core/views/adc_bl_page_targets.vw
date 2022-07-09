@@ -73,8 +73,8 @@ select cgr_id, 'ALL', 'ALL', 'FRAMEWORK', null, null, null, null, null, adc_util
   from adc_rule_groups;
 
 comment on table adc_bl_page_targets is 'View to collect all page components that are accessible by ADC, along with an item type categorization for grouping in ITEM_FOCUS etc.';
-comment on column adc_bl_page_targets.cgr_id is 'ID to the rule group';
-comment on column adc_bl_page_targets.pi_id is 'Static ID to the page item';
+comment on column adc_bl_page_targets.cpi_cgr_id is 'ID to the rule group';
+comment on column adc_bl_page_targets.cpi_id is 'Static ID to the page item';
 comment on column adc_bl_page_targets.cpi_cit_id is 'Item type of the page item, reference to ADC_PAGE_ITEM_TYPES';
 comment on column adc_bl_page_targets.cpi_cig_id is 'Item group of the page item, reference to ADC_PAGE_ITEM_TYPE_GROUPS';
 comment on column adc_bl_page_targets.cpi_cty_id is 'Optional APEX action type of the page item, if an APEX action, reference to ADC_APEX_ACTION_TYPES';
