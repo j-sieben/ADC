@@ -572,7 +572,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Seitenelemente, die aktualisiert werden können',
     p_cif_description => q'{Alle Seitenelemente, die aktualisiert werden können}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'REGION:ITEM',
+    p_cif_item_types => 'INTERACTIVE_GRID_REGION:INTERACTIVE_REPORT_REGION:TREE_REGION:ITEM',
     p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
