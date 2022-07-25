@@ -701,3 +701,4 @@ as
    end add_translation;
 
 end ut_adc_admin;
+/

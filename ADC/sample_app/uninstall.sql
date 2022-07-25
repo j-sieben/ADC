@@ -16,7 +16,8 @@ declare
                  '', -- Typen
                  'SADC_UI', '', -- Packages
                  'SADC_LOV_DEPARTMENT', 'SADC_LOV_JOB', 'SADC_UI_ADACT', 'SADC_UI_ADPTI', 'EMP_DETAILS_VW', 
-                 'SADC_UI_ADSTA', 'SADC_UI_EDEMP', 'SADC_UI_HOME', -- Views
+                 'SADC_UI_ADSTA', 'SADC_UI_EDEMP', 'SADC_UI_HOME', 'SADC_UI_ADREP', 'SADC_UI_DOC', 'SADC_UI_MENU_CAT', 'SADC_UI_TUTORIAL', 
+                 'EMP_DETAILS_VIEW', -- Views
                  'JOB_HISTORY', 'EMPLOYEES', 'JOBS', 'DEPARTMENTS', 'LOCATIONS', 'REGIONS', 'COUNTRIES',   -- Tabellen
                  '',  -- Synonyme
                  'LOCATIONS_SEQ', 'DEPARTMENTS_SEQ', 'EMPLOYEES_SEQ' -- Sequenzen

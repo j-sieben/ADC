@@ -2,6 +2,7 @@ create or replace package body ut_adc
 as
 
   C_APEX_USER constant utl_apex.ora_name_type := $$PLSQL_UNIT_OWNER;
+  C_ADC constant utl_apex.ora_name_type := 'ADC';
   
   C_DATE constant date := timestamp '2020-05-31 10:30:00';
   C_VALID_DATE_STRING constant utl_apex.ora_name_type := '31-05-2020 10:30';
@@ -75,7 +76,7 @@ as
     g_test_run := 0;
     pit.initialize;
     utl_dev_apex.init_owa;
-    adc.set_test_mode(true);
+    adc_util.set_test_mode(true);
     pit.set_context('DEBUG');
     get_session;
     null;
@@ -144,12 +145,7 @@ as
     select application_id
       into g_application_id
       from apex_applications
-     where alias = 'ADC';
-     
-    select cgr_id
-      into g_cgr_id
-      from adc_rule_group
-     where cgr_name = C_CGR_ADMIN_CGR;     
+     where alias = C_ADC; 
   end initialize;
   
   
@@ -165,7 +161,7 @@ as
              item, pl_sql, js, cra_sort_seq, cra_param_1, cra_param_2, cra_param_3, cra_on_error, cru_on_error, is_first_row, 
              id, cgr_id, firing_item, firing_event, error_dependent_items, bind_items, page_items, firing_items, error_stack, 
              recursive_stack, js_action_stack, is_recursive, level_length, allow_recursion, notification_stack, stop_flag, now)
-          with data as(
+    with data as(
            select adc.get_test_result result
              from dual)
     select g_test_name test_name, l_run + rownum sort_seq, 
@@ -197,7 +193,7 @@ as
     get_session;
     set_environment(C_CGR_ADMIN_CGR, C_NO_ITEM, C_EVENT_INITIALIZE);
     
-    g_render_result := plugin_adc.render(g_da_type, g_plugin_type);
+    g_render_result := adc_plugin.render(g_da_type, g_plugin_type);
     
     ut.expect(g_render_result.attribute_02).to_equal('P1_CGR_APP_ID,P1_CGR_ID,P1_CGR_PAGE_ID');
   end render_plugin;
@@ -218,7 +214,7 @@ as
     utl_apex.set_value(C_ITEM_CGR_ID, g_cgr_id);
     set_environment(C_CGR_ADMIN_CGR, C_ITEM_CGR_ID, C_EVENT_CHANGE);
     
-    g_ajax_result := plugin_adc.ajax(g_da_type, g_plugin_type);
+    g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
     l_result := adc.get_test_result;
     
     -- populate expected
@@ -240,7 +236,7 @@ as
     get_session;
     utl_apex.set_value(C_ITEM_CGR_ID, g_cgr_id);
     set_environment(C_CGR_ADMIN_CGR, C_ITEM_CGR_ID, C_EVENT_CHANGE);    
-    g_ajax_result := plugin_adc.ajax(g_da_type, g_plugin_type);
+    g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
     
     ut.expect(adc.get_event()).to_equal(C_EVENT_CHANGE);
   end get_event;
@@ -256,7 +252,7 @@ as
     get_session;
     utl_apex.set_value(C_ITEM_CGR_ID, g_cgr_id);
     set_environment(C_CGR_ADMIN_CGR, C_ITEM_CGR_ID, C_EVENT_CHANGE);    
-    g_ajax_result := plugin_adc.ajax(g_da_type, g_plugin_type);
+    g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
     
     ut.expect(adc.get_event()).to_equal(C_EVENT_CHANGE);
   end get_firing_item;
@@ -270,7 +266,7 @@ as
     get_session;
     utl_apex.set_value(C_ITEM_CGR_ID, g_cgr_id);
     set_environment(C_CGR_ADMIN_CGR, C_ITEM_CGR_ID, C_EVENT_CHANGE);    
-    g_ajax_result := plugin_adc.ajax(g_da_type, g_plugin_type);
+    g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
     
     ut.expect(adc.get_char(C_ITEM_CGR_ID)).to_equal(to_char(g_cgr_id));
   end get_char;
@@ -283,7 +279,7 @@ as
     g_test_name := 'get_char_default';
     get_session;
     set_environment(C_CGR_EDIT_CRU, C_NO_ITEM, C_EVENT_INITIALIZE);    
-    g_ajax_result := plugin_adc.ajax(g_da_type, g_plugin_type);
+    g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
     ut.expect(adc.get_char(C_ITEM_CRU_ACTIVE)).to_equal(adc_util.C_TRUE);
   end get_char_default;
 
@@ -296,7 +292,7 @@ as
     get_session(C_PAGE_TEST);
     utl_apex.set_value(C_ITEM_TEST_DATE, C_VALID_DATE_STRING);
     set_environment(C_CGR_TEST, C_ITEM_TEST_DATE, C_EVENT_CHANGE);    
-    g_ajax_result := plugin_adc.ajax(g_da_type, g_plugin_type);
+    g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
     ut.expect(adc.get_date(C_ITEM_TEST_DATE)).to_equal(C_DATE);
   end get_date;
 
@@ -309,7 +305,7 @@ as
     get_session(C_PAGE_TEST);
     utl_apex.set_value(C_ITEM_TEST_DATE, C_VALID_DATE_STRING);
     set_environment(C_CGR_TEST, C_ITEM_TEST_DATE, C_EVENT_CHANGE);
-    g_ajax_result := plugin_adc.ajax(g_da_type, g_plugin_type);
+    g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
   end check_date;
 
   --
@@ -322,7 +318,7 @@ as
     get_session(C_PAGE_TEST);
     utl_apex.set_value(C_ITEM_TEST_DATE, C_INVALID_DATE_STRING);
     set_environment(C_CGR_TEST, C_ITEM_TEST_DATE, C_EVENT_CHANGE);
-    g_ajax_result := plugin_adc.ajax(g_da_type, g_plugin_type);
+    g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
   end check_no_date;
 
   --
@@ -334,7 +330,7 @@ as
     get_session(C_PAGE_TEST);
     utl_apex.set_value(C_ITEM_TEST_NUMBER, C_VALID_NUMBER_STRING);
     set_environment(C_CGR_TEST, C_ITEM_TEST_NUMBER, C_EVENT_CHANGE);    
-    --g_ajax_result := plugin_adc.ajax(g_da_type, g_plugin_type);
+    --g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
     ut.expect(adc.get_number(C_ITEM_TEST_NUMBER)).to_equal(C_NUMBER);
   end get_number;
 
@@ -347,7 +343,7 @@ as
     get_session(C_PAGE_TEST);
     utl_apex.set_value(C_ITEM_TEST_NUMBER, C_VALID_NUMBER_STRING);
     set_environment(C_CGR_TEST, C_ITEM_TEST_NUMBER, C_EVENT_CHANGE);
-    g_ajax_result := plugin_adc.ajax(g_da_type, g_plugin_type);
+    g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
   end check_number;
 
   --
@@ -359,7 +355,7 @@ as
     get_session(C_PAGE_TEST);
     utl_apex.set_value(C_ITEM_TEST_NUMBER, C_INVALID_NUMBER_STRING);
     set_environment(C_CGR_TEST, C_ITEM_TEST_NUMBER, C_EVENT_CHANGE);
-    g_ajax_result := plugin_adc.ajax(g_da_type, g_plugin_type);
+    g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
   end check_no_number;
 
   --
@@ -587,7 +583,7 @@ as
   begin
     g_test_name := 'set_list_from_stmt';
     -- populate actual
-    -- adc.set_list_from_stmt;
+    -- adc_util.set_list_from_stmt;
 
     -- populate expected
     -- ...
@@ -605,7 +601,7 @@ as
   begin
     g_test_name := 'set_session_state';
     -- populate actual
-    -- adc.set_session_state;
+    -- adc_util.set_session_state;
 
     -- populate expected
     -- ...
@@ -623,7 +619,7 @@ as
   begin
     g_test_name := 'set_session_state_or_error';
     -- populate actual
-    -- adc.set_session_state_or_error;
+    -- adc_util.set_session_state_or_error;
 
     -- populate expected
     -- ...
@@ -641,7 +637,7 @@ as
   begin
     g_test_name := 'set_value_from_stmt';
     -- populate actual
-    -- adc.set_value_from_stmt;
+    -- adc_util.set_value_from_stmt;
 
     -- populate expected
     -- ...
@@ -767,7 +763,7 @@ as
   begin
     g_test_name := 'set_item';
     -- populate actual
-    -- adc.set_item;
+    -- adc_util.set_item;
 
     -- populate expected
     -- ...
@@ -785,7 +781,7 @@ as
   begin
     g_test_name := 'set_focus';
     -- populate actual
-    -- adc.set_focus;
+    -- adc_util.set_focus;
 
     -- populate expected
     -- ...
@@ -852,7 +848,7 @@ as
   procedure tear_down
   as
   begin
-    adc.set_test_mode(false);
+    adc_util.set_test_mode(false);
     pit.reset_context;
 
   end tear_down;

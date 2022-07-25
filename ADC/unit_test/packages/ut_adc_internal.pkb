@@ -65,7 +65,7 @@ as
     pragma autonomous_transaction;
   begin
     --pit.initialize;
-    --pit.set_context('DEFAULT');
+    pit.set_context('DEBUG');
     null;
   end before_all;
   
@@ -88,7 +88,7 @@ as
   procedure after_each
   as
   begin
-    adc_internal.initialize;
+    --adc_internal.initialize;
     delete_session;
   end after_each;
   
@@ -453,6 +453,7 @@ as
       
     -- Find l_bind_item in the list of bind items
     l_actual := json_array_t.parse(replace(adc_internal.get_bind_items_as_json(), '~', '"'));
+    dbms_output.put_line(l_actual.stringify());
     for i in 0 .. l_actual.get_size - 1 loop
       l_target_item := treat(l_actual.get(i) as json_object_t);
       if l_target_item.get_string('id') = l_bind_item then

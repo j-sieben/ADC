@@ -61,7 +61,7 @@ as
    */
   
   /**
-    Group: Getter
+    Group: Getter and Setter
    */
   /**
     Function: get_cgr_id
@@ -100,7 +100,7 @@ as
   function get_event_data(
      p_key in varchar2)
      return varchar2;
-
+     
 
   /* 
     Function: get_error_flag
@@ -170,7 +170,10 @@ as
   function get_page_items
     return varchar2;
     
-    
+  
+  /**
+    Group: Internal processing methods
+   */
   /** 
     Function: process_request
       Method to process an ADC request.
@@ -250,6 +253,13 @@ as
     p_param_2 in adc_rule_actions.cra_param_2%type,
     p_param_3 in adc_rule_actions.cra_param_3%type,
     p_allow_recursion in adc_util.flag_type);
+
+  /**
+    Procedure: execute_command
+      See <adc_api.execute_command>
+   */
+  procedure execute_command(
+    p_command in adc_apex_actions.caa_id%type);
 
 
   /**

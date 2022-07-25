@@ -21,6 +21,8 @@ echo ${APP_ID}
 NLS_LANG=GERMAN_GERMANY.AL32UTF8
 export NLS_LANG
 
+echo @install_scripts/install_core.sql | sqlplus ${OWNER}/${PWD}@${SERVICE}
+
 echo @install_scripts/install_apex.sql ${WORKSPACE} ${APP_ID} | sqlplus ${OWNER}/${PWD}@${SERVICE}
 
 pause

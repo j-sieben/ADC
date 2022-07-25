@@ -1,4 +1,5 @@
-@&tool_dir.set_folder sample_app
+@&tool_dir.set_folder 
+@&tool_dir.init.sql
 
 prompt create HR tables
 @&script_dir.install_hr.sql

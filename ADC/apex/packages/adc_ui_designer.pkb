@@ -76,6 +76,7 @@ as
   C_ITEM_CRA_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRA_ID';
   C_ITEM_CAA_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CAA_ID';
   C_ITEM_DIAGRAM_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'DIAGRAM_ID';
+  C_ITEM_CRA_CRU_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRA_CRU_ID';
   C_ITEM_CRA_CAT_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRA_CAT_ID';
   C_ITEM_CRU_CGR_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRU_CGR_ID';
   C_ITEM_CRA_CGR_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRA_CGR_ID';
@@ -742,6 +743,10 @@ as
           into g_environment.cgr_id
           from adc_rules
          where cru_id = g_environment.node_id;
+        -- Persist CRU in CRA to prepare creation of new CRA
+        adc.set_item(
+          p_cpi_id => C_ITEM_CRA_CRU_ID,
+          p_item_value => g_environment.node_id);
       when C_MODE_CRA then
         select cra_cgr_id, cra_cru_id
           into g_environment.cgr_id, l_cru_id
@@ -1036,7 +1041,7 @@ as
      else
        adc.set_item(
          p_cpi_id => param.cap_page_item,
-         p_item_value => apex_escape.json(param.cap_value),
+         p_item_value => param.cap_value,
          p_allow_recursion => adc_util.C_FALSE);
      end if;
 
@@ -1087,7 +1092,8 @@ select null caa_id, '#CGR_ID#' caa_cgr_id, 'ACTION' caa_cty_id, null caa_name,
     adc.show_hide_item('.adc-caa-' || lower(adc_api.get_string(C_PAGE_PREFIX || 'CAA_CTY_ID')), '.adc-caa-hide');
     adc.refresh_item(
       p_cpi_id => C_PAGE_PREFIX || 'CAA_CAI_LIST', 
-      p_set_item => adc_util.C_TRUE);
+      p_set_item => adc_util.C_TRUE, 
+      p_item_value => utl_apex.get_string('CAA_CAI_LIST'));
     adc.set_region_content(
       p_region_id => C_REGION_HELP,
       p_html_code => pit.get_trans_item_description(C_PTI_PMG, 'CAA_HELP'));
@@ -1175,7 +1181,13 @@ select null #PRE#CRA_ID, '#CGR_ID#' #PRE#CRA_CGR_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
 
     -- Read ID values to adjust display settings
     l_cra_id := adc_api.get_number(C_ITEM_CRA_ID);
-    l_cat_id := adc_api.get_string(C_ITEM_CRA_CAT_ID);  
+    l_cat_id := adc_api.get_string(C_ITEM_CRA_CAT_ID); 
+    
+    -- Filter CAT list
+    adc.refresh_item(
+      p_cpi_id => C_PAGE_PREFIX || 'CRA_CAT_ID',
+      p_item_value => l_cat_id,
+      p_set_item => adc_util.c_true);
 
     -- Adjust form for CAT if present
     if l_cat_id is not null then
@@ -1418,8 +1430,8 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
   procedure handle_activity
   as
     cursor page_state_cur(
-      p_mda_actual_mode adc_ui_map_designer_actions.mda_alm_id%type,
-      p_mda_actual_id adc_ui_map_designer_actions.mda_ald_id%type) 
+      p_mda_actual_mode adc_map_designer_actions.mda_alm_id%type,
+      p_mda_actual_id adc_map_designer_actions.mda_ald_id%type) 
     is
       select *
         from adc_bl_designer_actions
@@ -1468,7 +1480,8 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
       if act.mda_remember_page_state = adc_util.C_TRUE then
         adc.remember_page_status(
           p_page_items => case when g_form_item_list.exists(act.mda_form_id) then g_form_item_list(act.mda_form_id) else '[]' end,
-          p_message => pit.get_message_text(msg.ADC_UI_UNSAVED_DATA));
+          p_message => pit.get_message_text(msg.ADC_UI_UNSAVED_DATA),
+          p_title => pit.get_trans_item_name(C_PTI_PMG, 'ADC_WARNING'));
       end if;
     end loop;
 

@@ -5,19 +5,19 @@ as
   
   -- Aplication pages
   C_APP_ALIAS constant adc_util.ora_name_type := 'ADC';
-  C_PAGE_EDEMP constant number := 13;
+  C_PAGE_DESIGNER constant number := 13;
   
   -- Items
   g_cgr_id adc_rule_groups.cgr_id%type;
   g_application_id number;
-  g_page_prefix adc_util.ora_name_type := 'P' || C_PAGE_EDEMP || '_';
+  g_page_prefix adc_util.ora_name_type := 'P' || C_PAGE_DESIGNER || '_';
   
   C_CGR_APP_ID_ITEM constant adc_util.ora_name_type := g_page_prefix || 'CGR_APP_ID';
   C_CRA_CAT_ID_ITEM constant adc_util.ora_name_type := g_page_prefix || 'CRA_CAT_ID';
   C_CRU_CONDITION_ITEM constant adc_util.ora_name_type := g_page_prefix || 'CRU_CONDITION';  
   C_COMMAND constant adc_util.ora_name_type := 'COMMAND';
-  C_HIERARCHY_REGION constant adc_util.ora_name_type := 'R' || C_PAGE_EDEMP || '_HIERARCHY';
-  C_RULES_REGION constant adc_util.ora_name_type := 'R' || C_PAGE_EDEMP || '_RULES';
+  C_HIERARCHY_REGION constant adc_util.ora_name_type := 'R' || C_PAGE_DESIGNER || '_HIERARCHY';
+  C_RULES_REGION constant adc_util.ora_name_type := 'R' || C_PAGE_DESIGNER || '_RULES';
   
 
   procedure create_session
@@ -25,16 +25,15 @@ as
   begin    
     apex_session.create_session(
        p_app_id => g_application_id,
-       p_page_id => C_PAGE_EDEMP,
+       p_page_id => C_PAGE_DESIGNER,
        p_username => C_APEX_USER);
-    apex_application.g_flow_step_id := C_PAGE_EDEMP;
     
     -- get CGR for the rule group of the selected page
     select cgr_id
       into g_cgr_id
       from adc_rule_groups
      where cgr_app_id = g_application_id
-       and cgr_page_id = C_PAGE_EDEMP;
+       and cgr_page_id = C_PAGE_DESIGNER;
   end create_session;
 
 
@@ -447,7 +446,7 @@ as
     l_expected := json_element_t.parse('["' || C_CRA_CAT_ID_ITEM || '","' || C_CGR_APP_ID_ITEM || '"]');
     l_actual := json_element_t.parse(adc_recursion_stack.get_firing_items_as_json);
     
-    ut.expect(l_actual).to_equal(l_expected);    
+    ut.expect(l_expected).to_equal(l_actual);    
   end get_firing_items;
   
   

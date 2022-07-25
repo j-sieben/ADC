@@ -3,7 +3,7 @@ create or replace package ut_adc_recursion_stack
 as
 
   --%suite(ADC RECURSION STACK Tests)
-  --%suitepath(ut_adc_page_state)
+  --%suitepath(ut_adc_recursion_stack)
   --%rollback(manual)
 
   --%beforeall

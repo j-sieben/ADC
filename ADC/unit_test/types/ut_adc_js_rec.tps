@@ -1,4 +1,4 @@
-create or replace type adc_test_js_rec 
+create or replace type ut_adc_js_rec 
   authid definer
 as object(
   script varchar2(4000 byte),

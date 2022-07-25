@@ -181,10 +181,12 @@ as
                     and instr(cpi_cit_id, 'ITEM') > 0
                     and cru_cgr_id = p_cgr_id);
         end if;
-        if p_cpi_id = adc_util.C_NO_FIRING_ITEM or l_cpi_has_rule > 0  or p_force = adc_util.C_TRUE then
+        if (l_cpi_has_rule > 0 or p_force = adc_util.C_TRUE) and p_cpi_id != adc_util.C_NO_FIRING_ITEM then
           -- First, push item uniquely on g_recursion.firing_items to retrieve all firing items later
-          g_recursion.firing_items.extend;
-          g_recursion.firing_items(g_recursion.firing_items.last) := p_cpi_id;
+          if p_cpi_id not member of g_recursion.firing_items then
+            g_recursion.firing_items.extend;
+            g_recursion.firing_items(g_recursion.firing_items.last) := p_cpi_id;
+          end if;
           -- then add item to the recursive stack. After succesful completion the firing item will be popped from that stack
           g_recursion.item_stack(p_cpi_id) := case g_recursion.item_stack.count when 0 then 1 else get_level + 1 end;
           pit.info(msg.ADC_FIRING_ITEM_PUSHED, msg_args(p_cpi_id, to_char(g_recursion.item_stack(p_cpi_id))));

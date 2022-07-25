@@ -19,7 +19,7 @@ select mda_alm_id mda_actual_mode, mda_ald_id mda_actual_id, mda_comment,
        utl_apex.get_number(p_page_prefix || mda_delete_target_mode || '_ID') mda_delete_value,
        mda_cancel_button_active, mda_cancel_target_mode, 
        utl_apex.get_number(p_page_prefix || mda_cancel_target_mode || '_ID') mda_cancel_value
-  from adc_ui_map_designer_actions
+  from adc_map_designer_actions
  cross join session_state
   left join pti c
     on case mda_create_button_visible when adc_util.C_TRUE then mda_create_target_mode else 'NO' end || '_CREATE_BUTTON' = c.pti_id
@@ -29,7 +29,7 @@ select mda_alm_id mda_actual_mode, mda_ald_id mda_actual_id, mda_comment,
     on case mda_delete_button_visible when adc_util.C_TRUE then mda_alm_id else 'NO' end || '_DELETE_BUTTON' = d.pti_id;
     
     
-comment on table adc_bl_designer_actions is '    This view enriches the data from the decision table <Tables.ADC_UI_MAP_DESIGNER_ACTIONS> with translated label data and
+comment on table adc_bl_designer_actions is '    This view enriches the data from the decision table <Tables.ADC_MAP_DESIGNER_ACTIONS> with translated label data and
     session state information, such as the actual page and region prefix.    
     The decision is based on a mode the ADC Designer is actually in and the command to execute. As an example, if the
     designer shows a rule group, because the user clicked on a dynamic page in the tree control, The mode is CGR and the

@@ -18,6 +18,8 @@ as
   /**
     Constants: 
       C_ADC - UTL_TEXT template group for ADC
+      C_REGEX_ITEM - Regular expression to identify firing items in trechnical conditions
+      C_REGEX_CSS - Regular expression to identify CSS class references
    */
   C_ADC constant utl_text_templates.uttm_type%type := 'ADC';
   C_FRAME constant adc_util.ora_name_type := 'FRAME';
@@ -53,8 +55,8 @@ as
    */
   /** 
     Procedure: create_decision_table
-      Method to generate the decision table logic for a ADC Rule Group.
-      Result is persisted in column <ADC_RULE_GROUP.CGR_DECISION_TABLE>.
+      Method to generate the decision table logic for an ADC rule group.
+      Result is persisted in column <Tables.ADC_RULE_GROUPS>.CGR_DECISION_TABLE.
       
     Parameter:
       p_cgr_id - Rule group ID
@@ -221,7 +223,7 @@ as
 
   /** 
     Procedure: harmonize_adc_page_item
-      Method to harmonize table adc_page_items against APEX Data Dictionary.
+      Method to harmonize <Tables.ADC_PAGE_ITEMS> against APEX Data Dictionary.
       
       If a rule group changes, all rules and page elements are checked against each other.
       The resulting values are used as the basis for a single rule.
@@ -369,7 +371,7 @@ as
 
   /** 
     Procedure: harmonize_firing_items
-      Helper to harmonize page items which are referenced by a rule at table ADC_RULE.
+      Helper to harmonize page items which are referenced by a rule at <Tables.ADC_RULES>.
       
       Method extracts page item names from a rule condition using regex C_REGEX_ITEM.
       Used to validate a rule condition and further application logic.

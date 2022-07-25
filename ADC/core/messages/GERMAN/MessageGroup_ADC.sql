@@ -161,7 +161,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_ITEM_IS_MANDATORY',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^#1#^',
+    p_pms_text => q'^#LABEL# ist ein Pflichtelement. Bitte tragen Sie einen Wert ein.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',

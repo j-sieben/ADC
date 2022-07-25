@@ -47,7 +47,7 @@ create table hr_locations(
   loc_id number(4),
   loc_street_address varchar2(40 char),
   loc_postal_code varchar2(12 byte),
-  loc_city varchar2(30char) constraint loc_city_nn not null,
+  loc_city varchar2(30 char) constraint loc_city_nn not null,
   loc_state_province varchar2(25 char),
   loc_cou_id char(2 byte),
   loc_geometry sdo_geometry,

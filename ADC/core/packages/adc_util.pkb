@@ -9,15 +9,16 @@ as
     Author::
       Juergen Sieben, ConDeS GmbH
    */
+   
+  g_loop_counter binary_integer;
+  g_test_mode boolean;
 
   /**
     Group: Public Methods
    */
-  g_loop_counter binary_integer;
-
   
   /**
-    Function C_TRUE
+    Function: C_TRUE
       See <ADC_UTIL.C_TRUE>
    */
   function c_true
@@ -29,7 +30,7 @@ as
 
   
   /**
-    Function C_FALSE
+    Function: C_FALSE
       See <ADC_UTIL.C_FALSEE>
    */
   function c_false
@@ -41,7 +42,7 @@ as
 
   
   /**
-    Function C_HASH
+    Function: C_HASH
       See <ADC_UTIL.C_HASH>
    */
   function c_hash
@@ -53,7 +54,7 @@ as
 
   
   /**
-    Function get_boolean
+    Function: get_boolean
       See <ADC_UTIL.get_boolean>
    */
   function get_boolean(
@@ -70,7 +71,7 @@ as
 
   
   /**
-    Function to_bool
+    Function: to_bool
       See <ADC_UTIL.to_bool>
    */
   function to_bool(
@@ -83,7 +84,7 @@ as
 
   
   /**
-    Function bool_to_flag
+    Function: bool_to_flag
       See <ADC_UTIL.bool_to_flag>
    */
   function bool_to_flag(
@@ -100,7 +101,7 @@ as
 
   
   /**
-    Function clean_adc_name
+    Function: clean_adc_name
       See <ADC_UTIL.clean_adc_name>
    */
   function clean_adc_name(
@@ -116,7 +117,7 @@ as
 
   
   /**
-    Function get_trans_item_name
+    Function: get_trans_item_name
       See <ADC_UTIL.get_trans_item_name>
    */
   function get_trans_item_name(
@@ -130,7 +131,7 @@ as
 
   
   /**
-    Function close_cursor
+    Function: close_cursor
       See <ADC_UTIL.close_cursor>
    */
   procedure close_cursor(
@@ -148,7 +149,7 @@ as
 
   
   /**
-    Procedure monitor_loop
+    Procedure: monitor_loop
       See <ADC_UTIL.monitor_loop>
    */
   procedure monitor_loop(
@@ -165,7 +166,7 @@ as
   
   
   /**
-    Function get_additional_nd_comments
+    Function: get_additional_nd_comments
       See <ADC_UTIL.get_additional_nd_comments>
    */
   function get_additional_nd_comments
@@ -196,6 +197,30 @@ as
       
     return l_comments;
   end get_additional_nd_comments;
-
+  
+  
+  /**
+    Function: get_test_mode
+      See <ADC_UTIL.get_test_mode>
+   */
+  function get_test_mode
+    return boolean
+  as
+  begin
+    return g_test_mode;
+  end get_test_mode;
+  
+  
+  /**
+    Proceude: set_test_mode
+      See <ADC_UTIL.set_test_mode>
+   */
+  procedure set_test_mode(
+    p_flag in boolean)
+  as
+  begin
+    g_test_mode := p_flag;
+  end set_test_mode;
+  
 end adc_util;
 /

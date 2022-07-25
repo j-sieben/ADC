@@ -238,5 +238,28 @@ as
   function get_additional_nd_comments
     return clob;
 
+
+  /**
+    Function: get_test_mode
+      Method to retrieve the actual test mode state
+      
+    Returns:
+      - TRUE, if package is in test mode
+      - FALSE otherwise
+   */
+  function get_test_mode
+    return boolean;
+    
+    
+  /**
+    Procedure: set_test_mode
+      Method to set the actual test mode state
+    
+    Parameters:
+      p_flag - Flag to indicate whether test mode is set to TRUE or FALSE
+   */
+  procedure set_test_mode(
+    p_flag in boolean);
+    
 end adc_util;
 /

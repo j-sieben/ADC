@@ -208,7 +208,7 @@ as
     execute immediate replace(C_CMD, '#CMD#', trim(';' from p_param)) using out l_result;
     
     pit.leave_detailed(msg_params(msg_param('Parameter', l_result)));
-    return apex_escape.json(l_result);
+    return l_result; -- apex_escape.json(l_result);
   exception
     when others then
       return p_param;
@@ -278,7 +278,7 @@ as
                          'PARAM_2', case when p_action_rec.cra_param_2 is not null then analyze_parameter_value(p_action_rec.cra_item, p_action_rec.cra_param_2) end,
                          'PARAM_3', case when p_action_rec.cra_param_3 is not null then analyze_parameter_value(p_action_rec.cra_item, p_action_rec.cra_param_3) end,
                          'CRU_SORT_SEQ', case when p_action_rec.cru_sort_seq is not null then 'RULE_' || p_action_rec.cru_sort_seq else 'NO_RULE_FOUND' end,
-                         'CRU_NAME', convert(p_action_rec.cru_name, 'WE8ISO8859P1'),
+                         'CRU_NAME', p_action_rec.cru_name, --convert(p_action_rec.cru_name, 'WE8ISO8859P1'),
                          'EVENT_DATA', get_event_data(null),
                          'FIRING_ITEM', g_param.firing_item,
                          'CR', adc_util.C_CR));
@@ -645,10 +645,11 @@ as
     
     if g_param.cgr_id is null then
         with params as (
-             select utl_apex.get_application_id g_app_id,
+             select /*+ no_merge */
+                    utl_apex.get_application_id g_app_id,
                     utl_apex.get_page_id g_page_id
                from dual)
-      select /*+ no_merge(p) */cgr_id
+      select cgr_id
         into g_param.cgr_id
         from adc_rule_groups
         join params p
@@ -754,24 +755,24 @@ as
     C_BIND_JSON_ELEMENT constant adc_util.sql_char := '{"id":"#ID#","event":"#EVENT#","action":"#STATIC_ACTION#"}';
     -- List of item which need to bind an event
     cursor rule_group_cpi_ids(p_cgr_id adc_rule_groups.cgr_id%type) is
-      select cpi_id, cit_event, cit_has_value, null static_action
+      select cpi_id, cit_event, cit_has_value, to_char(null) static_action
         from adc_page_items    
         join adc_page_item_types_v
           on cpi_cit_id = cit_id
         join adc_rule_groups
           on cpi_cgr_id = cgr_id
              -- List of mandatory items
-        /*left join adc_rule_group_status
+        left join adc_rule_group_status
           on cgr_id = cgs_cgr_id
-         and cpi_id = cgs_cpi_id*/
+         and cpi_id = cgs_cpi_id
        where cit_event is not null
          and (cpi_is_required = adc_util.C_TRUE
-          /*or cgs_cpi_id is not null*/)
+          or cgs_cpi_id is not null)
          and cgr_active = adc_util.C_TRUE
          and cgr_id = p_cgr_id
      union all
      -- List of items which are bound by other events already
-     select coalesce(to_char(cra_param_2), cra_cpi_id), cit_event, cit_has_value, cra_param_2
+     select coalesce(to_char(cra_param_2), cra_cpi_id) cpi_id, cit_event, cit_has_value, cra_param_2 static_action
        from adc_page_item_types_v
        join adc_rule_actions
             -- PARAM_1 contains the name of an event to observe in case of action type MONITOR_EVENT
@@ -779,7 +780,9 @@ as
       where cra_cgr_id = p_cgr_id;
     l_json clob;
   begin
-    pit.enter_optional;
+    pit.enter_optional('get_bind_items_as_json',
+      p_params => msg_params(
+                    msg_param('cgr_id', g_param.cgr_id)));
     
     for item in rule_group_cpi_ids(g_param.cgr_id) loop
       utl_text.append(
@@ -1103,6 +1106,26 @@ as
 
 
   /**
+    Procedure: execute_command
+      See <ADC_API.execute_command>
+   */
+  procedure execute_command(
+    p_command in adc_apex_actions.caa_id%type)
+  as
+    C_COMMAND constant adc_util.ora_name_type := 'COMMAND';
+    C_JSON_COMMAND constant adc_util.ora_name_type := '{"command":"#COMMAND#"}';
+  begin
+    select replace(C_JSON_COMMAND, '#COMMAND#', caa_name)
+      into g_param.event_data
+      from adc_apex_actions
+     where caa_id = p_command;
+    adc_recursion_stack.push_firing_item(
+      p_cgr_id => g_param.cgr_id,
+      p_cpi_id => C_COMMAND);
+  end execute_command;
+  
+
+  /**
     Procedure: raise_item_event
       See <ADC_API.raise_item_event>
    */
@@ -1230,8 +1253,9 @@ as
   begin
     pit.enter_optional;
     
-    if not g_param.bind_event_items.exists(p_cpi_id) and g_param.initialize_mode then
-      g_param.bind_event_items(g_param.bind_event_items.count + 1) := p_cpi_id;
+    if g_param.initialize_mode then
+      g_param.bind_event_items.extend;
+      g_param.bind_event_items(g_param.bind_event_items.last) := p_cpi_id;
     end if;
     
     pit.leave_optional;

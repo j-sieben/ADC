@@ -16,7 +16,7 @@ as
   C_INVALID_DATE_STRING constant adc_util.ora_name_type := '31.05.2020 10:30:45';
   
   -- Aplication pages
-  C_PAGE_EDEMP constant number := 9;
+  C_PAGE_UNITTEST constant number := 99;
   
   -- Rule groups
   C_APP_ALIAS constant adc_util.ora_name_type := 'SADC';
@@ -39,7 +39,7 @@ as
        p_app_id => g_application_id,
        p_page_id => p_page_id,
        p_username => C_APEX_USER);
-    apex_application.g_flow_step_id := p_page_id;
+--    apex_application.g_flow_step_id := p_page_id;
     
     execute immediate 'alter session set nls_numeric_characters = ''' 
                    ||  apex_application.get_nls_decimal_separator
@@ -114,7 +114,7 @@ as
   procedure set_item_value_as_string
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(g_cgr_id, g_page_prefix || C_STRING_ITEM, C_STRING);
     
     ut.expect(utl_apex.get_string(C_STRING_ITEM)).to_equal(C_STRING);
@@ -127,7 +127,7 @@ as
   procedure set_and_read_item_value
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(g_cgr_id, g_page_prefix || C_STRING_ITEM, C_STRING, p_throw_error => adc_util.C_TRUE);
     
     ut.expect(adc_page_state.get_string(g_cgr_id, g_page_prefix || C_STRING_ITEM)).to_equal(C_STRING);
@@ -140,7 +140,7 @@ as
   procedure set_item_value_as_number
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
       p_cpi_id => g_page_prefix || C_NUMBER_ITEM, 
@@ -157,7 +157,7 @@ as
   procedure set_number_item_value_as_string
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
       p_cpi_id => g_page_prefix || C_NUMBER_ITEM, 
@@ -174,7 +174,7 @@ as
   procedure set_number_item_value_as_invalid_string
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
       p_cpi_id => g_page_prefix || C_NUMBER_ITEM, 
@@ -189,7 +189,7 @@ as
   procedure set_number_item_value_explicit_format
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
       p_cpi_id => g_page_prefix || C_NUMBER_ITEM, 
@@ -207,7 +207,7 @@ as
   procedure set_number_item_value_invalid_format_mask
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
       p_cpi_id => g_page_prefix || C_NUMBER_ITEM, 
@@ -225,7 +225,7 @@ as
   procedure set_number_item_value_string_too_long
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
       p_cpi_id => g_page_prefix || C_NUMBER_ITEM, 
@@ -243,7 +243,7 @@ as
   procedure set_item_value_as_date
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
       p_cpi_id => g_page_prefix || C_DATE_ITEM, 
@@ -260,7 +260,7 @@ as
   procedure set_date_item_value_as_string
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
       p_cpi_id => g_page_prefix || C_DATE_ITEM, 
@@ -277,7 +277,7 @@ as
   procedure set_date_item_value_explicit_format
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
       p_cpi_id => g_page_prefix || C_DATE_ITEM, 
@@ -295,7 +295,7 @@ as
   procedure set_date_item_value_as_invalid_string
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
       p_cpi_id => g_page_prefix || C_DATE_ITEM, 
@@ -310,7 +310,7 @@ as
   procedure set_date_item_value_invalid_format_mask
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
       p_cpi_id => g_page_prefix || C_DATE_ITEM, 
@@ -326,7 +326,7 @@ as
   procedure set_date_item_value_invalid_date
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
       p_cpi_id => g_page_prefix || C_DATE_ITEM, 
@@ -342,7 +342,7 @@ as
   procedure reset_string_item_value_to_null
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
       p_cpi_id => g_page_prefix || C_STRING_ITEM, 
@@ -365,7 +365,7 @@ as
   procedure reset_number_item_value_to_null
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
       p_cpi_id => g_page_prefix || C_NUMBER_ITEM, 
@@ -388,7 +388,7 @@ as
   procedure reset_date_item_value_to_null
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
       p_cpi_id => g_page_prefix || C_DATE_ITEM, 
@@ -411,7 +411,7 @@ as
   procedure read_string_item_value_from_session_state
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     utl_apex.set_value(
       p_page_item => g_page_prefix || C_STRING_ITEM, 
       p_value => C_STRING);
@@ -432,7 +432,7 @@ as
   procedure read_number_item_value_from_session_state
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     utl_apex.set_value(
       p_page_item => g_page_prefix || C_NUMBER_ITEM, 
       p_value => C_VALID_NUMBER_STRING);
@@ -454,7 +454,7 @@ as
   procedure read_date_item_value_from_session_state
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     utl_apex.set_value(
       p_page_item => g_page_prefix || C_DATE_ITEM, 
       p_value => C_VALID_DATE_STRING);
@@ -476,7 +476,7 @@ as
   procedure set_non_value_item
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
       
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
@@ -494,7 +494,7 @@ as
   procedure reset_state
   as
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
       p_cpi_id => g_page_prefix || C_STRING_ITEM, 
@@ -514,7 +514,7 @@ as
   as
     l_value_list char_table;
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
       p_cpi_id => g_page_prefix || C_STRING_ITEM, 
@@ -554,7 +554,7 @@ as
     l_actual json_element_t;
     l_expected json_element_t;
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
       p_cpi_id => g_page_prefix || C_STRING_ITEM, 
@@ -590,15 +590,16 @@ as
   --
   procedure get_number
   as
+    l_page_item adc_util.ora_name_type := g_page_prefix || C_NUMBER_ITEM;
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
-      p_cpi_id => g_page_prefix || C_NUMBER_ITEM, 
+      p_cpi_id => l_page_item, 
       p_number_value => C_NUMBER,
       p_throw_error => adc_util.C_TRUE);
     
-    ut.expect(adc_api.get_number(g_page_prefix || C_NUMBER_ITEM)).to_equal(C_NUMBER);
+    ut.expect(adc_api.get_number(l_page_item)).to_equal(C_NUMBER);
   end get_number;
   
   
@@ -607,13 +608,15 @@ as
   --
   procedure get_number_from_session_state
   as
+    l_page_item adc_util.ora_name_type;
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
+    l_page_item := g_page_prefix || C_NUMBER_ITEM;
     utl_apex.set_value(
-      p_page_item => g_page_prefix || C_NUMBER_ITEM, 
+      p_page_item => l_page_item, 
       p_value => C_VALID_NUMBER_STRING);
     
-    ut.expect(adc_api.get_number(g_page_prefix || C_NUMBER_ITEM)).to_equal(C_NUMBER);
+    ut.expect(adc_api.get_number(l_page_item)).to_equal(C_NUMBER);
   end get_number_from_session_state;
   
   
@@ -622,15 +625,17 @@ as
   --
   procedure get_date
   as
+    l_page_item adc_util.ora_name_type;
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
+    l_page_item := g_page_prefix || C_DATE_ITEM;
     adc_page_state.set_value(
       p_cgr_id => g_cgr_id, 
-      p_cpi_id => g_page_prefix || C_DATE_ITEM, 
+      p_cpi_id => l_page_item, 
       p_date_value => C_DATE,
       p_throw_error => adc_util.C_TRUE);
     
-    ut.expect(adc_api.get_date(g_page_prefix || C_DATE_ITEM)).to_equal(C_DATE);
+    ut.expect(adc_api.get_date(l_page_item)).to_equal(C_DATE);
   end get_date;
   
   
@@ -639,13 +644,14 @@ as
   --
   procedure get_date_from_session_state
   as
+    l_page_item adc_util.ora_name_type := g_page_prefix || C_DATE_ITEM;
   begin
-    create_session(C_PAGE_EDEMP);
+    create_session(C_PAGE_UNITTEST);
     utl_apex.set_value(
-      p_page_item => g_page_prefix || C_DATE_ITEM, 
+      p_page_item => l_page_item, 
       p_value => C_VALID_DATE_STRING);
     
-    ut.expect(adc_api.get_date(g_page_prefix || C_DATE_ITEM)).to_equal(C_DATE);
+    ut.expect(adc_api.get_date(l_page_item)).to_equal(C_DATE);
   end get_date_from_session_state;
   
 begin

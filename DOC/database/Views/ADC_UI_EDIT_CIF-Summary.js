@@ -1,1 +1,1 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_UI_EDIT_CIF","ADC_UI_EDIT_CIF");NDSummary.OnSummaryLoaded("Database:Views.ADC_UI_EDIT_CIF",[["SQL","SQL"]],[["Views","DatabaseView"]],[[440,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_UI_EDIT_CIF"]]);
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_UI_EDIT_CIF","ADC_UI_EDIT_CIF");NDSummary.OnSummaryLoaded("Database:Views.ADC_UI_EDIT_CIF",[["SQL","SQL"]],[["Views","DatabaseView"]],[[268,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_UI_EDIT_CIF"]]);

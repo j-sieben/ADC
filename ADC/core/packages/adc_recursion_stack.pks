@@ -15,7 +15,7 @@ as
       
       Items are pushed onto the stack only if
       
-      - the max recusrive depth is not yet reached (to prevent endless loops)
+      - the max recursive depth is not yet reached (to prevent endless loops)
       - the rule and the actually executed action allows for recursion 
       - the item to push is referenced in a technical rule condition of the actual rule group 
         (If this condition is not met, it is clear that pusing this item onto the recursive

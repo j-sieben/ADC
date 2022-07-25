@@ -54,8 +54,8 @@ begin
     p_cpt_description => q'{<p>Existierende APEX-Aktion der Regelgruppe.</p>}',
     p_cpt_cpv_id => 'SELECT_LIST',
     p_cpt_select_list_query => q'{select caa_name d, caa_id r, caa_cgr_id cgr_id\CR\}' || 
-q'{  from adc_apex_actions_v}',
-    p_cpt_select_view_comment => q'{}',
+q'{  from adc_apex_actions}',
+    p_cpt_select_view_comment => q'{List of page commands, groupt by CGR_ID}',
     p_cpt_sort_seq => 10,
     p_cpt_active => adc_util.C_TRUE);
 
@@ -79,7 +79,7 @@ q'{ order by cit_id}',
     p_cpt_display_name => '',
     p_cpt_description => q'{<p>Option zur Anzeige eines Seitenelements auf der Seite</p>}',
     p_cpt_cpv_id => 'STATIC_LIST',
-    p_cpt_select_list_query => q'{select pti_name d, substr(pti_id, 13) r, null cgr_id\CR\}' || 
+    p_cpt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null cgr_id\CR\}' || 
 q'{    from pit_translatable_item_v\CR\}' || 
 q'{   where pti_pmg_name = 'ADC'\CR\}' || 
 q'{     and pti_id like 'ITEM_STATUS%'}',
@@ -135,7 +135,7 @@ q'{ where sequence_name not like 'ISEQ$$%'}',
     p_cpt_display_name => '',
     p_cpt_description => q'{<p>Typen der Seitenweiterleitung</p>}',
     p_cpt_cpv_id => 'STATIC_LIST',
-    p_cpt_select_list_query => q'{select pti_name d, substr(pti_id, 13) r, null cgr_id\CR\}' || 
+    p_cpt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null cgr_id\CR\}' || 
 q'{    from pit_translatable_item_v\CR\}' || 
 q'{   where pti_pmg_name = 'ADC'\CR\}' || 
 q'{     and pti_id like 'SUBMIT_TYPE%'}',
@@ -350,6 +350,14 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cit_name => 'Dokument',
     p_cit_cig_id => 'FRAMEWORK',
     p_cit_event => '',
+    p_cit_col_template => q'{'#ITEM#' #ITEM#}',
+    p_cit_init_template => q'{}',
+    p_cit_is_custom_event => adc_util.C_FALSE);
+  adc_admin.merge_page_item_type(
+    p_cit_id => 'SELECTOR',
+    p_cit_name => 'Dokument',
+    p_cit_cig_id => 'FRAMEWORK',
+    p_cit_event => '',
     p_cit_col_template => q'{null #ITEM#}',
     p_cit_init_template => q'{}',
     p_cit_is_custom_event => adc_util.C_FALSE);
@@ -382,7 +390,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cit_name => 'Formularregion',
     p_cit_cig_id => 'REGION',
     p_cit_event => '',
-    p_cit_col_template => q'{null #ITEM#}',
+    p_cit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cit_init_template => q'{}',
     p_cit_is_custom_event => adc_util.C_FALSE);
   adc_admin.merge_page_item_type(
@@ -398,7 +406,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cit_name => 'Interaktives Grid',
     p_cit_cig_id => 'REGION',
     p_cit_event => '',
-    p_cit_col_template => q'{null #ITEM#}',
+    p_cit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cit_init_template => q'{}',
     p_cit_is_custom_event => adc_util.C_FALSE);
   adc_admin.merge_page_item_type(
@@ -406,7 +414,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cit_name => 'Interaktiver Bericht',
     p_cit_cig_id => 'REGION',
     p_cit_event => '',
-    p_cit_col_template => q'{null #ITEM#}',
+    p_cit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cit_init_template => q'{}',
     p_cit_is_custom_event => adc_util.C_FALSE);
   adc_admin.merge_page_item_type(
@@ -430,7 +438,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cit_name => 'Region',
     p_cit_cig_id => 'REGION',
     p_cit_event => '',
-    p_cit_col_template => q'{null #ITEM#}',
+    p_cit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cit_init_template => q'{}',
     p_cit_is_custom_event => adc_util.C_FALSE);
   adc_admin.merge_page_item_type(
@@ -438,7 +446,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cit_name => 'Klassischer Bericht',
     p_cit_cig_id => 'REGION',
     p_cit_event => '',
-    p_cit_col_template => q'{null #ITEM#}',
+    p_cit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cit_init_template => q'{}',
     p_cit_is_custom_event => adc_util.C_FALSE);
   adc_admin.merge_page_item_type(
@@ -462,7 +470,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cit_name => 'Hierarchie',
     p_cit_cig_id => 'REGION',
     p_cit_event => '',
-    p_cit_col_template => q'{null #ITEM#}',
+    p_cit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cit_init_template => q'{}',
     p_cit_is_custom_event => adc_util.C_FALSE);
 
@@ -473,8 +481,17 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Alle Seitenelemente',
     p_cif_description => q'{Alle Seitenelemente der Anwendung}',
     p_cif_actual_page_only => adc_util.C_FALSE,
-    p_cif_item_types => 'DOCUMENT:APP_ITEM:BUTTON:REGION:ITEM',
-    p_cif_default => 'DOCUMENT',
+    p_cif_item_types => 'BUTTON:ITEM:REGION',
+    p_cif_default => '',
+    p_cif_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_item_focus(
+    p_cif_id => 'COMMAND',
+    p_cif_name => 'Dynamische Seiten, die Seitenkommandos besitzen',
+    p_cif_description => q'{Es werden nur vorhandene Seitenkommandos angezeigt}',
+    p_cif_actual_page_only => adc_util.C_TRUE,
+    p_cif_item_types => 'COMMAND',
+    p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -482,7 +499,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Keine Seitenelemente',
     p_cif_description => q'{Die Aktion is keinem konkreten Seitenelement zugeordnet}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'DOCUMENT',
+    p_cif_item_types => 'FRAMEWORK',
     p_cif_default => 'DOCUMENT',
     p_cif_active => adc_util.C_TRUE);
 
@@ -491,7 +508,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Seitenelemente, die aktiviert und deaktiviert werden können',
     p_cif_description => q'{Alle Seitenelemente, die aktiviert und deaktiviert werden können}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'ITEM:DOCUMENT:BUTTON:REGION',
+    p_cif_item_types => 'BUTTON:ITEM',
     p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
@@ -536,7 +553,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Seitenelement oder jQuery-Selektor',
     p_cif_description => q'{Ermöglicht die Auswahl eines Seitenelements oder die Angabe eines jQuery-Selektors zur Auswahl mehrerer Seitenelemente.}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'BUTTON:DOCUMENT:ITEM:REGION',
+    p_cif_item_types => 'BUTTON:ITEM:REGION',
     p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
@@ -554,8 +571,8 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Eingabefeld oder Dokument',
     p_cif_description => q'{Alle Eingabefelder oder keine spezifische Angabe}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'DOCUMENT:ITEM',
-    p_cif_default => 'DOCUMENT',
+    p_cif_item_types => 'ITEM',
+    p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -666,11 +683,11 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_action_type(
     p_cat_id => 'DYNAMIC_JAVASCRIPT',
     p_cat_ctg_id => 'JAVA_SCRIPT',
-    p_cat_cif_id => 'DOCUMENT',
+    p_cat_cif_id => 'ALL',
     p_cat_name => 'Dynamisches JavaScript ausführen',
     p_cat_display_name => q'{<p><strong>berechne JavaScript </strong>mittels “#PARAM_1#” und führe es aus</p>}',
     p_cat_description => q'{<p>Führt das übergebene JavaScript auf der Seite aus</p>}',
-    p_cat_pl_sql => q'{adc_api.execute_javascript(q'##PARAM_1##');}',
+    p_cat_pl_sql => q'{adc_api.execute_javascript(q'|#PARAM_1#|');}',
     p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_TRUE);
@@ -683,6 +700,28 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_description => q'{<p>PL/SQL-Funktion, die eine JavaScript-Anweisung ausgibt.<br>Ohne "javascript:" verwenden, nur den JavaScript-Code ausgeben</p>}',
     p_cap_display_name => '',
     p_cap_mandatory => adc_util.C_TRUE,
+    p_cap_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_type(
+    p_cat_id => 'EXECUTE_COMMAND',
+    p_cat_ctg_id => 'ADC',
+    p_cat_cif_id => 'COMMAND',
+    p_cat_name => 'Seitenkommando ausführen',
+    p_cat_display_name => q'{<p><strong>führe Seitenkommand</strong> "#PARAM_1#" <strong>aus</strong></p>}',
+    p_cat_description => q'{<p>Führt ein Seitenkommando aus. Dieser Aktionstyp sorgt dafür, dass ein Seitenkommando rekursiv innerhalb der Datenbank ausgeführt wird. Seitenkommandos ohne Bezug zu einem Seitenelement, wie zum Beispiel einer Schaltfläche, können nur über diese Funktion (oder über eigenes JavaScript auf der Seite) ausgeführt werden.</p>}',
+    p_cat_pl_sql => q'{adc_api.execute_command('#PARAM_1#');}',
+    p_cat_js => q'{}',
+    p_cat_is_editable => adc_util.C_FALSE,
+    p_cat_raise_recursive => adc_util.C_TRUE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'EXECUTE_COMMAND',
+    p_cap_cpt_id => 'APEX_ACTION',
+    p_cap_sort_seq => 1,
+    p_cap_default => q'{}',
+    p_cap_description => q'{<p>Liste der Seitenkommandos, die für diese Seite definiert sind.&nbsp;</p><p>Sie können eigene Seitenkommandos im Reiter “Seitenkommandos” im ADC-Designer anlegen und anschließend hier verwenden.</p>}',
+    p_cap_display_name => '',
+    p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_type(
@@ -711,7 +750,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_cat_id => 'GET_REPORT_SELECTION',
     p_cap_cpt_id => 'STRING',
     p_cap_sort_seq => 2,
-    p_cap_default => q'{1}',
+    p_cap_default => q'{}',
     p_cap_description => q'{<p>1- basierte Ordinalzahl der Spalte, die im hinterlegten Element abgelegt werden soll. Die Reihenfolge richtet sich nach der Reihenfolge auf der APEX-Anwendungsseite.</p><p>Wird dieser Wert nicht angegeben, wird die Spalte verwendet, die auf der APEX-Anwendungsseite als Primärschlüsselspalte parametriert wurde. Bitte beachten Sie, dass derzeit nur eine Primärschlüsselspalte unterstützt wird.</p>}',
     p_cap_display_name => 'Ordinalzahl der Wertespalte',
     p_cap_mandatory => adc_util.C_FALSE,
@@ -855,7 +894,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_action_type(
     p_cat_id => 'NOOP',
     p_cat_ctg_id => 'ADC',
-    p_cat_cif_id => 'DOCUMENT',
+    p_cat_cif_id => 'ALL',
     p_cat_name => 'nichts tun',
     p_cat_display_name => q'{<p><strong>tue nichts</strong>.</p>}',
     p_cat_description => q'{<p>Dieser Aktionstyp erlaubt es, eine technische Bedingung zu formulieren, bei der nichts weiter geschehen soll. Manchmal ist das sinnvoll, wenn zum Beispiel ein speziellerer Fall nichts tun soll, ein allgemeinerer Fall jedoch schon. In diesem Fall würde ein Anwendungsfall für den spezielleren Fall nur dann berücksichtigt, wenn auch eine Aktion hinterlegt ist, und diese wäre dann “nichts tun”.</p>}',
@@ -868,7 +907,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_action_type(
     p_cat_id => 'NOTIFY',
     p_cat_ctg_id => 'JAVA_SCRIPT',
-    p_cat_cif_id => 'DOCUMENT',
+    p_cat_cif_id => 'ALL',
     p_cat_name => 'Benachrichtigung zeigen',
     p_cat_display_name => q'{<p><strong>zeige Hinweis </strong>“#PARAM_1#”</p>}',
     p_cat_description => q'{<p>Zeigt eine Nachricht auf der Anwendungsseite</p>}',
@@ -890,11 +929,11 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_action_type(
     p_cat_id => 'NOT_NULL',
     p_cat_ctg_id => 'ITEM',
-    p_cat_cif_id => 'DOCUMENT',
+    p_cat_cif_id => 'PAGE_ITEM',
     p_cat_name => 'Mindestens einen Wert wählen',
     p_cat_display_name => q'{<p>wähle <strong>mindestens einen Wert</strong> aus “#PARAM_1#”</p>}',
     p_cat_description => q'{<p>Stellt sicher, dass mindestens eines der Elemente aus Attribut “<i>Liste der Seitenelemente</i>” einen Wert enthält.</p>}',
-    p_cat_pl_sql => q'{adc.not_null('#ITEM#', '#PARAM_1#',#PARAM_2);}',
+    p_cat_pl_sql => q'{adc.not_null('#ITEM#', '#PARAM_1#',#PARAM_2#);}',
     p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_TRUE);
@@ -1005,12 +1044,12 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_action_type(
     p_cat_id => 'REMEMBER_PAGE_STATE',
     p_cat_ctg_id => 'ADC',
-    p_cat_cif_id => 'DOCUMENT',
+    p_cat_cif_id => 'PAGE_REGION',
     p_cat_name => 'speichere aktuellen Seitenstatus',
     p_cat_display_name => q'{<p><strong>speichere</strong> den aktuellen <strong>Seitenstatus</strong></p>}',
     p_cat_description => q'{<p>Merkt sich den aktuellen Wert der zu überwachenden Eingabefelder. Dieser Aktionstyp wird benötigt, um dynamisch Änderungen an der Seite zu erkennen und eine Warnmeldung beim Verlassen oder Überschreiben der aktuell erfassten Werte zu geben.</p>}',
     p_cat_pl_sql => q'{}',
-    p_cat_js => q'{de.condes.plugin.adc.rememberPageItemStatus(#PARAM_1#);}',
+    p_cat_js => q'{de.condes.plugin.adc.rememberPageItemStatus(#PARAM_1#, '#PARAM_2#', '#PARAM_3#');}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
 
@@ -1027,7 +1066,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_action_type(
     p_cat_id => 'SELECT_REGION_ENTRY',
     p_cat_ctg_id => 'IG',
-    p_cat_cif_id => 'PAGE_REGION',
+    p_cat_cif_id => 'SELECTABLE_REPORT',
     p_cat_name => 'Wähle Zeile in Region',
     p_cat_display_name => q'{<p><strong>wähle Zeile</strong> ‘#PARAM_1#' <strong>in Bericht</strong> #ITEM#</p>}',
     p_cat_description => q'{<p>Wählt eine Zeile in einem Bericht (klassisch, Interactive Region oder Interactive Grid) oder einem Tree.</p>}',
@@ -1279,7 +1318,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_action_type(
     p_cat_id => 'SHOW_HIDE_ITEMS',
     p_cat_ctg_id => 'ITEM',
-    p_cat_cif_id => 'DOCUMENT',
+    p_cat_cif_id => 'ALL',
     p_cat_name => 'Seitenlemente ein- und ausblenden',
     p_cat_display_name => q'{<p><strong>blende</strong> Selektoren "#PARAM_1#” <strong>ein und</strong> '#PARAM_2#" <strong>aus</strong></p>}',
     p_cat_description => q'{<p>Kontrolliert die Anzeige mehrerer Seitenelemente, indem die Seitzenelemente, die durch den ersten jQuery-Ausdruck identifiziert werden, ein- und die Seitenelemente, die durch den zweiten jQuery-Ausdruck identifiziert werden, ausgeblendet werden</p>}',
@@ -1311,7 +1350,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_action_type(
     p_cat_id => 'STOP_RULE',
     p_cat_ctg_id => 'ADC',
-    p_cat_cif_id => 'DOCUMENT',
+    p_cat_cif_id => 'ALL',
     p_cat_name => 'Regel stoppen',
     p_cat_display_name => q'{<p><strong>stoppe</strong> Anwendungsfall</p>}',
     p_cat_description => q'{<p>Beendet die aktuell laufende Regel und erlaubt keine rekursive Ausführung weiterer Regeln.</p>}',
@@ -1346,7 +1385,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_action_type(
     p_cat_id => 'XOR',
     p_cat_ctg_id => 'ITEM',
-    p_cat_cif_id => 'DOCUMENT',
+    p_cat_cif_id => 'PAGE_ITEM',
     p_cat_name => 'Genau einen Wert wählen',
     p_cat_display_name => q'{<p>wähle <strong>genau einen Wert</strong> aus “#PARAM_1#”</p>}',
     p_cat_description => q'{<p>Stellt sicher, dass genau eines der Elemente aus Attribut “<i>Liste der Elemente</i>” einen Wert enthält.</p>}',
@@ -1398,13 +1437,13 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cty_id => 'RADIO_GROUP',
     p_cty_name => 'Optionsgruppe',
     p_cty_description => q'{Auswahlliste, Optionsfelder}',
-    p_cty_active  => adc_util.C_TRUE);
+    p_cty_active  => adc_util.C_FALSE);
 
   adc_admin.merge_apex_action_type(
     p_cty_id => 'TOGGLE',
     p_cty_name => 'Schalter',
     p_cty_description => q'{Wahlschalter (JA|NEIN)}',
-    p_cty_active  => adc_util.C_TRUE);
+    p_cty_active  => adc_util.C_FALSE);
 
   commit;
 end;
@@ -1412,6 +1451,23 @@ end;
 
 set define on
 set sqlblanklines off
+
+create or replace view ADC_PARAM_LOV_SEQUENCE as select sequence_name d, sequence_name r, null cgr_id
+  from user_sequences
+       -- exclude column identity sequences
+ where sequence_name not like 'ISEQ$$%';
+
+comment on table ADC_PARAM_LOV_SEQUENCE is 'List of sequences owned by the user';
+
+
+create or replace view ADC_PARAM_LOV_SUBMIT_TYPE as 
+  select pti_name d, substr(pti_id, 15) r, null cgr_id
+    from pit_translatable_item_v
+   where pti_pmg_name = 'ADC'
+     and pti_id like 'SUBMIT_TYPE%';
+
+comment on table ADC_PARAM_LOV_SUBMIT_TYPE is 'List of translatable items of type ADC, related to the SUBMIT_TYPE';
+
 
 create or replace view ADC_PARAM_LOV_EVENT as select cit_name d, cit_id r, null cgr_id
   from adc_page_item_types_v
@@ -1431,7 +1487,9 @@ comment on table ADC_PARAM_LOV_PIT_MESSAGE is 'List of PIT messages';
 
 
 create or replace view ADC_PARAM_LOV_APEX_ACTION as select caa_name d, caa_id r, caa_cgr_id cgr_id
-  from adc_apex_actions_v;
+  from adc_apex_actions;
+
+comment on table ADC_PARAM_LOV_APEX_ACTION is 'List of page commands, groupt by CGR_ID';
 
 
 create or replace view ADC_PARAM_LOV_PAGE_ITEM as select case cpi_id when 'ALL' then ' Document' else cpi_id end d, cpi_id r, cpi_cgr_id cgr_id
@@ -1448,21 +1506,4 @@ create or replace view ADC_PARAM_LOV_ITEM_STATUS as
      and pti_id like 'ITEM_STATUS%';
 
 comment on table ADC_PARAM_LOV_ITEM_STATUS is 'List of translatable items of for that parameter type';
-
-
-create or replace view ADC_PARAM_LOV_SEQUENCE as select sequence_name d, sequence_name r, null cgr_id
-  from user_sequences
-       -- exclude column identity sequences
- where sequence_name not like 'ISEQ$$%';
-
-comment on table ADC_PARAM_LOV_SEQUENCE is 'List of sequences owned by the user';
-
-
-create or replace view ADC_PARAM_LOV_SUBMIT_TYPE as 
-  select pti_name d, substr(pti_id, 15) r, null cgr_id
-    from pit_translatable_item_v
-   where pti_pmg_name = 'ADC'
-     and pti_id like 'SUBMIT_TYPE%';
-
-comment on table ADC_PARAM_LOV_SUBMIT_TYPE is 'List of translatable items of type ADC, related to the SUBMIT_TYPE';
 

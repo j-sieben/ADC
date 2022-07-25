@@ -4,37 +4,37 @@ as
 
   /**
     Package: ADC_API
-    
-             Implements the internal interface of ADC and a wrapper around ADC_INTERNAL.
-             ADC_API serves as the technical interface to ADC in that it publishes
-             the most significant methods of ADC_INTERNAL. It is called by the PL/SQL interface
-             in package ADC and partly from ADC_UI.
-             
-             It is designed to form an API between the internal package to implement trivial
-             functionality directly and calling ADC_INTERNAL support for more advanced functionality.
-             
-             All other packages with the exception of ADC_PLUGIN are not allowed to directly address ADC_INTERNAL.
+
+      Implements the internal interface of ADC and a wrapper around <ADC_INTERNAL>.
+      ADC_API serves as the technical interface to ADC in that it publishes
+      the most significant methods of <ADC_INTERNAL>. It is called by the PL/SQL interface
+      in package ADC and partly from <ADC_UI>.
+      
+      It is designed to form an API between the internal package to implement trivial
+      functionality directly and calling <ADC_INTERNAL> support for more advanced functionality.
+      
+      All other packages with the exception of <ADC_PLUGIN> are not allowed to directly address <ADC_INTERNAL>.
 
     Author::
       Juergen Sieben, ConDeS GmbH
    */
   
-  /* CORE FUNCTIONALITY wrapper around ADC_INTERNAL
+  /* CORE FUNCTIONALITY wrapper around <ADC_INTERNAL>
    * Methods are in alphabetical order.
    */
   
   /**
     Procedure: add_javascript
-                 Method to incorporate a JavaScript chunk into the response.
-                 
-                 Each script is assigned a debug level that allows to control 
-                 the amount of code ADC produces in response. Right now, the response
-                 is limited to 32KBytes. To achieve this, ADC reduces the level 
-                 of the output if necessary (removing any comments etc) to keep 
-                 the response below 32KBytes. 
-                 
-                 The method also comments out duplicate JavaScript statements.
-                 Removing duplicates reduces the amount of code the browser has to execute.
+      Method to incorporate a JavaScript chunk into the response.
+      
+      Each script is assigned a debug level that allows to control 
+      the amount of code ADC produces in response. Right now, the response
+      is limited to 32KBytes. To achieve this, ADC reduces the level 
+      of the output if necessary (removing any comments etc) to keep 
+      the response below 32KBytes. 
+      
+      The method also comments out duplicate JavaScript statements.
+      Removing duplicates reduces the amount of code the browser has to execute.
 
     Parameter:
       p_script - JavaScript chunk to add
@@ -52,12 +52,12 @@ as
   
   /**
     Procedure: execute_action
-                 Method to execute a defined ACTION TYPE.
-                 
-                 Is used to allow PL/SQL code to execute predefined action types. 
-                 This forms an API to the action types to be used from within PL/SQL
-                 Don't use this method directly, but wrap the action type in package ADC to 
-                 allow for action type specific parameter naming.
+      Method to execute a defined <ACTION TYPE>.
+      
+      Is used to allow PL/SQL code to execute predefined action types. 
+      This forms an API to the action types to be used from within PL/SQL
+      Don't use this method directly, but wrap the action type in package ADC to 
+      allow for action type specific parameter naming.
                  
     Parameters:
       p_cat_id - ID of the action type
@@ -74,13 +74,32 @@ as
     p_param_3 in adc_rule_actions.cra_param_3%type default null,
     p_allow_recursion in adc_util.flag_type default adc_util.C_FALSE);
         
+        
+  /**
+    Procedure: execute_command
+      Method to directly execute a command (APEX action) from within a page rule.
+      By executing a command it is simulated that the uses executes a command.
+      ADC will recursively execute the command rather than asking the browser to 
+      execute it, creating an unnecessary roundtrip.
+      
+      If a command is not bound to any page item, such as a button, it won't be
+      generated on the page but is callable only from within a rule. This helps in 
+      organizing complex dynamic functionality by creating "sub routines" for 
+      dynamic behaviour.
+      
+    Parameter:
+      p_command - Name of the command to execute
+   */
+  procedure execute_command(
+    p_command in adc_apex_actions.caa_name%type);
+    
 
   /** 
     Procedure: execute_javascript
-                 Method to execute a PL/SQL block that returns JavaScript that will be part of the ADC answer.
-                 
-                 Is used to let ADC calculate a JavaScript chunk (such as a call to open a modal dialog) and return it to ADC.
-                 ADC will then incorporate this script into the answer and execute it.
+      Method to execute a PL/SQL block that returns JavaScript that will be part of the ADC answer.
+      
+      Is used to let ADC calculate a JavaScript chunk (such as a call to open a modal dialog) and return it to ADC.
+      ADC will then incorporate this script into the answer and execute it.
    
     Parameter:
       p_plsql - PL/SQL block to calculate the JavaScript
@@ -91,11 +110,11 @@ as
     
   /**
     Procedure: execute_plsql
-                 Method to execute a PL/SQL block.
-                 
-                 In contrast to <execute_javascript>, this method will exiectue the PL/SQL block
-                 to change the session state or do something else on the database side. If the
-                 PL/SQL block changes the session state, this may cause recursive rules to be executed.
+      Method to execute a PL/SQL block.
+      
+      In contrast to <execute_javascript>, this method will exiectue the PL/SQL block
+      to change the session state or do something else on the database side. If the
+      PL/SQL block changes the session state, this may cause recursive rules to be executed.
    
     Parameter:
       p_plsql  PL/SQL block to execute
@@ -106,8 +125,8 @@ as
 
   /** 
     Function: exclusive_or
-                Method to assure that exactly one or at most one page item of a selection of page items contains a value.
-                Is used to be able to utilize EXCLUSIVE_OR within an ADC rule condition (used in SQL).
+      Method to assure that exactly one or at most one page item of a selection of page items contains a value.
+      Is used to be able to utilize EXCLUSIVE_OR within an ADC rule condition (used in SQL).
 
     Parameter:
       p_item_list - colon-separated list of page item IDs to check
@@ -124,14 +143,14 @@ as
 
   /**
     Function: get_date
-                Method to retrieve the value of a page item as char.
-                
-                Is used to convert a session state string value into date.
-                Depending on parameter P_THROW_ERROR an error is not only registered upon unsuccessful conversion but thrown as well.
-                This is useful if a rule cannot be processed any further if the conversion is not successful.
-                
-                If the element is mandatory and NULL, a default value is returned as defined in the APEX metadata. If no such default
-                value exists, an exception is registered with ADC.
+      Method to retrieve the value of a page item as char.
+      
+      Is used to convert a session state string value into date.
+      Depending on parameter P_THROW_ERROR an error is not only registered upon unsuccessful conversion but thrown as well.
+      This is useful if a rule cannot be processed any further if the conversion is not successful.
+      
+      If the element is mandatory and NULL, a default value is returned as defined in the APEX metadata. If no such default
+      value exists, an exception is registered with ADC.
    
     Parameters:
       p_cpi_id - ID of the page item
@@ -139,8 +158,8 @@ as
                       If NULL, ADC tries to get the format mask from the meta data
       p_throw_error - Optional flag to indicate whether a non successful conversion is treated as an error. Defaults to C_TRUE.
                       
-                      - adc_util.C_TRUE: an error is registered and thrown
-                      - adc_util.C_FALSE: an error is registered but not thrown
+                    - adc_util.C_TRUE: an error is registered and thrown
+                    - adc_util.C_FALSE: an error is registered but not thrown
                     
     Returns:
       DATE value
@@ -154,10 +173,10 @@ as
     
   /** 
     Function: get_event
-                Method to retrieve the name of the event that has caused ADC to execute.
-                
-                ADC events differ from normal web browser or APEX events in that they can replace browser events with their own
-                events, fi by replacing the keypress-event for keycode 13 with an "enter" event.
+      Method to retrieve the name of the event that has caused ADC to execute.
+      
+      ADC events differ from normal web browser or APEX events in that they can replace browser events with their own
+      events, fi by replacing the keypress-event for keycode 13 with an "enter" event.
    
     Returns:
       Name of the event
@@ -168,9 +187,9 @@ as
     
   /** 
     Function: get_event_data
-                Is called to retrieve additional event data information such as returned data from a modal dialog
-                
-                Event data can be a simple string or a JSON instance, depending on the client side code.
+      Is called to retrieve additional event data information such as returned data from a modal dialog
+      
+      Event data can be a simple string or a JSON instance, depending on the client side code.
    
     Parameter:
       p_key - Optional name of a key. If the event data is JSON, P_KEY can be used to extract specific information
@@ -186,13 +205,13 @@ as
 
   /**
     Function: get_firing_item
-                Method to get the page item id of the item that has fired ADC processing.
-                
-                Is used to get access to the ID of the page item that has fired the event.
-                This information is used within the decision table to decide upon the rule
-                to execute. If firing_item is adc_util.C_NO_FIRING_ITEM, it is assumed that
-                the page is initializing. It is also used to populate event pseudo columns
-                such as dialog_closed etc.
+      Method to get the page item id of the item that has fired ADC processing.
+      
+      Is used to get access to the ID of the page item that has fired the event.
+      This information is used within the decision table to decide upon the rule
+      to execute. If firing_item is adc_util.C_NO_FIRING_ITEM, it is assumed that
+      the page is initializing. It is also used to populate event pseudo columns
+      such as dialog_closed etc.
    
     Returns:
       ID of the firing item
@@ -203,16 +222,16 @@ as
 
   /**
     Function: get_lov_sql
-                Method to retrieve a select statement that reads values for a given
-                Action Parameter of type SELECT_LIST
-                
+      Method to retrieve a select statement that reads values for a given
+      Action Parameter of type <SELECT_LIST>
+      
     Parameters:
       p_cpt_id - Type of the Action Parameter
       p_cgr_id - ID of the rule group. Is used to filter the LOV statement
     
     Returns:
       Select statement to be executed by the ADC_UI to retrieve values for an Action Parameter#
-      of type SELECT_LIST
+      of type <SELECT_LIST>
    */
   function get_lov_sql(
     p_cpt_id in adc_action_param_types.cpt_id%type,
@@ -222,14 +241,14 @@ as
 
   /** 
     Function: get_number
-                Method to retrieve the value of a page item as number.
-                
-                Is used to convert a session state string value into number.
-                Depending on parameter P_THROW_ERROR an error is not only register upon unsuccessful conversion but thrown as well.
-                This is useful if a rule cannot be processed any further if the conversion is not successful.
-                
-                If the element is mandatory and NULL, a default value is returned as defined in the APEX metadata. If no such default
-                value exists, an exception is registered with ADC.
+      Method to retrieve the value of a page item as number.
+      
+      Is used to convert a session state string value into number.
+      Depending on parameter P_THROW_ERROR an error is not only register upon unsuccessful conversion but thrown as well.
+      This is useful if a rule cannot be processed any further if the conversion is not successful.
+      
+      If the element is mandatory and NULL, a default value is returned as defined in the APEX metadata. If no such default
+      value exists, an exception is registered with ADC.
    
     Parameters:
       p_cpi_id - ID of the page item
@@ -252,10 +271,10 @@ as
     
   /**
     Function: get_string
-                Method to retrieve the value of a page item as char.
-                
-                As an extension to V(P_CPI_ID) this method retrieves a default value as defined within the APEX data dictionary
-                if the actual value of the page item is NULL.
+      Method to retrieve the value of a page item as char.
+      
+      As an extension to V(P_CPI_ID) this method retrieves a default value as defined within the APEX data dictionary
+      if the actual value of the page item is NULL.
 
     Parameter:
       p_cpi_id - ID of the page item
@@ -289,9 +308,9 @@ as
 
   /**
     Function: has_errors
-                Method to learn whether the actual rule flow has receieved errors.
-                
-                Is called from PL/SQL code to react if errors have occurred.
+      Method to learn whether the actual rule flow has receieved errors.
+      
+      Is called from PL/SQL code to react if errors have occurred.
                 
     Returns:
       FALSE if no error has occured, TRUE otherwise
@@ -302,9 +321,9 @@ as
 
   /** 
     Function: has_no_errors
-                Method to learn whether the actual rule flow has receieved errors.
-                
-                Is called from PL/SQL code to react if errors have occurred.
+      Method to learn whether the actual rule flow has receieved errors.
+      
+      Is called from PL/SQL code to react if errors have occurred.
                 
     Returns:
       TRUE if no error has occured, FALSE otherwise
@@ -315,14 +334,14 @@ as
     
   /**
     Procedure: initialize_form_region
-                 Method to initialize a form region with data.
-                 
-                 Is used to dynamically initialize the values of a form region.
-                 It requires:
-                 
-                 - A static ID for the form region, as it is possible to have more than one form region on a page
-                 - At least one page item that is flagged as the priomary key column
-                 - the form region must have the flag EDITABLE set to true
+      Method to initialize a form region with data.
+      
+      Is used to dynamically initialize the values of a form region.
+      It requires:
+      
+      - A static ID for the form region, as it is possible to have more than one form region on a page
+      - At least one page item that is flagged as the priomary key column
+      - the form region must have the flag EDITABLE set to true
    
     Parameter:
       p_static_id - Static ID of the form region to initialize
@@ -333,7 +352,7 @@ as
 
   /** 
     Function: not_null
-                Method to check whether at least one of the page items provided in <p_value_list> is not null
+      Method to check whether at least one of the page items provided in <p_value_list> is not null
                 
     Parameter:
       p_item_list - colon-separated list of page item IDs to check
@@ -349,12 +368,12 @@ as
     
   /**
     Procedure: raise_item_event
-                 Method to register an item as a firing item, effectively raising its related event. 
-                 
-                 Registering an item as a firing explicitly serves as a mechanism
-                 to evaluate all ADC rules related to this item. Effectively, this simulates
-                 raising the assigned event on the given item. This is useful 
-                 if it is required to execute ADC rules without changing the item's value.
+      Method to register an item as a firing item, effectively raising its related event. 
+      
+      Registering an item as a firing explicitly serves as a mechanism to evaluate 
+      all ADC rules related to this item. Effectively, this simulates raising
+      the assigned event on the given item. This is useful  if it is required to execute
+      ADC rules without changing the item's value.
 
     Parameter:
       p_cpi_id - page item to raise the event for
@@ -365,7 +384,7 @@ as
     
   /** 
     Procedure: register_error
-                 Method to register an error with ADC.
+      Method to register an error with ADC.
    
     Parameters:
       p_cpi_id - page item to assign the error to
@@ -380,9 +399,9 @@ as
     
   /** 
     Procedure: register_error
-                 Method to register an error with ADC.
-                 
-                 Overloaded version to accept a PIT message
+      Method to register an error with ADC.
+      
+      Overloaded version to accept a PIT message
 
     Parameters:
       p_cpi_id - page item to assign the error to
@@ -397,10 +416,10 @@ as
     
   /**
     Procedure: register_mandatory
-                 Method to register a page item as mandatory or optional at ADC.
-                 
-                 ADC maintains APEX collections with all mandatory items per ADC rule group. 
-                 This way, mandatory items can differ between sessions.
+      Method to register a page item as mandatory or optional at ADC.
+      
+      ADC maintains APEX collections with all mandatory items per ADC rule group. 
+      This way, mandatory items can differ between sessions.
    
     Parameters:
       p_cpi_id - Page item to set mandatory or optional
@@ -417,17 +436,17 @@ as
     
   /**
     Procedure: register_observer
-                 Method to register a page item as to be observed.
-                 
-                 Is used to register a page item with ADC. This is necessary only if:
-                 
-                 - ADC action require the actually set value at the session state with every roundtrip
-                 - no technical condition references this item
-                 
-                 If these requirements are met, this method allows to register a page item for observation
-                 This method is only applicable during page initialization, as lateron no event handlers
-                 are added to the page
-   
+      Method to register a page item as to be observed.
+      
+      Is used to register a page item with ADC. This is necessary only if:
+      
+      - ADC action require the actually set value at the session state with every roundtrip
+      - no technical condition references this item
+      
+      If these requirements are met, this method allows to register a page item for observation
+      This method is only applicable during page initialization, as lateron no event handlers
+      are added to the page
+      
     Parameter:
       p_cpi_id  page item to observe
    */
@@ -437,11 +456,11 @@ as
     
   /** 
     Procedure: set_session_state
-                 Wrapper around apex_util to set a value in the session state.
-                 
-                 Is used to set a session state value. In extension to apex_util, setting a value using this method
-                 leads to recursive rule execution for the changed page items if allowed an it gives the possibility
-                 to set the value of many items using a jQuery selector.
+      Wrapper around apex_util to set a value in the session state.
+      
+      Is used to set a session state value. In extension to apex_util, setting a value using this method
+      leads to recursive rule execution for the changed page items if allowed an it gives the possibility
+      to set the value of many items using a jQuery selector.
 
     Parameters:
       p_cpi_id - page item to set
@@ -511,17 +530,17 @@ as
 
   /**
     Procedure: validate_page
-                 Method to validate user data for a page.
-                 
-                 It checks the following actions
-                 
-                 - all mandatory items (in case an initially empty item did not receive a change event)
-                 - all actions that are marked as validations (in case an exception that is shown on the
-                   page has not been fixed before submitting the page)
-                   
-                This method is only useful if ADC controls the whole page completely. It can not intercept
-                a apex.submit call raised by a button or a Dynamic Action on the page. Rather, validate
-                the page using this method and submit the page in case of success using ADC.
+      Method to validate user data for a page.
+      
+      It checks the following actions
+      
+      - all mandatory items (in case an initially empty item did not receive a change event)
+      - all actions that are marked as validations (in case an exception that is shown on the
+        page has not been fixed before submitting the page)
+      
+      This method is only useful if ADC controls the whole page completely. It can not intercept
+      a apex.submit call raised by a button or a Dynamic Action on the page. Rather, validate
+      the page using this method and submit the page in case of success using ADC.
    */
   procedure validate_page;
   

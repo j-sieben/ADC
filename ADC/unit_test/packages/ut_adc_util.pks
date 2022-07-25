@@ -2,7 +2,7 @@ create or replace package ut_adc_util
   authid definer
 as
 
-  --%suite(ADC_UTIL Tests)
+  --%suite(ADC UTIL Tests)
   --%suitepath(ut_adc_util)
   --%rollback(manual)
 

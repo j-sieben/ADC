@@ -7,6 +7,14 @@ begin
     p_pmg_description => q'^Meldungen für die ADC Administrationsanwendung^');
     
     
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'ADC_WARNING',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^ADC_UI^',
+    p_pti_name => q'^Warnung^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^Titelelement für Dialogbox^'
+  );
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'ADC_AUTO_INITIALIZE',

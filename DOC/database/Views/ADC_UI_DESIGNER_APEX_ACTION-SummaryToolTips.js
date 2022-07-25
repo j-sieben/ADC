@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_UI_DESIGNER_APEX_ACTION",{431:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">View on ADC_APEX_ACTION.</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_UI_DESIGNER_APEX_ACTION",{259:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">View on ADC_APEX_ACTION.</div></div>"});

@@ -182,7 +182,8 @@ as
     p_cpi_id in adc_page_items.cpi_id%type)
     return boolean
   as
-    l_is_value_item pls_integer;
+    l_count pls_integer;
+    l_is_value_item boolean;
   begin
     pit.enter_optional(
       p_params => msg_params(
@@ -190,22 +191,23 @@ as
                     msg_param('p_cpi_id', p_cpi_id)));
   
     select count(*)
-      into l_is_value_item
+      into l_count
       from adc_page_items
      where cpi_cgr_id = p_cgr_id
        and cpi_id = p_cpi_id
        and cpi_cit_id in (C_ITEM, C_APP_ITEM, C_NUMBER_ITEM, C_DATE_ITEM);
        
-    if l_is_value_item = 0 and g_session_values.exists(p_cpi_id)then
-      -- Adding a non item to the session values collection prevents further checks
-      g_session_values(p_cpi_id) := null;
+    l_is_value_item := adc_util.get_boolean(l_count) = adc_util.C_TRUE;
+       
+    if not l_is_value_item and g_session_values.exists(p_cpi_id) then
+      g_session_values.delete(p_cpi_id);
     end if;
   
     pit.leave_optional(
       p_params => msg_params(
-                    msg_param('Result', adc_util.get_boolean(l_is_value_item))));
+                    msg_param('Result', adc_util.to_bool(l_count))));
                     
-    return adc_util.get_boolean(l_is_value_item) = adc_util.C_TRUE;
+    return l_is_value_item;
   end item_may_have_value;
   
   
@@ -386,14 +388,16 @@ as
       pit.leave_optional;
     -- NUMBER conversion
     when INVALID_NUMBER or VALUE_ERROR then
-      pit.leave_optional(p_params => msg_params(msg_param('Result', g_session_values(p_cpi_id).string_value)));
+      pit.leave_optional(
+        p_params => msg_params(
+                      msg_param('Result', g_session_values(p_cpi_id).string_value)));
       if p_throw_error = adc_util.C_TRUE then
         pit.error(msg.ADC_INVALID_NUMBER, msg_args(g_session_values(p_cpi_id).string_value, l_format_mask));
       end if;
     when msg.ADC_ITEM_IS_MANDATORY_ERR then
       raise;
     when others then
-      pit.leave_optional(p_params => msg_params(msg_param('Result', g_session_values(p_cpi_id).string_value)));
+      pit.leave_optional;
       if p_throw_error = adc_util.C_TRUE then
         case 
         when sqlcode in (-1858, -1862) then
@@ -438,7 +442,9 @@ as
         l_string_value := g_session_values(p_cpi_id).string_value;
     end case;
     
-    pit.leave_optional(p_params => msg_params(msg_param('Result', l_string_value)));
+    pit.leave_optional(
+      p_params => msg_params(
+                    msg_param('Result', l_string_value)));
     return l_string_value;
   end get_string;
   
@@ -477,7 +483,7 @@ as
       
     pit.leave_optional(
       p_params => msg_params(
-                    msg_param('Result', g_session_values(p_cpi_id).string_value)));
+                    msg_param('Result', l_date_value)));
     return l_date_value;
   end get_date;
   
@@ -514,7 +520,9 @@ as
         l_number_value := g_session_values(p_cpi_id).number_value;
     end case;
     
-    pit.leave_optional(p_params => msg_params(msg_param('Result', g_session_values(p_cpi_id).string_value)));
+    pit.leave_optional(
+      p_params => msg_params(
+                    msg_param('Result', l_number_value)));
     return l_number_value;
   end get_number;
   

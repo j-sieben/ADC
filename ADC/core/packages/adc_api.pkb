@@ -57,11 +57,25 @@ as
     pit.leave_mandatory;
   end execute_action;
   
+  
+  procedure execute_command(
+    p_command in adc_apex_actions.caa_name%type)
+  as
+  begin
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_command', p_command)));
+                    
+    adc_internal.execute_command(p_command);
+                    
+    pit.leave_mandatory;
+  end execute_command;
+  
 
   procedure execute_javascript(
     p_plsql in varchar2)
   as
-    c_cmd_template varchar2(200) := 'begin :x := #COMMAND#; end;';
+    c_cmd_template varchar2(200) := 'begin :x := #PL_SQL#; end;';
     l_result adc_util.max_char;
     l_cmd adc_util.max_char;
   begin
@@ -69,7 +83,7 @@ as
       p_params => msg_params(
                     msg_param('p_plsql', p_plsql)));
                     
-    l_cmd := replace(c_cmd_template, '#COMMAND#', replace(trim(p_plsql), ';'));
+    l_cmd := replace(c_cmd_template, '#PL_SQL#', replace(trim(p_plsql), ';'));
     execute immediate l_cmd using out l_result;
     
     adc_internal.add_javascript(replace(l_result, 'javascript:'), adc_util.C_JS_CODE);
@@ -87,7 +101,7 @@ as
   procedure execute_plsql(
     p_plsql in varchar2)
   as
-    C_CMD_TEMPLATE constant varchar2(100) := 'begin #COMMAND# end;';
+    C_CMD_TEMPLATE constant varchar2(100) := 'begin #PL_SQL# end;';
     l_plsql adc_util.max_char;
   begin
     pit.enter_mandatory(p_params => msg_params(msg_param('p_cmd', substr(p_plsql, 1, 4000))));
@@ -95,7 +109,7 @@ as
     
     l_plsql := rtrim(trim(p_plsql), ';') || ';';
     pit.assert(l_plsql != ';');
-    execute immediate replace(C_CMD_TEMPLATE, '#COMMAND#', l_plsql);
+    execute immediate replace(C_CMD_TEMPLATE, '#PL_SQL#', l_plsql);
 
     pit.leave_mandatory;
   exception

@@ -585,10 +585,7 @@ as
         adc.refresh_item(C_REGION_CPT_STATIC_LIST_FORM);
         l_static_list_status := adc.C_SHOW_ENABLE;
       else
-        adc.register_error(
-          p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
-          p_message_name => msg.ADC_UI_UNKNOWN_ACTION,
-          p_msg_args => msg_args(l_cpt_cpv_id));
+        null;
     end case;
     
     adc.set_visual_state(

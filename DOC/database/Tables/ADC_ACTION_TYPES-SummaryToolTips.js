@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Tables.ADC_ACTION_TYPES",{401:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Tabel to store different action types as template for actions</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Tables.ADC_ACTION_TYPES",{229:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Tabel to store different action types as template for actions</div></div>"});

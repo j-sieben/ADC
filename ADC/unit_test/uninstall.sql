@@ -1,8 +1,4 @@
 
-prompt
-prompt &section.
-prompt &h1.Remove existing unit tests
-
 declare
   object_does_not_exist exception;
   pragma exception_init(object_does_not_exist, -4043);
@@ -16,10 +12,10 @@ declare
           select object_name name, object_type type
             from user_objects
            where object_name in (
-                 'ADC_TEST_JS_REC', 'ADC_TEST_JS_LIST', 'ADC_TEST_RESULT', 'ADC_TEST_LIST', 'ADC_TEST_ROW', -- Typen
-                 'ADC_TEST',  -- Packages
+                 'UT_ADC_JS_REC', 'UT_ADC_JS_LIST', 'UT_ADC_RESULT', 'UT_ADC_LIST', 'UT_ADC_ROW', -- Typen
+                 'UT_ADC_ADMIN',  'UT_ADC_INTERNAL',  'UT_ADC_PAGE_STATE',  'UT_ADC_RECURSION_STAXCK',  'UT_ADC_UTIL',  'UT_ADC',  -- Packages
                  '', -- Views
-                 'ADC_TEST_OUTCOME',  -- Tabellen
+                 'UT_ADC_OUTCOME',  -- Tabellen
                  '',  -- Synonyme
                  '' -- Sequenzen
                  )

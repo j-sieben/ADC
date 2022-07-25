@@ -2,7 +2,7 @@ create or replace package ut_adc_page_state
   authid definer
 as
 
-  --%suite(ADC Tests)
+  --%suite(ADC PAGE STATE Tests)
   --%suitepath(ut_adc_page_state)
   --%rollback(manual)
 
