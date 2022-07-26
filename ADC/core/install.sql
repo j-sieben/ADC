@@ -65,7 +65,7 @@ prompt &h3.Create ADC translatable items
 @&msg_dir.TranslatableItemGroup_ADC.sql
 
 prompt &h3.Create UTL_TEXT templates
-@&tool_dir.run_script merge_utl_text_templates
+@&tool_dir.run_script utl_text_templates_ADC
 
 
 prompt &h2.Create PL/SQL objects
