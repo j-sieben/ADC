@@ -378,6 +378,7 @@ as
       end loop;
     end if;
     
+    
     -- wrap JavaScript in <script> tag and add item value and error scripts
     -- Replace script explicitely to circumvent length limitation of CHAR_TABLE
     l_response := replace(g_js_script_frame_template, '#SCRIPT#', l_response);

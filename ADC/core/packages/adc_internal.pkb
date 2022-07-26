@@ -783,7 +783,7 @@ as
     pit.enter_optional('get_bind_items_as_json',
       p_params => msg_params(
                     msg_param('cgr_id', g_param.cgr_id)));
-    
+                    
     for item in rule_group_cpi_ids(g_param.cgr_id) loop
       utl_text.append(
         l_json,
@@ -943,6 +943,7 @@ as
     g_param.event_data := p_event_data;
     g_param.stop_flag := adc_util.C_FALSE;
     g_param.has_errors := false;
+    g_param.rule_counter := 0;
     adc_recursion_stack.reset(g_param.cgr_id, g_param.firing_item);    
     adc_page_state.reset;
     adc_response.initialize_response(g_param.initialize_mode, g_param.cgr_id);

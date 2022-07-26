@@ -725,6 +725,28 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_type(
+    p_cat_id => 'EXECUTE_JAVASCRIPT',
+    p_cat_ctg_id => 'JAVA_SCRIPT',
+    p_cat_cif_id => 'DOCUMENT',
+    p_cat_name => 'JavaScript-Code ausführen',
+    p_cat_display_name => q'{<p><strong>führe JavaScript-Code</strong> "#PARAM_1#" <strong>aus</strong>.</p>}',
+    p_cat_description => q'{<p>Führt den eingetragenen JavaScript-Code auf der Anwendungsseite aus.</p>}',
+    p_cat_pl_sql => q'{}',
+    p_cat_js => q'{#PARAM_1#}',
+    p_cat_is_editable => adc_util.C_TRUE,
+    p_cat_raise_recursive => adc_util.C_FALSE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'EXECUTE_JAVASCRIPT',
+    p_cap_cpt_id => 'JAVA_SCRIPT',
+    p_cap_sort_seq => 1,
+    p_cap_default => q'{}',
+    p_cap_description => q'{<p>JavaScript-Code, der ausgeführt werden soll. Bitte verwenden Sie doppelte Anführungszeichen, um Probleme bei der Übermittlung des Codes zu vermeiden. Es sollten keine komplexen Ausdrücke, sondern bevorzugt Funktionsnamen mit Parametern ausgeführt werden.</p>}',
+    p_cap_display_name => '',
+    p_cap_mandatory => adc_util.C_TRUE,
+    p_cap_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_type(
     p_cat_id => 'GET_REPORT_SELECTION',
     p_cat_ctg_id => 'IG',
     p_cat_cif_id => 'SELECTABLE_REPORT',
@@ -1452,23 +1474,6 @@ end;
 set define on
 set sqlblanklines off
 
-create or replace view ADC_PARAM_LOV_SEQUENCE as select sequence_name d, sequence_name r, null cgr_id
-  from user_sequences
-       -- exclude column identity sequences
- where sequence_name not like 'ISEQ$$%';
-
-comment on table ADC_PARAM_LOV_SEQUENCE is 'List of sequences owned by the user';
-
-
-create or replace view ADC_PARAM_LOV_SUBMIT_TYPE as 
-  select pti_name d, substr(pti_id, 15) r, null cgr_id
-    from pit_translatable_item_v
-   where pti_pmg_name = 'ADC'
-     and pti_id like 'SUBMIT_TYPE%';
-
-comment on table ADC_PARAM_LOV_SUBMIT_TYPE is 'List of translatable items of type ADC, related to the SUBMIT_TYPE';
-
-
 create or replace view ADC_PARAM_LOV_EVENT as select cit_name d, cit_id r, null cgr_id
   from adc_page_item_types_v
  where cit_is_custom_event = (select adc_util.c_true from dual)
@@ -1506,4 +1511,21 @@ create or replace view ADC_PARAM_LOV_ITEM_STATUS as
      and pti_id like 'ITEM_STATUS%';
 
 comment on table ADC_PARAM_LOV_ITEM_STATUS is 'List of translatable items of for that parameter type';
+
+
+create or replace view ADC_PARAM_LOV_SEQUENCE as select sequence_name d, sequence_name r, null cgr_id
+  from user_sequences
+       -- exclude column identity sequences
+ where sequence_name not like 'ISEQ$$%';
+
+comment on table ADC_PARAM_LOV_SEQUENCE is 'List of sequences owned by the user';
+
+
+create or replace view ADC_PARAM_LOV_SUBMIT_TYPE as 
+  select pti_name d, substr(pti_id, 15) r, null cgr_id
+    from pit_translatable_item_v
+   where pti_pmg_name = 'ADC'
+     and pti_id like 'SUBMIT_TYPE%';
+
+comment on table ADC_PARAM_LOV_SUBMIT_TYPE is 'List of translatable items of type ADC, related to the SUBMIT_TYPE';
 
