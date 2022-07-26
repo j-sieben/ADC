@@ -14,11 +14,11 @@ select mda_alm_id mda_actual_mode, mda_ald_id mda_actual_id, mda_comment,
        mda_remember_page_state,
        mda_create_button_visible, c.pti_name mda_create_button_label, mda_create_target_mode,
        mda_update_button_visible, u.pti_name mda_update_button_label, mda_alm_id mda_update_target_mode,
-       utl_apex.get_number(p_page_prefix || mda_id_value) mda_update_value,
+       case when mda_id_value is not null then utl_apex.get_number(p_page_prefix || mda_id_value) end mda_update_value,
        mda_delete_button_visible, d.pti_name mda_delete_button_label, mda_delete_mode, mda_delete_target_mode, 
-       utl_apex.get_number(p_page_prefix || mda_delete_target_mode || '_ID') mda_delete_value,
+       case when mda_delete_target_mode is not null then utl_apex.get_number(p_page_prefix || mda_delete_target_mode || '_ID') end mda_delete_value,
        mda_cancel_button_active, mda_cancel_target_mode, 
-       utl_apex.get_number(p_page_prefix || mda_cancel_target_mode || '_ID') mda_cancel_value
+       case when mda_cancel_target_mode is not null then utl_apex.get_number(p_page_prefix || mda_cancel_target_mode || '_ID') end mda_cancel_value
   from adc_map_designer_actions
  cross join session_state
   left join pti c

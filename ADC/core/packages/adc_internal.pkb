@@ -1120,6 +1120,7 @@ as
       into g_param.event_data
       from adc_apex_actions
      where caa_id = p_command;
+    g_param.firing_event := 'command';
     adc_recursion_stack.push_firing_item(
       p_cgr_id => g_param.cgr_id,
       p_cpi_id => C_COMMAND);
@@ -1276,8 +1277,6 @@ as
     p_jquery_selector in adc_rule_actions.cra_param_2%type default null)
   as
     l_item_list char_table := char_table();
-    l_item_name adc_util.ora_name_type;
-    l_page_prefix adc_util.ora_name_type;
     l_exception message_type;
   begin
     pit.enter_mandatory(
@@ -1291,11 +1290,6 @@ as
                     
     case
     when adc_page_state.item_may_have_value(g_param.cgr_id, p_cpi_id) then
-      l_page_prefix := utl_apex.get_page_prefix;
-      l_item_name := p_cpi_id;
-      if substr(l_item_name, 1, length(l_page_prefix)) != l_page_prefix then
-        l_item_name := l_page_prefix || l_item_name;
-      end if;
       adc_page_state.set_value(
         p_cgr_id => g_param.cgr_id,
         p_cpi_id => p_cpi_id,
@@ -1355,15 +1349,16 @@ as
     l_col_cnt integer;
     l_desc_tab DBMS_SQL.DESC_TAB2;
   begin
-    -- Tracing done in ADC_API
     l_stmt := replace(c_stmt, '#STMT#', p_statement);
     
     if p_cpi_id = adc_util.c_no_firing_item or p_cpi_id is null then
+      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Executing item statement'));
       -- Wird kein Element angegeben, werden die Elemente gemaess des Spaltennamens gesetzt
       l_cur := dbms_sql.open_cursor;
       -- SQL parsen, um Spaltenbezeichner zu ermitteln
       dbms_sql.parse(l_cur, l_stmt, dbms_sql.native);
       dbms_sql.describe_columns2(l_cur, l_col_cnt, l_desc_tab);
+      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('... ' || l_col_cnt || ' column(s) found'));
       for i in 1 .. l_col_cnt loop
         dbms_sql.define_column(l_cur, i, l_result, 4000);
       end loop;
@@ -1373,6 +1368,7 @@ as
       -- Alle Spaltenwerte in Seitenelemente mit entsprechendem Spaltennamen kopieren
       for i in 1 .. l_col_cnt loop
         dbms_sql.column_value(l_cur, i, l_result);
+        pit.debug(msg.PIT_PASS_MESSAGE, msg_args('... ' || l_desc_tab(i).col_name || ': ' || l_result));
         -- Wert in Sessionstatus kopieren
         set_session_state(
           p_cpi_id => l_desc_tab(i).col_name,  

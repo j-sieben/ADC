@@ -52,6 +52,40 @@ as
     Group: Private methods
    */
   /**
+    Function: harmonize_page_item_name
+      Method to assure that a page item has got a page prefix
+      
+    Parameter:
+      p_cpi_id - Name of the page item to harmonize
+      
+    Returns: Page item name with page prefix
+   */
+  function harmonize_page_item_name(
+    p_cpi_id in adc_page_items.cpi_id%type)
+    return varchar2
+  as
+    l_item_name adc_util.ora_name_type;
+    l_page_prefix adc_util.ora_name_type;
+  begin
+    pit.enter_detailed('harmonize_page_item_name',
+      p_params => msg_params(msg_param('p_cpi_id', p_cpi_id)));
+      
+    l_item_name := p_cpi_id;
+    
+    if l_item_name != adc_util.C_NO_FIRING_ITEM and p_cpi_id is not null then
+      l_page_prefix := utl_apex.get_page_prefix;
+        
+      if substr(l_item_name, 1, length(l_page_prefix)) != l_page_prefix then
+        l_item_name := l_page_prefix || l_item_name;
+      end if;
+    end if;
+      
+    pit.leave_detailed(
+      p_params => msg_params(msg_param('item_name', l_item_name)));
+    return l_item_name;
+  end harmonize_page_item_name;
+   
+  /**
     Function: get_mandatory_default_value
       Method to retrieve a default value for a mandatory page item.
       
@@ -183,21 +217,24 @@ as
     return boolean
   as
     l_count pls_integer;
+    l_item_name adc_util.ora_name_type;
     l_is_value_item boolean;
   begin
     pit.enter_optional(
       p_params => msg_params(
                     msg_param('p_cgr_id', p_cgr_id),
                     msg_param('p_cpi_id', p_cpi_id)));
-  
+    
+    l_item_name := harmonize_page_item_name(p_cpi_id);
+    
     select count(*)
       into l_count
       from adc_page_items
      where cpi_cgr_id = p_cgr_id
-       and cpi_id = p_cpi_id
+       and cpi_id = l_item_name
        and cpi_cit_id in (C_ITEM, C_APP_ITEM, C_NUMBER_ITEM, C_DATE_ITEM);
        
-    l_is_value_item := adc_util.get_boolean(l_count) = adc_util.C_TRUE;
+    l_is_value_item := l_count = 1;
        
     if not l_is_value_item and g_session_values.exists(p_cpi_id) then
       g_session_values.delete(p_cpi_id);
@@ -205,7 +242,7 @@ as
   
     pit.leave_optional(
       p_params => msg_params(
-                    msg_param('Result', adc_util.to_bool(l_count))));
+                    msg_param('Result', adc_util.to_bool(adc_util.bool_to_flag(l_is_value_item)))));
                     
     return l_is_value_item;
   end item_may_have_value;
@@ -323,6 +360,7 @@ as
     l_cpi_conversion adc_page_items.cpi_conversion%type;
     l_format_mask adc_util.ora_name_type;
     l_value session_value_rec;
+    l_item_name adc_util.ora_name_type;
   begin
     pit.enter_optional(
       p_params => msg_params(
@@ -334,17 +372,19 @@ as
                     msg_param('p_format_mask', p_format_mask),
                     msg_param('p_throw_error', p_throw_error)));
                     
+    l_item_name := harmonize_page_item_name(p_cpi_id);
+    
     -- Check whether page item is allowed to have a value and get the item type and format mask
     select cpi_cit_id, cpi_conversion
       into l_cpi_cit_id, l_cpi_conversion
       from adc_page_items
      where cpi_cgr_id = p_cgr_id
-       and cpi_id = p_cpi_id
+       and cpi_id = l_item_name
        and cpi_cit_id in (C_ITEM, C_APP_ITEM, C_NUMBER_ITEM, C_DATE_ITEM);
     
     -- If requested, get the value from the session state
     if p_value = C_FROM_SESSION_STATE then
-      l_value.string_value := coalesce(utl_apex.get_string(p_cpi_id), get_mandatory_default_value(p_cgr_id, p_cpi_id));
+      l_value.string_value := coalesce(utl_apex.get_string(l_item_name), get_mandatory_default_value(p_cgr_id, p_cpi_id));
       g_session_values(p_cpi_id) := l_value;
     else
       l_value.string_value := p_value;
@@ -361,7 +401,7 @@ as
       -- then persist number value, either directly or by converting the string value
       l_format_mask := replace(l_format_mask, C_NUMBER_GROUP_MASK);
       g_session_values(p_cpi_id).number_value := coalesce(p_number_value, to_number(l_value.string_value, l_format_mask));
-      pit.info(msg.ADC_NUMBER_ITEM_SET, msg_args(p_cpi_id , to_char(g_session_values(p_cpi_id).number_value), g_session_values(p_cpi_id).string_value));
+      pit.info(msg.ADC_NUMBER_ITEM_SET, msg_args(l_item_name , to_char(g_session_values(p_cpi_id).number_value), g_session_values(p_cpi_id).string_value));
     when l_cpi_cit_id = C_DATE_ITEM then
       -- first, get string value from parameter values
       l_format_mask := coalesce(p_format_mask, l_cpi_conversion, apex_application.g_date_format);
@@ -369,7 +409,7 @@ as
       g_session_values(p_cpi_id).string_value := l_value.string_value;
       -- then persist date value, either directly or by converting the string value
       g_session_values(p_cpi_id).date_value := coalesce(p_date_value, to_date(l_value.string_value, l_format_mask));
-      pit.info(msg.ADC_DATE_ITEM_SET, msg_args(p_cpi_id , to_char(g_session_values(p_cpi_id).date_value), g_session_values(p_cpi_id).string_value));
+      pit.info(msg.ADC_DATE_ITEM_SET, msg_args(l_item_name , to_char(g_session_values(p_cpi_id).date_value), g_session_values(p_cpi_id).string_value));
     else
       null;
     end case;
@@ -378,7 +418,7 @@ as
       check_mandatory(p_cgr_id, p_cpi_id);
     end if;
     
-    apex_util.set_session_state(p_cpi_id, g_session_values(p_cpi_id).string_value);
+    apex_util.set_session_state(l_item_name, g_session_values(p_cpi_id).string_value);
     
     pit.leave_optional;
   exception
@@ -549,7 +589,7 @@ as
         utl_text.append(
           p_text => l_json, 
           p_chunk => replace(replace(C_PAGE_JSON_ELEMENT, 
-                      '#ID#', l_item), 
+                      '#ID#', harmonize_page_item_name(l_item)), 
                       '#VALUE#', l_what),
           p_delimiter => ',',
           p_before => true);

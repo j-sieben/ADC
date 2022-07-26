@@ -1063,21 +1063,22 @@ as
   procedure show_form_caa
   as
     l_statement adc_util.max_char := q'^
-select null caa_id, '#CGR_ID#' caa_cgr_id, 'ACTION' caa_cty_id, null caa_name,
-       null caa_label, null caa_context_label, null caa_icon, 'fa' caa_icon_type,
-       null caa_shortcut, adc_util.C_FALSE caa_initially_disabled, adc_util.C_FALSE caa_initially_hidden,
-       null caa_href, null caa_action, null caa_on_label, null caa_off_label,
-       null caa_get, null caa_set, null caa_choices, 
-       null caa_label_classes, null caa_label_start_classes,
-       null caa_label_end_classes, null caa_item_wrap_class
-  from dual;
-    ^';
+select null #PRE#caa_id, '#CGR_ID#' #PRE#caa_cgr_id, 'ACTION' #PRE#caa_cty_id, null #PRE#caa_name,
+       null #PRE#caa_label, null #PRE#caa_context_label, null #PRE#caa_icon, 'fa' #PRE#caa_icon_type,
+       null #PRE#caa_shortcut, adc_util.C_FALSE #PRE#caa_initially_disabled, adc_util.C_FALSE #PRE#caa_initially_hidden,
+       null #PRE#caa_href, null #PRE#caa_action, null #PRE#caa_on_label, null #PRE#caa_off_label,
+       null #PRE#caa_get, null #PRE#caa_set, null #PRE#caa_choices, 
+       null #PRE#caa_label_classes, null #PRE#caa_label_start_classes,
+       null #PRE#caa_label_end_classes, null #PRE#caa_item_wrap_class, null #PRE#caa_cai_list
+  from dual^';
   begin
     pit.enter_mandatory('show_form_caa');
 
     if g_environment.action = C_ACTION_CREATE then
       -- Was called to create a new CAA, initialize default values
-      l_statement := replace(l_statement, '#CGR_ID#', g_environment.cgr_id);
+      l_statement := replace(
+                       replace(l_statement, '#CGR_ID#', g_environment.cgr_id), 
+                       '#PRE#', utl_apex.get_page_prefix);
       adc.set_items_from_statement(
         p_cpi_id => adc_util.c_no_firing_item, 
         p_statement => l_statement);

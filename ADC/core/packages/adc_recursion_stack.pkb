@@ -178,7 +178,7 @@ as
                    join adc_page_items
                      on instr(',' || cru_firing_items || ',', ',' || cpi_id || ',') > 0
                   where cpi_id = p_cpi_id
-                    and instr(cpi_cit_id, 'ITEM') > 0
+                    and (instr(cpi_cit_id, 'ITEM') > 0 or cpi_cit_id = 'COMMAND')
                     and cru_cgr_id = p_cgr_id);
         end if;
         if (l_cpi_has_rule > 0 or p_force = adc_util.C_TRUE) and p_cpi_id != adc_util.C_NO_FIRING_ITEM then
