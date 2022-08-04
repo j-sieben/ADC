@@ -63,8 +63,11 @@ select cgr_id, static_id,
  where static_id is not null
  union all
 -- GENERICALLY REQUIRED ENTRIES
-select cgr_id, 'DOCUMENT', 'DOCUMENT', 'FRAMEWORK', null, null, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
-  from adc_rule_groups
+select cgr_id, 'DOCUMENT', 'DOCUMENT' || case page_mode when 'Modal Dialog' then '_MODAL' end, 'FRAMEWORK', null, null, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
+  from apex_application_pages
+  join adc_rule_groups sgr
+    on application_id = sgr.cgr_app_id
+   and page_id = sgr.cgr_page_id
  union all
 select cgr_id, 'COMMAND', 'COMMAND', 'EVENT', null, null, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
   from adc_rule_groups

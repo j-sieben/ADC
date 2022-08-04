@@ -29,6 +29,7 @@ prompt &h3.Create views
 @&tool_dir.create_view adc_ui_lov_export_types
 @&tool_dir.create_view adc_ui_lov_item_types
 @&tool_dir.create_view adc_ui_lov_page_item_type
+@&tool_dir.create_view adc_ui_lov_page_item_type_group
 @&tool_dir.create_view adc_ui_lov_page_items_p11
 @&tool_dir.create_view adc_ui_lov_page_items
 @&tool_dir.create_view adc_ui_lov_yes_no
@@ -43,6 +44,7 @@ prompt &h3.Create views
 @&tool_dir.create_view adc_ui_designer_tree
 @&tool_dir.create_view adc_ui_edit_cat
 @&tool_dir.create_view adc_ui_edit_cif
+@&tool_dir.create_view adc_ui_edit_cit
 @&tool_dir.create_view adc_ui_edit_ctg
 @&tool_dir.create_view adc_ui_edit_cpt
 @&tool_dir.create_view adc_ui_edit_cpt_static_list

@@ -18,7 +18,7 @@ select cat_name || case cat_active when adc_util.C_FALSE then ' (deprecated)' en
            on cpi_cit_id = cit_id
          join params
            on cpi_cgr_id = p_cgr_id
-        where cpi_id not in ('DOCUMENT', 'COMMAND')
+        where cpi_id not in ('COMMAND')
           and cif_id = cat_cif_id)
     or (cat_cif_id = 'COMMAND'
    and exists(

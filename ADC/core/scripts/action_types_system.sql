@@ -362,6 +362,14 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cit_init_template => q'{}',
     p_cit_is_custom_event => adc_util.C_FALSE);
   adc_admin.merge_page_item_type(
+    p_cit_id => 'DOCUMENT_MODAL',
+    p_cit_name => 'Modaler Dialog',
+    p_cit_cig_id => 'FRAMEWORK',
+    p_cit_event => '',
+    p_cit_col_template => q'{}',
+    p_cit_init_template => q'{}',
+    p_cit_is_custom_event => adc_util.C_FALSE);
+  adc_admin.merge_page_item_type(
     p_cit_id => 'DOUBLE_CLICK',
     p_cit_name => 'Doppelklick',
     p_cit_cig_id => 'EVENT',
@@ -481,7 +489,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Alle Seitenelemente',
     p_cif_description => q'{Alle Seitenelemente der Anwendung}',
     p_cif_actual_page_only => adc_util.C_FALSE,
-    p_cif_item_types => 'BUTTON:ITEM:REGION',
+    p_cif_item_types => 'ITEM:REGION:DOCUMENT:BUTTON',
     p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
@@ -490,7 +498,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Dynamische Seiten, die Seitenkommandos besitzen',
     p_cif_description => q'{Es werden nur vorhandene Seitenkommandos angezeigt}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'COMMAND',
+    p_cif_item_types => 'COMMAND:DOCUMENT',
     p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
@@ -499,8 +507,8 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Keine Seitenelemente',
     p_cif_description => q'{Die Aktion is keinem konkreten Seitenelement zugeordnet}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'FRAMEWORK',
-    p_cif_default => 'DOCUMENT',
+    p_cif_item_types => 'DOCUMENT',
+    p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -531,6 +539,15 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
+    p_cif_id => 'MODAL_DIALOG',
+    p_cif_name => 'Modale Anwendungsseite',
+    p_cif_description => q'{Die Anwendungsseite wird als modaler Dialog angezeigt}',
+    p_cif_actual_page_only => adc_util.C_TRUE,
+    p_cif_item_types => 'DOCUMENT_MODAL',
+    p_cif_default => '',
+    p_cif_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_item_focus(
     p_cif_id => 'PAGE',
     p_cif_name => 'Alle Seitenelemente der aktuellen Seite',
     p_cif_description => q'{Alle Seitenelemente der aktuellen Anwendungsseite}',
@@ -553,7 +570,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Seitenelement oder jQuery-Selektor',
     p_cif_description => q'{Ermöglicht die Auswahl eines Seitenelements oder die Angabe eines jQuery-Selektors zur Auswahl mehrerer Seitenelemente.}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'BUTTON:ITEM:REGION',
+    p_cif_item_types => 'ITEM:REGION:DOCUMENT',
     p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
@@ -571,7 +588,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cif_name => 'Eingabefeld oder Dokument',
     p_cif_description => q'{Alle Eingabefelder oder keine spezifische Angabe}',
     p_cif_actual_page_only => adc_util.C_TRUE,
-    p_cif_item_types => 'ITEM',
+    p_cif_item_types => 'ITEM:DOCUMENT',
     p_cif_default => '',
     p_cif_active => adc_util.C_TRUE);
 
@@ -709,7 +726,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cat_name => 'Seitenkommando ausführen',
     p_cat_display_name => q'{<p><strong>führe Seitenkommand</strong> "#PARAM_1#" <strong>aus</strong></p>}',
     p_cat_description => q'{<p>Führt ein Seitenkommando aus. Dieser Aktionstyp sorgt dafür, dass ein Seitenkommando rekursiv innerhalb der Datenbank ausgeführt wird. Seitenkommandos ohne Bezug zu einem Seitenelement, wie zum Beispiel einer Schaltfläche, können nur über diese Funktion (oder über eigenes JavaScript auf der Seite) ausgeführt werden.</p>}',
-    p_cat_pl_sql => q'{adc_api.execute_command('#PARAM_1#');}',
+    p_cat_pl_sql => q'{adc_api.execute_command(#PARAM_1#);}',
     p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_TRUE);
@@ -1260,6 +1277,28 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_FALSE);
 
+
+  adc_admin.merge_action_type(
+    p_cat_id => 'SET_MODAL_DIALOG_TITLE',
+    p_cat_ctg_id => 'ADC',
+    p_cat_cif_id => 'MODAL_DIALOG',
+    p_cat_name => 'Titel des modalen Fensters setzen',
+    p_cat_display_name => q'{<p><strong>setze den Titel</strong> des modalen Dialogs auf “#PARAM_1#”.</p>}',
+    p_cat_description => q'{<p>Stellt den Titel eines modalen Dialogs auf den gewünschten Wert.</p>}',
+    p_cat_pl_sql => q'{}',
+    p_cat_js => q'{adc.setModalDialogTitle('#PARAM_1#');}',
+    p_cat_is_editable => adc_util.C_TRUE,
+    p_cat_raise_recursive => adc_util.C_FALSE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'SET_MODAL_DIALOG_TITLE',
+    p_cap_cpt_id => 'STRING',
+    p_cap_sort_seq => 1,
+    p_cap_default => q'{}',
+    p_cap_description => q'{<p>Titel, der auf dem modalen Dialog angezeigt werden soll.</p>}',
+    p_cap_display_name => 'Tiel',
+    p_cap_mandatory => adc_util.C_TRUE,
+    p_cap_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_type(
     p_cat_id => 'SET_REGION_CONTENT',

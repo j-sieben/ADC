@@ -94,6 +94,26 @@ as
   
     pit.leave_detailed;
   end copy_edit_cif;
+
+
+  procedure copy_edit_cit(
+    p_row in out nocopy adc_page_item_types_v%rowtype)
+  as
+  begin
+    pit.enter_detailed('copy_edit_cit');
+  
+    p_row.cit_id := adc_util.clean_adc_name(utl_apex.get_string('cit_id'));
+    p_row.cit_name := utl_apex.get_string('cit_name');
+    p_row.cit_cig_id := utl_apex.get_string('cit_cig_id');
+    p_row.cit_has_value := utl_apex.get_string('cit_has_value');
+    p_row.cit_include_in_view := utl_apex.get_string('cit_include_in_view');
+    p_row.cit_event := utl_apex.get_string('cit_event');
+    p_row.cit_col_template := utl_apex.get_string('cit_col_template');
+    p_row.cit_init_template := utl_apex.get_string('cit_init_template');
+    p_row.cit_is_custom_event := utl_apex.get_string('cit_is_custom_event');
+  
+    pit.leave_detailed;
+  end copy_edit_cit;
   
 
   procedure copy_edit_ctg(
@@ -390,7 +410,7 @@ as
   
     
   /** 
-    Function: process_edit_cif
+    Procedure: process_edit_cif
       See <ADC_UI.process_edit_cif>
    */
   procedure process_edit_cif
@@ -413,6 +433,59 @@ as
     
     pit.leave_mandatory;
   end process_edit_cif;
+  
+  
+  /** 
+    Function: validate_edit_cit
+      See <ADC_UI.validate_edit_cit>
+   */
+  function validate_edit_cit
+    return boolean
+  as
+    l_row adc_page_item_types_v%rowtype;
+  begin
+    pit.enter_mandatory;
+    
+    copy_edit_cit(l_row);
+    
+    pit.start_message_collection;
+    adc_admin.validate_page_item_type(l_row);
+    pit.stop_message_collection;
+  
+    pit.leave_mandatory;
+    return true;
+  exception
+    when msg.PIT_BULK_ERROR_ERR or msg.PIT_BULK_FATAL_ERR then
+      utl_apex.handle_bulk_errors(char_table(
+        'ERROR_CODE', 'ASSIGNED_ITEM'));
+      return true;
+  end validate_edit_cit;
+
+
+  /** 
+    Procedure: process_edit_cit
+      See <ADC_UI.process_edit_cit>
+   */
+  procedure process_edit_cit
+  as
+    l_row adc_page_item_types_v%rowtype;
+  begin
+    pit.enter_mandatory;
+    
+    copy_edit_cit(l_row);
+    case when utl_apex.inserting or utl_apex.updating then
+      adc_admin.merge_page_item_type(l_row);
+    when utl_apex.deleting then
+      adc_admin.delete_page_item_type(l_row);
+    else
+      adc.register_error(
+        p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
+        p_message_name => msg.ADC_UI_UNKNOWN_ACTION,
+        p_msg_args => msg_args(utl_apex.get_request));
+    end case;
+    
+    pit.leave_mandatory;
+  end process_edit_cit;
   
     
   /** 
@@ -450,7 +523,7 @@ as
   
     
   /** 
-    Function: process_edit_cat
+    Procedure: process_edit_cat
       See <ADC_UI.process_edit_cat>
    */
   procedure process_edit_cat

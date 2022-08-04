@@ -90,6 +90,25 @@ as
   
   
   /** 
+    Procedure: validate_edit_cit
+      Method to validate page EDIT_CIT
+      
+      Is called to validate user data if the page is submitted. (CIT = ADC Page Item Type).
+   */
+  function validate_edit_cit
+    return boolean;
+
+
+  /** 
+    Procedure: process_edit_cit
+      Method to process page EDIT_CIT
+      
+      Is called to persist user data if the page is submitted. (CIT = ADC Page Item Type).
+   */
+  procedure process_edit_cit;
+  
+  
+  /** 
     Procedure: validate_edit_ctg
       Method to validate page EDIT_CTG
       
