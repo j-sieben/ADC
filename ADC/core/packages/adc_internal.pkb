@@ -924,6 +924,8 @@ as
                     msg_param('p_event', p_event),
                     msg_param('p_event_data', p_event_data)));
                     
+    pit.assert_not_null(p_firing_item);
+    pit.assert_not_null(p_event);
     l_rule_group_row.cgr_app_id := apex_application.g_flow_id;
     l_rule_group_row.cgr_page_id := apex_application.g_flow_step_id;
     
@@ -962,6 +964,7 @@ as
         p_throw_error => adc_util.C_TRUE);
     end if;
     
+    pit.assert_not_null(g_param.cgr_id);
     pit.leave_optional;
   exception
     when msg.ADC_INVALID_NUMBER_ERR or msg.ADC_INVALID_DATE_ERR then
@@ -970,6 +973,7 @@ as
       stop_rule;
     when NO_DATA_FOUND then
       create_initial_rule_group_and_rule(l_rule_group_row);
+      -- recursivley read the settings for the new rule group
       read_settings(p_firing_item, p_event, p_event_data);
     when msg.ADC_ITEM_IS_MANDATORY_ERR then
       l_message := pit.get_active_message;

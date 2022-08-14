@@ -1,4 +1,4 @@
-merge into adc_ui_map_designer_actions t
+merge into adc_map_designer_actions t
 using (select 'CRU' mda_alm_id, 'show' mda_ald_id, 'Rule selected from hierarchy' mda_comment, 'CRU_ID' mda_id_value, 'Y' mda_remember_page_state, 
                'Y' mda_create_button_visible, 'CRA' mda_create_target_mode, 'Y' mda_update_button_visible,  
                'Y' mda_delete_button_visible, 'CRU' mda_delete_mode, 'CGR' mda_delete_target_mode,

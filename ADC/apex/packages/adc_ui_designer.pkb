@@ -571,6 +571,75 @@ as
   end maintain_actions;
 
 
+
+  /** 
+    Function: validate_page
+      Method to validate the user input against the business rules for the different designer areas.
+      
+      Based on the mode of the APEX Action (see <C_MODE_CREATE> etc.) a decision is taken whether
+      
+      - a validation method is required
+      - which validation method to call.
+      
+      Validation methods are implemented in package <ADC_ADMIN> and throw errors. If an error is thrown,
+      this will prevent further execution of the page.
+   */
+  procedure validate_page
+  as
+    l_apex_row adc_apex_actions_v%rowtype;
+    l_rule_row adc_rules%rowtype;
+    l_action_row adc_rule_actions%rowtype;
+    $IF adc_util.C_WITH_FLOWS $THEN
+    l_flow_row fls_diagrams_v%rowtype;
+    $END
+  begin
+    pit.enter_mandatory;
+
+    case g_environment.action_mode
+      when C_MODE_CRU then
+        copy_rule(l_rule_row);
+        pit.start_message_collection;
+        adc_admin.validate_rule(l_rule_row);
+        pit.stop_message_collection;
+      when C_MODE_CRA then
+        copy_rule_action(l_action_row);
+        pit.start_message_collection;
+        adc_admin.validate_rule_action(l_action_row);
+        pit.stop_message_collection;
+      when C_MODE_CAA then
+        copy_apex_action(l_apex_row);
+        pit.start_message_collection;
+        adc_admin.validate_apex_action(l_apex_row);
+        pit.stop_message_collection;
+      $IF adc_util.C_WITH_FLOWS $THEN
+      when C_MODE_FLS then
+        copy_flow(l_flow_row);
+        pit.start_message_collection;
+        fls_admin_api.validate_diagram(l_flow_row);
+        pit.stop_message_collection;
+      $END
+      else
+        null;
+    end case;
+
+    pit.leave_mandatory;
+  exception
+    when msg.PIT_BULK_ERROR_ERR or msg.PIT_BULK_FATAL_ERR then
+      adc.handle_bulk_errors(char_table(
+        -- CRU
+        'ADC_INVALID_SQL', 'CRU_CONDITION',
+        'CRU_CONDITION_MISSING', 'CRU_CONDITION',
+        'CRU_CGR_ID_MISSING', 'CRU_CGR_ID',
+        'CRU_NAME_MISSING', 'CRU_NAME',
+        -- CRA
+        'CRA_CRU_ID_MISSING', 'CRA_CRU_ID',
+        'CRA_CGR_ID_MISSING', 'CRA_CGR_ID',
+        'CRA_CPI_ID_MISSING', 'CRA_CPI_ID',
+        'CRA_CAT_ID_MISSING', 'CRA_CAT_ID'
+        -- CAA TODO: CAA Mapping
+        ));
+  end validate_page;
+
   /** 
     Function: process_page
       Method to process the user input and persist the data at the database.
@@ -682,6 +751,20 @@ as
     begin
       adc_admin.propagate_rule_change(l_cgr_id);
     exception
+      when msg.PIT_BULK_ERROR_ERR or msg.PIT_BULK_FATAL_ERR then
+        adc.handle_bulk_errors(char_table(
+          -- CRU
+          'ADC_INVALID_SQL', 'CRU_CONDITION',
+          'CRU_CONDITION_MISSING', 'CRU_CONDITION',
+          'CRU_CGR_ID_MISSING', 'CRU_CGR_ID',
+          'CRU_NAME_MISSING', 'CRU_NAME',
+          -- CRA
+          'CRA_CRU_ID_MISSING', 'CRA_CRU_ID',
+          'CRA_CGR_ID_MISSING', 'CRA_CGR_ID',
+          'CRA_CPI_ID_MISSING', 'CRA_CPI_ID',
+          'CRA_CAT_ID_MISSING', 'CRA_CAT_ID'
+          -- CAA TODO: CAA Mapping
+          ));
       when others then
         -- ignore any errors here as these can occur if the page has changed
         -- and has made a rule group invalid. Display the errors instead.
@@ -1311,60 +1394,6 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
   end show_form_fls;
 
 
-  /** 
-    Function: validate_page
-      Method to validate the user input against the business rules for the different designer areas.
-      
-      Based on the mode of the APEX Action (see <C_MODE_CREATE> etc.) a decision is taken whether
-      
-      - a validation method is required
-      - which validation method to call.
-      
-      Validation methods are implemented in package <ADC_ADMIN> and throw errors. If an error is thrown,
-      this will prevent further execution of the page.
-   */
-  procedure validate_page
-  as
-    l_apex_row adc_apex_actions_v%rowtype;
-    l_rule_row adc_rules%rowtype;
-    l_action_row adc_rule_actions%rowtype;
-    $IF adc_util.C_WITH_FLOWS $THEN
-    l_flow_row fls_diagrams_v%rowtype;
-    $END
-  begin
-    pit.enter_mandatory;
-
-    case g_environment.action_mode
-      when C_MODE_CRU then
-        copy_rule(l_rule_row);
-        pit.start_message_collection;
-        adc_admin.validate_rule(l_rule_row);
-        pit.stop_message_collection;
-      when C_MODE_CRA then
-        copy_rule_action(l_action_row);
-        pit.start_message_collection;
-        adc_admin.validate_rule_action(l_action_row);
-        pit.stop_message_collection;
-      when C_MODE_CAA then
-        copy_apex_action(l_apex_row);
-        pit.start_message_collection;
-        adc_admin.validate_apex_action(l_apex_row);
-        pit.stop_message_collection;
-      $IF adc_util.C_WITH_FLOWS $THEN
-      when C_MODE_FLS then
-        copy_flow(l_flow_row);
-        pit.start_message_collection;
-        fls_admin_api.validate_diagram(l_flow_row);
-        pit.stop_message_collection;
-      $END
-      else
-        null;
-    end case;
-
-    pit.leave_mandatory;
-  end validate_page;
-
-
   /**
     Procedure: initialize
       Method to initialize the ADC_UI package
@@ -1487,21 +1516,6 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
     end loop;
 
     pit.leave_mandatory;
-  exception
-    when msg.PIT_BULK_ERROR_ERR or msg.PIT_BULK_FATAL_ERR then
-      adc.handle_bulk_errors(char_table(
-        -- CRU
-        'ADC_INVALID_SQL', 'CRU_CONDITION',
-        'CRU_CONDITION_MISSING', 'CRU_CONDITION',
-        'CRU_CGR_ID_MISSING', 'CRU_CGR_ID',
-        'CRU_NAME_MISSING', 'CRU_NAME',
-        -- CRA
-        'CRA_CRU_ID_MISSING', 'CRA_CRU_ID',
-        'CRA_CGR_ID_MISSING', 'CRA_CGR_ID',
-        'CRA_CPI_ID_MISSING', 'CRA_CPI_ID',
-        'CRA_CAT_ID_MISSING', 'CRA_CAT_ID'
-        -- CAA TODO: CAA Mapping
-        ));
   end handle_activity;
   
   

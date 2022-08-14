@@ -94,10 +94,6 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       // Select list, deactivate all entries except the selected one
       $(`#${pItemId}:not(:selected)`).prop('disabled', false);
     }
-    else if ($this.hasClass('radio-group')){
-      // radio groups have to disable all radio entries
-      $(`#${pItemId} .apex-item-option`).prop('disabled', false);
-    }
     else if ($this.is('button')){
       // button, is deactivated "normally"
       apex.item(pItemId).disable();
@@ -133,12 +129,12 @@ de.condes.plugin.adc.apex_42_20_2 = {};
 
     // if page item is a colour picker, enable button as well
     else if ($this.hasClass("color_picker")) {
-      $('#' + pItemId + '_fieldset').prop('readonly', false).removeClass(C_APEX_DISABLED_CLASS);
+      $('#' + pItem + '_fieldset').prop('readonly', false).removeClass(C_APEX_DISABLED_CLASS);
     }
 
     // if page item is a popup list, enable button as well
     else if ($this.hasClass("popup_lov")) {
-      $this.closest('#' + pItemId + '_fieldset').find('.a-Button--popupLOV')
+      $this.closest('#' + pItem + '_fieldset').find('.a-Button--popupLOV')
          .prop('readonly', false).removeClass(C_APEX_DISABLED_CLASS);
     };
   };

@@ -102,6 +102,28 @@ as
     return l_result;
   end exclusive_or;
   
+  
+  static procedure get_report_selection(
+    p_region_id in varchar2,
+    p_page_item in varchar2 default null,
+    p_ordinal_nr in binary_integer default null)
+  as
+  begin
+    pit.enter_optional('get_report_selection',
+      p_params => msg_params(
+                    msg_param('p_region_id', p_region_id),
+                    msg_param('p_page_item', p_page_item),
+                    msg_param('p_ordinal_nr', p_ordinal_nr)));
+    
+    adc_api.execute_action(
+      p_cat_id => 'GET_REPORT_SELECTION',
+      p_cpi_id => p_region_id,
+      p_param_1 => p_page_item,
+      p_param_2 => to_char(p_ordinal_nr));
+    
+    pit.leave_optional;
+  end get_report_selection;
+  
 
   static procedure handle_bulk_errors(
     p_mapping in char_table default null)

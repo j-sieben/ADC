@@ -318,17 +318,18 @@ as
                     msg_param('p_static_id', p_static_id)));
 
     with templates as(
-           select uttm_text template, uttm_mode,
+           select /*+ no_merge */
+                  uttm_text template, uttm_mode,
                   utl_apex.get_application_id g_app_id,
                   utl_apex.get_page_id g_page_id,
                   p_static_id g_static_id
              from utl_text_templates
             where uttm_type = 'ADC'
               and uttm_name = 'INITIALIZE_FORM')
-    select /*+ no_merge (t) */utl_text.generate_text(cursor(
-           select t.template, table_name "TABLE",
+    select utl_text.generate_text(cursor(
+           select t.template, table_name,
                   utl_text.generate_text(cursor(
-                    select /*+ no_merge (s) */s.template, i.item_source column_name, i.item_name item_name,
+                    select s.template, i.item_source column_name, i.item_name item_name,
                            case i.item_source_data_type when 'NUMBER' then 'number' when 'DATE' then 'date' else 'string' end data_type
                       from apex_application_page_items i
                       join templates s
@@ -339,7 +340,7 @@ as
                        and uttm_mode = 'STATE'),
                     ',' || chr(10), 8) session_state,
                   utl_text.generate_text(cursor(
-                    select /*+ no_merge (s) */s.template, i.item_source column_name, i.item_name item_name
+                    select s.template, i.item_source column_name, i.item_name item_name
                       from apex_application_page_items i
                       join templates s
                         on application_id = g_app_id

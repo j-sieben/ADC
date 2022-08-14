@@ -99,6 +99,24 @@ as object (
   static function exclusive_or(
     p_value_list in varchar2)
     return varchar2,
+    
+  
+  /** 
+    Procedure: get_report_selection
+      Registers an event handler on a region to report if the selection of the region changes
+      
+    Parameters:
+      p_region_id - ID of the region to observe
+      p_page_item - Optional page item to store the selected node id at. If NULL, the selected node is reported
+                    to ADC via EVENT_DATA
+      p_ordinal_nr - Optional ordinal number of the column that contains the node id information.
+                     If NULL, a column must be marked as primary key (IG) or a column must contain an attribute data-id
+                     containing the primary key information
+   */
+  static procedure get_report_selection(
+    p_region_id in varchar2,
+    p_page_item in varchar2 default null,
+    p_ordinal_nr in binary_integer default null),
 
   
   /** 

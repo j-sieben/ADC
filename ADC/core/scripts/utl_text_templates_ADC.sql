@@ -884,10 +884,10 @@ q'{  ]);}',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
     p_uttm_text => q'{ with session_state as(\CR\}' || 
-q'{        select #SESSION_STATE#\CR\}' || 
+q'{        select /*+ no_merge */ #SESSION_STATE#\CR\}' || 
 q'{          from dual)\CR\}' || 
-q'{ select /*+ no_merge (session_state) */ #COLUMN_LIST#\CR\}' || 
-q'{   from #TABLE#\CR\}' || 
+q'{ select #COLUMN_LIST#\CR\}' || 
+q'{   from #TABLE_NAME#\CR\}' || 
 q'{natural join session_state}',
     p_uttm_log_text => q'{}',
     p_uttm_log_severity => 70
