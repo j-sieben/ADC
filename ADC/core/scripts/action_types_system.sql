@@ -54,8 +54,8 @@ begin
     p_cpt_description => q'{<p>Existierende APEX-Aktion der Regelgruppe.</p>}',
     p_cpt_cpv_id => 'SELECT_LIST',
     p_cpt_select_list_query => q'{select caa_name d, caa_id r, caa_cgr_id cgr_id\CR\}' || 
-q'{  from adc_apex_actions}',
-    p_cpt_select_view_comment => q'{List of page commands, groupt by CGR_ID}',
+q'{  from adc_apex_actions_v}',
+    p_cpt_select_view_comment => q'{}',
     p_cpt_sort_seq => 10,
     p_cpt_active => adc_util.C_TRUE);
 
@@ -354,14 +354,6 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cit_init_template => q'{}',
     p_cit_is_custom_event => adc_util.C_FALSE);
   adc_admin.merge_page_item_type(
-    p_cit_id => 'SELECTOR',
-    p_cit_name => 'Dokument',
-    p_cit_cig_id => 'FRAMEWORK',
-    p_cit_event => '',
-    p_cit_col_template => q'{null #ITEM#}',
-    p_cit_init_template => q'{}',
-    p_cit_is_custom_event => adc_util.C_FALSE);
-  adc_admin.merge_page_item_type(
     p_cit_id => 'DOCUMENT_MODAL',
     p_cit_name => 'Modaler Dialog',
     p_cit_cig_id => 'FRAMEWORK',
@@ -471,6 +463,14 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cit_cig_id => 'EVENT',
     p_cit_event => 'adcselectionchange',
     p_cit_col_template => q'{case p_event when 'adcselectionchange' then p_firing_item end selection_changed}',
+    p_cit_init_template => q'{}',
+    p_cit_is_custom_event => adc_util.C_FALSE);
+  adc_admin.merge_page_item_type(
+    p_cit_id => 'SELECTOR',
+    p_cit_name => 'Dokument',
+    p_cit_cig_id => 'FRAMEWORK',
+    p_cit_event => '',
+    p_cit_col_template => q'{null #ITEM#}',
     p_cit_init_template => q'{}',
     p_cit_is_custom_event => adc_util.C_FALSE);
   adc_admin.merge_page_item_type(
@@ -1195,7 +1195,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cat_name => 'Elementwert mit SQL-Anweisung setzen',
     p_cat_display_name => q'{<p><strong>setze Feldwert </strong>aus SQL-Anweisung</p>}',
     p_cat_description => q'{<p>Setzt einen Elementwert basierend auf einer SQL-Anweisung, die einen einzelnen Wert zurückgibt…</p>}',
-    p_cat_pl_sql => q'{adc_api.set_value_from_stmt('#ITEM#',q'|#PARAM_1#|');}',
+    p_cat_pl_sql => q'{adc_api.set_value_from_statement('#ITEM#',q'|#PARAM_1#|');}',
     p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_TRUE);
@@ -1286,7 +1286,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cat_display_name => q'{<p><strong>setze den Titel</strong> des modalen Dialogs auf “#PARAM_1#”.</p>}',
     p_cat_description => q'{<p>Stellt den Titel eines modalen Dialogs auf den gewünschten Wert.</p>}',
     p_cat_pl_sql => q'{}',
-    p_cat_js => q'{adc.setModalDialogTitle('#PARAM_1#');}',
+    p_cat_js => q'{de.condes.plugin.adc.setModalDialogTitle('#PARAM_1#');}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_FALSE);
 
@@ -1513,6 +1513,23 @@ end;
 set define on
 set sqlblanklines off
 
+create or replace view ADC_PARAM_LOV_SEQUENCE as select sequence_name d, sequence_name r, null cgr_id
+  from user_sequences
+       -- exclude column identity sequences
+ where sequence_name not like 'ISEQ$$%';
+
+comment on table ADC_PARAM_LOV_SEQUENCE is 'List of sequences owned by the user';
+
+
+create or replace view ADC_PARAM_LOV_SUBMIT_TYPE as 
+  select pti_name d, substr(pti_id, 15) r, null cgr_id
+    from pit_translatable_item_v
+   where pti_pmg_name = 'ADC'
+     and pti_id like 'SUBMIT_TYPE%';
+
+comment on table ADC_PARAM_LOV_SUBMIT_TYPE is 'List of translatable items of type ADC, related to the SUBMIT_TYPE';
+
+
 create or replace view ADC_PARAM_LOV_EVENT as select cit_name d, cit_id r, null cgr_id
   from adc_page_item_types_v
  where cit_is_custom_event = (select adc_util.c_true from dual)
@@ -1531,9 +1548,7 @@ comment on table ADC_PARAM_LOV_PIT_MESSAGE is 'List of PIT messages';
 
 
 create or replace view ADC_PARAM_LOV_APEX_ACTION as select caa_name d, caa_id r, caa_cgr_id cgr_id
-  from adc_apex_actions;
-
-comment on table ADC_PARAM_LOV_APEX_ACTION is 'List of page commands, groupt by CGR_ID';
+  from adc_apex_actions_v;
 
 
 create or replace view ADC_PARAM_LOV_PAGE_ITEM as select case cpi_id when 'ALL' then ' Document' else cpi_id end d, cpi_id r, cpi_cgr_id cgr_id
@@ -1550,21 +1565,4 @@ create or replace view ADC_PARAM_LOV_ITEM_STATUS as
      and pti_id like 'ITEM_STATUS%';
 
 comment on table ADC_PARAM_LOV_ITEM_STATUS is 'List of translatable items of for that parameter type';
-
-
-create or replace view ADC_PARAM_LOV_SEQUENCE as select sequence_name d, sequence_name r, null cgr_id
-  from user_sequences
-       -- exclude column identity sequences
- where sequence_name not like 'ISEQ$$%';
-
-comment on table ADC_PARAM_LOV_SEQUENCE is 'List of sequences owned by the user';
-
-
-create or replace view ADC_PARAM_LOV_SUBMIT_TYPE as 
-  select pti_name d, substr(pti_id, 15) r, null cgr_id
-    from pit_translatable_item_v
-   where pti_pmg_name = 'ADC'
-     and pti_id like 'SUBMIT_TYPE%';
-
-comment on table ADC_PARAM_LOV_SUBMIT_TYPE is 'List of translatable items of type ADC, related to the SUBMIT_TYPE';
 
