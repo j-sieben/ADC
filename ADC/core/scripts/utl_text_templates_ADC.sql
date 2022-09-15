@@ -338,16 +338,14 @@ q'{ where #CONDITION#}',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'DEFAULT',
     p_uttm_text => q'{\CR\}' || 
-q'{set define #\CR\}' || 
+q'{set define °\CR\}' || 
 q'{\CR\}' || 
 q'{declare\CR\}' || 
 q'{  l_foo number;\CR\}' || 
 q'{  l_app_id number;\CR\}' || 
 q'{begin\CR\}' || 
 q'{  l_foo := adc_admin.map_id;\CR\}' || 
-q'{  l_app_id := coalesce(apex_application_install.get_application_id, #APP_ID.);\CR\}' || 
-q'{\CR\}' || 
-q'{  dbms_output.put_line('&s1.Rulegroup #CGR_NAME#');\CR\}' || 
+q'{  l_app_id := coalesce(apex_application_install.get_application_id, °APP_ID.);\CR\}' || 
 q'{\CR\}' || 
 q'{  adc_admin.prepare_rule_group_import(\CR\}' || 
 q'{    p_cgr_app_id => l_app_id,\CR\}' || 
@@ -370,7 +368,7 @@ q'{/\CR\}' ||
 q'{\CR\}' || 
 q'{set define on\CR\}' || 
 q'{}',
-    p_uttm_log_text => q'{Rule group #CGR_NAME# exported.}',
+    p_uttm_log_text => q'{Rule group #CGR_ID# exported.}',
     p_uttm_log_severity => 70
   );
 
@@ -841,7 +839,7 @@ q'{}',
     p_uttm_name => 'PAGE_ITEM_ERROR',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
-    p_uttm_text => q'{<p>Regelgruppe "#CGR_NAME#" kann nicht exportiert werden:</p><ul>#ERROR_LIST#</ul>}',
+    p_uttm_text => q'{<p>Regelgruppe "#CGR_ID#" kann nicht exportiert werden:</p><ul>#ERROR_LIST#</ul>}',
     p_uttm_log_text => q'{}',
     p_uttm_log_severity => 70
   );
