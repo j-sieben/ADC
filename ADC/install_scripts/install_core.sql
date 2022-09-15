@@ -31,8 +31,8 @@ prompt &h1.PLUGIN ADC
 prompt
 prompt &section.
 prompt &h1.Optional unit test package installation
-@&tool_dir.check_unit_test_exists.sql "unit_test/uninstall.sql" "clean up"
-@&tool_dir.check_unit_test_exists.sql "unit_test/install.sql" "installation"
+-- @&tool_dir.check_unit_test_exists.sql "unit_test/uninstall.sql" "clean up"
+-- @&tool_dir.check_unit_test_exists.sql "unit_test/install.sql" "installation"
 
 prompt &h1.Finished ADC-Installation
 

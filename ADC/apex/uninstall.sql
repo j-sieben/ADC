@@ -21,7 +21,7 @@ declare
                  'ADC_UI_LOV_APEX_ACTION_TYPE', 'ADC_UI_LOV_APPLICATIONS', 'ADC_UI_LOV_APP_PAGES', 'ADC_UI_LOV_EXPORT_TYPES', 'ADC_UI_LOV_EXPORT_CAT', 
                  'ADC_UI_LOV_PAGE_ITEMS', 'ADC_UI_LOV_PAGE_ITEMS_P11', 'ADC_UI_LOV_CGR_APPLICATIONS', 'ADC_UI_LOV_PAGE_ITEM_TYPE',
                  'ADC_UI_LOV_CGR_APP_PAGES', 'ADC_UI_LOV_CGR_PAGE_ITEMS', 'ADC_UI_LOV_YES_NO', -- Views
-                 'ADC_LU_DESIGNER_ACTIONS', 'ADC_LU_DESIGNER_MODES', 'ADC_UI_MAP_DESIGNER_ACTIONS',   -- Tabellen
+                 'ADC_LU_DESIGNER_ACTIONS', 'ADC_LU_DESIGNER_MODES', 'ADC_MAP_DESIGNER_ACTIONS',   -- Tabellen
                  '',  -- Synonyme
                  '' -- Sequenzen
                  )
