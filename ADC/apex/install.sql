@@ -8,7 +8,7 @@ prompt &h2.Create database objects
 prompt &h3.Create tables
 @&tool_dir.create_table adc_lu_designer_modes
 @&tool_dir.create_table adc_lu_designer_actions
-@&tool_dir.create_table adc_ui_map_designer_actions
+@&tool_dir.create_table adc_map_designer_actions
 
 prompt &h3.Create views
 @&tool_dir.create_view adc_bl_cat_help
@@ -71,7 +71,7 @@ prompt &h3.Create package bodies
 prompt &h2.Scripts
 @&tool_dir.run_script adc_lu_designer_modes
 @&tool_dir.run_script adc_lu_designer_actions
-@&tool_dir.run_script adc_ui_map_designer_actions
+@&tool_dir.run_script adc_map_designer_actions
 --@&tool_dir.run_script splitter_plugin
 
 prompt &h2.Version specific installation

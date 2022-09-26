@@ -261,20 +261,21 @@ q'{}',
     p_uttm_text => q'{with params as(\CR\}' || 
 q'{       select /*+ no_merge */\CR\}' || 
 q'{              adc_util.c_true c_true,\CR\}' || 
-q'{              adc_util.c_false c_false,\CR\}' || 
+q'{              adc_util.c_false c_false,\CR\}' ||
+q'{              adc_util.c_true c_clicked,\CR\}' || 
 q'{              adc_api.get_event p_event,\CR\}' || 
 q'{              adc_api.get_event_data p_event_data,\CR\}' || 
 q'{              adc_api.get_firing_item p_firing_item\CR\}' || 
 q'{         from dual),\CR\}' || 
 q'{     session_state as(\CR\}' || 
 q'{       select #COLUMN_LIST#,\CR\}' || 
-q'{              c_true, c_false\CR\}' || 
+q'{              c_true, c_false, c_clicked\CR\}' || 
 q'{         from params p),\CR\}' || 
 q'{       data as (\CR\}' || 
 q'{       select r.cru_id, r.cru_name, r.cru_firing_items, r.cru_fire_on_page_load,\CR\}' || 
 q'{              r.cra_cpi_id, r.cra_cat_id, r.cra_sort_seq, r.cra_param_1, r.cra_param_2, r.cra_param_3, r.cra_on_error, r.cra_raise_recursive,\CR\}' || 
 q'{              rank() over (order by r.cru_sort_seq) rang, s.initializing initializing,\CR\}' || 
-q'{              c_true, c_false\CR\}' || 
+q'{              c_true, c_false, c_clicked\CR\}' || 
 q'{         from adc_bl_rules r\CR\}' || 
 q'{         join session_state s\CR\}' || 
 q'{           on instr(',' || r.cru_firing_items || ',', ',' || s.firing_item || ',') > 0\CR\}' || 
@@ -283,7 +284,7 @@ q'{          and initializing = C_TRUE)\CR\}' ||
 q'{        where r.cgr_id = #CGR_ID#\CR\}' || 
 q'{          and (#WHERE_CLAUSE#)),\CR\}' || 
 q'{     decision_table as(\CR\}' || 
-q'{       select cru_id, cru_name, cra_cpi_id, cra_cat_id, cra_param_1, cra_param_2, cra_param_3, cra_on_error, cra_raise_recursive, cra_sort_seq, c_true, c_false\CR\}' || 
+q'{       select cru_id, cru_name, cra_cpi_id, cra_cat_id, cra_param_1, cra_param_2, cra_param_3, cra_on_error, cra_raise_recursive, cra_sort_seq, c_true, c_false, c_clicked\CR\}' || 
 q'{         from data\CR\}' || 
 q'{        where rang = 1\CR\}' || 
 q'{           or (cru_fire_on_page_load = initializing\CR\}' || 
@@ -309,13 +310,14 @@ q'{ order by cru.cru_sort_seq desc, crg.cra_sort_seq}',
     p_uttm_text => q'{with params as (\CR\}' || 
 q'{       select adc_util.c_true c_true,\CR\}' || 
 q'{              adc_util.c_false c_false,\CR\}' || 
+q'{              adc_util.c_true c_clicked,\CR\}' || 
 q'{              adc_api.get_event p_event,\CR\}' || 
 q'{              adc_api.get_event_data p_event_data,\CR\}' || 
 q'{              adc_api.get_firing_item p_firing_item\CR\}' || 
 q'{         from dual),\CR\}' || 
 q'{     session_state as(\CR\}' || 
 q'{       select #COLUMN_LIST#,\CR\}' || 
-q'{              c_true, c_false\CR\}' || 
+q'{              c_true, c_false, c_clicked\CR\}' || 
 q'{         from params)\CR\}' || 
 q'{select *\CR\}' || 
 q'{  from session_state\CR\}' || 
@@ -338,16 +340,14 @@ q'{ where #CONDITION#}',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'DEFAULT',
     p_uttm_text => q'{\CR\}' || 
-q'{set define #\CR\}' || 
+q'{set define °\CR\}' || 
 q'{\CR\}' || 
 q'{declare\CR\}' || 
 q'{  l_foo number;\CR\}' || 
 q'{  l_app_id number;\CR\}' || 
 q'{begin\CR\}' || 
 q'{  l_foo := adc_admin.map_id;\CR\}' || 
-q'{  l_app_id := coalesce(apex_application_install.get_application_id, #APP_ID.);\CR\}' || 
-q'{\CR\}' || 
-q'{  dbms_output.put_line('&s1.Rulegroup #CGR_NAME#');\CR\}' || 
+q'{  l_app_id := coalesce(apex_application_install.get_application_id, °APP_ID.);\CR\}' || 
 q'{\CR\}' || 
 q'{  adc_admin.prepare_rule_group_import(\CR\}' || 
 q'{    p_cgr_app_id => l_app_id,\CR\}' || 
@@ -370,7 +370,7 @@ q'{/\CR\}' ||
 q'{\CR\}' || 
 q'{set define on\CR\}' || 
 q'{}',
-    p_uttm_log_text => q'{Rule group #CGR_NAME# exported.}',
+    p_uttm_log_text => q'{Rule group #CGR_ID# exported.}',
     p_uttm_log_severity => 70
   );
 
@@ -841,7 +841,7 @@ q'{}',
     p_uttm_name => 'PAGE_ITEM_ERROR',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
-    p_uttm_text => q'{<p>Regelgruppe "#CGR_NAME#" kann nicht exportiert werden:</p><ul>#ERROR_LIST#</ul>}',
+    p_uttm_text => q'{<p>Regelgruppe "#CGR_ID#" kann nicht exportiert werden:</p><ul>#ERROR_LIST#</ul>}',
     p_uttm_log_text => q'{}',
     p_uttm_log_severity => 70
   );

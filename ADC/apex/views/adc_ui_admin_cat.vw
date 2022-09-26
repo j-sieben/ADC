@@ -1,15 +1,14 @@
 create or replace editionable view adc_ui_admin_cat
 as 
 with params as (
-       select utl_apex.current_user_in_group('ADC_ADMIN') is_adc_admin,
+       select  /*+ NO_MERGE */ utl_apex.current_user_in_group('ADC_ADMIN') is_adc_admin,
               adc_util.c_false c_false,
               'EDIT_CAT' target_page,
               'P3_CAT_ID' target_item
          from dual)
-select /*+ NO_MERGE (p) */
-       g.ctg_name,
+select g.ctg_name,
        a.cat_id,
-       a.cat_name || case a.cat_active when adc_util.C_FALSE then ' (deprecated)' end cat_name,
+       a.cat_name || case a.cat_active when C_FALSE then ' (deprecated)' end cat_name,
        a.cat_is_editable,
        replace(a.cat_pl_sql, chr(13), '<br>') cat_pl_sql,
        replace(a.cat_js, chr(13), '<br>') cat_js,

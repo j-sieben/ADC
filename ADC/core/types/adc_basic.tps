@@ -82,7 +82,7 @@ as object (
     p_cpi_id in varchar2,
     p_value_list in varchar2,
     p_message in varchar2 default 'ASSERTION_FAILED',
-    p_error_on_null in varchar2 default 'Y'),
+    p_error_on_null in varchar2 default &C_TRUE.),
 
 
   /** Function: exclusive_or
@@ -235,7 +235,7 @@ as object (
   static procedure refresh_item(
     p_cpi_id in varchar2,
     p_item_value in varchar2 default null,
-    p_set_item in varchar2 default 'Y'),
+    p_set_item in varchar2 default &C_TRUE.),
 
 
   /** 
@@ -283,7 +283,7 @@ as object (
   static procedure select_region_entry(
     p_region_id in varchar2,
     p_entry_id in varchar2,
-    p_notify in varchar2 default 'Y'),
+    p_notify in varchar2 default &C_TRUE.),
 
 
   /** 
@@ -328,22 +328,22 @@ as object (
     p_cpi_id in varchar2 default 'DOCUMENT',
     p_item_value in varchar2 default null,
     p_jquery_selector in varchar2 default null,
-    p_allow_recursion in varchar2 default 'Y'),
+    p_allow_recursion in varchar2 default &C_TRUE.),
     
-    
-  static procedure set_item(
+  
+  static procedure set_number_item(
     p_cpi_id in varchar2 default 'DOCUMENT',
     p_item_value in number,
     p_jquery_selector in varchar2 default null,
-    p_allow_recursion in varchar2 default 'Y'),
+    p_allow_recursion in varchar2 default &C_TRUE.),
     
     
-  static procedure set_item(
+  static procedure set_date_item(
     p_cpi_id in varchar2 default 'DOCUMENT',
     p_item_value in date,
     p_jquery_selector in varchar2 default null,
-    p_allow_recursion in varchar2 default 'Y'),
-
+    p_allow_recursion in varchar2 default &C_TRUE.),
+ 
 
   /** 
     Procedure: set_item_label
@@ -487,7 +487,7 @@ as object (
       p_execute_validations - Optional flag to indicate whether all validations should be performed. Defaults to adc_util.C_TRUE
    */
   static procedure submit_page(
-    p_execute_validations in varchar2 default 'Y'),
+    p_execute_validations in varchar2 default &C_TRUE.),
 
 
   /** 

@@ -372,7 +372,7 @@ as
   end set_item;
   
   
-  static procedure set_item(
+  static procedure set_number_item(
     p_cpi_id in varchar2 default 'DOCUMENT',
     p_item_value in number,
     p_jquery_selector in varchar2 default null,
@@ -393,10 +393,10 @@ as
       p_allow_recursion => p_allow_recursion);
         
     pit.leave_optional;
-  end set_item;
+  end set_number_item;
   
   
-  static procedure set_item(
+  static procedure set_date_item(
     p_cpi_id in varchar2 default 'DOCUMENT',
     p_item_value in date,
     p_jquery_selector in varchar2 default null,
@@ -417,7 +417,7 @@ as
       p_allow_recursion => p_allow_recursion);
         
     pit.leave_optional;
-  end set_item;
+  end set_date_item;
   
   
   static procedure set_item_label(

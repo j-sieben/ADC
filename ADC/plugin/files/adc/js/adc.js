@@ -163,7 +163,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     getTriggeringElement(pEvent);
 
     $(C_BODY).queue(function () {
-      maintainAndCheckEventLock();
+      //maintainAndCheckEventLock();
       adc.showWaitSpinner(pWait);
       adc.execute(pEvent, pEventData);
     });
@@ -184,7 +184,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     getTriggeringElement(pEvent);
 
     $(C_BODY).queue(function () {
-      maintainAndCheckEventLock();
+      //maintainAndCheckEventLock();
       adc.showWaitSpinner(pWait);
       // Handle event only after confirmation from the user
       adc.ApexJS.confirmRequest(pEvent, changeCallback);
@@ -208,7 +208,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     if (triggeringElement.event === C_ENTER_EVENT){
       apex.debug.info(`Enqueueing Event '${C_ENTER_EVENT}'`);
       $('body').queue(function(){
-        maintainAndCheckEventLock();
+        //maintainAndCheckEventLock();
         adc.showWaitSpinner(pWait);
         adc.execute(pEventData);
       });
@@ -229,7 +229,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     getTriggeringElement(pEvent);
 
     $(C_BODY).queue(function () {
-      maintainAndCheckEventLock();
+      //maintainAndCheckEventLock();
       adc.showWaitSpinner(pWait);
       if(hasUnsavedChanges()){
         // Handle event only after confirmation from the user
