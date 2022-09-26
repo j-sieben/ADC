@@ -35,6 +35,7 @@ prompt &h3.Create views
 @&tool_dir.create_view adc_ui_lov_yes_no
 @&tool_dir.create_view adc_ui_admin_cat
 @&tool_dir.create_view adc_ui_admin_cif
+@&tool_dir.create_view adc_ui_admin_cpt
 @&tool_dir.create_view adc_ui_designer_apex_action
 @&tool_dir.create_view adc_ui_designer_findings
 @&tool_dir.create_view adc_ui_designer_rule_action
