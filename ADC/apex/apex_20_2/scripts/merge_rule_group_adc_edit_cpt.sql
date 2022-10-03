@@ -1,0 +1,159 @@
+
+set define #
+
+declare
+  l_foo number;
+  l_app_id number;
+begin
+  l_foo := adc_admin.map_id;
+  l_app_id := coalesce(apex_application_install.get_application_id, #APP_ID.);
+
+  dbms_output.put_line('#s1.Rulegroup #CGR_NAME#');
+
+  adc_admin.prepare_rule_group_import(
+    p_cgr_app_id => l_app_id,
+    p_cgr_page_id => 5);
+
+  adc_admin.merge_rule_group(
+    p_cgr_id => adc_admin.map_id(13),
+    p_cgr_app_id => l_app_id,
+    p_cgr_page_id => 5,
+    p_cgr_with_recursion => adc_util.C_TRUE,
+    p_cgr_active => adc_util.C_TRUE);
+  
+  adc_admin.merge_rule(
+    p_cru_id => adc_admin.map_id(15),
+    p_cru_cgr_id => adc_admin.map_id(13),
+    p_cru_name => 'einen neuen Parametertyp anlegen möchte',
+    p_cru_condition => q'|initializing = c_true and P5_CPT_ID is null|',
+    p_cru_sort_seq => 20,
+    p_cru_fire_on_page_load => adc_util.C_TRUE,
+    p_cru_active => adc_util.C_TRUE);
+  
+  adc_admin.merge_rule_action(
+    p_cra_id => adc_admin.map_id(17),
+    p_cra_cru_id => adc_admin.map_id(15),
+    p_cra_cgr_id => adc_admin.map_id(13),
+    p_cra_cpi_id => 'P5_CPT_ID',
+    p_cra_cat_id => 'IS_MANDATORY',
+    p_cra_param_1 => q'||',
+    p_cra_param_2 => q'||',
+    p_cra_param_3 => q'||',
+    p_cra_sort_seq => 30,
+    p_cra_on_error => adc_util.C_FALSE,
+    p_cra_raise_recursive => adc_util.C_TRUE,
+    p_cra_active => adc_util.C_TRUE);
+  adc_admin.merge_rule_action(
+    p_cra_id => adc_admin.map_id(19),
+    p_cra_cru_id => adc_admin.map_id(15),
+    p_cra_cgr_id => adc_admin.map_id(13),
+    p_cra_cpi_id => 'DOCUMENT',
+    p_cra_cat_id => 'SET_VISUAL_STATE',
+    p_cra_param_1 => q'|HIDE|',
+    p_cra_param_2 => q'|#R5_EDIT_CPT_SELECT_LIST,#R5_EDIT_CPT_STATIC_LIST_FORM|',
+    p_cra_param_3 => q'||',
+    p_cra_sort_seq => 10,
+    p_cra_on_error => adc_util.C_FALSE,
+    p_cra_raise_recursive => adc_util.C_TRUE,
+    p_cra_active => adc_util.C_TRUE);
+  adc_admin.merge_rule_action(
+    p_cra_id => adc_admin.map_id(21),
+    p_cra_cru_id => adc_admin.map_id(15),
+    p_cra_cgr_id => adc_admin.map_id(13),
+    p_cra_cpi_id => 'P5_CPT_ACTIVE',
+    p_cra_cat_id => 'SET_ITEM',
+    p_cra_param_1 => q'|adc_util.C_TRUE|',
+    p_cra_param_2 => q'||',
+    p_cra_param_3 => q'|SHOW_ENABLE|',
+    p_cra_sort_seq => 20,
+    p_cra_on_error => adc_util.C_FALSE,
+    p_cra_raise_recursive => adc_util.C_TRUE,
+    p_cra_active => adc_util.C_TRUE);
+  adc_admin.merge_rule(
+    p_cru_id => adc_admin.map_id(23),
+    p_cru_cgr_id => adc_admin.map_id(13),
+    p_cru_name => 'den Parametertyp ändert',
+    p_cru_condition => q'|firing_item = 'P5_CPT_CPV_ID'|',
+    p_cru_sort_seq => 40,
+    p_cru_fire_on_page_load => adc_util.C_FALSE,
+    p_cru_active => adc_util.C_TRUE);
+  
+  adc_admin.merge_rule_action(
+    p_cra_id => adc_admin.map_id(25),
+    p_cra_cru_id => adc_admin.map_id(23),
+    p_cra_cgr_id => adc_admin.map_id(13),
+    p_cra_cpi_id => 'DOCUMENT',
+    p_cra_cat_id => 'PLSQL_CODE',
+    p_cra_param_1 => q'|adc_ui.handle_cpv_changed;|',
+    p_cra_param_2 => q'||',
+    p_cra_param_3 => q'||',
+    p_cra_sort_seq => 10,
+    p_cra_on_error => adc_util.C_FALSE,
+    p_cra_raise_recursive => adc_util.C_TRUE,
+    p_cra_active => adc_util.C_TRUE);
+  adc_admin.merge_rule(
+    p_cru_id => adc_admin.map_id(27),
+    p_cru_cgr_id => adc_admin.map_id(13),
+    p_cru_name => 'einen Parametertyp bearbeiten möchte',
+    p_cru_condition => q'|initializing = c_true and P5_CPT_ID is not null|',
+    p_cru_sort_seq => 30,
+    p_cru_fire_on_page_load => adc_util.C_TRUE,
+    p_cru_active => adc_util.C_TRUE);
+  
+  adc_admin.merge_rule_action(
+    p_cra_id => adc_admin.map_id(29),
+    p_cra_cru_id => adc_admin.map_id(27),
+    p_cra_cgr_id => adc_admin.map_id(13),
+    p_cra_cpi_id => 'DOCUMENT',
+    p_cra_cat_id => 'PLSQL_CODE',
+    p_cra_param_1 => q'|adc_ui.handle_cpv_changed;|',
+    p_cra_param_2 => q'||',
+    p_cra_param_3 => q'||',
+    p_cra_sort_seq => 10,
+    p_cra_on_error => adc_util.C_FALSE,
+    p_cra_raise_recursive => adc_util.C_TRUE,
+    p_cra_active => adc_util.C_TRUE);
+  adc_admin.merge_rule_action(
+    p_cra_id => adc_admin.map_id(31),
+    p_cra_cru_id => adc_admin.map_id(27),
+    p_cra_cgr_id => adc_admin.map_id(13),
+    p_cra_cpi_id => 'P5_CPT_ID',
+    p_cra_cat_id => 'SET_VISUAL_STATE',
+    p_cra_param_1 => q'|SHOW_DISABLE|',
+    p_cra_param_2 => q'||',
+    p_cra_param_3 => q'||',
+    p_cra_sort_seq => 20,
+    p_cra_on_error => adc_util.C_FALSE,
+    p_cra_raise_recursive => adc_util.C_TRUE,
+    p_cra_active => adc_util.C_TRUE);
+  adc_admin.merge_rule(
+    p_cru_id => adc_admin.map_id(33),
+    p_cru_cgr_id => adc_admin.map_id(13),
+    p_cru_name => 'die Seite öffnet',
+    p_cru_condition => q'|initializing = c_true|',
+    p_cru_sort_seq => 10,
+    p_cru_fire_on_page_load => adc_util.C_FALSE,
+    p_cru_active => adc_util.C_TRUE);
+  
+  adc_admin.merge_rule_action(
+    p_cra_id => adc_admin.map_id(35),
+    p_cra_cru_id => adc_admin.map_id(33),
+    p_cra_cgr_id => adc_admin.map_id(13),
+    p_cra_cpi_id => 'DOCUMENT',
+    p_cra_cat_id => 'IS_MANDATORY',
+    p_cra_param_1 => q'||',
+    p_cra_param_2 => q'|.adc-required|',
+    p_cra_param_3 => q'||',
+    p_cra_sort_seq => 10,
+    p_cra_on_error => adc_util.C_FALSE,
+    p_cra_raise_recursive => adc_util.C_TRUE,
+    p_cra_active => adc_util.C_TRUE);
+  
+
+  adc_admin.propagate_rule_change(adc_admin.map_id(13));
+
+  commit;
+end;
+/
+
+set define on

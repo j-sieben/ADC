@@ -3,15 +3,16 @@ create table adc_page_item_types(
   cit_pti_id varchar2(50 char) constraint nn_cit_pti_id not null,
   cit_pmg_name varchar2(3 byte) default 'ADC' constraint chk_cit_pmg_name check(cit_pmg_name = 'ADC'),
 	cit_cig_id varchar2(50 char), 
-	cit_event varchar2(30 byte), 
+	cit_cet_id varchar2(30 byte), 
 	cit_col_template varchar2(100 char), 
-	cit_init_template varchar2(100 char), 
-  cit_is_custom_event &FLAG_TYPE. default &C_FALSE.,
+	cit_init_template varchar2(100 char),
   constraint pk_adc_page_item_types primary key (cit_id),
   constraint fk_cit_pti_id foreign key(cit_pti_id, cit_pmg_name)
     references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
   constraint fk_cit_cig_id foreign key(cit_cig_id)
     references adc_page_item_type_groups(cig_id),
+  constraint fk_cit_cet_id foreign key(cit_cet_id)
+    references adc_event_types(cet_id),
   constraint chk_cit_is_custom_event check (cit_is_custom_event in (&C_TRUE., &C_FALSE.))
 ) organization index;
 
@@ -19,7 +20,6 @@ comment on table adc_page_item_types  is 'Table to store page item types which a
 comment on column adc_page_item_types.cit_id is 'PK, alphanumerical key';
 comment on column adc_page_item_types.cit_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
 comment on column adc_page_item_types.cit_cig_id is 'Group of the page item type, reference to ADC_PAGE_ITEM_TYPE_GROUPS';
-comment on column adc_page_item_types.cit_event is 'JavaScript event to be bound to this element type by the plugin. If null, ADC won''t react on changes.';
+comment on column adc_page_item_types.cit_cet_id is 'JavaScript event to be bound to this element type by the plugin. If null, ADC won''t react on changes.. Reference to PIT_EVENT_TYPES';
 comment on column adc_page_item_types.cit_col_template is 'Template for creating a column in the decision table.';
 comment on column adc_page_item_types.cit_init_template is 'Template for generating the initialization code';
-comment on column adc_page_item_types.cit_init_template is 'Flag to indicate whether this event has to be observed explicitly by a rule action.';

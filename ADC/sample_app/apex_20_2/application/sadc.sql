@@ -37,7 +37,7 @@ prompt APPLICATION 118 - ADC Beispielanwendung
 --       Processes:               14
 --       Regions:                 81
 --       Buttons:                 47
---       Dynamic Actions:          5
+--       Dynamic Actions:          6
 --     Shared Components:
 --       Logic:
 --         Items:                  7
@@ -120,7 +120,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'APP_NAME'
 ,p_substitution_value_01=>'ADC Beispielanwendung'
 ,p_last_updated_by=>'ADC_ADMIN'
-,p_last_upd_yyyymmddhh24miss=>'20220726085119'
+,p_last_upd_yyyymmddhh24miss=>'20220926103003'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>3
 ,p_ui_type_name => null
@@ -12470,7 +12470,7 @@ wwv_flow_api.create_page(
 ,p_autocomplete_on_off=>'OFF'
 ,p_page_template_options=>'#DEFAULT#'
 ,p_last_updated_by=>'ADC_ADMIN'
-,p_last_upd_yyyymmddhh24miss=>'20210815105052'
+,p_last_upd_yyyymmddhh24miss=>'20220926103003'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(374878397408435412)
@@ -12647,6 +12647,25 @@ wwv_flow_api.create_page_item(
 ,p_attribute_04=>'button'
 ,p_attribute_05=>'N'
 ,p_attribute_07=>'NONE'
+);
+wwv_flow_api.create_page_da_event(
+ p_id=>wwv_flow_api.id(19510837473030139)
+,p_name=>'Neu'
+,p_event_sequence=>10
+,p_triggering_element_type=>'ITEM'
+,p_triggering_element=>'P4_DATE'
+,p_bind_type=>'bind'
+,p_bind_event_type=>'change'
+);
+wwv_flow_api.create_page_da_action(
+ p_id=>wwv_flow_api.id(19510977908030140)
+,p_event_id=>wwv_flow_api.id(19510837473030139)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'Y'
+,p_action=>'NATIVE_DISABLE'
+,p_affected_elements_type=>'ITEM'
+,p_affected_elements=>'P4_DATE'
 );
 end;
 /
@@ -13664,6 +13683,7 @@ wwv_flow_api.create_interactive_grid(
 ,p_define_chart_view=>false
 ,p_enable_download=>false
 ,p_download_formats=>null
+,p_enable_mail_download=>true
 ,p_fixed_header=>'REGION'
 ,p_fixed_header_max_height=>240
 ,p_show_icon_view=>false
@@ -14263,6 +14283,7 @@ wwv_flow_api.create_worksheet(
 ,p_pagination_type=>'ROWS_X_TO_Y'
 ,p_pagination_display_pos=>'BOTTOM_RIGHT'
 ,p_show_search_bar=>'N'
+,p_report_list_mode=>'TABS'
 ,p_fixed_header=>'REGION'
 ,p_fixed_header_max_height=>240
 ,p_show_detail_link=>'N'
@@ -14691,6 +14712,7 @@ wwv_flow_api.create_interactive_grid(
 ,p_define_chart_view=>false
 ,p_enable_download=>false
 ,p_download_formats=>null
+,p_enable_mail_download=>true
 ,p_fixed_header=>'REGION'
 ,p_fixed_header_max_height=>240
 ,p_show_icon_view=>false
@@ -16541,15 +16563,15 @@ begin
     p_cgr_page_id => 1);
 
   adc_admin.merge_rule_group(
-    p_cgr_id => adc_admin.map_id(123),
+    p_cgr_id => adc_admin.map_id(694),
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 1,
     p_cgr_with_recursion => adc_util.C_TRUE,
     p_cgr_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(125),
-    p_cru_cgr_id => adc_admin.map_id(123),
+    p_cru_id => adc_admin.map_id(696),
+    p_cru_cgr_id => adc_admin.map_id(694),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = c_true|',
     p_cru_sort_seq => 10,
@@ -16557,7 +16579,7 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   
-  adc_admin.propagate_rule_change(adc_admin.map_id(123));
+  adc_admin.propagate_rule_change(adc_admin.map_id(694));
 
   commit;
 end;
@@ -16578,15 +16600,15 @@ begin
     p_cgr_page_id => 2);
 
   adc_admin.merge_rule_group(
-    p_cgr_id => adc_admin.map_id(127),
+    p_cgr_id => adc_admin.map_id(698),
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 2,
     p_cgr_with_recursion => adc_util.C_TRUE,
     p_cgr_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(129),
-    p_cru_cgr_id => adc_admin.map_id(127),
+    p_cru_id => adc_admin.map_id(700),
+    p_cru_cgr_id => adc_admin.map_id(698),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = c_true|',
     p_cru_sort_seq => 10,
@@ -16594,7 +16616,7 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   
-  adc_admin.propagate_rule_change(adc_admin.map_id(127));
+  adc_admin.propagate_rule_change(adc_admin.map_id(698));
 
   commit;
 end;
@@ -16615,15 +16637,15 @@ begin
     p_cgr_page_id => 3);
 
   adc_admin.merge_rule_group(
-    p_cgr_id => adc_admin.map_id(131),
+    p_cgr_id => adc_admin.map_id(684),
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 3,
     p_cgr_with_recursion => adc_util.C_TRUE,
     p_cgr_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(133),
-    p_cru_cgr_id => adc_admin.map_id(131),
+    p_cru_id => adc_admin.map_id(686),
+    p_cru_cgr_id => adc_admin.map_id(684),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = c_true|',
     p_cru_sort_seq => 10,
@@ -16631,7 +16653,7 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   
-  adc_admin.propagate_rule_change(adc_admin.map_id(131));
+  adc_admin.propagate_rule_change(adc_admin.map_id(684));
 
   commit;
 end;
@@ -16652,15 +16674,15 @@ begin
     p_cgr_page_id => 4);
 
   adc_admin.merge_rule_group(
-    p_cgr_id => adc_admin.map_id(135),
+    p_cgr_id => adc_admin.map_id(702),
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 4,
     p_cgr_with_recursion => adc_util.C_TRUE,
     p_cgr_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(137),
-    p_cru_cgr_id => adc_admin.map_id(135),
+    p_cru_id => adc_admin.map_id(704),
+    p_cru_cgr_id => adc_admin.map_id(702),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = c_true|',
     p_cru_sort_seq => 10,
@@ -16668,9 +16690,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(139),
-    p_cra_cru_id => adc_admin.map_id(137),
-    p_cra_cgr_id => adc_admin.map_id(135),
+    p_cra_id => adc_admin.map_id(706),
+    p_cra_cru_id => adc_admin.map_id(704),
+    p_cra_cgr_id => adc_admin.map_id(702),
     p_cra_cpi_id => 'P4_DATE',
     p_cra_cat_id => 'SET_VISUAL_STATE',
     p_cra_param_1 => q'|SHOW_DISABLE|',
@@ -16681,9 +16703,9 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(141),
-    p_cra_cru_id => adc_admin.map_id(137),
-    p_cra_cgr_id => adc_admin.map_id(135),
+    p_cra_id => adc_admin.map_id(708),
+    p_cra_cru_id => adc_admin.map_id(704),
+    p_cra_cgr_id => adc_admin.map_id(702),
     p_cra_cpi_id => 'P4_REQUIRED',
     p_cra_cat_id => 'IS_MANDATORY',
     p_cra_param_1 => q'||',
@@ -16694,7 +16716,7 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   
-  adc_admin.propagate_rule_change(adc_admin.map_id(135));
+  adc_admin.propagate_rule_change(adc_admin.map_id(702));
 
   commit;
 end;
@@ -16715,15 +16737,15 @@ begin
     p_cgr_page_id => 5);
 
   adc_admin.merge_rule_group(
-    p_cgr_id => adc_admin.map_id(143),
+    p_cgr_id => adc_admin.map_id(710),
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 5,
     p_cgr_with_recursion => adc_util.C_TRUE,
     p_cgr_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(145),
-    p_cru_cgr_id => adc_admin.map_id(143),
+    p_cru_id => adc_admin.map_id(712),
+    p_cru_cgr_id => adc_admin.map_id(710),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = c_true|',
     p_cru_sort_seq => 10,
@@ -16731,9 +16753,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(147),
-    p_cra_cru_id => adc_admin.map_id(145),
-    p_cra_cgr_id => adc_admin.map_id(143),
+    p_cra_id => adc_admin.map_id(714),
+    p_cra_cru_id => adc_admin.map_id(712),
+    p_cra_cgr_id => adc_admin.map_id(710),
     p_cra_cpi_id => 'P5_REQUIRED',
     p_cra_cat_id => 'IS_MANDATORY',
     p_cra_param_1 => q'||',
@@ -16744,8 +16766,8 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(149),
-    p_cru_cgr_id => adc_admin.map_id(143),
+    p_cru_id => adc_admin.map_id(716),
+    p_cru_cgr_id => adc_admin.map_id(710),
     p_cru_name => 'ein Datum in der Vergangenheit eingibt',
     p_cru_condition => q'|P5_DATE < sysdate|',
     p_cru_sort_seq => 20,
@@ -16753,9 +16775,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(151),
-    p_cra_cru_id => adc_admin.map_id(149),
-    p_cra_cgr_id => adc_admin.map_id(143),
+    p_cra_id => adc_admin.map_id(718),
+    p_cra_cru_id => adc_admin.map_id(716),
+    p_cra_cgr_id => adc_admin.map_id(710),
     p_cra_cpi_id => 'P5_DATE',
     p_cra_cat_id => 'SHOW_ERROR',
     p_cra_param_1 => q'|Das Datum muss in der Zukunft liegen.|',
@@ -16766,8 +16788,8 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(153),
-    p_cru_cgr_id => adc_admin.map_id(143),
+    p_cru_id => adc_admin.map_id(720),
+    p_cru_cgr_id => adc_admin.map_id(710),
     p_cru_name => 'eine nicht erlaubte Zahl eingibt',
     p_cru_condition => q'|P5_NUMBER not between 100 and 1000|',
     p_cru_sort_seq => 30,
@@ -16775,9 +16797,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(155),
-    p_cra_cru_id => adc_admin.map_id(153),
-    p_cra_cgr_id => adc_admin.map_id(143),
+    p_cra_id => adc_admin.map_id(722),
+    p_cra_cru_id => adc_admin.map_id(720),
+    p_cra_cgr_id => adc_admin.map_id(710),
     p_cra_cpi_id => 'P5_NUMBER',
     p_cra_cat_id => 'SHOW_ERROR',
     p_cra_param_1 => q'|Die Zahl muss zwischen 100 und 1000 liegen.|',
@@ -16788,7 +16810,7 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   
-  adc_admin.propagate_rule_change(adc_admin.map_id(143));
+  adc_admin.propagate_rule_change(adc_admin.map_id(710));
 
   commit;
 end;
@@ -16809,15 +16831,15 @@ begin
     p_cgr_page_id => 6);
 
   adc_admin.merge_rule_group(
-    p_cgr_id => adc_admin.map_id(157),
+    p_cgr_id => adc_admin.map_id(724),
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 6,
     p_cgr_with_recursion => adc_util.C_TRUE,
     p_cgr_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(159),
-    p_cru_cgr_id => adc_admin.map_id(157),
+    p_cru_id => adc_admin.map_id(726),
+    p_cru_cgr_id => adc_admin.map_id(724),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = c_true|',
     p_cru_sort_seq => 10,
@@ -16825,9 +16847,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(161),
-    p_cra_cru_id => adc_admin.map_id(159),
-    p_cra_cgr_id => adc_admin.map_id(157),
+    p_cra_id => adc_admin.map_id(728),
+    p_cra_cru_id => adc_admin.map_id(726),
+    p_cra_cgr_id => adc_admin.map_id(724),
     p_cra_cpi_id => 'P6_REQUIRED',
     p_cra_cat_id => 'IS_MANDATORY',
     p_cra_param_1 => q'||',
@@ -16838,8 +16860,8 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(163),
-    p_cru_cgr_id => adc_admin.map_id(157),
+    p_cru_id => adc_admin.map_id(730),
+    p_cru_cgr_id => adc_admin.map_id(724),
     p_cru_name => 'eine Zahl eingibt',
     p_cru_condition => q'|P6_NUMBER is not null|',
     p_cru_sort_seq => 20,
@@ -16847,9 +16869,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(165),
-    p_cra_cru_id => adc_admin.map_id(163),
-    p_cra_cgr_id => adc_admin.map_id(157),
+    p_cra_id => adc_admin.map_id(732),
+    p_cra_cru_id => adc_admin.map_id(730),
+    p_cra_cgr_id => adc_admin.map_id(724),
     p_cra_cpi_id => 'P6_NUMBER',
     p_cra_cat_id => 'PLSQL_CODE',
     p_cra_param_1 => q'|sadc_ui.validate_p6_number|',
@@ -16860,8 +16882,8 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(167),
-    p_cru_cgr_id => adc_admin.map_id(157),
+    p_cru_id => adc_admin.map_id(734),
+    p_cru_cgr_id => adc_admin.map_id(724),
     p_cru_name => 'ein Datum eingibt',
     p_cru_condition => q'|P6_DATE is not null|',
     p_cru_sort_seq => 30,
@@ -16869,9 +16891,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(169),
-    p_cra_cru_id => adc_admin.map_id(167),
-    p_cra_cgr_id => adc_admin.map_id(157),
+    p_cra_id => adc_admin.map_id(736),
+    p_cra_cru_id => adc_admin.map_id(734),
+    p_cra_cgr_id => adc_admin.map_id(724),
     p_cra_cpi_id => 'P6_DATE',
     p_cra_cat_id => 'PLSQL_CODE',
     p_cra_param_1 => q'|sadc_ui.validate_p6_date;|',
@@ -16882,7 +16904,7 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   
-  adc_admin.propagate_rule_change(adc_admin.map_id(157));
+  adc_admin.propagate_rule_change(adc_admin.map_id(724));
 
   commit;
 end;
@@ -16903,15 +16925,15 @@ begin
     p_cgr_page_id => 7);
 
   adc_admin.merge_rule_group(
-    p_cgr_id => adc_admin.map_id(171),
+    p_cgr_id => adc_admin.map_id(738),
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 7,
     p_cgr_with_recursion => adc_util.C_TRUE,
     p_cgr_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(173),
-    p_cru_cgr_id => adc_admin.map_id(171),
+    p_cru_id => adc_admin.map_id(740),
+    p_cru_cgr_id => adc_admin.map_id(738),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = c_true|',
     p_cru_sort_seq => 10,
@@ -16919,9 +16941,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(175),
-    p_cra_cru_id => adc_admin.map_id(173),
-    p_cra_cgr_id => adc_admin.map_id(171),
+    p_cra_id => adc_admin.map_id(742),
+    p_cra_cru_id => adc_admin.map_id(740),
+    p_cra_cgr_id => adc_admin.map_id(738),
     p_cra_cpi_id => 'DOCUMENT',
     p_cra_cat_id => 'IS_MANDATORY',
     p_cra_param_1 => q'||',
@@ -16932,9 +16954,9 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(177),
-    p_cra_cru_id => adc_admin.map_id(173),
-    p_cra_cgr_id => adc_admin.map_id(171),
+    p_cra_id => adc_admin.map_id(744),
+    p_cra_cru_id => adc_admin.map_id(740),
+    p_cra_cgr_id => adc_admin.map_id(738),
     p_cra_cpi_id => 'P7_EMP_JOB_ID',
     p_cra_cat_id => 'RAISE_ITEM_EVENT',
     p_cra_param_1 => q'||',
@@ -16945,8 +16967,8 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(179),
-    p_cru_cgr_id => adc_admin.map_id(171),
+    p_cru_id => adc_admin.map_id(746),
+    p_cru_cgr_id => adc_admin.map_id(738),
     p_cru_name => 'einen Beruf mit Bonusberechtigung wählt',
     p_cru_condition => q'|sadc_ui.is_comm_eligible(P7_EMP_JOB_ID) = C_TRUE|',
     p_cru_sort_seq => 20,
@@ -16954,9 +16976,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(181),
-    p_cra_cru_id => adc_admin.map_id(179),
-    p_cra_cgr_id => adc_admin.map_id(171),
+    p_cra_id => adc_admin.map_id(748),
+    p_cra_cru_id => adc_admin.map_id(746),
+    p_cra_cgr_id => adc_admin.map_id(738),
     p_cra_cpi_id => 'P7_EMP_COMMISSION_PCT',
     p_cra_cat_id => 'IS_MANDATORY',
     p_cra_param_1 => q'||',
@@ -16967,8 +16989,8 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(183),
-    p_cru_cgr_id => adc_admin.map_id(171),
+    p_cru_id => adc_admin.map_id(750),
+    p_cru_cgr_id => adc_admin.map_id(738),
     p_cru_name => 'einen Beruf ohne Bonusberechtigung wählt',
     p_cru_condition => q'|sadc_ui.is_comm_eligible(P7_EMP_JOB_ID) = C_FALSE|',
     p_cru_sort_seq => 30,
@@ -16976,9 +16998,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(185),
-    p_cra_cru_id => adc_admin.map_id(183),
-    p_cra_cgr_id => adc_admin.map_id(171),
+    p_cra_id => adc_admin.map_id(752),
+    p_cra_cru_id => adc_admin.map_id(750),
+    p_cra_cgr_id => adc_admin.map_id(738),
     p_cra_cpi_id => 'P7_EMP_COMMISSION_PCT',
     p_cra_cat_id => 'IS_OPTIONAL',
     p_cra_param_1 => q'||',
@@ -16989,9 +17011,9 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(187),
-    p_cra_cru_id => adc_admin.map_id(183),
-    p_cra_cgr_id => adc_admin.map_id(171),
+    p_cra_id => adc_admin.map_id(754),
+    p_cra_cru_id => adc_admin.map_id(750),
+    p_cra_cgr_id => adc_admin.map_id(738),
     p_cra_cpi_id => 'P7_EMP_COMMISSION_PCT',
     p_cra_cat_id => 'SET_VISUAL_STATE',
     p_cra_param_1 => q'|SHOW_DISABLE|',
@@ -17002,7 +17024,7 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   
-  adc_admin.propagate_rule_change(adc_admin.map_id(171));
+  adc_admin.propagate_rule_change(adc_admin.map_id(738));
 
   commit;
 end;
@@ -17023,15 +17045,15 @@ begin
     p_cgr_page_id => 8);
 
   adc_admin.merge_rule_group(
-    p_cgr_id => adc_admin.map_id(189),
+    p_cgr_id => adc_admin.map_id(756),
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 8,
     p_cgr_with_recursion => adc_util.C_TRUE,
     p_cgr_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(191),
-    p_cru_cgr_id => adc_admin.map_id(189),
+    p_cru_id => adc_admin.map_id(758),
+    p_cru_cgr_id => adc_admin.map_id(756),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = c_true|',
     p_cru_sort_seq => 10,
@@ -17039,9 +17061,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(220),
-    p_cra_cru_id => adc_admin.map_id(191),
-    p_cra_cgr_id => adc_admin.map_id(189),
+    p_cra_id => adc_admin.map_id(760),
+    p_cra_cru_id => adc_admin.map_id(758),
+    p_cra_cgr_id => adc_admin.map_id(756),
     p_cra_cpi_id => 'R8_EMPLOYEES',
     p_cra_cat_id => 'GET_REPORT_SELECTION',
     p_cra_param_1 => q'||',
@@ -17052,8 +17074,8 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(224),
-    p_cru_cgr_id => adc_admin.map_id(189),
+    p_cru_id => adc_admin.map_id(762),
+    p_cru_cgr_id => adc_admin.map_id(756),
     p_cru_name => 'einen Mitarbeiter auswählt',
     p_cru_condition => q'|selection_changed = 'R8_EMPLOYEES'|',
     p_cru_sort_seq => 20,
@@ -17061,9 +17083,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(226),
-    p_cra_cru_id => adc_admin.map_id(224),
-    p_cra_cgr_id => adc_admin.map_id(189),
+    p_cra_id => adc_admin.map_id(764),
+    p_cra_cru_id => adc_admin.map_id(762),
+    p_cra_cgr_id => adc_admin.map_id(756),
     p_cra_cpi_id => 'B8_EDIT_EMP',
     p_cra_cat_id => 'PLSQL_CODE',
     p_cra_param_1 => q'|sadc_ui.adact_control_action;|',
@@ -17075,8 +17097,8 @@ begin
     p_cra_active => adc_util.C_TRUE);
   
   adc_admin.merge_apex_action(    
-    p_caa_id => adc_admin.map_id(217),
-    p_caa_cgr_id => adc_admin.map_id(189),
+    p_caa_id => adc_admin.map_id(766),
+    p_caa_cgr_id => adc_admin.map_id(756),
     p_caa_cty_id => 'ACTION',
     p_caa_name => 'edit-employee',
     p_caa_label => 'Mitarbeiter bearbeiten',
@@ -17091,13 +17113,13 @@ begin
     p_caa_action => '');
   
   adc_admin.merge_apex_action_item(
-    p_cai_caa_id => adc_admin.map_id(217),
-    p_cai_cpi_cgr_id => adc_admin.map_id(189),
+    p_cai_caa_id => adc_admin.map_id(766),
+    p_cai_cpi_cgr_id => adc_admin.map_id(756),
     p_cai_cpi_id => 'B8_EDIT_EMP',
     p_cai_active => adc_util.C_TRUE);
 
 
-  adc_admin.propagate_rule_change(adc_admin.map_id(189));
+  adc_admin.propagate_rule_change(adc_admin.map_id(756));
 
   commit;
 end;
@@ -17118,15 +17140,15 @@ begin
     p_cgr_page_id => 9);
 
   adc_admin.merge_rule_group(
-    p_cgr_id => adc_admin.map_id(230),
+    p_cgr_id => adc_admin.map_id(768),
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 9,
     p_cgr_with_recursion => adc_util.C_TRUE,
     p_cgr_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(232),
-    p_cru_cgr_id => adc_admin.map_id(230),
+    p_cru_id => adc_admin.map_id(770),
+    p_cru_cgr_id => adc_admin.map_id(768),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = c_true|',
     p_cru_sort_seq => 10,
@@ -17134,7 +17156,7 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   
-  adc_admin.propagate_rule_change(adc_admin.map_id(230));
+  adc_admin.propagate_rule_change(adc_admin.map_id(768));
 
   commit;
 end;
@@ -17155,15 +17177,15 @@ begin
     p_cgr_page_id => 10);
 
   adc_admin.merge_rule_group(
-    p_cgr_id => adc_admin.map_id(193),
+    p_cgr_id => adc_admin.map_id(772),
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 10,
     p_cgr_with_recursion => adc_util.C_TRUE,
     p_cgr_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(195),
-    p_cru_cgr_id => adc_admin.map_id(193),
+    p_cru_id => adc_admin.map_id(774),
+    p_cru_cgr_id => adc_admin.map_id(772),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = c_true|',
     p_cru_sort_seq => 10,
@@ -17171,9 +17193,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(234),
-    p_cra_cru_id => adc_admin.map_id(195),
-    p_cra_cgr_id => adc_admin.map_id(193),
+    p_cra_id => adc_admin.map_id(776),
+    p_cra_cru_id => adc_admin.map_id(774),
+    p_cra_cgr_id => adc_admin.map_id(772),
     p_cra_cpi_id => 'R10_EMPLOYEES_IG',
     p_cra_cat_id => 'GET_REPORT_SELECTION',
     p_cra_param_1 => q'|P10_EMP_ID_IG|',
@@ -17184,9 +17206,9 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(236),
-    p_cra_cru_id => adc_admin.map_id(195),
-    p_cra_cgr_id => adc_admin.map_id(193),
+    p_cra_id => adc_admin.map_id(778),
+    p_cra_cru_id => adc_admin.map_id(774),
+    p_cra_cgr_id => adc_admin.map_id(772),
     p_cra_cpi_id => 'R10_EMPLOYEE_IR',
     p_cra_cat_id => 'GET_REPORT_SELECTION',
     p_cra_param_1 => q'|P10_EMP_ID_IR|',
@@ -17197,9 +17219,9 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(238),
-    p_cra_cru_id => adc_admin.map_id(195),
-    p_cra_cgr_id => adc_admin.map_id(193),
+    p_cra_id => adc_admin.map_id(780),
+    p_cra_cru_id => adc_admin.map_id(774),
+    p_cra_cgr_id => adc_admin.map_id(772),
     p_cra_cpi_id => 'R10_EMPLOYEE_CR',
     p_cra_cat_id => 'GET_REPORT_SELECTION',
     p_cra_param_1 => q'||',
@@ -17210,8 +17232,8 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(240),
-    p_cru_cgr_id => adc_admin.map_id(193),
+    p_cru_id => adc_admin.map_id(782),
+    p_cru_cgr_id => adc_admin.map_id(772),
     p_cru_name => 'eine Zeile im klassischen Bericht wählt',
     p_cru_condition => q'|selection_changed = 'R10_EMPLOYEE_CR'|',
     p_cru_sort_seq => 20,
@@ -17219,9 +17241,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(242),
-    p_cra_cru_id => adc_admin.map_id(240),
-    p_cra_cgr_id => adc_admin.map_id(193),
+    p_cra_id => adc_admin.map_id(784),
+    p_cra_cru_id => adc_admin.map_id(782),
+    p_cra_cgr_id => adc_admin.map_id(772),
     p_cra_cpi_id => 'DOCUMENT',
     p_cra_cat_id => 'NOTIFY',
     p_cra_param_1 => q'|p_event_data|',
@@ -17232,7 +17254,7 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   
-  adc_admin.propagate_rule_change(adc_admin.map_id(193));
+  adc_admin.propagate_rule_change(adc_admin.map_id(772));
 
   commit;
 end;
@@ -17253,15 +17275,15 @@ begin
     p_cgr_page_id => 11);
 
   adc_admin.merge_rule_group(
-    p_cgr_id => adc_admin.map_id(197),
+    p_cgr_id => adc_admin.map_id(786),
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 11,
     p_cgr_with_recursion => adc_util.C_TRUE,
     p_cgr_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(199),
-    p_cru_cgr_id => adc_admin.map_id(197),
+    p_cru_id => adc_admin.map_id(788),
+    p_cru_cgr_id => adc_admin.map_id(786),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = c_true|',
     p_cru_sort_seq => 10,
@@ -17269,7 +17291,7 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   
-  adc_admin.propagate_rule_change(adc_admin.map_id(197));
+  adc_admin.propagate_rule_change(adc_admin.map_id(786));
 
   commit;
 end;
@@ -17290,15 +17312,15 @@ begin
     p_cgr_page_id => 12);
 
   adc_admin.merge_rule_group(
-    p_cgr_id => adc_admin.map_id(201),
+    p_cgr_id => adc_admin.map_id(790),
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 12,
     p_cgr_with_recursion => adc_util.C_TRUE,
     p_cgr_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(203),
-    p_cru_cgr_id => adc_admin.map_id(201),
+    p_cru_id => adc_admin.map_id(792),
+    p_cru_cgr_id => adc_admin.map_id(790),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = c_true|',
     p_cru_sort_seq => 10,
@@ -17306,7 +17328,7 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   
-  adc_admin.propagate_rule_change(adc_admin.map_id(201));
+  adc_admin.propagate_rule_change(adc_admin.map_id(790));
 
   commit;
 end;
@@ -17327,15 +17349,15 @@ begin
     p_cgr_page_id => 13);
 
   adc_admin.merge_rule_group(
-    p_cgr_id => adc_admin.map_id(205),
+    p_cgr_id => adc_admin.map_id(794),
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 13,
     p_cgr_with_recursion => adc_util.C_TRUE,
     p_cgr_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(207),
-    p_cru_cgr_id => adc_admin.map_id(205),
+    p_cru_id => adc_admin.map_id(796),
+    p_cru_cgr_id => adc_admin.map_id(794),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = c_true|',
     p_cru_sort_seq => 10,
@@ -17343,7 +17365,7 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   
-  adc_admin.propagate_rule_change(adc_admin.map_id(205));
+  adc_admin.propagate_rule_change(adc_admin.map_id(794));
 
   commit;
 end;
@@ -17364,15 +17386,15 @@ begin
     p_cgr_page_id => 14);
 
   adc_admin.merge_rule_group(
-    p_cgr_id => adc_admin.map_id(209),
+    p_cgr_id => adc_admin.map_id(798),
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 14,
     p_cgr_with_recursion => adc_util.C_TRUE,
     p_cgr_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(211),
-    p_cru_cgr_id => adc_admin.map_id(209),
+    p_cru_id => adc_admin.map_id(800),
+    p_cru_cgr_id => adc_admin.map_id(798),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = c_true|',
     p_cru_sort_seq => 10,
@@ -17380,7 +17402,7 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   
-  adc_admin.propagate_rule_change(adc_admin.map_id(209));
+  adc_admin.propagate_rule_change(adc_admin.map_id(798));
 
   commit;
 end;
@@ -17401,15 +17423,15 @@ begin
     p_cgr_page_id => 15);
 
   adc_admin.merge_rule_group(
-    p_cgr_id => adc_admin.map_id(213),
+    p_cgr_id => adc_admin.map_id(802),
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 15,
     p_cgr_with_recursion => adc_util.C_TRUE,
     p_cgr_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(215),
-    p_cru_cgr_id => adc_admin.map_id(213),
+    p_cru_id => adc_admin.map_id(804),
+    p_cru_cgr_id => adc_admin.map_id(802),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = c_true|',
     p_cru_sort_seq => 10,
@@ -17417,7 +17439,7 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   
-  adc_admin.propagate_rule_change(adc_admin.map_id(213));
+  adc_admin.propagate_rule_change(adc_admin.map_id(802));
 
   commit;
 end;
@@ -17438,15 +17460,15 @@ begin
     p_cgr_page_id => 16);
 
   adc_admin.merge_rule_group(
-    p_cgr_id => adc_admin.map_id(391),
+    p_cgr_id => adc_admin.map_id(806),
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 16,
     p_cgr_with_recursion => adc_util.C_TRUE,
     p_cgr_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(393),
-    p_cru_cgr_id => adc_admin.map_id(391),
+    p_cru_id => adc_admin.map_id(808),
+    p_cru_cgr_id => adc_admin.map_id(806),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = c_true|',
     p_cru_sort_seq => 10,
@@ -17454,9 +17476,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(395),
-    p_cra_cru_id => adc_admin.map_id(393),
-    p_cra_cgr_id => adc_admin.map_id(391),
+    p_cra_id => adc_admin.map_id(810),
+    p_cra_cru_id => adc_admin.map_id(808),
+    p_cra_cgr_id => adc_admin.map_id(806),
     p_cra_cpi_id => 'DOCUMENT',
     p_cra_cat_id => 'IS_MANDATORY',
     p_cra_param_1 => q'||',
@@ -17467,8 +17489,8 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(397),
-    p_cru_cgr_id => adc_admin.map_id(391),
+    p_cru_id => adc_admin.map_id(812),
+    p_cru_cgr_id => adc_admin.map_id(806),
     p_cru_name => 'eine Seite im Modus COMMISSION öffnet',
     p_cru_condition => q'|initializing = c_true and P16_PAGE_MODE = 'COMMISSION'|',
     p_cru_sort_seq => 20,
@@ -17476,9 +17498,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(399),
-    p_cra_cru_id => adc_admin.map_id(397),
-    p_cra_cgr_id => adc_admin.map_id(391),
+    p_cra_id => adc_admin.map_id(814),
+    p_cra_cru_id => adc_admin.map_id(812),
+    p_cra_cgr_id => adc_admin.map_id(806),
     p_cra_cpi_id => 'P16_EMP_COMMISSION_PCT',
     p_cra_cat_id => 'IS_MANDATORY',
     p_cra_param_1 => q'||',
@@ -17489,8 +17511,8 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(401),
-    p_cru_cgr_id => adc_admin.map_id(391),
+    p_cru_id => adc_admin.map_id(816),
+    p_cru_cgr_id => adc_admin.map_id(806),
     p_cru_name => 'die Seite in einem anderen Modus öffnet',
     p_cru_condition => q'|initializing = c_true and coalesce(P16_PAGE_MODE, 'FOO') != 'COMMISSION'|',
     p_cru_sort_seq => 30,
@@ -17498,9 +17520,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(404),
-    p_cra_cru_id => adc_admin.map_id(401),
-    p_cra_cgr_id => adc_admin.map_id(391),
+    p_cra_id => adc_admin.map_id(818),
+    p_cra_cru_id => adc_admin.map_id(816),
+    p_cra_cgr_id => adc_admin.map_id(806),
     p_cra_cpi_id => 'P16_EMP_COMMISSION_PCT',
     p_cra_cat_id => 'SET_VISUAL_STATE',
     p_cra_param_1 => q'|HIDE|',
@@ -17511,7 +17533,7 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   
-  adc_admin.propagate_rule_change(adc_admin.map_id(391));
+  adc_admin.propagate_rule_change(adc_admin.map_id(806));
 
   commit;
 end;
@@ -17532,15 +17554,15 @@ begin
     p_cgr_page_id => 99);
 
   adc_admin.merge_rule_group(
-    p_cgr_id => adc_admin.map_id(361),
+    p_cgr_id => adc_admin.map_id(820),
     p_cgr_app_id => l_app_id,
     p_cgr_page_id => 99,
     p_cgr_with_recursion => adc_util.C_TRUE,
     p_cgr_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(363),
-    p_cru_cgr_id => adc_admin.map_id(361),
+    p_cru_id => adc_admin.map_id(822),
+    p_cru_cgr_id => adc_admin.map_id(820),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = c_true|',
     p_cru_sort_seq => 10,
@@ -17548,9 +17570,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(367),
-    p_cra_cru_id => adc_admin.map_id(363),
-    p_cra_cgr_id => adc_admin.map_id(361),
+    p_cra_id => adc_admin.map_id(824),
+    p_cra_cru_id => adc_admin.map_id(822),
+    p_cra_cgr_id => adc_admin.map_id(820),
     p_cra_cpi_id => 'DOCUMENT',
     p_cra_cat_id => 'IS_MANDATORY',
     p_cra_param_1 => q'||',
@@ -17561,7 +17583,7 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
   
-  adc_admin.propagate_rule_change(adc_admin.map_id(361));
+  adc_admin.propagate_rule_change(adc_admin.map_id(820));
 
   commit;
 end;

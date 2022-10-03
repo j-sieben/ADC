@@ -435,7 +435,7 @@ as
     adc_api.execute_action(
       p_cat_id => 'SET_ITEM_LABEL',
       p_cpi_id => p_cpi_id,
-      p_param_1 => trim(chr(39) from apex_escape.js_literal(p_item_label)),
+      p_param_1 => trim(adc_util.C_APOS from apex_escape.js_literal(p_item_label)),
       p_param_2 => p_jquery_selector);
       
     pit.leave_optional;
@@ -527,7 +527,7 @@ as
     adc_api.execute_action(
       p_cat_id => 'SET_REGION_CONTENT',
       p_cpi_id => p_region_id,
-      p_param_1 => trim(chr(39) from apex_escape.js_literal(p_html_code)));
+      p_param_1 => trim(adc_util.C_APOS from apex_escape.js_literal(p_html_code)));
       
     pit.leave_optional;
   end set_region_content;

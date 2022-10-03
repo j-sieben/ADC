@@ -89,11 +89,26 @@ as
   C_PARAM_EVENT_DATA constant adc_util.ora_name_type := 'EVENT_DATA';
   
   C_DELIMITER constant varchar2(1 byte) := ',';
-  C_CR constant varchar2(2 byte) := chr(10);
   
   /**
     Group: Public methods
    */
+  /**
+    Function: C_CR
+      Getter method to retrive a operation system aware return character
+   */
+  function C_CR
+    return varchar2;
+    
+    
+  /**
+    Function: C_APOS
+      Getter method to retrive an apostrophe character
+   */
+  function C_APOS
+    return varchar2;
+    
+    
   /** 
     Function: C_TRUE
       Getter method to retrieve a TRUE value as a flag_type

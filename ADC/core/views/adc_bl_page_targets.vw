@@ -69,9 +69,6 @@ select cgr_id, 'DOCUMENT', 'DOCUMENT' || case page_mode when 'Modal Dialog' then
     on application_id = sgr.cgr_app_id
    and page_id = sgr.cgr_page_id
  union all
-select cgr_id, 'COMMAND', 'COMMAND', 'EVENT', null, null, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
-  from adc_rule_groups
- union all
 select cgr_id, 'ALL', 'ALL', 'FRAMEWORK', null, null, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
   from adc_rule_groups;
 

@@ -1,8 +1,7 @@
 set define off
-set sqlprefix off
 
 begin
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_RULE_GROUP',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'DEFAULT_APP',
@@ -39,7 +38,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_RULE_GROUP',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'EXPORT_APP',
@@ -75,7 +74,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'APEX_ACTION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ACTION',
@@ -84,7 +83,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'APEX_ACTION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'TOGGLE',
@@ -108,7 +107,7 @@ q'{}}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'APEX_ACTION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'RADIO_GROUP',
@@ -135,7 +134,7 @@ q'{}}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'APEX_ACTION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'RADIO_GROUP_CHOICE',
@@ -151,7 +150,7 @@ q'{}}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'JSON_ERRORS',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
@@ -160,7 +159,7 @@ q'{}}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'JSON_ERRORS',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ERROR',
@@ -169,30 +168,30 @@ q'{}}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'JS_SCRIPT_FRAME',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
-    p_uttm_text => q'{<script id="#ID#">
-  /** Total duration: #DURATION#hsec*/
-  #JS_FILE#.setItemValues(#ITEM_JSON#);
-  #JS_FILE#.setErrors(#ERROR_JSON#);
-#SCRIPT#
-</script>}',
+    p_uttm_text => q'{<script id="#ID#">\CR\}' || 
+q'{  /** Total duration: #DURATION#hsec*/\CR\}' || 
+q'{  #JS_FILE#.setItemValues(#ITEM_JSON#);\CR\}' || 
+q'{  #JS_FILE#.setErrors(#ERROR_JSON#);\CR\}' || 
+q'{#SCRIPT#\CR\}' || 
+q'{</script>}',
     p_uttm_log_text => q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
-    p_uttm_name => 'DEAFULT_APEX_ACTION',
+  utl_text_admin.merge_template(
+    p_uttm_name => 'DEFAULT_APEX_ACTION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
-    p_uttm_text => q'{function(){de.condes.plugin.adc.executeCommand('#CAA_NAME#');}}',
+    p_uttm_text => q'{function(){de.condes.plugin.adc.actions.executeCommand('#CAA_NAME#');}}',
     p_uttm_log_text => q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'ACTION_TYPE_HELP',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
@@ -201,7 +200,7 @@ q'{}}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'ACTION_TYPE_HELP',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'PARAMETERS',
@@ -210,7 +209,7 @@ q'{}}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'APEX_ACTION_TYPE',
@@ -224,7 +223,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'PAGE_ITEM_TYPE_GROUP',
@@ -237,7 +236,21 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
+    p_uttm_name => 'EXPORT_ACTION_TYPE',
+    p_uttm_type => 'ADC',
+    p_uttm_mode => 'EVENT_TYPE',
+    p_uttm_text => q'{  adc_admin.merge_event_type(\CR\}' || 
+q'{    p_cet_id => '#CET_ID#',\CR\}' || 
+q'{    p_cet_name => '#CET_NAME#',\CR\}' || 
+q'{    p_cet_column_name => '#CET_COLUMN_NAME#',\CR\}' || 
+q'{    p_cet_is_custom_event => #CET_IS_CUSTOM_EVENT#);\CR\}' || 
+q'{}',
+    p_uttm_log_text => q'{}',
+    p_uttm_log_severity => 70
+  );
+
+  utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'PAGE_ITEM_TYPE',
@@ -254,7 +267,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'RULE_VIEW',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
@@ -268,14 +281,15 @@ q'{              adc_api.get_event_data p_event_data,\CR\}' ||
 q'{              adc_api.get_firing_item p_firing_item\CR\}' || 
 q'{         from dual),\CR\}' || 
 q'{     session_state as(\CR\}' || 
-q'{       select #COLUMN_LIST#,\CR\}' || 
+q'{       select #EVENT_LIST#,\CR\}' || 
+q'{              #COLUMN_LIST#,\CR\}' || 
 q'{              c_true, c_false, c_clicked\CR\}' || 
 q'{         from params p),\CR\}' || 
 q'{       data as (\CR\}' || 
 q'{       select r.cru_id, r.cru_name, r.cru_firing_items, r.cru_fire_on_page_load,\CR\}' || 
 q'{              r.cra_cpi_id, r.cra_cat_id, r.cra_sort_seq, r.cra_param_1, r.cra_param_2, r.cra_param_3, r.cra_on_error, r.cra_raise_recursive,\CR\}' || 
 q'{              rank() over (order by r.cru_sort_seq) rang, s.initializing initializing,\CR\}' || 
-q'{              c_true, c_false, c_clicked\CR\}' || 
+q'{              firing_item, c_true, c_false, c_clicked\CR\}' || 
 q'{         from adc_bl_rules r\CR\}' || 
 q'{         join session_state s\CR\}' || 
 q'{           on instr(',' || r.cru_firing_items || ',', ',' || s.firing_item || ',') > 0\CR\}' || 
@@ -303,7 +317,7 @@ q'{ order by cru.cru_sort_seq desc, crg.cra_sort_seq}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'RULE_VALIDATION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'DEFAULT',
@@ -316,7 +330,8 @@ q'{              adc_api.get_event_data p_event_data,\CR\}' ||
 q'{              adc_api.get_firing_item p_firing_item\CR\}' || 
 q'{         from dual),\CR\}' || 
 q'{     session_state as(\CR\}' || 
-q'{       select #COLUMN_LIST#,\CR\}' || 
+q'{       select #EVENT_LIST#,\CR\}' || 
+q'{              #COLUMN_LIST#,\CR\}' || 
 q'{              c_true, c_false, c_clicked\CR\}' || 
 q'{         from params)\CR\}' || 
 q'{select *\CR\}' || 
@@ -326,7 +341,7 @@ q'{ where #CONDITION#}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'RULE_VIEW',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'WHERE_CLAUSE',
@@ -335,7 +350,7 @@ q'{ where #CONDITION#}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_RULE_GROUP',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'DEFAULT',
@@ -374,7 +389,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_RULE_GROUP',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'RULE',
@@ -392,7 +407,7 @@ q'{  #RULE_ACTIONS#}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_RULE_GROUP',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'RULE_ACTION',
@@ -414,7 +429,7 @@ q'{    p_cra_active => #CRA_ACTIVE#);}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_RULE_GROUP',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'APEX_ACTION_ACTION',
@@ -440,7 +455,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_RULE_GROUP',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'APEX_ACTION_TOGGLE',
@@ -470,7 +485,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_RULE_GROUP',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'APEX_ACTION_RADIO_GROUP',
@@ -502,7 +517,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_RULE_GROUP',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'APEX_ACTION_ITEM',
@@ -517,7 +532,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'VIEW_ITEM',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ITEM',
@@ -526,7 +541,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'VIEW_INIT',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ITEM',
@@ -535,7 +550,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'VIEW_ITEM',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'NUMBER_ITEM',
@@ -544,7 +559,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'VIEW_INIT',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'NUMBER_ITEM',
@@ -553,7 +568,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'VIEW_ITEM',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'DATE_ITEM',
@@ -562,7 +577,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'VIEW_INIT',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'DATE_ITEM',
@@ -571,7 +586,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'VIEW_ITEM',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'APP_ITEM',
@@ -580,7 +595,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'VIEW_INIT',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'APP_ITEM',
@@ -589,7 +604,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'VIEW_ITEM',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'BUTTON',
@@ -598,7 +613,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'VIEW_INIT',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'BUTTON',
@@ -607,7 +622,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'VIEW_ITEM',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'REGION',
@@ -616,7 +631,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'VIEW_INIT',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'REGION',
@@ -625,7 +640,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'VIEW_ITEM',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'DOCUMENT',
@@ -634,7 +649,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'VIEW_INIT',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'DOCUMENT',
@@ -643,7 +658,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
@@ -659,6 +674,9 @@ q'{#ACTION_PARAM_TYPES#\CR\}' ||
 q'{\CR\}' || 
 q'{  -- PAGE_ITEM_TYPE_GROUPS\CR\}' || 
 q'{#PAGE_ITEM_TYPE_GROUPS#\CR\}' || 
+q'{\CR\}' || 
+q'{  -- EVENT_TYPES\CR\}' || 
+q'{#EVENT_TYPES#\CR\}' || 
 q'{\CR\}' || 
 q'{  -- PAGE_ITEM_TYPES\CR\}' || 
 q'{#PAGE_ITEM_TYPES#\CR\}' || 
@@ -685,7 +703,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'PARAM_VISUAL_TYPE',
@@ -700,7 +718,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'PARAM_TYPE',
@@ -719,7 +737,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ITEM_FOCUS',
@@ -736,7 +754,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ACTION_PARAMS',
@@ -754,7 +772,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ACTION_TYPE_GROUP',
@@ -768,7 +786,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'INITIALIZE_CODE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
@@ -784,7 +802,7 @@ q'{end;}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'INITIALIZE_CODE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ROWID',
@@ -795,7 +813,7 @@ q'{ where #ATTRIBUTE_04# = (select v('#ATTRIBUTE_03#') from dual)}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'INITIALIZE_CODE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'DEFAULT',
@@ -806,7 +824,7 @@ q'{ where #ATTRIBUTE_04# = (select v('#ATTRIBUTE_03#') from dual)}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ACTION_TYPE',
@@ -828,7 +846,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'INITIALIZE_CODE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'VALUE',
@@ -837,7 +855,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'PAGE_ITEM_ERROR',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
@@ -846,7 +864,7 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'PAGE_ITEM_ERROR',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'DEFAULT',
@@ -855,12 +873,12 @@ q'{}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'APEX_ACTION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
     p_uttm_text => q'{\CR\}' || 
-q'{// #APEX_ACTION_ORIGIN#\CR\}' || 
+q'{/** #APEX_ACTION_ORIGIN# */\CR\}' || 
 q'{#BIND_ACTION_ITEMS#\CR\}' || 
 q'{\CR\}' || 
 q'{apex.actions.add(\CR\}' || 
@@ -870,7 +888,7 @@ q'{  ]);}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'APEX_ACTION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'BUTTON',
@@ -879,7 +897,7 @@ q'{  ]);}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'INITIALIZE_FORM',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
@@ -893,7 +911,7 @@ q'{natural join session_state}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'INITIALIZE_FORM',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'STATE',
@@ -902,7 +920,7 @@ q'{natural join session_state}',
     p_uttm_log_severity => 70
   );
 
-  utl_text.merge_template(
+  utl_text_admin.merge_template(
     p_uttm_name => 'INITIALIZE_FORM',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'COLUMNS',
@@ -914,4 +932,3 @@ q'{natural join session_state}',
 end;
 /
 set define on
-set sqlprefix on

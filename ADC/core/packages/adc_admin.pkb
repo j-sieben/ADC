@@ -28,8 +28,7 @@ as
   C_REGEX_ITEM constant varchar2(50 byte) := q'~(^|[ '\(])#ITEM#([ ',=<^>\)]|$)~';
   C_REGEX_CSS constant varchar2(50 byte) := q'~'.+'~';
   
-  C_CR constant char(1 byte) := chr(10);
-  C_APOS constant char(1 byte) := chr(39);
+  C_CR constant varchar2(2 byte) := adc_util.C_CR;
   C_PIPE constant char(1 byte) := '|';
   
   C_CPT_VIEW_NAME_PREFIX constant adc_util.ora_name_type := 'ADC_PARAM_LOV_';  
@@ -72,22 +71,31 @@ as
 
     -- generate view SQL
     with params as(
-           select uttm_text template, uttm_log_text log_template,
+           select /*+ no_merge */
+                  uttm_text template, uttm_log_text log_template,
                   uttm_name, uttm_mode, p_cgr_id g_cgr_id,
                   adc_util.C_TRUE c_true,
-                  adc_util.C_CR c_cr
+                  C_CR c_cr
              from utl_text_templates
             where uttm_type = C_ADC
               and uttm_name = C_UTTM_NAME)
     select utl_text.generate_text(cursor(
              select template, log_template, g_cgr_id cgr_id,
+                    -- Events
+                    utl_text.generate_text(cursor(
+                      select template, cet_id, lower(cet_column_name) cet_column_name
+                        from adc_event_types_v
+                        join params
+                          on uttm_mode = case cet_is_custom_event when c_true then 'EVENT' else upper(cet_id) end
+                       where (cet_is_custom_event = c_true
+                          or cet_id in ('initialize', 'command'))
+                       order by case cet_is_custom_event when c_true then 1 else 0 end, cet_id), ',' || C_CR, 14) event_list,
                     -- Spaltenliste im SessionState
                     utl_text.generate_text(cursor(
-                      select /*+ no_merge (p) */
-                             cit_col_template template,
+                      select cit_col_template template,
                              replace(cpi_conversion, 'G') conversion,
                              cpi_id item,
-                             cit_event
+                             cit_cet_id
                         from adc_page_item_types_v sit
                         left join (
                                select *
@@ -101,8 +109,7 @@ as
                        order by cit_include_in_view desc, cpi_id), ',' || C_CR, 14) column_list,
                     coalesce(
                       utl_text.generate_text(cursor(
-                        select /*+ no_merge (p) */
-                               template, cru_id, cru_name, cru_condition, cru_firing_items,
+                        select template, cru_id, cru_name, cru_condition, cru_firing_items,
                                row_number() over (order by cru_id) sort_seq
                           from adc_rules
                           join params p
@@ -153,7 +160,7 @@ as
 
       with params as (
            -- Get common values, depending on whether the page contains a DML_FETCH_ROW process
-           select cgr.cgr_id, adc_util.C_CR cr,
+           select cgr.cgr_id, C_CR cr,
                   uttm.uttm_name, uttm.uttm_mode, uttm.uttm_text template,
                   app.attribute_02, app.attribute_03, app.attribute_04, app.application_id, app.page_id
              from apex_application_page_proc app
@@ -173,7 +180,7 @@ as
                       select p.template, p.attribute_02, p.attribute_03, p.attribute_04
                         from params p
                        where p.uttm_mode = case p.attribute_04 when 'ROWID' then p.attribute_04 else 'DEFAULT' end
-                         and p.uttm_name = 'INITIALIZE_COLUMN'), ',' || adc_util.C_CR) sql_stmt,
+                         and p.uttm_name = 'INITIALIZE_COLUMN'), ',' || C_CR) sql_stmt,
                     -- generate adc_util.set_session_state calls for any page element
                     utl_text.generate_text(cursor(
                       select p.template, sit.cit_init_template, cpi.cpi_conversion,
@@ -189,7 +196,7 @@ as
                           on cpi.cpi_cit_id = sit.cit_id
                        where api.item_source_type = 'Database Column'
                          and cpi.cpi_is_required = adc_util.C_TRUE
-                         and p.uttm_name = 'INITIALIZE_COL_VAL'), adc_util.C_CR) item_stmt
+                         and p.uttm_name = 'INITIALIZE_COL_VAL'), C_CR) item_stmt
                from dual)) resultat
       into l_initialization_code
       from params
@@ -302,7 +309,7 @@ as
                      select cpi_cgr_id, cpi_id
                        from adc_page_items cpi
                       where (regexp_instr(upper(p_new_condition), replace(C_REGEX_ITEM, '#ITEM#', cpi.cpi_id)) > 0
-                         or instr(cpi.cpi_css, replace(regexp_substr(p_new_condition, C_REGEX_CSS), C_APOS, C_PIPE)) > 0)
+                         or instr(cpi.cpi_css, replace(regexp_substr(p_new_condition, C_REGEX_CSS), adc_util.C_APOS, C_PIPE)) > 0)
                         and cpi_cgr_id = p_cgr_id)) s
          on (t.cpi_id = s.cpi_id
          and t.cpi_cgr_id = s.cpi_cgr_id)
@@ -394,7 +401,7 @@ as
              join adc_rules cru
                on cpi.cpi_cgr_id = cru.cru_cgr_id
               and (regexp_instr(upper(cru.cru_condition), replace(C_REGEX_ITEM, '#ITEM#', cpi.cpi_id)) > 0
-               or instr(cpi.cpi_css, replace(regexp_substr(cru.cru_condition, C_REGEX_CSS), C_APOS, C_PIPE)) > 0)
+               or instr(cpi.cpi_css, replace(regexp_substr(cru.cru_condition, C_REGEX_CSS), adc_util.C_APOS, C_PIPE)) > 0)
             where cpi.cpi_cgr_id = p_cgr_id
               and cru.cru_active = adc_util.C_TRUE
             group by cru.cru_id) s
@@ -413,13 +420,15 @@ as
     Parameters:
       p_cgr_app_id - ID of the APEX application to integrate the rule group script into
       p_script - Rule group script
+      p_install_id - ID for the APEX supporting object install id
       
     Returns:
       Script with the APEX export and rule group script integrated
    */
   function integrate_rule_groups_into_app(
     p_cgr_app_id in adc_rule_groups.cgr_app_id%type,
-    p_rule_group in clob)
+    p_rule_group in clob,
+    p_install_id in number)
     return clob
   as
     C_MAX_LENGTH constant pls_integer := 30000;
@@ -431,13 +440,15 @@ as
     l_length pls_integer;
     l_buffer utl_apex.max_char;
     l_script clob;
+    l_prefix adc_util.max_char;
   begin
     dbms_lob.createtemporary(l_script, false, dbms_lob.call);
     
     -- Get APEX application
     l_export_file := apex_export.get_application (
                        p_application_id => p_cgr_app_id,
-                       p_with_ir_public_reports => true);
+                       p_with_ir_public_reports => true,
+                       p_with_supporting_objects => 'N');
                 
     -- Find position to integrate rule script into the export file
     l_length := dbms_lob.getlength(l_export_file(1).contents);
@@ -454,9 +465,16 @@ as
         l_amount := l_amount + 1000;
         dbms_lob.read(l_export_file(1).contents, l_amount, l_offset, l_buffer);
         dbms_lob.append(l_script, substr(l_buffer, 1, instr(l_buffer, C_END_COMMENT) - 1));
-        dbms_lob.append(l_script, 'set define ^' || chr(13));
+      
+      select replace(uttm_text, '#CGR_INSTALL_ID#', p_install_id)
+        into l_prefix
+        from utl_text_templates
+       where uttm_type = C_ADC
+         and uttm_name = 'EXPORT_RULE_GROUP'
+         and uttm_mode = 'DEFAULT_APP_PREFIX';
+         
+        dbms_lob.append(l_script, l_prefix);
         dbms_lob.append(l_script, p_rule_group);
-        dbms_lob.append(l_script, 'set define on' || chr(13));
         dbms_lob.append(l_script, substr(l_buffer, instr(l_buffer, C_END_COMMENT)));
         exit;
       else
@@ -931,11 +949,13 @@ as
    */ 
   function export_rule_group(
     p_cgr_id in adc_rule_groups.cgr_id%type,
-    p_mode in varchar2 default C_APP_GROUPS)
+    p_mode in varchar2 default C_APP_GROUPS,
+    p_install_id in number default null)
     return clob
   as
     C_UTTM_NAME constant utl_text_templates.uttm_name%type := 'EXPORT_RULE_GROUP';
     l_template utl_text_templates.uttm_mode%type;
+    l_stmt_frame clob;
     l_stmt clob;
   begin      
     -- Create export script based on UTL_TEXT export templates
@@ -946,7 +966,8 @@ as
                   case p_mode when C_APEX_APP then 'DEFAULT_APP' else C_DEFAULT end g_mode,
                   cgr_id, cgr_app_id, cgr_page_id, 
                   adc_util.to_bool(cgr_active) cgr_active,
-                  adc_util.to_bool(cgr_with_recursion) cgr_with_recursion
+                  adc_util.to_bool(cgr_with_recursion) cgr_with_recursion,
+                  p_install_id cgr_install_id
              from utl_text_templates
             cross join adc_rule_groups
             where uttm_type = C_ADC
@@ -1002,6 +1023,25 @@ as
       into l_stmt
       from params p
      where uttm_mode = g_mode;
+     
+    if p_mode = C_APEX_APP then
+      l_stmt := replace(replace(utl_text.wrap_string(l_stmt), ' ||', ','), '\CR\');
+      select utl_text.generate_text(cursor(
+               select uttm_text template, cgr_id * cgr_id cgr_id_square, lower(page_alias) cgr_page_alias, 
+                      cgr_sort_seq, p_install_id cgr_install_id
+                 from (select cgr.*, rank() over (partition by cgr_app_id order by cgr_page_id) * 10 cgr_sort_seq
+                         from adc_rule_groups cgr)
+                 join apex_application_pages
+                   on cgr_app_id = application_id
+                  and cgr_page_id = page_id
+                where cgr_id = p_cgr_id)) frame
+        into l_stmt_frame
+        from utl_text_templates
+       where uttm_type = C_ADC
+         and uttm_name = C_UTTM_NAME
+         and uttm_mode = 'DEFAULT_APP_FRAME';
+      l_stmt := utl_text.clob_replace(l_stmt_frame, '#CGR_SCRIPT#', l_stmt);
+    end if;
     return l_stmt;
   end export_rule_group;
   
@@ -1041,6 +1081,7 @@ as
     
     l_cgr_app_id adc_rule_groups.cgr_app_id%type;
     l_cgr_page_id adc_rule_groups.cgr_page_id%type;
+    l_install_id number;
   begin
     pit.enter_mandatory(
       p_params => msg_params(
@@ -1052,6 +1093,10 @@ as
     dbms_lob.createtemporary(l_clob, false, dbms_lob.call);
     l_cgr_app_id := p_cgr_app_id;
     l_cgr_page_id := p_cgr_page_id;
+    
+    if p_mode = C_APEX_APP then
+      l_install_id := trunc(dbms_random.value * 100000000);
+    end if;
                     
     validate_export_rule_groups(
       p_cgr_app_id => l_cgr_app_id,
@@ -1065,10 +1110,14 @@ as
           l_clob, 
           export_rule_group(
             p_cgr_id => cgr.cgr_id,
-            p_mode => p_mode));
+            p_mode => p_mode,
+            p_install_id => l_install_id));
       end loop;
-      
-      l_clob := integrate_rule_groups_into_app(p_cgr_app_id, l_clob);
+         
+      l_clob := integrate_rule_groups_into_app(
+                  p_cgr_app_id => p_cgr_app_id, 
+                  p_rule_group => l_clob,
+                  p_install_id => l_install_id);
       l_blob := utl_text.clob_to_blob(l_clob);
       
       apex_zip.add_file(
@@ -1325,20 +1374,30 @@ as
 
     -- create validation statement
     with params as(
-           select uttm_text template,
+           select uttm_text template, uttm_mode,
                   p_row.cru_cgr_id cgr_id,
-                  p_row.cru_condition condition
+                  p_row.cru_condition condition,
+                  adc_util.c_true c_true
              from utl_text_templates
             where uttm_type = C_ADC
-              and uttm_name = C_UTTM_NAME
-              and uttm_mode = C_DEFAULT)
+              and uttm_name in (C_UTTM_NAME, 'RULE_VIEW'))
     select utl_text.generate_text(cursor(
              select p.template, p.condition,
+                    -- Events
+                    utl_text.generate_text(cursor(
+                      select template, cet_id, lower(cet_column_name) cet_column_name
+                        from adc_event_types_v
+                        join params
+                          on uttm_mode = case cet_is_custom_event when c_true then 'EVENT' else upper(cet_id) end
+                       where (cet_is_custom_event = c_true
+                          or cet_id in ('initialize', 'command'))
+                       order by case cet_is_custom_event when c_true then 1 else 0 end, cet_id), ',' || C_CR, 14) event_list,
+                    -- Column List
                     utl_text.generate_text(cursor(
                       select cit_col_template template,
                              replace(cpi_conversion, 'G') conversion,
                              cpi_id item,
-                             cit_event
+                             cit_cet_id
                         from adc_page_item_types_v sit
                         left join (
                                select *
@@ -1347,10 +1406,11 @@ as
                           on sit.cit_id = cpi.cpi_cit_id
                        where adc_util.C_TRUE in (cpi_is_required, cit_include_in_view)
                          and cit_col_template is not null
-                      order by cit_include_in_view desc, cpi_id), ',' || adc_util.C_CR, 14) column_list
+                      order by cit_include_in_view desc, cpi_id), ',' || C_CR, 14) column_list
                from dual)) resultat
       into l_stmt
-      from params p;
+      from params p
+     where uttm_mode = C_DEFAULT;
 
     -- perform validation
     begin
@@ -2357,6 +2417,7 @@ as
     l_action_param_visual_types clob;
     l_action_param_types clob;
     l_page_item_type_groups clob;
+    l_event_types clob;
     l_page_item_types clob;
     l_action_item_focus clob;
     l_action_type_groups clob;
@@ -2422,16 +2483,27 @@ as
      where uttm_type = C_ADC
        and uttm_name = C_UTTM_NAME
        and uttm_mode = 'PAGE_ITEM_TYPE_GROUP';
+       
+    select utl_text.generate_text(cursor(
+            select p.uttm_text template,
+                   cet_id, cet_name, cet_cig_id, cet_column_name,
+                   adc_util.to_bool(cet_is_custom_event) cet_is_custom_event
+              from adc_event_types_v
+          ))
+      into l_event_types
+      from utl_text_templates p
+     where uttm_type = C_ADC
+       and uttm_name = C_UTTM_NAME
+       and uttm_mode = 'EVENT_TYPE';
 
     select utl_text.generate_text(cursor(
             select p.uttm_text template,
                    cit_id, cit_cig_id, cit_name, 
                    adc_util.to_bool(cit_has_value) cit_has_value, 
                    adc_util.to_bool(cit_include_in_view) cit_include_in_view, 
-                   cit_event, 
+                   cit_cet_id, 
                    utl_text.wrap_string(cit_col_template, C_WRAP_START, C_WRAP_END) cit_col_template, 
-                   utl_text.wrap_string(cit_init_template, C_WRAP_START, C_WRAP_END) cit_init_template, 
-                   adc_util.to_bool(cit_is_custom_event) cit_is_custom_event
+                   utl_text.wrap_string(cit_init_template, C_WRAP_START, C_WRAP_END) cit_init_template
               from adc_page_item_types_v
           ))
       into l_page_item_types
@@ -2523,6 +2595,7 @@ as
                     l_action_param_visual_types action_param_visual_types,
                     l_action_param_types action_param_types,
                     l_page_item_type_groups page_item_type_groups,
+                    l_event_types event_types,
                     l_page_item_types page_item_types,
                     l_action_item_focus action_item_focus,
                     l_action_type_groups action_type_groups,
@@ -2740,13 +2813,17 @@ as
       See <ADC_ADMIN.merge_page_item_type_group>
    */
   procedure merge_page_item_type_group(
-    p_cig_id              in adc_page_item_type_groups.cig_id%type,
-    p_cig_has_value       in adc_page_item_type_groups.cig_has_value%type,
+    p_cig_id in adc_page_item_type_groups.cig_id%type,
+    p_cig_has_value in adc_page_item_type_groups.cig_has_value%type,
     p_cig_include_in_view in adc_page_item_type_groups.cig_include_in_view%type)
   as
     l_row adc_page_item_type_groups%rowtype;
   begin
-    pit.enter_mandatory;
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_cig_id', p_cig_id),
+                    msg_param('p_cig_has_value', p_cig_has_value),
+                    msg_param('p_cig_include_in_view', p_cig_include_in_view)));
     
     l_row.cig_id := p_cig_id;
     l_row.cig_has_value := p_cig_has_value;
@@ -2815,17 +2892,108 @@ as
   
   
   /**
+    Procedure: merge_event_type
+      See <ADC_ADMIN.merge_event_type>
+   */
+  procedure merge_event_type(
+    p_cet_id in adc_event_types_v.cet_id%type,
+    p_cet_name in adc_event_types_v.cet_name%type,
+    p_cet_column_name in adc_event_types_v.cet_column_name%type,
+    p_cet_is_custom_event in adc_event_types_v.cet_is_custom_event%type)
+  as
+    l_row adc_event_types_v%rowtype;
+  begin
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_cet_id', p_cet_id),
+                    msg_param('p_cet_name', p_cet_name),
+                    msg_param('p_cet_column_name', p_cet_column_name),
+                    msg_param('p_cet_is_custom_event', p_cet_is_custom_event)));
+    
+    l_row.cet_id := p_cet_id;
+    l_row.cet_name := p_cet_name;
+    l_row.cet_column_name := p_cet_column_name;
+    l_row.cet_is_custom_event := p_cet_is_custom_event;
+    
+    merge_event_type(l_row);
+    
+    pit.leave_mandatory;
+  end merge_event_type;
+    
+  /**
+    Procedure: merge_event_type
+      See <ADC_ADMIN.merge_event_type>
+   */
+  procedure merge_event_type(
+    p_row in out nocopy adc_event_types_v%rowtype)
+  as
+    l_pti_id pit_translatable_item.pti_id%type;
+  begin
+    pit.enter_mandatory;
+    
+    validate_event_type(p_row);
+    
+    -- maintain translatable item
+    l_pti_id := 'CET_' || upper(replace(p_row.cet_id, '-', '_'));
+    
+    pit_admin.merge_translatable_item(
+      p_pti_id => l_pti_id,
+      p_pti_pml_name => null,
+      p_pti_pmg_name => C_ADC,
+      p_pti_name => p_row.cet_name);
+    
+    merge into adc_event_types t
+    using (select p_row.cet_id cet_id,
+                  l_pti_id cet_pti_id,
+                  C_ADC cet_pmg_name,
+                  'EVENT' cet_cig_id,
+                  p_row.cet_column_name cet_column_name,
+                  p_row.cet_is_custom_event cet_is_custom_event
+             from dual) s
+       on (t.cet_id = s.cet_id)
+     when matched then update set
+       t.cet_column_name = s.cet_column_name,
+       t.cet_is_custom_event = s.cet_is_custom_event
+     when not matched then insert (cet_id, cet_pti_id, cet_pmg_name, cet_cig_id, cet_column_name, cet_is_custom_event)
+       values (s.cet_id, s.cet_pti_id, s.cet_pmg_name, s.cet_cig_id, s.cet_column_name, s.cet_is_custom_event);
+    
+    pit.leave_mandatory;
+  end merge_event_type;
+
+  /**
+    Procedure: delete_event_type
+      See <ADC_ADMIN.delete_event_type>
+   */
+  procedure delete_event_type(
+    p_row in adc_event_types_v%rowtype)
+  as
+  begin
+    null;
+  end delete_event_type;
+    
+  /**
+    Procedure: validate_event_type
+      See <ADC_ADMIN.validate_event_type>
+   */
+  procedure validate_event_type(
+    p_row in adc_event_types_v%rowtype)
+  as
+  begin
+    null;
+  end validate_event_type;
+  
+  
+  /**
     Procedure: merge_page_item_type
       See <ADC_ADMIN.merge_page_item_type>
    */
   procedure merge_page_item_type(
-    p_cit_id              in adc_page_item_types_v.cit_id%type,
-    p_cit_name            in adc_page_item_types_v.cit_name%type,
-    p_cit_cig_id          in adc_page_item_types_v.cit_cig_id%type,
-    p_cit_event           in adc_page_item_types_v.cit_event%type,
-    p_cit_col_template    in adc_page_item_types_v.cit_col_template%type,
-    p_cit_init_template   in adc_page_item_types_v.cit_init_template%type,
-    p_cit_is_custom_event in adc_page_item_types_v.cit_is_custom_event%type) 
+    p_cit_id in adc_page_item_types_v.cit_id%type,
+    p_cit_name in adc_page_item_types_v.cit_name%type,
+    p_cit_cig_id in adc_page_item_types_v.cit_cig_id%type,
+    p_cit_cet_id in adc_page_item_types_v.cit_cet_id%type,
+    p_cit_col_template in adc_page_item_types_v.cit_col_template%type,
+    p_cit_init_template in adc_page_item_types_v.cit_init_template%type) 
   as
     l_row adc_page_item_types_v%rowtype;
   begin
@@ -2834,10 +3002,9 @@ as
     l_row.cit_id := p_cit_id;
     l_row.cit_name := p_cit_name;
     l_row.cit_cig_id := p_cit_cig_id;
-    l_row.cit_event := p_cit_event;
+    l_row.cit_cet_id := p_cit_cet_id;
     l_row.cit_col_template := p_cit_col_template;
     l_row.cit_init_template := p_cit_init_template;
-    l_row.cit_is_custom_event := p_cit_is_custom_event;
     
     merge_page_item_type(l_row);
 
@@ -2872,22 +3039,20 @@ as
                   l_pti_id cit_pti_id,
                   C_ADC cit_pmg_name,
                   p_row.cit_cig_id cit_cig_id,
-                  p_row.cit_event cit_event,
+                  p_row.cit_cet_id cit_cet_id,
                   p_row.cit_col_template cit_col_template,
-                  p_row.cit_init_template cit_init_template,
-                  p_row.cit_is_custom_event cit_is_custom_event
+                  p_row.cit_init_template cit_init_template
              from dual) s
        on (t.cit_id = s.cit_id)
      when matched then update set
             t.cit_cig_id = s.cit_cig_id,
-            t.cit_event = s.cit_event,
+            t.cit_cet_id = s.cit_cet_id,
             t.cit_col_template = s.cit_col_template,
-            t.cit_init_template = s.cit_init_template,
-            t.cit_is_custom_event = s.cit_is_custom_event
+            t.cit_init_template = s.cit_init_template
      when not matched then insert(
-            t.cit_id, t.cit_pti_id, t.cit_pmg_name, t.cit_cig_id, t.cit_event, t.cit_col_template, t.cit_init_template, t.cit_is_custom_event)
+            t.cit_id, t.cit_pti_id, t.cit_pmg_name, t.cit_cig_id, t.cit_cet_id, t.cit_col_template, t.cit_init_template)
           values(
-            s.cit_id, s.cit_pti_id, s.cit_pmg_name, s.cit_cig_id, s.cit_event, s.cit_col_template, s.cit_init_template, s.cit_is_custom_event);
+            s.cit_id, s.cit_pti_id, s.cit_pmg_name, s.cit_cig_id, s.cit_cet_id, s.cit_col_template, s.cit_init_template);
 
     pit.leave_mandatory;
   end merge_page_item_type;

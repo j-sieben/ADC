@@ -18,6 +18,29 @@ as
    */
   
   /**
+    Function: C_CR
+      See <ADC_UTIL.C_CR>
+   */
+  function c_cr
+    return varchar2
+  as
+  begin
+    return chr(10);
+  end c_cr;
+  
+  
+  /**
+    Function: C_APOS
+      See <ADC_UTIL.C_APOS>
+   */
+  function c_apos
+    return varchar2
+  as
+  begin
+    return chr(39);
+  end c_apos;
+  
+  /**
     Function: C_TRUE
       See <ADC_UTIL.C_TRUE>
    */
@@ -31,7 +54,7 @@ as
   
   /**
     Function: C_FALSE
-      See <ADC_UTIL.C_FALSEE>
+      See <ADC_UTIL.C_FALSE>
    */
   function c_false
     return flag_type
@@ -174,26 +197,30 @@ as
   as
     l_comments clob;
   begin
+    with params as (
+           select /*+ no_merge */
+                  adc_util.C_CR C_CR
+             from dual)
     select utl_text.generate_text(cursor(
-             select '#OBJECT_TYPE#: #OBJECT_TYPE#s.#OBJECT_NAME##CR#  #COMMENTS##CR##CR#Fields:#CR#  #COLUMNS#' template, initcap(object_type) object_type, object_name, comments, chr(10) cr,
+             select '#OBJECT_TYPE#: #OBJECT_TYPE#s.#OBJECT_NAME##CR#  #COMMENTS##CR##CR#Fields:#CR#  #COLUMNS#' template, initcap(object_type) object_type, object_name, comments, C_CR cr,
                     utl_text.generate_text(cursor(
                       select '#COLUMN_NAME# - #COMMENTS#' template, lower(t.column_name) column_name, 
-                             coalesce(c.comments, case t.column_name when 'D' then 'Display value' when 'R' then 'Return value' else 'no comment available' end) comments, chr(10) cr
+                             coalesce(c.comments, case t.column_name when 'D' then 'Display value' when 'R' then 'Return value' else 'no comment available' end) comments, C_CR cr
                         from user_tab_columns t
                         join user_col_comments c
                           on t.table_name = c.table_name
                          and t.column_name = c.column_name
                        where t.table_name = o.object_name
                        order by t.table_name, t.column_id
-                    ), chr(10), 2) columns
+                    ), adc_util.C_CR, 2) columns
                from user_objects o
                join user_tab_comments
                  on object_name = table_name
               where object_type in ('TABLE', 'VIEW')
                 and object_name like 'ADC%'
-              order by 1, 2), chr(10) || chr(10)) resultat
+              order by 1, 2), C_CR || C_CR) resultat
       into l_comments
-      from dual;
+      from params;
       
     return l_comments;
   end get_additional_nd_comments;

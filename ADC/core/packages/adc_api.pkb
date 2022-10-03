@@ -338,7 +338,7 @@ as
                      where i.data_source_region_id = r.region_id
                        and is_primary_key = 'Yes'
                        and uttm_mode = 'STATE'),
-                    ',' || chr(10), 8) session_state,
+                    ',' || adc_util.C_CR, 8) session_state,
                   utl_text.generate_text(cursor(
                     select s.template, i.item_source column_name, i.item_name item_name
                       from apex_application_page_items i
@@ -357,7 +357,12 @@ as
       into l_stmt
       from dual;
       
-    pit.log_state(msg_params(msg_param('Statement', l_stmt)));
+    pit.log_state(
+      msg_params(
+        msg_param('APP', utl_apex.get_application_id),
+        msg_param('PAGE', utl_apex.get_page_id),
+        msg_param('ID', p_static_id),
+        msg_param('Statement', l_stmt)));
     adc_internal.set_value_from_statement(
       p_cpi_id => null, 
       p_statement => l_stmt, 

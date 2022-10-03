@@ -4,7 +4,7 @@ with cit_references as (
        select cpi_cit_id, count(*) ref_amount
          from adc_page_items
         group by cpi_cit_id)
-select cit_id, cit_name, cit_cig_id, cit_has_value, cit_include_in_view, cit_event, cit_col_template, cit_init_template, cit_is_custom_event,
+select cit_id, cit_name, cit_cig_id, cit_has_value, cit_include_in_view, cit_cet_id, cit_col_template, cit_init_template,
        coalesce(ref_amount, 0) ref_amount,
        case coalesce(ref_amount, 0)
          when 0 then 'UD'

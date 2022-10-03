@@ -17,9 +17,9 @@ as
       C_JS_NAMESPACE - Namespace of the core JavaScript functionality
       C_JS_COMMENT_STRING - Comment string to comment unneeded or double JavaScript snippets
    */    
-  C_JS_NAMESPACE constant adc_util.ora_name_type := 'de.condes.plugin.adc';
+  C_JS_NAMESPACE constant adc_util.ora_name_type := 'de.condes.plugin.adc.actions';
   C_JS_COMMENT_STRING constant adc_util.sql_char := '// ';
-  C_COMMENT_OUT constant varchar2(20) := C_JS_COMMENT_STRING ||'(double) ';
+  C_COMMENT_OUT constant varchar2(20) := C_JS_COMMENT_STRING || '(double)';
   
   /**
     Group: Private package types
@@ -378,7 +378,6 @@ as
       end loop;
     end if;
     
-    
     -- wrap JavaScript in <script> tag and add item value and error scripts
     -- Replace script explicitely to circumvent length limitation of CHAR_TABLE
     l_response := replace(g_js_script_frame_template, '#SCRIPT#', l_response);
@@ -393,7 +392,12 @@ as
                     'DURATION', to_char(dbms_utility.get_time - g_param.request_start)));
     
     -- BULK_REPLACE uses # as a control character, unmask it after conversion
-    l_response := replace(l_response, adc_util.C_HASH, '#');
+   -- l_response := replace(l_response, adc_util.C_HASH, '#');
+    
+    pit.log_state(
+      msg_params(
+        msg_param('JS Action Stack Count', g_param.js_action_stack.count),
+        msg_param('Response', l_response)));
     
     reset;
     

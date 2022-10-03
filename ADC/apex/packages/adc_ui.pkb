@@ -107,10 +107,9 @@ as
     p_row.cit_cig_id := utl_apex.get_string('cit_cig_id');
     p_row.cit_has_value := utl_apex.get_string('cit_has_value');
     p_row.cit_include_in_view := utl_apex.get_string('cit_include_in_view');
-    p_row.cit_event := utl_apex.get_string('cit_event');
+    p_row.cit_cet_id := utl_apex.get_string('cit_cet_id');
     p_row.cit_col_template := utl_apex.get_string('cit_col_template');
     p_row.cit_init_template := utl_apex.get_string('cit_init_template');
-    p_row.cit_is_custom_event := utl_apex.get_string('cit_is_custom_event');
   
     pit.leave_detailed;
   end copy_edit_cit;

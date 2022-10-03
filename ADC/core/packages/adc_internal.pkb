@@ -19,7 +19,7 @@ as
     Properties:
       cgr_id adc_rule_groups.cgr_id%type - actual CGR_ID
       firing_item adc_page_items.cpi_id%type - actual firing item (or adc_util.C_NO_FIRING_ITEM)
-      firing_event adc_page_item_types.cit_event%type - actual firing event (normally change or click, but can be any event)
+      firing_event adc_page_item_types.cit_cet_id%type - actual firing event (normally change or click, but can be any event)
       initialize_mode boolean - Flag to indicate whether automatic mandatory checks should be paused
       event_data adc_util.max_char - optional event data that is returned from modal dialog pages etc.
       bind_event_items char_table - List of items for which ADC binds event handlers
@@ -30,7 +30,7 @@ as
   type param_rec is record(
     cgr_id adc_rule_groups.cgr_id%type, 
     firing_item adc_page_items.cpi_id%type,
-    firing_event adc_page_item_types.cit_event%type,
+    firing_event adc_page_item_types.cit_cet_id%type,
     initialize_mode boolean,
     event_data adc_util.max_char,
     bind_event_items char_table,
@@ -527,7 +527,7 @@ as
     pit.enter_optional('prepare_error');
     
     p_error.page_item_name := p_cpi_id;
-    p_error.additional_info := apex_escape.json(p_error.additional_info || replace(dbms_utility.format_error_backtrace, chr(10), '<br/>'));
+    p_error.additional_info := apex_escape.json(p_error.additional_info || replace(dbms_utility.format_error_backtrace, adc_util.C_CR, '<br/>'));
     if instr(p_error.message, C_LABEL_ANCHOR) > 0 then
       select replace(p_error.message, C_LABEL_ANCHOR, cpi_label)
         into p_error.message
@@ -755,7 +755,7 @@ as
     C_BIND_JSON_ELEMENT constant adc_util.sql_char := '{"id":"#ID#","event":"#EVENT#","action":"#STATIC_ACTION#"}';
     -- List of item which need to bind an event
     cursor rule_group_cpi_ids(p_cgr_id adc_rule_groups.cgr_id%type) is
-      select cpi_id, cit_event, cit_has_value, to_char(null) static_action
+      select cpi_id, cit_cet_id, cit_has_value, to_char(null) static_action
         from adc_page_items    
         join adc_page_item_types_v
           on cpi_cit_id = cit_id
@@ -765,19 +765,19 @@ as
         left join adc_rule_group_status
           on cgr_id = cgs_cgr_id
          and cpi_id = cgs_cpi_id
-       where cit_event is not null
+       where cit_cet_id is not null
          and (cpi_is_required = adc_util.C_TRUE
           or cgs_cpi_id is not null)
          and cgr_active = adc_util.C_TRUE
          and cgr_id = p_cgr_id
      union all
-     -- List of items which are bound by other events already
-     select coalesce(to_char(cra_param_2), cra_cpi_id) cpi_id, cit_event, cit_has_value, cra_param_2 static_action
-       from adc_page_item_types_v
-       join adc_rule_actions
-            -- PARAM_1 contains the name of an event to observe in case of action type MONITOR_EVENT
-         on cit_id in (cra_cat_id, cra_param_1) 
-      where cra_cgr_id = p_cgr_id;
+     -- List of items which have to be bound to custom specific events
+     select cra_cpi_id, cet_id, adc_util.C_FALSE, to_char(cra_param_2)
+       from adc_rule_actions
+       join adc_event_types
+         on cet_id member of utl_text.string_to_table(cra_param_1, ':')
+      where cra_cat_id = 'MONITOR_EVENT'
+        and cra_cgr_id = p_cgr_id;
     l_json clob;
   begin
     pit.enter_optional('get_bind_items_as_json',
@@ -789,7 +789,7 @@ as
         l_json,
         utl_text.bulk_replace(C_BIND_JSON_ELEMENT, char_table(
           'ID', item.cpi_id,
-          'EVENT', item.cit_event,
+          'EVENT', item.cit_cet_id,
           'STATIC_ACTION', item.static_action)),
         adc_util.C_DELIMITER, true);
     end loop;
@@ -1392,7 +1392,7 @@ as
     when NO_DATA_FOUND then
       null;
     when others then
-      adc_response.add_comment(msg.ADC_NO_DATA_FOR_ITEM, msg_args(coalesce(p_cpi_id, replace(p_statement, chr(10)))));
+      adc_response.add_comment(msg.ADC_NO_DATA_FOR_ITEM, msg_args(coalesce(p_cpi_id, replace(p_statement, adc_util.C_CR))));
       set_session_state(
         p_cpi_id => p_cpi_id, 
         p_value => '');

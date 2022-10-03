@@ -16,6 +16,7 @@ prompt &h3.Create tables
 @&tool_dir.create_table adc_apex_action_types
 @&tool_dir.create_table adc_page_item_type_groups
 @&tool_dir.create_table adc_page_item_types
+@&tool_dir.create_table adc_event_types
 @&tool_dir.create_table adc_action_parameters
 @&tool_dir.create_table adc_page_items
 @&tool_dir.create_table adc_apex_actions
@@ -36,6 +37,7 @@ prompt &h3.Create views
 @&tool_dir.create_view adc_apex_action_types_v
 @&tool_dir.create_view adc_apex_actions_v
 @&tool_dir.create_view adc_page_item_types_v
+@&tool_dir.create_view adc_event_types_v
 @&tool_dir.create_view adc_bl_page_items
 @&tool_dir.create_view adc_bl_page_targets
 @&tool_dir.create_view adc_bl_rules

@@ -172,13 +172,15 @@ as
     Parameters:
       p_cgr_id  Rule group ID of the rule group that is to be exported
       p_mode - Optional information, needed to switch the frame template accordingly
+      p_ionstall_id - Optional Installation ID of the supporting install scripts. Used internally
       
     Returns:
       Script to import a rule group, including all necessary information, excluding action type definitions
    */
   function export_rule_group(
     p_cgr_id in adc_rule_groups.cgr_id%type,
-    p_mode in varchar2 default C_APP_GROUPS)
+    p_mode in varchar2 default C_APP_GROUPS,
+    p_install_id in number default null)
     return clob;
 
 
@@ -923,6 +925,53 @@ as
 
 
   /**
+    Procedure: merge_event_type
+      Administration of EVENT TYPES
+                 
+    Parameters:
+      p_cet_id - Name of the event. Used as a PK. Must be written exactly as the JavaScript event name
+      p_cet_name - ID of the translatable Item for that event
+      p_cet_column_name - Name of the column under which the firing item for that event is accessible
+      p_cet_is_custom_event - Flag to indicate whether this event must be monitored explicitly by ADC
+   */
+  procedure merge_event_type(
+    p_cet_id in adc_event_types_v.cet_id%type,
+    p_cet_name in adc_event_types_v.cet_name%type,
+    p_cet_column_name in adc_event_types_v.cet_column_name%type,
+    p_cet_is_custom_event in adc_event_types_v.cet_is_custom_event%type);
+    
+  /**
+    Procedure: merge_event_type
+      Overload with a row record
+                 
+    Parameter:
+      p_row - Row record
+   */
+  procedure merge_event_type(
+    p_row in out nocopy adc_event_types_v%rowtype);
+
+  /**
+    Procedure: delete_event_type
+      Deletes a Page Item Type Group
+                 
+    Parameter:
+      p_row - Row record
+   */
+  procedure delete_event_type(
+    p_row in adc_event_types_v%rowtype);
+    
+  /**
+    Procedure: validate_event_type
+      Validates an Page Item Type
+                 
+    Parameter:
+      p_row - Row record
+   */
+  procedure validate_event_type(
+    p_row in adc_event_types_v%rowtype);
+
+
+  /**
     Procedure: merge_page_item_type
       Administration of PAGE ITEM TYPES
                  
@@ -930,19 +979,17 @@ as
       p_cit_id - Technical ID of the item type
       p_cit_name - Display name
       p_cit_cig_id - Grouping of the page item type, Reference to <PAGE_ITEM_TYPE_GROUPS>
-      p_cit_event - Event thas has to be bound if a rule requires this item
+      p_cit_cet_id - Event thas has to be bound if a rule requires this item
       p_cit_col_template - Template for the session state view to retrieve the session state value
       p_cit_init_template . Template to get the initial session state value
-      p_cit_init_template . Flag that indicates whether this event has to be observered explicitly by a rule action
    */
   procedure merge_page_item_type(
-    p_cit_id              in adc_page_item_types_v.cit_id%type,
-    p_cit_name            in adc_page_item_types_v.cit_name%type,
-    p_cit_cig_id          in adc_page_item_types_v.cit_cig_id%type,
-    p_cit_event           in adc_page_item_types_v.cit_event%type,
-    p_cit_col_template    in adc_page_item_types_v.cit_col_template%type,
-    p_cit_init_template   in adc_page_item_types_v.cit_init_template%type,
-    p_cit_is_custom_event in adc_page_item_types_v.cit_is_custom_event%type);
+    p_cit_id in adc_page_item_types_v.cit_id%type,
+    p_cit_name in adc_page_item_types_v.cit_name%type,
+    p_cit_cig_id in adc_page_item_types_v.cit_cig_id%type,
+    p_cit_cet_id in adc_page_item_types_v.cit_cet_id%type,
+    p_cit_col_template in adc_page_item_types_v.cit_col_template%type,
+    p_cit_init_template in adc_page_item_types_v.cit_init_template%type);
     
   /**
     Procedure: merge_page_item_type

@@ -254,6 +254,7 @@ as
                     when 'TEXT' then null
                     when 'SELECT_LIST' then 'LOV_'
                     when 'STATIC_LIST' then 'LOV_'
+                    when 'CONTROL_LIST' then 'CB_'
                     when 'TEXT_AREA' then 'AREA_'
                     when 'SWITCH' then 'SWITCH_'
                   end || cap_sort_seq item_name
@@ -326,7 +327,7 @@ as
         upon action execution via the <ADC_API.get_event_data> method. It's structure is as follows:
         
         --- JavaScript
-        de.condes.plugin.adc.executeCommand({
+        de.condes.plugin.adc.actions.executeCommand({
           "command":"Name of the APEX action",
           "targetMode":"Mode to which the code traverses if the action is executed",
           "actionMode":"Mode to which APEX action refers to",
@@ -336,7 +337,7 @@ as
         ---
      */
     C_ACTION_TEMPLATE adc_util.max_char := 
-      'de.condes.plugin.adc.executeCommand({"command":"#COMMAND#","targetMode":"#TARGET_MODE#","actionMode":"#ACTION_MODE#","id":"#NODE_ID#","additionalPageItems":#PAGE_ITEM_LIST#,"monitorChanges":#MONITOR_CHANGES#});';
+      'de.condes.plugin.adc.actions.executeCommand({"command":"#COMMAND#","targetMode":"#TARGET_MODE#","actionMode":"#ACTION_MODE#","id":"#NODE_ID#","additionalPageItems":#PAGE_ITEM_LIST#,"monitorChanges":#MONITOR_CHANGES#});';
     l_action adc_util.max_char;
     l_target_mode adc_util.ora_name_type;
     l_action_mode adc_util.ora_name_type;
@@ -1055,6 +1056,7 @@ as
              case cpt_cpv_id
                when 'SELECT_LIST' then 'LOV_'
                when 'STATIC_LIST' then 'LOV_'
+               when 'CONTROL_LIST' then 'CB_'
                when 'TEXT_AREA' then 'AREA_'
                when 'SWITCH' then 'SWITCH_'
              end || cap_sort_seq cap_page_item
@@ -1113,7 +1115,7 @@ as
       end if;
 
      -- set values, if required after refresh
-     if param.cpt_cpv_id in ('SELECT_LIST', 'STATIC_LIST') then
+     if param.cpt_cpv_id in ('SELECT_LIST', 'STATIC_LIST', 'CONTROL_LIST') then
        adc.set_item(
          p_cpi_id => C_PAGE_PREFIX || 'CRA_LOV_PARAM_' || param.cap_sort_seq,
          p_item_value => param.cpt_id);

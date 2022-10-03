@@ -96,15 +96,14 @@ as
     p_text in varchar2,
     p_for_action in boolean default TRUE)
   as
-    C_CR constant varchar2(10) := chr(10);
   begin
     pit.enter_detailed('append');
     if p_text is not null then
       if p_for_action then
-        g_action.javascript_stack := g_action.javascript_stack || C_CR
+        g_action.javascript_stack := g_action.javascript_stack || adc_util.C_CR
                                     || replace(p_text, '#NAME#', g_action.action_name);
       else
-        g_action.additional_javascript := g_action.additional_javascript || C_CR || p_text;
+        g_action.additional_javascript := g_action.additional_javascript || adc_util.C_CR || p_text;
       end if;
     end if;
     pit.leave_detailed;
@@ -239,10 +238,10 @@ as
                         join templates
                           on cit_id = uttm_mode
                          and cai_cpi_cgr_id = cgr_id),
-                      p_delimiter => chr(10)
+                      p_delimiter => adc_util.C_CR
                     ) bind_action_items,
                     utl_text.generate_text(cursor(
-                      select uttm_text template, chr(10) || '    ' cr,
+                      select uttm_text template, adc_util.C_CR || '    ' cr,
                              caa_cgr_id, caa_cty_id, caa_name, 
                              apex_escape.json(caa_label) caa_label,
                              apex_escape.json(caa_label) caa_label_key, 
@@ -262,7 +261,7 @@ as
                         join templates t
                           on t.cgr_id = cgr.cgr_id
                          and uttm_mode = caa_cty_id),
-                      p_delimiter => adc_util.C_DELIMITER || chr(10) || '   '
+                      p_delimiter => adc_util.C_DELIMITER || adc_util.C_CR || '   '
                     ) action_list
                from templates
               where uttm_mode = 'FRAME')

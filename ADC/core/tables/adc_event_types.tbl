@@ -1,0 +1,22 @@
+create table adc_event_types(
+  cet_id varchar2(50 char), 
+  cet_pti_id varchar2(50 char) constraint nn_cet_pti_id not null,
+  cet_pmg_name varchar2(3 byte) default on null 'ADC' constraint chk_cet_pmg_name check(cet_pmg_name = 'ADC'),
+	cet_cig_id varchar2(50 char) default on null 'EVENT' constraint chk_cet_cig_id check(cet_cig_id = 'EVENT'), 
+	cet_column_name varchar2(100 char),
+  cet_is_custom_event &FLAG_TYPE. default &C_FALSE.,
+  constraint pk_adc_event_types primary key (cet_id),
+  constraint fk_cet_pti_id foreign key(cet_pti_id, cet_pmg_name)
+    references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
+  constraint fk_cet_cig_id foreign key(cet_cig_id)
+    references adc_page_item_type_groups(cig_id),
+  constraint chk_cet_is_custom_event check (cet_is_custom_event in (&C_TRUE., &C_FALSE.))
+) organization index;
+
+comment on table adc_event_types  is 'Table to store page item types which are supported by ADC.';
+comment on column adc_event_types.cet_id is 'PK, alphanumerical key';
+comment on column adc_event_types.cet_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
+comment on column adc_event_types.cet_cig_id is 'Reference to ADC_PAGE_ITEM_TYPE_GROUPS';
+comment on column adc_event_types.cet_event is 'JavaScript event to be bound to this element type by the plugin. If null, ADC won''t react on changes.';
+comment on column adc_event_types.cet_column_name is 'Name of the event column in the decision table.';
+comment on column adc_event_types.cet_is_custom_event is 'Flag to indicate whether this event has to be observed explicitly by a rule action.';
