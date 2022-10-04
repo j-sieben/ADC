@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("dis",["Function"],[["disableElement",,[[,,,,0,"File:plugin/files/adc/js/renderer.js:disableElement"]]]]);

@@ -1,6 +1,6 @@
 create or replace package adc_recursion_stack
   authid definer
-  accessible by (package adc_internal, package adc_response, package ut_adc_recursion_stack)
+  --accessible by (package adc_internal, package adc_response, package ut_adc_recursion_stack)
 as
 
   /** 
@@ -121,11 +121,13 @@ as
     Function: get_next
       Method to retrieve the name of the first entry of the recursion stack.
                 
-    Returns:
-      Name of the first entry of the recursion stack
+    Parameters:
+      p_cpi_id - Out parameter with the name of the first entry of the recursion stack
+      p_event_data - Out parameter with the event data initially entered
    */
-  function get_next
-    return adc_page_items.cpi_id%type;
+  procedure get_next(
+    p_cpi_id out adc_page_items.cpi_id%type,
+    p_event_data out varchar2);
     
   
   /**

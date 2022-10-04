@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("c_c",["Constant"],[["C_CR",,[["ADC_UTIL",,,,0,"File:core/packages/adc_util.pks:ADC_UTIL.C_CR","SQLClass:ADC_UTIL:C_CR"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("c_c",["Function","Constant"],[["C_CR",,[["ADC_UTIL Body",,,,0,"File:core/packages/adc_util.pkb:ADC_UTIL_Body.C_CR","SQLClass:ADC_UTIL_Body:C_CR"],["ADC_UTIL",,,,1,"File:core/packages/adc_util.pks:ADC_UTIL.C_CR","SQLClass:ADC_UTIL:C_CR"]]]]);

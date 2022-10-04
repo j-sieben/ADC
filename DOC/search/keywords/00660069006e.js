@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("fin",["Function"],[["findItemValue",,[[,,,,0,"File:plugin/files/adc/js/controller.js:findItemValue"]]]]);

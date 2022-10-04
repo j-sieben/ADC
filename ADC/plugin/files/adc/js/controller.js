@@ -251,7 +251,6 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
    */
   function bindEvent(pItemId, pEvent, pAction) {
     var $this;
-    var eventList;
     var callback;
 
     if (pItemId.search(/[\.#\u0020:\[\]]+/) < 0) {
@@ -261,7 +260,6 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
     // Check whether element exists on page (could be missing due to a server condition)
     if ($this.length > 0) {
-      eventList = $._data($this.get(0), 'events');
       callback = ((typeof pAction !== 'undefined' && pAction.length > 0) ? new Function(pAction) : changeCallback);
 
       // ADC unbinds event handlers bound to this item to prevent problems between the different handlers
@@ -737,9 +735,10 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   ctl.execute = function(){
 
     if(maintainAndCheckEventLock()){
-      var additionalPageItems = props.triggeringElement.data.additionalPageItems || []; 
-      props.pageItems = new Set([...props.pageItems, ...additionalPageItems]);
-      props.pageItems = Array.from(props.pageItems);
+      if(props.triggeringElement.data && props.triggeringElement.data.additionalPageItems){
+        props.pageItems = new Set([...props.pageItems, ...props.triggeringElement.data.additionalPageItems]);
+        props.pageItems = Array.from(props.pageItems);
+      }
       
       apex.debug.info(`ADC handles event ${props.triggeringElement.event}`);
       apex.debug.info(`ADC sends pageItems ${props.pageItems.join()}`);

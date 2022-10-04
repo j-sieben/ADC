@@ -34,6 +34,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
   const C_VISIBLE = 'u-visible';
   const C_HIDDEN = 'u-hidden';
   const C_ADC_DISABLED = 'adc-disabled';
+  const C_APEX_DISABLED = 'apex_disabled';
 
   const C_REGION_CR = 'ClassicReport';
   const C_REGION_IR = 'InteractiveReport';
@@ -58,6 +59,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
   const C_IG_SELECTION_CHANGE = 'interactivegridselectionchange';
   const C_TREE_SELECTION_CHANGE = 'treeviewselectionchange';
   const C_APEX_AFTER_REFRESH = 'apexafterrefresh';
+  const C_CLICK = 'click';
   
   // Globals
   var gErrors = []; // Interim solution required until <code>apex.message</code> supports removing a single error
@@ -128,7 +130,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
 
     // Normal element, do not disable, otherwise sessionstate will not be filled.
     // Instead, set readonly and CSS class so that it looks like disabled.
-    $item.prop(C_READONLY_PROP, true).addClass(C_ADC_DISABLED).attr('aria-disabled', 'true');
+    $item.prop(C_DISABLED_PROP, true).addClass(C_APEX_DISABLED).attr('aria-disabled', 'true');
     $item.attr('tabindex', "-1");
 
     // if the page element is a selection list, readonly must be added differently
@@ -141,7 +143,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
 
     // if the page element is a date field, then also deactivate the button for the date selection
     else if ($item.hasClass("hasDatepicker")) {
-      $item.parent().find("button").prop(C_READONLY_PROP, true).addClass(C_ADC_DISABLED);
+      $item.parent().find("button").prop(C_DISABLED_PROP, true);
     }
 
     // if the page element is a color field, then also deactivate the button for color selection
@@ -214,16 +216,16 @@ de.condes.plugin.adc.apex_42_20_2 = {};
   renderer.getReportSelection = function(pReportId, pColumn, pRegionType, pCallback){
     const C_REGION_CR_SELECTOR = '.t-Report-report tbody tr';
     const C_REGION_IR_SELECTOR = '.a-IRR-table tr:not(:first-child)';
-    var $report = $(`#${pReportId}`);
-    var $tree;
-    var selectedNodes;
-    var idList;
-    var pkValue;
+    const $report = $(`#${pReportId}`);
+    let $tree;
+    let selectedNodes;
+    let idList;
+    let pkValue;
 
     // Examine type of report and bind click handler
     switch(pRegionType){
       case C_REGION_CR:
-        $report.on(C_ADC_DISABLED, C_REGION_CR_SELECTOR, function(){
+        $report.on(C_CLICK, C_REGION_CR_SELECTOR, function(){
           pkValue = $(this).find('td [data-id]').data('id');
           pCallback(pkValue);
         });
@@ -243,9 +245,9 @@ de.condes.plugin.adc.apex_42_20_2 = {};
         });
         break;
       case C_REGION_IR:
-        $report.on(C_ADC_DISABLED, C_REGION_IR_SELECTOR, function(){
+        $report.on(C_CLICK, C_REGION_IR_SELECTOR, function(){
           pkValue = $(this).find('td [data-id]').data('id');
-          persistOrReport(pkValue);
+          pCallback(pkValue);
         });
         break;
       case C_REGION_TREE:

@@ -603,7 +603,7 @@ as
     
     -- Iterate over recursion stack. First firing item was pushed to the stack in READ_SETTINGS
     -- If a rule action changes the session state, the changed item will be pushed onto the recursive stack
-    g_param.firing_item := adc_recursion_stack.get_next;
+    adc_recursion_stack.get_next(g_param.firing_item, g_param.event_data);
     if g_param.firing_item is not null then
       process_rule(p_rule_stmt);
     end if;
@@ -1120,11 +1120,15 @@ as
     C_COMMAND constant adc_util.ora_name_type := 'COMMAND';
     C_JSON_COMMAND constant adc_util.ora_name_type := '{"command":"#COMMAND#"}';
   begin
+    g_param.cgr_id := 67;
     select replace(C_JSON_COMMAND, '#COMMAND#', caa_name)
       into g_param.event_data
       from adc_apex_actions
      where caa_id = p_command;
     g_param.firing_event := 'command';
+    pit.log_state(
+      msg_params(
+        msg_param('Command', g_param.event_data)));
     adc_recursion_stack.push_firing_item(
       p_cgr_id => g_param.cgr_id,
       p_cpi_id => C_COMMAND);

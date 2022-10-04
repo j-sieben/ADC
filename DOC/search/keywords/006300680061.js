@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("cha",["Function"],[["changeCallback",,[[,,,,0,"File:plugin/files/adc/js/controller.js:changeCallback"]]]]);

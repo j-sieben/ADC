@@ -480,7 +480,39 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pNoNotify - If true the treeView#event:selectionChange event will be suppressed.
    */
   actions.selectEntry = function(pRegionId, pEntryId, pNoNotify){
-    adc.renderer.selectEntry(pRegionId, pEntryId, pNoNotify);
+    let region$;
+    let entry;
+
+    switch(getRegionType(pRegionId)){
+      case C_REGION_CR:
+        break;
+      case C_REGION_IG:
+        region$ = $(C_IG_SELECTOR);
+        entry = region$
+                .interactiveGrid('getViews', 'grid')
+                .model
+                .getRecord(pEntryId);
+        if(entry){
+          region$.interactiveGrid('setSelectedRecords', entry, true, pNoNotify);
+        }
+        break;
+      case C_REGION_IR:
+        break;
+      case C_REGION_TREE:
+        region$ = $(C_TREE_SELECTOR);
+        entry = region$.treeView(
+                  "find",
+                  {"depth": -1,
+                   "match": function(n){
+                              return n.id === pEntryId;
+                            }
+                  }
+                );
+        region$.treeView('collapseAll');
+        region$.treeView('expand', entry);
+        region$.treeView('setSelection', entry, true, pNoNotify);
+        break;
+    }
   }; // selectEntry
 
 

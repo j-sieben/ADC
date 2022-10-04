@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("hid",["Function"],[["hideReportFilterPanel",,[[,,,,0,"File:plugin/files/adc/js/actions.js:hideReportFilterPanel"]]]]);

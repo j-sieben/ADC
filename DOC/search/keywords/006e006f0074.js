@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("not",["Function"],[["not_null",,[[,,,,0,"File:core/types/adc_basic.tps:not_null"],["ADC_API",,,,0,"File:core/packages/adc_api.pks:ADC_API.not_null","SQLClass:ADC_API:not_null"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("not",["Function"],[["not_null",,[[,,,,0,"File:core/types/adc_basic.tps:not_null"],["ADC_API",,,,0,"File:core/packages/adc_api.pks:ADC_API.not_null","SQLClass:ADC_API:not_null"]]],["notify",,[[,,,,0,"File:plugin/files/adc/js/actions.js:notify"]]]]);

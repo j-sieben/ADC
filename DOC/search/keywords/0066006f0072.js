@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("for",["Type"],[["form_item_list_tab",,[["ADC_UI_DESIGNER Body",,,,0,"File:apex/packages/adc_ui_designer.pkb:ADC_UI_DESIGNER_Body.form_item_list_tab","SQLClass:ADC_UI_DESIGNER_Body:form_item_list_tab"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("for",["Function","Type"],[["forEach",,[[,,,,0,"File:plugin/files/adc/js/actions.js:forEach"]]],["form_item_list_tab",,[["ADC_UI_DESIGNER Body",,,,1,"File:apex/packages/adc_ui_designer.pkb:ADC_UI_DESIGNER_Body.form_item_list_tab","SQLClass:ADC_UI_DESIGNER_Body:form_item_list_tab"]]]]);

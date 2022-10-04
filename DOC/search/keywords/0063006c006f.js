@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("clo",["Function"],[["close_cursor",,[["ADC_UTIL",,,,0,"File:core/packages/adc_util.pks:ADC_UTIL.close_cursor","SQLClass:ADC_UTIL:close_cursor"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("clo",["Function"],[["close_cursor",,[["ADC_UTIL Body",,,,0,"File:core/packages/adc_util.pkb:ADC_UTIL_Body.close_cursor","SQLClass:ADC_UTIL_Body:close_cursor"],["ADC_UTIL",,,,0,"File:core/packages/adc_util.pks:ADC_UTIL.close_cursor","SQLClass:ADC_UTIL:close_cursor"]]]]);

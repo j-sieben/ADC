@@ -40,6 +40,18 @@
  <div class="CTitle">Public methods</div>
 </div>
 
+<a name="ADC_UTIL.C_CR(2)"></a><a name="Topic159"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">C_CR</div>
+ <div id="NDPrototype159" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> C_CR</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">varchar2</span></div></div>
+ <div class="CBody"><p>Getter method to retrive a operation system aware return character</p></div>
+</div>
+
+<a name="ADC_UTIL.C_APOS"></a><a name="Topic169"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">C_APOS</div>
+ <div id="NDPrototype169" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> C_APOS</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">varchar2</span></div></div>
+ <div class="CBody"><p>Getter method to retrive an apostrophe character</p></div>
+</div>
+
 <a name="ADC_UTIL.C_TRUE"></a><a name="Topic556"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">C_TRUE</div>
  <div id="NDPrototype556" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> C_TRUE</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.flag_type" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,536);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >flag_type</a></div></div>
@@ -100,10 +112,22 @@
  <div class="CBody"><p>Method to monitor that loops can't go into infinite loop mode.&nbsp; If the parameters are NULL, a new monitor is instantiated. Within the loop this method is called with a variable holding the amount of loops so far The method increments this variable and checks it against the maximally allowed loop operations. If it exceeds this limit, an exception is thrown</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">p_counter<div class="CDLParameterType"><span class="SHKeyword">in</span> <span class="SHKeyword">number</span></div></td><td class="CDLDefinition"><p>Optional variable that holds the amount of loops</p></td></tr><tr><td class="CDLEntry">p_loop_name<div class="CDLParameterType"><span class="SHKeyword">in</span> <span class="SHKeyword">varchar2</span></div></td><td class="CDLDefinition"><p>Optional name of the the loop to monitor</p></td></tr></table></div>
 </div>
 
-<a name="ADC_UTIL.get_additional_nd_comments"></a><a name="Topic566"></a><div class="CTopic TFunction LSQL last">
+<a name="ADC_UTIL.get_additional_nd_comments"></a><a name="Topic566"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">get_additional_nd_comments</div>
  <div id="NDPrototype566" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> get_additional_nd_comments</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">clob</span></div></div>
  <div class="CBody"><p>Method collects additional comments in NaturalDocs syntax and returns them as CLOB. The content of the comments describes tables and views and picks up their comments and column names.</p><p>Add the resulting comments to a sql file that is not executed or commented out to make these available for NaturalDocs.</p></div>
+</div>
+
+<a name="ADC_UTIL.get_test_mode"></a><a name="Topic389"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">get_test_mode</div>
+ <div id="NDPrototype389" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> get_test_mode</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
+ <div class="CBody"><p>Method to retrieve the actual test mode state</p><div class="CHeading">Returns</div><ul><li><p>TRUE, if package is in test mode</p></li><li><p>FALSE otherwise</p></li></ul></div>
+</div>
+
+<a name="ADC_UTIL.set_test_mode"></a><a name="Topic957"></a><div class="CTopic TFunction LSQL last">
+ <div class="CTitle">set_test_mode</div>
+ <div id="NDPrototype957" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_test_mode(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_flag&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Method to set the actual test mode state</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">p_flag<div class="CDLParameterType"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></div></td><td class="CDLDefinition"><p>Flag to indicate whether test mode is set to TRUE or FALSE</p></td></tr></table></div>
 </div>
 
 </body></html>

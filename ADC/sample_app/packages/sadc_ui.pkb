@@ -173,7 +173,7 @@ as
     p_job_id in hr_jobs.job_id%type)
   return adc_util.flag_type 
   as
-    l_is_commission_eligible pls_integer;
+    l_is_commission_eligible adc_util.flag_type;
   begin
   
     select job_is_commission_eligible
@@ -181,7 +181,7 @@ as
       from hr_jobs
      where job_id = p_job_id;
      
-    return case l_is_commission_eligible when 1 then adc_util.C_TRUE else adc_util.C_FALSE end;
+    return l_is_commission_eligible;
     
   end is_comm_eligible;
   
@@ -253,8 +253,8 @@ as
   procedure adact_control_action
   as
     l_emp_id sadc_ui_adact.emp_id%type;
-    l_is_manager pls_integer;
-    l_label varchar2(100 byte);
+    l_is_manager adc_util.flag_type;
+    l_label adc_util.ora_name_type;
   begin
     pit.enter_mandatory;
     
@@ -269,7 +269,7 @@ as
         on job_id = emp_job_id
      where emp_id = l_emp_id;
      
-    if l_is_manager = 1 then
+    if l_is_manager = adc_util.C_TRUE then
       adc_apex_action.set_label('Nicht bearbeitbar');
       adc_apex_action.set_disabled(true);
     else
@@ -278,7 +278,7 @@ as
       adc_apex_action.set_href(
         utl_apex.get_page_url(
           p_page => 'edemp',
-          p_param_items => 'P9_EMPLOYEE_ID',
+          p_param_items => 'P9_EMP_ID',
           p_value_list => l_emp_id,
           p_triggering_element => 'B8_EDIT_EMP',
           p_clear_cache => 9));

@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("boo",["Function"],[["bool_to_flag",,[["ADC_UTIL",,,,0,"File:core/packages/adc_util.pks:ADC_UTIL.bool_to_flag","SQLClass:ADC_UTIL:bool_to_flag"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("boo",["Function"],[["bool_to_flag",,[["ADC_UTIL Body",,,,0,"File:core/packages/adc_util.pkb:ADC_UTIL_Body.bool_to_flag","SQLClass:ADC_UTIL_Body:bool_to_flag"],["ADC_UTIL",,,,0,"File:core/packages/adc_util.pks:ADC_UTIL.bool_to_flag","SQLClass:ADC_UTIL:bool_to_flag"]]]]);

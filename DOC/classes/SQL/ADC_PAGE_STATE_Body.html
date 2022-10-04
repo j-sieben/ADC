@@ -26,6 +26,12 @@
  <div class="CTitle">Private methods</div>
 </div>
 
+<a name="harmonize_page_item_name"></a><a name="Topic146"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">harmonize_page_item_name</div>
+ <div id="NDPrototype146" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> harmonize_page_item_name(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_cpi_id&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_page_items.cpi_id<span class="SHKeyword">%type</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">varchar2</span></div></div>
+ <div class="CBody"><p>Method to assure that a page item has got a page prefix</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">p_cpi_id<div class="CDLParameterType"><span class="SHKeyword">in</span> adc_page_items.cpi_id<span class="SHKeyword">%type</span></div></td><td class="CDLDefinition"><p>Name of the page item to harmonize</p></td></tr></table><p>Returns: Page item name with page prefix</p></div>
+</div>
+
 <a name="get_mandatory_default_value"></a><a name="Topic435"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">get_mandatory_default_value</div>
  <div id="NDPrototype435" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> get_mandatory_default_value(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_cgr_id&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_rule_groups.cgr_id<span class="SHKeyword">%type</span>,</td></tr><tr><td class="PName first">p_cpi_id&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_page_items.cpi_id<span class="SHKeyword">%type</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">varchar2</span></div></div>

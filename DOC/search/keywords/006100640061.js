@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("ada",["Function"],[["adact_control_action",,[["ADC_UI",,,,0,"File:sample_app/packages/sadc_ui.pks:ADC_UI.adact_control_action","SQLClass:ADC_UI:adact_control_action"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("ada",["Function"],[["adact_control_action",,[["ADC_UI",,,,0,"File:sample_app/packages/sadc_ui.pks:ADC_UI.adact_control_action","SQLClass:ADC_UI:adact_control_action"]]],["adapter",,[[,"ADC Theme adapter",,,0,"File:plugin/files/adc/js/renderer.js:ADC_Theme_adapter"]]]]);

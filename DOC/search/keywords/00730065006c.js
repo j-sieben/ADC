@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("sel",["Function"],[["select_region_entry",,[[,,,,0,"File:core/types/adc_basic.tps:select_region_entry"]]],["select_tab",,[[,,,,0,"File:core/types/adc_basic.tps:select_tab"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("sel",["Function"],[["select_region_entry",,[[,,,,0,"File:core/types/adc_basic.tps:select_region_entry"]]],["select_tab",,[[,,,,0,"File:core/types/adc_basic.tps:select_tab"]]],["selectEntry",,[[,,,,0,"File:plugin/files/adc/js/actions.js:selectEntry"]]],["selectTab",,[[,,,,0,"File:plugin/files/adc/js/actions.js:selectTab"]]]]);
