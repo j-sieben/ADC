@@ -258,10 +258,9 @@ q'{}',
 q'{    p_cit_id => '#CIT_ID#',\CR\}' || 
 q'{    p_cit_name => '#CIT_NAME#',\CR\}' || 
 q'{    p_cit_cig_id => '#CIT_CIG_ID#',\CR\}' || 
-q'{    p_cit_event => '#CIT_EVENT#',\CR\}' || 
+q'{    p_cit_cet_id => '#CIT_CET_ID#',\CR\}' || 
 q'{    p_cit_col_template => #CIT_COL_TEMPLATE#,\CR\}' || 
-q'{    p_cit_init_template => #CIT_INIT_TEMPLATE#,\CR\}' || 
-q'{    p_cit_is_custom_event => #CIT_IS_CUSTOM_EVENT#);\CR\}' || 
+q'{    p_cit_init_template => #CIT_INIT_TEMPLATE#);\CR\}' || 
 q'{}',
     p_uttm_log_text => q'{}',
     p_uttm_log_severity => 70
