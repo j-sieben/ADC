@@ -62,6 +62,11 @@ select cgr_id, static_id,
    and page_id = sgr.cgr_page_id
  where static_id is not null
  union all
+-- EVENTS and COMMANDS
+select cgr_id, cet_column_name, 'EVENT', 'EVENT', null, null, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
+  from adc_event_types_v
+ cross join adc_rule_groups sgr
+ union all
 -- GENERICALLY REQUIRED ENTRIES
 select cgr_id, 'DOCUMENT', 'DOCUMENT' || case page_mode when 'Modal Dialog' then '_MODAL' end, 'FRAMEWORK', null, null, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE
   from apex_application_pages
