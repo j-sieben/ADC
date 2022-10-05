@@ -603,7 +603,7 @@ as
     
     -- Iterate over recursion stack. First firing item was pushed to the stack in READ_SETTINGS
     -- If a rule action changes the session state, the changed item will be pushed onto the recursive stack
-    adc_recursion_stack.get_next(g_param.firing_item, g_param.event_data);
+    adc_recursion_stack.get_next(g_param.firing_item, g_param.firing_event, g_param.event_data);
     if g_param.firing_item is not null then
       process_rule(p_rule_stmt);
     end if;
@@ -1131,7 +1131,9 @@ as
         msg_param('Command', g_param.event_data)));
     adc_recursion_stack.push_firing_item(
       p_cgr_id => g_param.cgr_id,
-      p_cpi_id => C_COMMAND);
+      p_cpi_id => C_COMMAND,
+      p_event => 'command',
+      p_event_data => g_param.event_data);
   end execute_command;
   
 
@@ -1149,7 +1151,7 @@ as
       p_params => msg_params(
                     msg_param('p_cpi_id', p_cpi_id)));
                     
-    adc_recursion_stack.push_firing_item(g_param.cgr_id, p_cpi_id);
+    adc_recursion_stack.push_firing_item(g_param.cgr_id, p_cpi_id, 'change');
     
     pit.leave_detailed;
   end raise_item_event;  

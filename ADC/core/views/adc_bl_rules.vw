@@ -5,23 +5,23 @@ with params as(
          from dual)
        -- get all rules and items denormalized
 select /*+ no_merge(p) */
-       sru.cru_id, sru.cru_cgr_id cgr_id, sru.cru_sort_seq, sru.cru_name,
-       ',' || sru.cru_firing_items|| ',DOCUMENT,' cru_firing_items, cru_fire_on_page_load, sra.cra_raise_recursive,
-       sra.cra_cpi_id, spi.cpi_css item_css, sra.cra_cat_id, sra.cra_param_1, sra.cra_param_2, sra.cra_param_3, sra.cra_on_error, sra.cra_sort_seq
-  from adc_rule_groups sgr
-  join adc_rules sru
-    on sgr.cgr_id = sru.cru_cgr_id
-  join adc_rule_actions sra
-    on sru.cru_id in sra.cra_cru_id
-   and sru.cru_cgr_id in sra.cra_cgr_id
-  join adc_page_items spi
-    on sgr.cgr_id = spi.cpi_cgr_id
-   and sra.cra_cpi_id = spi.cpi_id
-  join params p
-    on sgr.cgr_active = p.c_true
-   and sru.cru_active = p.c_true
-   and sra.cra_active = p.c_true
- where sra.cra_cpi_id != 'ALL';
+       cru_id, cru_cgr_id cgr_id, cru_sort_seq, cru_name,
+       ',' || cru_firing_items|| ',DOCUMENT,' cru_firing_items, cru_fire_on_page_load, cra_raise_recursive,
+       cra_cpi_id, cpi_css item_css, cra_cat_id, cra_param_1, cra_param_2, cra_param_3, cra_on_error, cra_sort_seq
+  from adc_rule_groups
+  join adc_rules
+    on cgr_id = cru_cgr_id
+  join adc_rule_actions
+    on cru_id in cra_cru_id
+   and cru_cgr_id in cra_cgr_id
+  join adc_page_items
+    on cgr_id = cpi_cgr_id
+   and cra_cpi_id = cpi_id
+  join params
+    on cgr_active = c_true
+   and cru_active = c_true
+   and cra_active = c_true
+ where cra_cpi_id != 'ALL';
 
 comment on table adc_bl_rules is 'View to collect common data for rules and their respective actions. Is used as the basis for ADC to execute the rule logic';
 comment on column adc_bl_rules.cru_id is 'ID of the rule, reference to <Tables.ADC_RULES>';

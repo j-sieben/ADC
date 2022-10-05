@@ -231,7 +231,6 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pItem - Item that gets focus if the confirmation is not given.
    */
   actions.confirmAndExecuteCommand = function (pMessage, pData, pItem){
-    controller.setTriggeringElement(C_COMMAND, C_COMMAND_NAME);
     // Handle event only after confirmation from the user
     adc.renderer.confirmRequest(pMessage, function() {actions.executeCommand(pData);}, pItem);
   };  // confirmAndExecuteCommand

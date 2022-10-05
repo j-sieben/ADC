@@ -66,6 +66,9 @@ as
     Parameters:
       p_cgr_id - ID of the rule group. 
       p_cpi_id - ID of the page item to push. May also be C_NO_FIRING_ITEM
+      p_event - Event that was raised
+      p_event_data - Optional event data for a given item. Is required when executing a command,
+                     as the name of the comman is passed in via this way.
       p_allow_recursion - Flag to indicate whether recursion is forbidden for that action type. 
                           Value can be overwritten by g_param.allow_recursion, so if the rule is
                           set to not evaluate recursion, this will be respected.
@@ -76,6 +79,8 @@ as
   procedure push_firing_item(
     p_cgr_id in adc_rule_groups.cgr_id%type,
     p_cpi_id in adc_page_items.cpi_id%type,
+    p_event in adc_page_item_types.cit_cet_id%type,
+    p_event_data in adc_util.max_char default null,
     p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE,
     p_force in adc_util.flag_type default adc_util.C_FALSE);
   
@@ -123,11 +128,13 @@ as
                 
     Parameters:
       p_cpi_id - Out parameter with the name of the first entry of the recursion stack
+      p_event - Out parameter with the event initially raised
       p_event_data - Out parameter with the event data initially entered
    */
   procedure get_next(
-    p_cpi_id out adc_page_items.cpi_id%type,
-    p_event_data out varchar2);
+    p_cpi_id out nocopy adc_page_items.cpi_id%type,
+    p_event out nocopy adc_page_item_types.cit_cet_id%type,
+    p_event_data out nocopy varchar2);
     
   
   /**
