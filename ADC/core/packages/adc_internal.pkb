@@ -527,7 +527,9 @@ as
     pit.enter_optional('prepare_error');
     
     p_error.page_item_name := p_cpi_id;
-    p_error.additional_info := apex_escape.json(p_error.additional_info || replace(dbms_utility.format_error_backtrace, adc_util.C_CR, '<br/>'));
+    if pit.check_log_level_greater_equal(pit.level_debug) then
+      p_error.additional_info := apex_escape.json(p_error.additional_info || replace(dbms_utility.format_error_backtrace, adc_util.C_CR, '<br/>'));
+    end if;
     if instr(p_error.message, C_LABEL_ANCHOR) > 0 then
       select replace(p_error.message, C_LABEL_ANCHOR, cpi_label)
         into p_error.message

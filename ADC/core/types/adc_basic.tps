@@ -484,10 +484,11 @@ as object (
                  Method to submit the actual page. Allows ADC to determine on whether the actual page has to be processed or not
    
     Parameter:
-      p_execute_validations - Optional flag to indicate whether all validations should be performed. Defaults to adc_util.C_TRUE
+      p_submit_type - Optional flag to indicate whether all validations should be performed. Defaults to VALIDATE_AND_SUBMIT.
+                      Allowed values are taken from ADC_PARAM_LOV_SUBMIT_TYPE
    */
   static procedure submit_page(
-    p_execute_validations in varchar2 default &C_TRUE.),
+    p_submit_type in varchar2 default 'VALIDATE_AND_SUBMIT'),
 
 
   /** 

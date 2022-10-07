@@ -541,8 +541,13 @@ as
       This method is only useful if ADC controls the whole page completely. It can not intercept
       a apex.submit call raised by a button or a Dynamic Action on the page. Rather, validate
       the page using this method and submit the page in case of success using ADC.
+      
+    Parameter:
+      p_submit_type - Indicates the type of submission. Is used to decide whether a validation is
+                      requested or not. One of the submission types of ADC_PARAM_LOV_SUBMIT_TYPE.
    */
-  procedure validate_page;
+  procedure validate_page(
+    p_submit_type in varchar2);
   
   
 end adc_api;

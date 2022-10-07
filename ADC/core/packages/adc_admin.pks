@@ -371,6 +371,7 @@ as
       p_cra_param_3 - Optional parameter 3
       p_cra_on_error - Optional flag to indicate whether this action is executed as an error handler for that rule. Defaults to ADC_UTIL.C_FALSE
       p_cra_raise_recursive - Optional flag to indicate whether this action allows recursive executions of other rules. Defaults to ADC_UTIL.C_TRUE
+      p_cra_raise_on_validation - Optional flag to indicate whether this action has to be executed when the page is validated. Defaults to ADC_UTIL.C_TRUE
       p_cra_active - Optional flag to indicate whether this rule action is in use. Defaults to ADC_UTIL.C_TRUE
       p_cra_comment - Optional developer comment
    */
@@ -386,6 +387,7 @@ as
     p_cra_param_3 in adc_rule_actions.cra_param_3%type default null,
     p_cra_on_error in adc_rule_actions.cra_on_error%type default adc_util.C_FALSE,
     p_cra_raise_recursive in adc_rule_actions.cra_raise_recursive%type default adc_util.C_TRUE,
+    p_cra_raise_on_validation in adc_rule_actions.cra_raise_on_validation%type default adc_util.C_TRUE,
     p_cra_active in adc_rule_actions.cra_active%type default adc_util.C_TRUE,
     p_cra_comment in adc_rule_actions.cra_comment%type default null);
 

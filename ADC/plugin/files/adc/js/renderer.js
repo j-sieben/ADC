@@ -142,20 +142,9 @@ de.condes.plugin.adc.apex_42_20_2 = {};
     }
 
     // if the page element is a date field, then also deactivate the button for the date selection
-    else if ($item.hasClass("hasDatepicker")) {
+    else if ($item.hasClass("hasDatepicker") || $item.hasClass("color_picker") || $item.hasClass("popup_lov")) {
       $item.parent().find("button").prop(C_DISABLED_PROP, true);
     }
-
-    // if the page element is a color field, then also deactivate the button for color selection
-    else if ($item.hasClass("color_picker")) {
-      $('#' + pItemId + '_fieldset').prop(C_READONLY_PROP, true).addClass(C_ADC_DISABLED);
-    }
-
-    // if the page element is a popup list, then also disable the button for selecting the list entries
-    else if ($item.hasClass("popup_lov")) {
-      $item.closest('div').find(C_POPUP_LOV_SELECTOR)
-        .prop(C_READONLY_PROP, true).addClass(C_ADC_DISABLED);
-    };
   }; // disableElement
 
   

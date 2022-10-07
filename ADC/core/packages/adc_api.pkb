@@ -570,12 +570,15 @@ as
   end stop_rule;
 
 
-  procedure validate_page
+  procedure validate_page(
+    p_submit_type in varchar2)
   as
   begin
     pit.enter_mandatory;
     
-    adc_internal.validate_page;
+    if instr(p_submit_type, 'VALIDATE' ) > 0 then
+      adc_internal.validate_page;
+    end if;
     
     pit.leave_mandatory;
   end validate_page;

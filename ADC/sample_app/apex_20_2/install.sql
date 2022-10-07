@@ -15,6 +15,7 @@ prompt &s1.Install ADC rules
 &app_dir.scripts/merge_rule_group_sadc_adsta.sql
 &app_dir.scripts/merge_rule_group_sadc_adval.sql
 &app_dir.scripts/merge_rule_group_sadc_adval2.sql
+&app_dir.scripts/merge_rule_group_sadc_elems.sql
 &app_dir.scripts/merge_rule_group_sadc_cat_page_item.sql
 &app_dir.scripts/merge_rule_group_sadc_doc.sql
 &app_dir.scripts/merge_rule_group_sadc_edemp.sql

@@ -593,16 +593,14 @@ as
 
 
   static procedure submit_page(
-    p_execute_validations in varchar2 default &C_TRUE.)
+    p_submit_type in varchar2 default 'VALIDATE_AND_SUBMIT')
   as
   begin
     pit.enter_optional(
       p_params => msg_params(
-                    msg_param('p_execute_validations', p_execute_validations)));
+                    msg_param('p_submit_type', p_submit_type)));
     
-    if p_execute_validations = adc_util.C_TRUE then
-      adc_api.validate_page;
-    end if;
+    adc_api.validate_page(p_submit_type);
 
     pit.leave_optional;
   end submit_page;
@@ -624,7 +622,7 @@ as
   begin
     pit.enter_optional;
 
-    adc_api.validate_page;
+    adc_api.validate_page('VALIDATE');
 
     pit.leave_optional;
   end validate_page;  

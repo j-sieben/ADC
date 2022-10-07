@@ -1008,6 +1008,7 @@ as
                                       adc_util.to_bool(cra_on_error) cra_on_error,
                                       cra_param_1, cra_param_2, cra_param_3, cra_comment, cra_sort_seq,
                                       adc_util.to_bool(cra_raise_recursive) cra_raise_recursive,
+                                      adc_util.to_bool(cra_raise_on_validation) cra_raise_on_validation,
                                       adc_util.to_bool(cra_active) cra_active
                                  from adc_rule_actions a
                                 cross join params p
@@ -1494,6 +1495,7 @@ as
     p_cra_param_3 in adc_rule_actions.cra_param_3%type default null,
     p_cra_on_error in adc_rule_actions.cra_on_error%type default adc_util.C_FALSE,
     p_cra_raise_recursive in adc_rule_actions.cra_raise_recursive%type default adc_util.C_TRUE,
+    p_cra_raise_on_validation in adc_rule_actions.cra_raise_on_validation%type default adc_util.C_TRUE,
     p_cra_active in adc_rule_actions.cra_active%type default adc_util.C_TRUE,
     p_cra_comment in adc_rule_actions.cra_comment%type default null)
   as
@@ -1512,6 +1514,7 @@ as
                     msg_param('p_cra_param_3', p_cra_param_3),
                     msg_param('p_cra_on_error', p_cra_on_error),
                     msg_param('p_cra_raise_recursive', p_cra_raise_recursive),
+                    msg_param('p_cra_raise_on_validation', p_cra_raise_on_validation),
                     msg_param('p_cra_active', p_cra_active),
                     msg_param('p_cra_comment', p_cra_comment)));
     
@@ -1526,6 +1529,7 @@ as
     l_row.cra_param_3 := p_cra_param_3;
     l_row.cra_on_error := adc_util.get_boolean(p_cra_on_error);
     l_row.cra_raise_recursive := adc_util.get_boolean(p_cra_raise_recursive);
+    l_row.cra_raise_on_validation := adc_util.get_boolean(p_cra_raise_on_validation);
     l_row.cra_active := adc_util.get_boolean(p_cra_active);
     l_row.cra_comment := p_cra_comment;
 
@@ -1564,6 +1568,7 @@ as
                   p_row.cra_param_3 cra_param_3,
                   p_row.cra_on_error cra_on_error,
                   p_row.cra_raise_recursive cra_raise_recursive,
+                  p_row.cra_raise_on_validation cra_raise_on_validation,
                   p_row.cra_active cra_active,
                   p_row.cra_comment cra_comment
              from dual) s
@@ -1577,14 +1582,15 @@ as
           t.cra_param_3 = s.cra_param_3,
           t.cra_on_error = s.cra_on_error,
           t.cra_raise_recursive = s.cra_raise_recursive,
+          t.cra_raise_on_validation = s.cra_raise_on_validation,
           t.cra_active = s.cra_active,
           t.cra_comment = s.cra_comment
      when not matched then insert (
             cra_id, cra_cru_id, cra_cgr_id, cra_cpi_id, cra_cat_id, cra_sort_seq, cra_param_1, cra_param_2, cra_param_3,
-            cra_on_error, cra_raise_recursive, cra_active, cra_comment)
+            cra_on_error, cra_raise_recursive, cra_raise_on_validation, cra_active, cra_comment)
           values(
             s.cra_id, s.cra_cru_id, s.cra_cgr_id, s.cra_cpi_id, s.cra_cat_id, s.cra_sort_seq, s.cra_param_1, s.cra_param_2, s.cra_param_3,
-            s.cra_on_error, s.cra_raise_recursive, s.cra_active, s.cra_comment);
+            s.cra_on_error, s.cra_raise_recursive, s.cra_raise_on_validation, s.cra_active, s.cra_comment);
 
     pit.leave_mandatory;
   end merge_rule_action;

@@ -150,12 +150,14 @@ as
     Returns:
       JSON instance for all page items referenced by the rule executed.
    */
-  function get_errors_as_json
+  function get_errors_as_json(
+    p_max_length in binary_integer)
     return varchar2
   as
     l_json adc_util.max_char;
     l_error_key binary_integer;
     l_error_count binary_integer;
+    l_has_space boolean := true;
   begin
     pit.enter_optional('get_errors_as_json');
     
@@ -163,10 +165,14 @@ as
     l_error_count := g_param.error_stack.count;
     if l_error_count > 0 then
       l_error_key := g_param.error_stack.first;
-
       while l_error_key is not null loop
-        utl_text.append(l_json, g_param.error_stack(l_error_key), adc_util.C_DELIMITER, true);
-        l_error_key := g_param.error_stack.next(l_error_key);
+        l_has_space := coalesce(length(l_json), 0) + length(g_param.error_stack(l_error_key)) < p_max_length;
+        if l_has_space then 
+          utl_text.append(l_json, g_param.error_stack(l_error_key), adc_util.C_DELIMITER, true);
+          l_error_key := g_param.error_stack.next(l_error_key);
+        else
+          exit;
+        end if;
       end loop;
     end if;
     
@@ -358,6 +364,9 @@ as
     return varchar2
   as
     l_response adc_util.max_char;
+    l_remaining_length binary_integer := 30000;
+    l_changed_items adc_util.max_char;
+    l_firing_items adc_util.max_char;
     l_max_level binary_integer;
   begin
     pit.enter_optional('get_response');
@@ -373,7 +382,9 @@ as
           and not(g_param.js_action_stack(i).debug_level = adc_util.C_JS_DEBUG 
           and not(pit.check_log_level_greater_equal(pit.LEVEL_DEBUG)))
         then
-          utl_text.append(l_response, g_param.js_action_stack(i).script || adc_util.C_CR);
+          if coalesce(length(l_response), 0) + length(g_param.js_action_stack(i).script) < adc_util.C_MAX_LENGTH then
+            utl_text.append(l_response, g_param.js_action_stack(i).script || adc_util.C_CR);
+          end if;
         end if;
       end loop;
     end if;
@@ -382,12 +393,21 @@ as
     -- Replace script explicitely to circumvent length limitation of CHAR_TABLE
     l_response := replace(g_js_script_frame_template, '#SCRIPT#', l_response);
     
+    -- Prepare remaining chunks and check overall length
+    l_remaining_length := l_remaining_length - length(l_response);
+    l_changed_items := adc_page_state.get_changed_items_as_json;
+    l_remaining_length := l_remaining_length - length(l_changed_items);
+    l_firing_items := adc_recursion_stack.get_firing_items_as_json;
+    l_remaining_length := l_remaining_length - length(l_changed_items);
+    
+    -- Replace script explicitely to circumvent length limitation of CHAR_TABLE. Limit length of error messages.
+    l_response := replace(l_response, '#ERROR_JSON#', get_errors_as_json(l_remaining_length));
+                    
     l_response := utl_text.bulk_replace(l_response, char_table(
                     'ID', 'S_' || trunc(dbms_random.value(1, 100000)),
                     'CR', adc_util.C_CR,
-                    'ITEM_JSON', adc_page_state.get_changed_items_as_json,
-                    'ERROR_JSON',  get_errors_as_json,
-                    'FIRING_ITEMS', adc_recursion_stack.get_firing_items_as_json,
+                    'ITEM_JSON', l_changed_items,
+                    'FIRING_ITEMS', l_firing_items,
                     'JS_FILE', C_JS_NAMESPACE,
                     'DURATION', to_char(dbms_utility.get_time - g_param.request_start)));
     
