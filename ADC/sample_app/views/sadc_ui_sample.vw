@@ -3,6 +3,6 @@ select null status, label_value, target_value, is_current, image_value, image_at
   from apex_ui_list_menu
  where list_name = 'Desktop Navigation Menu'
    and level_value = 4
-   and parent_page_alias = 'adc_sample'
+   and parent_page_alias = 'ADC_SAMPLE'
  order by display_sequence;
  

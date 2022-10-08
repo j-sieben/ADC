@@ -56,27 +56,36 @@ as
     pit.enter_mandatory;
     
     with params as (
-           select utl_apex.get_application_id p_app_id,
-                  utl_apex.get_page_id p_page_id
+           select /*+ no_merge */ 
+                  utl_apex.get_application_id p_app_id,
+                  utl_apex.get_page_id p_page_id,
+                  utl_apex.get_page_alias p_page_alias
              from dual),
-        data as(
-           select /*+ no_merge(p) */ 
-                  lag(page_name) over (order by display_sequence) prev_title, 
-                  lag(page_alias) over (order by display_sequence) prev_target,
-                  lag(page_id) over (order by display_sequence) prev_id,
-                  lead(page_name) over (order by display_sequence) next_title, 
-                  lead(page_alias) over (order by display_sequence) next_target,
-                  lead(page_id) over (order by display_sequence) next_id,
-                  page_id, p_page_id, display_sequence
-             from apex_application_pages
-             join params p
-               on application_id = p_app_id
-             join apex_ui_list_menu
-                  -- Extrahiere Zielseite aus Navigationsmenue und joine ueber Seiten-ID oder -Alias
-               on lower(substr(target_value, instr(target_value, ':') + 1, instr(target_value, ':', 1, 2) - instr(target_value, ':') - 1)) in (to_char(page_id), lower(page_alias))
+         ui_list as (
+           select *
+             from apex_ui_list_menu m
             where list_name = 'Desktop Navigation Menu'
-              and level_value = 3
-              and parent_page_alias = 'tutorial')
+              and parent_page_alias in (
+                    select parent_page_alias
+                      from apex_ui_list_menu
+                      join params
+                        on page_alias in (to_char(p_page_id), p_page_alias))),
+         app_pages as (
+           select *
+             from apex_application_pages
+             join params
+               on application_id = p_app_id),
+         data as(
+           select lag(a.page_name) over (order by display_sequence) prev_title, 
+                  lag(a.page_alias) over (order by display_sequence) prev_target,
+                  lag(a.page_id) over (order by display_sequence) prev_id,
+                  lead(page_name) over (order by display_sequence) next_title, 
+                  lead(a.page_alias) over (order by display_sequence) next_target,
+                  lead(a.page_id) over (order by display_sequence) next_id,
+                  page_id, p_page_id, display_sequence
+             from app_pages a
+             join ui_list m
+               on m.page_alias in (to_char(a.page_id), a.page_alias))
     select prev_id, prev_title, prev_target, next_id, next_title, next_target
       into l_prev_id, l_prev_title, l_prev_target, l_next_id, l_next_title, l_next_target
       from data

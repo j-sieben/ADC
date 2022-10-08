@@ -97,12 +97,12 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       One of the constants <C_REGION_IG>,  <C_REGION_IR>, <C_REGION_CR>, <C_REGION_TREE>, <C_REGION_TAB>
    */
   function getRegionType(pRegionId){
+    const $report = $(`#${pRegionId}`);
     const C_CR_SELECTOR = `#report_table_${pRegionId}`;
     const C_IR_SELECTOR = `#${pRegionId}_ir`;
     const C_IG_SELECTOR = `#${pRegionId}_ig`;
     const C_TREE_SELECTOR = `#${pRegionId}_tree`;
     const C_TAB_SELECTOR = `#SR_${pRegionId}`;
-    const $report = $(`#${pRegionId}`);
     var reportType;
 
     if($report.find(C_IG_SELECTOR).length > 0){
@@ -481,6 +481,8 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   actions.selectEntry = function(pRegionId, pEntryId, pNoNotify){
     let region$;
     let entry;
+    const C_IG_SELECTOR = `#${pRegionId}_ig`;
+    const C_TREE_SELECTOR = `#${pRegionId}_tree`;
 
     switch(getRegionType(pRegionId)){
       case C_REGION_CR:
