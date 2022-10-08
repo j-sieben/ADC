@@ -28,7 +28,7 @@ prompt APPLICATION 118 - ADC Beispielanwendung
 -- Application Export:
 --   Application:     118
 --   Name:            ADC Beispielanwendung
---   Date and Time:   16:37 Freitag Oktober 7, 2022
+--   Date and Time:   08:52 Samstag Oktober 8, 2022
 --   Exported By:     ADC_ADMIN
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -122,7 +122,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'APP_NAME'
 ,p_substitution_value_01=>'ADC Beispielanwendung'
 ,p_last_updated_by=>'ADC_ADMIN'
-,p_last_upd_yyyymmddhh24miss=>'20221007163127'
+,p_last_upd_yyyymmddhh24miss=>'20221008085100'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>3
 ,p_ui_type_name => null
@@ -322,6 +322,15 @@ wwv_flow_api.create_list_item(
 ,p_list_text_02=>'Manipulation der Sichtbarkeit, Pflichtstatus, Label etc.'
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
 ,p_list_item_current_for_pages=>'15'
+);
+wwv_flow_api.create_list_item(
+ p_id=>wwv_flow_api.id(119733474762206201)
+,p_list_item_display_sequence=>190
+,p_list_item_link_text=>'Elemente mit ADC'
+,p_list_item_link_target=>'f?p=&APP_ID.:elems:&SESSION.::&DEBUG.::::'
+,p_list_item_icon=>'fa-bolt'
+,p_parent_list_item_id=>wwv_flow_api.id(319444608168845803)
+,p_list_item_current_type=>'TARGET_PAGE'
 );
 end;
 /
