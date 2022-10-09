@@ -15,8 +15,9 @@ prompt &h3.Create tables
 @&tool_dir.create_table adc_action_param_types
 @&tool_dir.create_table adc_apex_action_types
 @&tool_dir.create_table adc_page_item_type_groups
-@&tool_dir.create_table adc_page_item_types
+--muss vor adc_page_item_types installiert werden
 @&tool_dir.create_table adc_event_types
+@&tool_dir.create_table adc_page_item_types
 @&tool_dir.create_table adc_action_parameters
 @&tool_dir.create_table adc_page_items
 @&tool_dir.create_table adc_apex_actions

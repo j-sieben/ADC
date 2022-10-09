@@ -22,7 +22,7 @@ declare
                  'ADC_PARAM_LOV_APEX_ACTION', 'ADC_PARAM_LOV_PAGE_ITEM', 'ADC_PARAM_LOV_PIT_MESSAGE', 'ADC_PARAM_LOV_SEQUENCE', 'ADC_PARAM_LOV_SUBMIT_TYPE', -- Views
                  'ADC_ACTION_ITEM_FOCUS', 'ADC_ACTION_PARAMETERS', 'ADC_ACTION_PARAM_TYPES', 'ADC_ACTION_TYPES', 'ADC_ACTION_PARAM_VISUAL_TYPES',
                  'ADC_ACTION_TYPE_GROUPS', 'ADC_APEX_ACTIONS', 'ADC_APEX_ACTION_ITEMS', 'ADC_APEX_ACTION_TYPES', 'ADC_PAGE_ITEMS', 
-                 'ADC_PAGE_ITEM_TYPE_GROUPS', 'ADC_PAGE_ITEM_TYPES', 'ADC_RULES', 'ADC_RULE_ACTIONS', 'ADC_RULE_GROUPS',   -- Tabellen
+                 'ADC_PAGE_ITEM_TYPE_GROUPS', 'ADC_PAGE_ITEM_TYPES', 'ADC_RULES', 'ADC_RULE_ACTIONS', 'ADC_RULE_GROUPS', 'ADC_EVENT_TYPES',   -- Tabellen
                  '',  -- Synonyme
                  'ADC_SEQ' -- Sequenzen
                  )
@@ -48,7 +48,7 @@ begin
   
   pit_admin.delete_message_group('ADC', true);
   param_admin.delete_parameter_group('ADC', true);  
-  utl_text.remove_templates('ADC');
+  utl_text_admin.delete_template('ADC');
   
 end;
 /

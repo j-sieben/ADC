@@ -74,6 +74,8 @@ prompt &h2.Scripts
 @&tool_dir.run_script adc_map_designer_actions
 --@&tool_dir.run_script splitter_plugin
 
+define script_dir=apex/apex_20_2/scripts/
+
 prompt &h2.Version specific installation
 @&apex_version_dir.install.sql
 

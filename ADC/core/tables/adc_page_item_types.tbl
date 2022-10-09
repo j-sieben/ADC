@@ -12,13 +12,13 @@ create table adc_page_item_types(
   constraint fk_cit_cig_id foreign key(cit_cig_id)
     references adc_page_item_type_groups(cig_id),
   constraint fk_cit_cet_id foreign key(cit_cet_id)
-    references adc_event_types(cet_id),
-  constraint chk_cit_is_custom_event check (cit_is_custom_event in (&C_TRUE., &C_FALSE.))
+    references adc_event_types(cet_id)
 ) organization index;
 
 comment on table adc_page_item_types  is 'Table to store page item types which are supported by ADC.';
 comment on column adc_page_item_types.cit_id is 'PK, alphanumerical key';
 comment on column adc_page_item_types.cit_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
+comment on column adc_page_item_types.cit_pmg_name is 'Part of the FK, reference to PIT_TRANSLATABLE_ITEM, criteria to group messages and translatables items per group';
 comment on column adc_page_item_types.cit_cig_id is 'Group of the page item type, reference to ADC_PAGE_ITEM_TYPE_GROUPS';
 comment on column adc_page_item_types.cit_cet_id is 'JavaScript event to be bound to this element type by the plugin. If null, ADC won''t react on changes.. Reference to PIT_EVENT_TYPES';
 comment on column adc_page_item_types.cit_col_template is 'Template for creating a column in the decision table.';

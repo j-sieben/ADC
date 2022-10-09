@@ -16,7 +16,7 @@ create table adc_event_types(
 comment on table adc_event_types  is 'Table to store page item types which are supported by ADC.';
 comment on column adc_event_types.cet_id is 'PK, alphanumerical key';
 comment on column adc_event_types.cet_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
+comment on column adc_event_types.cet_pmg_name is 'Part of the FK, reference to PIT_TRANSLATABLE_ITEM, criteria to group messages and translatables items per group';
 comment on column adc_event_types.cet_cig_id is 'Reference to ADC_PAGE_ITEM_TYPE_GROUPS';
-comment on column adc_event_types.cet_event is 'JavaScript event to be bound to this element type by the plugin. If null, ADC won''t react on changes.';
 comment on column adc_event_types.cet_column_name is 'Name of the event column in the decision table.';
 comment on column adc_event_types.cet_is_custom_event is 'Flag to indicate whether this event has to be observed explicitly by a rule action.';
