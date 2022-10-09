@@ -1,6 +1,6 @@
 create or replace package adc_page_state
   authid definer
-  accessible by (package adc_internal, package adc_api, package adc_response, package ut_adc_page_state)
+  accessible by (package adc_internal, package adc_api, package adc_response, package ut_adc_page_state, package adc_parameter)
 as
 
   /** 

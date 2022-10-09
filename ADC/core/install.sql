@@ -80,7 +80,7 @@ prompt &h3.Create packages
 @&tool_dir.create_package adc_recursion_stack
 @&tool_dir.create_package adc_response
 @&tool_dir.create_package adc_util
-@&tool_dir.create_package adc_validation
+@&tool_dir.create_package adc_parameter
 
 prompt &h3.Access types
 @&tool_dir.create_type adc_basic
@@ -95,7 +95,7 @@ prompt &h3.Create package bodies
 @&tool_dir.create_package_body adc_recursion_stack
 @&tool_dir.create_package_body adc_response
 @&tool_dir.create_package_body adc_util
-@&tool_dir.create_package_body adc_validation
+@&tool_dir.create_package_body adc_parameter
 
 prompt &h3.Access type bodies
 @&tool_dir.create_type_body adc_basic

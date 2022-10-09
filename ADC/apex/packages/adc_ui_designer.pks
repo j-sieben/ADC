@@ -89,6 +89,15 @@ as
   
   
   /**
+    Procedure: check_parameter_value
+      Checks a manually entered parameter value against its parameter type
+      
+      Is used to check whether an entered parameter value makes sense.
+   */
+  procedure check_parameter_value;
+  
+  
+  /**
     Function: support_flows
       Method checks whether flows has to be supported by the designer
       

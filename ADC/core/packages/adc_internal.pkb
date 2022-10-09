@@ -70,151 +70,25 @@ as
     cat_pl_sql adc_action_types.cat_pl_sql%type,
     cat_js adc_action_types.cat_js%type,
     cra_sort_seq adc_rule_actions.cra_sort_seq%type,
-    cra_param_1 adc_rule_actions.cra_param_1%type,
-    cra_param_2 adc_rule_actions.cra_param_2%type,
-    cra_param_3 adc_rule_actions.cra_param_3%type,
     cra_on_error adc_rule_actions.cra_on_error%type,
+    cra_param_1 adc_rule_actions.cra_param_1%type,
+    cra_param_1_type adc_action_param_types.cpt_id%type,
+    cra_param_2 adc_rule_actions.cra_param_2%type,
+    cra_param_2_type adc_action_param_types.cpt_id%type,
+    cra_param_3 adc_rule_actions.cra_param_3%type,
+    cra_param_3_type adc_action_param_types.cpt_id%type,
     cru_has_error_handler adc_rule_actions.cra_on_error%type,
     is_first_action adc_util.flag_type
   );
 
   g_param param_rec;
+  
+  
+  C_CMD constant varchar2(100) := 'begin :x := #CMD#; end;';
     
   /**
     Group: Private Methods
-   */
-   /** 
-    Function: analyze_selector_parameter
-      Helper to analyze a rule action parameter.
-      
-      The following syntactical possibilities exist:
-      
-      - jQuery CSS selector
-      - jQuery ID selector
-      - static string, encapsulated in single quotes
-      - PL/SQL-Block without single quotes, with or without terminating semicolon
-      
-    Parameters:
-      p_cpi_id - Name of the referenced item or <ADC_UTIL.C_NO_FIRING_ITEM>
-      p_selector - Selector to replace the parameter value with
-      p_code_template - Code template to insert a calculated parameter value into
-      p_param - Attribute value to analyze
-      
-    Returns:
-      Result of the analysis, either static or dynamic.
-   */
-  function analyze_selector_parameter(
-    p_cpi_id in varchar2,
-    p_param in adc_rule_actions.cra_param_2%type,
-    p_code_template in varchar2 default null)
-    return varchar2
-  as
-    C_CMD constant varchar2(100) := 'begin :x := #CMD#; end;';
-    C_SELECTOR constant adc_util.ora_name_type := '#SELECTOR#';
-    l_result adc_util.max_char;
-  begin
-    pit.enter_detailed('analyze_selector_parameter',
-      p_params => msg_params(
-                    msg_param('p_cpi_id', p_cpi_id),
-                    msg_param('p_param', p_param),
-                    msg_param('p_code_template', p_code_template)));
-                    
-    l_result := p_param;
-    case 
-    when p_cpi_id = adc_util.C_NO_FIRING_ITEM then
-      if l_result is not null and instr(p_code_template, C_SELECTOR) > 0 then 
-        case substr(l_result, 1, 1)
-          when '.' then null;
-          when '#' then null;
-          when '''' then l_result := trim('''' from l_result);
-          else execute immediate replace(C_CMD, '#CMD#', trim(';' from l_result)) using out l_result;
-        end case;
-      end if;
-    else
-      l_result := p_cpi_id;
-    end case;
-    
-    pit.leave_detailed(msg_params(msg_param('Parameter', l_result)));
-    return l_result;
-  end analyze_selector_parameter;
-  
-
-  /** 
-    Function: analyze_parameter_value
-      Helper to analyze a parameter value.
-      
-      If it is one of the predefined special attribute values, the respective replacement value is calculated.
-      
-    Parameters:
-      p_cpi_id - Name of the referenced item or <Adc_UTIL.C_NO_FIRING_ITEM>
-      p_param - Attribute value to analyze
-      
-    Returns:
-      Result of the analysis, either static or dynamic 
-   */
-  function analyze_parameter_value(
-    p_cpi_id in varchar2,
-    p_param in adc_rule_actions.cra_param_2%type)
-    return varchar2
-  as
-    l_result adc_util.max_char;
-  begin
-    pit.enter_detailed('analyze_parameter_value',
-      p_params => msg_params(
-                    msg_param('p_cpi_id', p_cpi_id),
-                    msg_param('p_param', p_param)));
-                    
-    case 
-      when p_param = adc_util.C_PARAM_ITEM_VALUE then
-        l_result := adc_page_state.get_string(g_param.cgr_id, p_cpi_id);
-      when p_param = adc_util.C_PARAM_EVENT_DATA then
-        l_result := get_event_data(null);
-      when p_param is null then
-        l_result := null;
-      else
-        l_result := p_param;
-    end case;
-    
-    pit.leave_detailed(msg_params(msg_param('Parameter', l_result)));
-    return l_result;
-  exception
-    when others then
-      return p_param;
-  end analyze_parameter_value;
-  
-  
-  /** 
-    Function: calculate_parameter_value
-      Method to dynamically calculate the parameter value. Expects either a valid PL/SQL function
-      returning a string value or a constant string.
-      
-    Parameter:
-      p_param - Parameter value to analyze
-      
-    Returns:
-      The enriched parameter value if applicable, <p_param> otherwise.
-   */
-  function calculate_parameter_value(
-    p_param in adc_rule_actions.cra_param_2%type)
-    return varchar2
-  as
-    C_CMD constant varchar2(100) := 'begin :x := #CMD#; end;';
-    l_result adc_util.max_char;
-  begin
-    pit.enter_detailed('calculate_parameter_value',
-      p_params => msg_params(
-                    msg_param('p_param', p_param)));
-                    
-    execute immediate replace(C_CMD, '#CMD#', trim(';' from p_param)) using out l_result;
-    
-    pit.leave_detailed(msg_params(msg_param('Parameter', l_result)));
-    return l_result; -- apex_escape.json(l_result);
-  exception
-    when others then
-      return p_param;
-  end calculate_parameter_value;
-  
-  
+   */  
   /** 
     Procedure: create_initial_rule_group_and_rule
       Method to create initial rule group and rule for a page that references ADC
@@ -274,22 +148,14 @@ as
     if g_param.stop_flag = adc_util.C_FALSE then
       l_java_script := utl_text.bulk_replace(p_action_rec.cat_js, char_table(
                          'ITEM', p_action_rec.cra_item,
-                         'PARAM_1', case when p_action_rec.cra_param_1 is not null then analyze_parameter_value(p_action_rec.cra_item, p_action_rec.cra_param_1) end,
-                         'PARAM_2', case when p_action_rec.cra_param_2 is not null then analyze_parameter_value(p_action_rec.cra_item, p_action_rec.cra_param_2) end,
-                         'PARAM_3', case when p_action_rec.cra_param_3 is not null then analyze_parameter_value(p_action_rec.cra_item, p_action_rec.cra_param_3) end,
+                         'SELECTOR', adc_parameter.analyze_selector_parameter(p_action_rec.cra_item, p_action_rec.cra_param_2, l_java_script),
+                         'PARAM_1', adc_parameter.evaluate_parameter(p_action_rec.cra_param_1_type, p_action_rec.cra_param_1, g_param.cgr_id, p_action_rec.cra_item),
+                         'PARAM_2', adc_parameter.evaluate_parameter(p_action_rec.cra_param_2_type, p_action_rec.cra_param_2, g_param.cgr_id, p_action_rec.cra_item),
+                         'PARAM_3', adc_parameter.evaluate_parameter(p_action_rec.cra_param_3_type, p_action_rec.cra_param_3, g_param.cgr_id, p_action_rec.cra_item),
                          'CRU_SORT_SEQ', case when p_action_rec.cru_sort_seq is not null then 'RULE_' || p_action_rec.cru_sort_seq else 'NO_RULE_FOUND' end,
-                         'CRU_NAME', p_action_rec.cru_name, --convert(p_action_rec.cru_name, 'WE8ISO8859P1'),
-                         'EVENT_DATA', get_event_data(null),
+                         'CRU_NAME', p_action_rec.cru_name,
                          'FIRING_ITEM', g_param.firing_item,
                          'CR', adc_util.C_CR));
-                         
-      if instr(l_java_script, '#SELECTOR#') > 0 then
-        l_java_script := replace(l_java_script, '#SELECTOR#', analyze_selector_parameter(p_action_rec.cra_item, p_action_rec.cra_param_2, l_java_script));
-      end if;
-                         
-      if instr(l_java_script, '#METHOD#') > 0 then
-        l_java_script := replace(l_java_script, '#METHOD#', calculate_parameter_value(p_action_rec.cra_param_1));
-      end if;
       
       adc_response.add_javascript(l_java_script);
     else
@@ -331,13 +197,11 @@ as
     -- create PL/QSL code from template
     if g_param.stop_flag = adc_util.C_FALSE then
       l_plsql_code := utl_text.bulk_replace(trim(';' from p_action_rec.cat_pl_sql), char_table(
-                        'PARAM_1', case when p_action_rec.cra_param_1 is not null then analyze_parameter_value(p_action_rec.cra_item, p_action_rec.cra_param_1) end,
-                        'PARAM_2', case when p_action_rec.cra_param_2 is not null then analyze_parameter_value(p_action_rec.cra_item, p_action_rec.cra_param_2) end,
-                        'PARAM_3', case when p_action_rec.cra_param_3 is not null then analyze_parameter_value(p_action_rec.cra_item, p_action_rec.cra_param_3) end,
-                        'ALLOW_RECURSION', adc_recursion_stack.check_recursion(p_action_rec.cra_item, p_action_rec.cru_fire_on_page_load),
-                        'ITEM_VALUE', C_PLSQL_ITEM_VALUE_TEMPLATE,
-                        'EVENT_DATA', get_event_data(null),
                         'ITEM', p_action_rec.cra_item,
+                        'PARAM_1', adc_parameter.evaluate_parameter(p_action_rec.cra_param_1_type, p_action_rec.cra_param_1, g_param.cgr_id, p_action_rec.cra_item),
+                        'PARAM_2', adc_parameter.evaluate_parameter(p_action_rec.cra_param_2_type, p_action_rec.cra_param_2, g_param.cgr_id, p_action_rec.cra_item),
+                        'PARAM_3', adc_parameter.evaluate_parameter(p_action_rec.cra_param_3_type, p_action_rec.cra_param_3, g_param.cgr_id, p_action_rec.cra_item),
+                        'ALLOW_RECURSION', adc_recursion_stack.check_recursion(p_action_rec.cra_item, p_action_rec.cru_fire_on_page_load),
                         'CR', adc_util.C_CR));
                         
       l_plsql_code := replace(C_PLSQL_CODE_TEMPLATE, '#CODE#', l_plsql_code);      
@@ -520,7 +384,7 @@ as
    */
   procedure prepare_error(
     p_error in out nocopy apex_error.t_error,
-    p_cpi_id in varchar2)
+    p_cpi_id in adc_page_items.cpi_id%type)
   as
     C_LABEL_ANCHOR constant adc_util.ora_name_type := '#LABEL#';
   begin
@@ -1067,48 +931,56 @@ as
     p_param_3 in adc_rule_actions.cra_param_3%type,
     p_allow_recursion in adc_util.flag_type)
   as
-    l_row adc_action_types%rowtype;
+    cursor cat_cur (p_cat_id adc_action_types.cat_id%type) is
+      select cat_pl_sql, cat_js, 
+             max(decode(cap_sort_seq, 1, cap_cpt_id)) cra_param_1_type,
+             max(decode(cap_sort_seq, 2, cap_cpt_id)) cra_param_2_type,
+             max(decode(cap_sort_seq, 3, cap_cpt_id)) cra_param_3_type
+        from adc_action_types
+        left join adc_action_parameters
+          on cat_id = cap_cat_id
+       where cat_id = p_cat_id
+       group by cat_pl_sql, cat_js;
+    l_row cat_cur%rowtype;
     l_java_script adc_util.max_char;
   begin
     -- Tracing done in ADC_API
-    select *
-      into l_row
-      from adc_action_types
-     where cat_id = p_cat_id;
-
+    open cat_cur(p_cat_id);
+    fetch cat_cur into l_row;
+                        
     if l_row.cat_pl_sql is not null then
       l_row.cat_pl_sql := utl_text.bulk_replace('begin #CODE#; end;', char_table(
                             'CODE', rtrim(l_row.cat_pl_sql, ';'),
                             'ITEM', p_cpi_id,
-                            'PARAM_1', case when p_param_1 is not null then analyze_parameter_value(p_cpi_id, p_param_1) end,
-                            'PARAM_2', case when p_param_2 is not null then analyze_parameter_value(p_cpi_id, p_param_2) end,
-                            'PARAM_3', case when p_param_3 is not null then analyze_parameter_value(p_cpi_id, p_param_3) end,
+                            'PARAM_1', adc_parameter.evaluate_parameter(l_row.cra_param_1_type, p_param_1, g_param.cgr_id, p_cpi_id),
+                            'PARAM_2', adc_parameter.evaluate_parameter(l_row.cra_param_2_type, p_param_2, g_param.cgr_id, p_cpi_id),
+                            'PARAM_3', adc_parameter.evaluate_parameter(l_row.cra_param_3_type, p_param_3, g_param.cgr_id, p_cpi_id),
                             'ALLOW_RECURSION', p_allow_recursion));
       execute immediate l_row.cat_pl_sql;
     end if;
 
-    if l_row.cat_js is not null then
+    if l_row.cat_js is not null then 
       l_java_script := utl_text.bulk_replace(l_row.cat_js, char_table(
                          'ITEM', p_cpi_id,
-                         'PARAM_1', case when p_param_1 is not null then analyze_parameter_value(p_cpi_id, p_param_1) end,
-                         'PARAM_2', case when p_param_2 is not null then analyze_parameter_value(p_cpi_id, p_param_2) end,
-                         'PARAM_3', case when p_param_3 is not null then analyze_parameter_value(p_cpi_id, p_param_3) end));
-                         
-      if instr(l_java_script, '#METHOD#') > 0 then
-        l_java_script := replace(l_java_script, '#METHOD#', calculate_parameter_value(p_param_1));
-      end if;
-                         
-      if instr(l_java_script, '#SELECTOR#') > 0 then
-        l_java_script := replace(l_java_script, '#SELECTOR#', analyze_selector_parameter(p_cpi_id, p_param_2, l_row.cat_js));
-      end if;
+                         'SELECTOR', adc_parameter.analyze_selector_parameter(p_cpi_id, p_param_2, l_row.cat_js),
+                         'PARAM_1', adc_parameter.evaluate_parameter(l_row.cra_param_1_type, p_param_1, g_param.cgr_id, p_cpi_id),
+                         'PARAM_2', adc_parameter.evaluate_parameter(l_row.cra_param_2_type, p_param_2, g_param.cgr_id, p_cpi_id),
+                         'PARAM_3', adc_parameter.evaluate_parameter(l_row.cra_param_3_type, p_param_3, g_param.cgr_id, p_cpi_id)));
       
       adc_response.add_javascript(l_java_script);
     end if;
+    close cat_cur;
   exception
     when NO_DATA_FOUND then
       register_error('DOCUMENT', msg.ADC_ACTION_DOES_NOT_EXIST, msg_args(p_cat_id));
+      if cat_cur%ISOPEN then
+        close cat_cur;
+      end if;
     when others then
       pit.handle_exception(msg.ADC_PLSQL_ERROR, msg_args(l_row.cat_pl_sql));
+      if cat_cur%ISOPEN then
+        close cat_cur;
+      end if;
   end execute_action;
 
 
@@ -1144,7 +1016,7 @@ as
       See <ADC_API.raise_item_event>
    */
   procedure raise_item_event(
-    p_cpi_id in varchar2)
+    p_cpi_id in adc_page_items.cpi_id%type)
   as
     l_has_rule number;
     l_dummy adc_util.max_char;
@@ -1164,7 +1036,7 @@ as
       See <ADC_API.register_error>
    */
   procedure register_error(
-    p_cpi_id in varchar2,
+    p_cpi_id in adc_page_items.cpi_id%type,
     p_error_msg in varchar2,
     p_internal_error in varchar2)
   as
@@ -1199,7 +1071,7 @@ as
       See <ADC_API.register_error>
    */
   procedure register_error(
-    p_cpi_id in varchar2,
+    p_cpi_id in adc_page_items.cpi_id%type,
     p_message_name in varchar2,
     p_msg_args in msg_args default null)
   as

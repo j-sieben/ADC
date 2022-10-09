@@ -1583,6 +1583,43 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
         'CRU_CONDITION_MISSING', 'CRU_CONDITION'));
     pit.leave_mandatory;
   end validate_rule_condition;
+  
+  
+  /**
+    Procedure: check_parameter_value
+      See <ADC_UI_DESIGNER.check_parameter_value>
+   */
+  procedure check_parameter_value
+  as
+    l_cat_id adc_action_types.cat_id%type;
+    l_cpt_id adc_action_param_types.cpt_id%type;
+    l_firing_item adc_util.ora_name_type;
+    l_param_index binary_integer;
+    l_param_value adc_rule_actions.cra_param_1%type;
+    l_environment adc_util.environment_rec;
+  begin
+    pit.enter_mandatory;
+    
+    l_firing_item := adc_api.get_firing_item;
+    l_param_index := to_number(substr(l_firing_item, -1, 1));
+    l_cat_id := adc_api.get_string('CRA_CAT_ID');
+    l_param_value := adc_api.get_string(l_firing_item);
+    l_environment := adc_util.get_environment;
+    
+    select cap_cpt_id
+      into l_cpt_id
+      from adc_action_parameters
+     where cap_cat_id = l_cat_id
+       and cap_sort_seq = l_param_index;
+       
+    adc_parameter.validate_parameter(
+      p_value => l_param_value,
+      p_cpt_id => l_cpt_id,
+      p_cpi_id => l_firing_item,
+      p_environment => l_environment);
+    
+    pit.leave_mandatory;
+  end check_parameter_value;
 
 
   /** 
@@ -1596,11 +1633,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
   begin
     pit.enter_mandatory;
     
-    if adc_util.C_WITH_FLOWS then
-      l_result := adc_util.C_TRUE;
-    else
-      l_result := adc_util.C_FALSE;
-    end if;
+    l_result := adc_util.bool_to_flag(adc_util.C_WITH_FLOWS);
     
     pit.leave_mandatory(
       p_params => msg_params(

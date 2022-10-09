@@ -279,6 +279,13 @@ q'{              adc_api.get_event p_event,\CR\}' ||
 q'{              adc_api.get_event_data p_event_data,\CR\}' || 
 q'{              adc_api.get_firing_item p_firing_item\CR\}' || 
 q'{         from dual),\CR\}' || 
+q'{     parameter_types as(\CR\}' || 
+q'{       select cap_cat_id,\CR\}' || 
+q'{              max(decode(cap_sort_seq, 1, cap_cpt_id)) cra_param_1_type,\CR\}' || 
+q'{              max(decode(cap_sort_seq, 2, cap_cpt_id)) cra_param_2_type,\CR\}' || 
+q'{              max(decode(cap_sort_seq, 3, cap_cpt_id)) cra_param_3_type\CR\}' || 
+q'{         from adc_action_parameters\CR\}' || 
+q'{        group by cap_cat_id),\CR\}' || 
 q'{     session_state as(\CR\}' || 
 q'{       select #EVENT_LIST#,\CR\}' || 
 q'{              #COLUMN_LIST#,\CR\}' || 
@@ -303,7 +310,8 @@ q'{        where rang = 1\CR\}' ||
 q'{           or (cru_fire_on_page_load = initializing\CR\}' || 
 q'{          and initializing = C_TRUE))\CR\}' || 
 q'{select cru.cru_id, cru.cru_sort_seq, cru.cru_name, cru.cru_firing_items, cru_fire_on_page_load,\CR\}' || 
-q'{       cra_cpi_id cra_item, cat_pl_sql, cat_js, cra_sort_seq, cra_param_1, cra_param_2, cra_param_3, cra_on_error,\CR\}' || 
+q'{       cra_cpi_id cra_item, cat_pl_sql, cat_js, cra_sort_seq, cra_on_error,\CR\}' || 
+q'{       cra_param_1, cra_param_1_type, cra_param_2, cra_param_2_type, cra_param_3, cra_param_3_type,\CR\}' || 
 q'{       max(cra_on_error) over (partition by cru_sort_seq) cru_has_error_handler,\CR\}' || 
 q'{       case cra_sort_seq when 10 then c_true else c_false end is_first_row\CR\}' || 
 q'{  from decision_table crg\CR\}' || 
@@ -311,6 +319,8 @@ q'{  join adc_rules cru\CR\}' ||
 q'{    on crg.cru_id = cru.cru_id\CR\}' || 
 q'{  join adc_action_types cat\CR\}' || 
 q'{    on crg.cra_cat_id = cat.cat_id\CR\}' || 
+q'{  join parameter_types cap\CR\}' || 
+q'{    on cat.cat_id = cap.cap_cat_id\CR\}' || 
 q'{ order by cru.cru_sort_seq desc, crg.cra_sort_seq}',
     p_uttm_log_text => q'{Rule View #PREFIX##CGR_ID# created.}',
     p_uttm_log_severity => 70

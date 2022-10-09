@@ -248,6 +248,30 @@ as
   begin
     g_test_mode := p_flag;
   end set_test_mode;
+    
+    
+  /**
+    Function: get_environment
+      See <ADC_UTIL.get_environment>
+   */
+  function get_environment
+    return environment_rec
+  as
+    l_rec environment_rec;
+  begin
+    l_rec.app_id := utl_apex.get_application_id;
+    l_rec.page_id := utl_apex.get_page_id;
+    select cgr_id
+      into l_rec.cgr_id
+      from adc_rule_groups
+     where cgr_app_id = l_rec.app_id
+       and cgr_page_id = l_rec.page_id;
+       
+    return l_rec;
+  exception
+    when NO_DATA_FOUND then 
+      return null;
+  end get_environment;
   
 end adc_util;
 /

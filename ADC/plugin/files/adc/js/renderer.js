@@ -46,7 +46,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
   const C_REQUIRED_CLASS = 'is-required';
 
   // Selector constants
-  const C_REGION_BODY_SELECTOR = ' .t-Region-body';
+  const C_REGION_BODY_SELECTOR = ' .t-Region-body,.t-ContentBlock-body';
   const C_REGION_TITLE_SELECTOR = ' .t-Region-title';
   const C_MODAL_DIALOG_TITLE_SELECTOR = ' .ui-dialog-title';
   const C_POPUP_LOV_SELECTOR = '.a-Button--popupLOV';
@@ -103,7 +103,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
     var message = typeof(pEventOrMessage) === "string" ? pEventOrMessage : pEventOrMessage.data.message;
     apex.message.confirm(message, function (pAnswer) {
       if(pAnswer){
-        pCallback(pEvent);
+        pCallback(pEventOrMessage);
       }
       else {
         apex.item(pFocusItem).setFocus();

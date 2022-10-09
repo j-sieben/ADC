@@ -24,15 +24,14 @@ as
   C_ADC constant utl_text_templates.uttm_type%type := 'ADC';
   C_FRAME constant adc_util.ora_name_type := 'FRAME';
   C_DEFAULT constant adc_util.ora_name_type := 'DEFAULT';
+  C_CPT_VIEW_NAME_PREFIX constant adc_util.ora_name_type := 'ADC_PARAM_LOV_';  
+  C_STATIC_LIST constant adc_util.ora_name_type := 'STATIC_LIST';
 
   C_REGEX_ITEM constant varchar2(50 byte) := q'~(^|[ '\(])#ITEM#([ ',=<^>\)]|$)~';
   C_REGEX_CSS constant varchar2(50 byte) := q'~'.+'~';
   
-  C_CR constant varchar2(2 byte) := adc_util.C_CR;
-  C_PIPE constant char(1 byte) := '|';
+  C_PIPE constant adc_util.tiny_char := '|';
   
-  C_CPT_VIEW_NAME_PREFIX constant adc_util.ora_name_type := 'ADC_PARAM_LOV_';  
-  C_STATIC_LIST constant adc_util.ora_name_type := 'STATIC_LIST';
 
   /* Globale Variablen */
   g_offset binary_integer;
@@ -75,7 +74,7 @@ as
                   uttm_text template, uttm_log_text log_template,
                   uttm_name, uttm_mode, p_cgr_id g_cgr_id,
                   adc_util.C_TRUE c_true,
-                  C_CR c_cr
+                  adc_util.C_CR cr
              from utl_text_templates
             where uttm_type = C_ADC
               and uttm_name = C_UTTM_NAME)
@@ -89,7 +88,7 @@ as
                           on uttm_mode = case cet_is_custom_event when c_true then 'EVENT' else upper(cet_id) end
                        where (cet_is_custom_event = c_true
                           or cet_id in ('initialize', 'command'))
-                       order by case cet_is_custom_event when c_true then 1 else 0 end, cet_id), ',' || C_CR, 14) event_list,
+                       order by case cet_is_custom_event when c_true then 1 else 0 end, cet_id), ',' || CR, 14) event_list,
                     -- Spaltenliste im SessionState
                     utl_text.generate_text(cursor(
                       select cit_col_template template,
@@ -98,7 +97,7 @@ as
                              cit_cet_id
                         from adc_page_item_types_v sit
                         left join (
-                               select *
+                               select cpi_id, cpi_cit_id, cpi_conversion, cpi_is_required
                                  from adc_page_items
                                 where cpi_cgr_id = g_cgr_id) cpi
                           on sit.cit_id = cpi.cpi_cit_id
@@ -106,7 +105,7 @@ as
                           on C_TRUE in (cpi_is_required, cit_include_in_view)
                        where cit_col_template is not null
                          and uttm_mode = 'WHERE_CLAUSE'
-                       order by cit_include_in_view desc, cpi_id), ',' || C_CR, 14) column_list,
+                       order by cit_include_in_view desc, cpi_id), ',' || CR, 14) column_list,
                     coalesce(
                       utl_text.generate_text(cursor(
                         select template, cru_id, cru_name, cru_condition, cru_firing_items,
@@ -116,7 +115,7 @@ as
                             on cru_cgr_id in (0, g_cgr_id)
                            and cru_active = c_true
                          where uttm_mode = 'WHERE_CLAUSE'
-                         order by cru_id), C_CR || '           or '),
+                         order by cru_id), CR || '           or '),
                       to_clob('null is null')) where_clause
                from dual)) resultat
       into l_stmt
@@ -160,7 +159,7 @@ as
 
       with params as (
            -- Get common values, depending on whether the page contains a DML_FETCH_ROW process
-           select cgr.cgr_id, C_CR cr,
+           select cgr.cgr_id, adc_util.C_CR cr,
                   uttm.uttm_name, uttm.uttm_mode, uttm.uttm_text template,
                   app.attribute_02, app.attribute_03, app.attribute_04, app.application_id, app.page_id
              from apex_application_page_proc app
@@ -180,7 +179,7 @@ as
                       select p.template, p.attribute_02, p.attribute_03, p.attribute_04
                         from params p
                        where p.uttm_mode = case p.attribute_04 when 'ROWID' then p.attribute_04 else 'DEFAULT' end
-                         and p.uttm_name = 'INITIALIZE_COLUMN'), ',' || C_CR) sql_stmt,
+                         and p.uttm_name = 'INITIALIZE_COLUMN'), ',' || CR) sql_stmt,
                     -- generate adc_util.set_session_state calls for any page element
                     utl_text.generate_text(cursor(
                       select p.template, sit.cit_init_template, cpi.cpi_conversion,
@@ -196,7 +195,7 @@ as
                           on cpi.cpi_cit_id = sit.cit_id
                        where api.item_source_type = 'Database Column'
                          and cpi.cpi_is_required = adc_util.C_TRUE
-                         and p.uttm_name = 'INITIALIZE_COL_VAL'), C_CR) item_stmt
+                         and p.uttm_name = 'INITIALIZE_COL_VAL'), CR) item_stmt
                from dual)) resultat
       into l_initialization_code
       from params
@@ -441,6 +440,7 @@ as
     l_buffer utl_apex.max_char;
     l_script clob;
     l_prefix adc_util.max_char;
+    l_no_end_comment_found boolean := true;
   begin
     dbms_lob.createtemporary(l_script, false, dbms_lob.call);
     
@@ -453,7 +453,7 @@ as
     -- Find position to integrate rule script into the export file
     l_length := dbms_lob.getlength(l_export_file(1).contents);
 
-    while l_offset < l_length loop
+    while l_offset < l_length and l_no_end_comment_found loop
       -- Add some text to securly detect C_END_COMMENT
       l_add_amount := length(C_END_COMMENT);
       l_amount := l_amount + l_add_amount;
@@ -476,7 +476,7 @@ as
         dbms_lob.append(l_script, l_prefix);
         dbms_lob.append(l_script, p_rule_group);
         dbms_lob.append(l_script, substr(l_buffer, instr(l_buffer, C_END_COMMENT)));
-        exit;
+        l_no_end_comment_found := false;
       else
         -- Not found, add buffer to out script and read on
         l_amount := l_amount - l_add_amount;
@@ -488,50 +488,6 @@ as
     
     return l_script;
   end integrate_rule_groups_into_app;
-  
-
-  /** 
-    Procedure: resequence_rule_group
-      Helper to resequence rules and rule actions.
-      
-      Is called automatically upon change of a rule group to resequence all entries in steps of 10.
-      
-    Parameter:
-      p_cgr_id - Rule group ID
-   */
-  procedure resequence_rule_group(
-    p_cgr_id in adc_rule_groups.cgr_id%type)
-  as
-  begin
-    pit.enter_optional('resequence_rule_group',
-      p_params => msg_params(msg_param('p_cgr_id', p_cgr_id)));
-
-    -- resequence rules
-    merge into adc_rules t
-    using (select cru_id, cru_cgr_id,
-                  row_number() over (partition by cru_cgr_id order by cru_sort_seq) * 10 cru_sort_seq
-             from adc_rules
-            where cru_cgr_id = p_cgr_id
-              and cru_cgr_id > 0) s
-       on (t.cru_id = s.cru_id and t.cru_cgr_id = s.cru_cgr_id)
-     when matched then update set
-          t.cru_sort_seq = s.cru_sort_seq;
-
-    -- resequence rule actions
-    merge into adc_rule_actions t
-    using (select rowid row_id,
-                  row_number() over (partition by cra_cru_id order by cra_on_error, cra_sort_seq) * 10 cra_sort_seq
-             from adc_rule_actions
-            where cra_cgr_id = p_cgr_id) s
-       on (t.rowid = s.row_id)
-     when matched then update set
-          t.cra_sort_seq = s.cra_sort_seq;
-
-    -- Is called outside the request-response-cycle, so commit explicitly
-    commit;
-
-    pit.leave_optional;
-  end resequence_rule_group;
   
   
   /** 
@@ -586,78 +542,6 @@ as
       pit.stop;
   end validate_export_rule_groups;
   
-  
-  /**
-    Function: get_param_lov_query
-      Method to caculate a query for a parameter in case its type mandates for a LOV.
-      
-      Is called when create a new parameter typ from within the ADC app as well as
-      when exporting. The statement must be present in the export file to circumvent
-      then necessity of having a direct CREATE VIEW grant for any user working with ADC.
-      
-    Parameters:
-      p_row - Instance of <ADC_ACTION_PARAM_TYPES_V>
-      
-    Returns:
-      A create view statement, if the parameter type includes a LOV and NULL otherwise
-   */
-  function get_param_lov_query(
-    p_row in out nocopy adc_action_param_types_v%rowtype,
-    p_for_immediate in boolean default false)
-    return varchar2
-  as
-    C_VIEW_STATEMENT_TEMPLATE constant adc_util.max_char := q'^create or replace view #VIEW_NAME# as #QUERY#^';
-    C_VIEW_STATIC_LIST_TEMPLATE constant adc_util.max_char := q'^
-  select pti_name d, substr(pti_id, #IDX#) r, null cgr_id
-    from pit_translatable_item_v
-   where pti_pmg_name = 'ADC'
-     and pti_id like '#VIEW_NAME#%'^';
-    C_VIEW_COMMENT_TEMPLATE constant adc_util.max_char := q'^comment on table #VIEW_NAME# is '#COMMENT#'^';
-    l_stmt adc_util.max_char;
-    l_delimiter varchar2(10 byte);
-    l_idx binary_integer;
-  begin
-    pit.enter_optional('get_param_lov_query');
-    
-    if not p_for_immediate then
-      l_delimiter := ';' || C_CR;
-    end if;
-  
-    if p_row.cpt_cpv_id = C_STATIC_LIST then
-    
-      with params as (
-             select length(p_row.cpt_id) p_position,
-                    p_row.cpt_id || '%' p_cpt_id_pattern
-               from dual)
-      select p_position + case when substr(pti_id, p_position + 3, 1) = '_' then 4 else 2 end
-        into l_idx
-        from pit_translatable_item_v
-        join params
-          on pti_id like p_cpt_id_pattern
-       where pti_pmg_name = 'ADC'
-         and rownum = 1;
-         
-      p_row.cpt_select_list_query := utl_text.bulk_replace(C_VIEW_STATIC_LIST_TEMPLATE, char_table(
-                                       '#VIEW_NAME#', p_row.cpt_id,
-                                       '#IDX#', to_char(l_idx)));
-    end if;
-    
-    if p_row.cpt_select_list_query is not null then
-      l_stmt := utl_text.bulk_replace(C_VIEW_STATEMENT_TEMPLATE || l_delimiter, char_table(
-                  '#VIEW_NAME#', C_CPT_VIEW_NAME_PREFIX || p_row.cpt_id,
-                  '#QUERY#', p_row.cpt_select_list_query));
-    end if;
-          
-    if p_row.cpt_select_view_comment is not null then
-      l_stmt := l_stmt || C_CR || 
-                utl_text.bulk_replace(C_VIEW_COMMENT_TEMPLATE || l_delimiter, char_table(
-                  '#VIEW_NAME#', C_CPT_VIEW_NAME_PREFIX || p_row.cpt_id,
-                  '#COMMENT#', p_row.cpt_select_view_comment));
-    end if;
-    return l_stmt;
-    
-  end get_param_lov_query;
-  
 
   /**
     Procedure: initialize
@@ -707,7 +591,7 @@ as
   procedure add_translation(
     p_table_shortcut in adc_util.ora_name_type,
     p_item_id in adc_util.ora_name_type,
-    p_pml_name pit_translatable_item.pti_pml_name%type,
+    p_pml_name in pit_translatable_item.pti_pml_name%type,
     p_name in pit_translatable_item.pti_name%type,
     p_display_name in pit_translatable_item.pti_display_name%type,
     p_description in pit_translatable_item.pti_description%type)
@@ -937,7 +821,7 @@ as
     harmonize_firing_items(p_cgr_id);
     harmonize_adc_page_item(p_cgr_id);
     create_decision_table(p_cgr_id);
-    resequence_rule_group(p_cgr_id);
+    resequence_rule(p_cgr_id);
 
     pit.leave_mandatory;
   end propagate_rule_change;
@@ -1160,8 +1044,8 @@ as
     p_workspace in varchar2,
     p_app_alias in varchar2)
   as
-    l_ws_id number;
-    l_app_id number;
+    l_ws_id apex_applications.workspace_id%type;
+    l_app_id apex_applications.application_id%type;
   begin
     pit.enter_mandatory(
       p_params => msg_params(
@@ -1193,7 +1077,7 @@ as
     p_workspace in varchar2,
     p_app_id in adc_rule_groups.cgr_app_id%type)
   as
-    l_ws_id number;
+    l_ws_id apex_applications.workspace_id%type;
   begin
     pit.enter_mandatory(
       p_params => msg_params(
@@ -1375,10 +1259,11 @@ as
 
     -- create validation statement
     with params as(
-           select uttm_text template, uttm_mode,
+           select /*+ no_merge */ uttm_text template, uttm_mode,
                   p_row.cru_cgr_id cgr_id,
                   p_row.cru_condition condition,
-                  adc_util.c_true c_true
+                  adc_util.c_true c_true,
+                  adc_util.C_CR cr
              from utl_text_templates
             where uttm_type = C_ADC
               and uttm_name in (C_UTTM_NAME, 'RULE_VIEW'))
@@ -1392,7 +1277,7 @@ as
                           on uttm_mode = case cet_is_custom_event when c_true then 'EVENT' else upper(cet_id) end
                        where (cet_is_custom_event = c_true
                           or cet_id in ('initialize', 'command'))
-                       order by case cet_is_custom_event when c_true then 1 else 0 end, cet_id), ',' || C_CR, 14) event_list,
+                       order by case cet_is_custom_event when c_true then 1 else 0 end, cet_id), ',' || CR, 14) event_list,
                     -- Column List
                     utl_text.generate_text(cursor(
                       select cit_col_template template,
@@ -1401,13 +1286,13 @@ as
                              cit_cet_id
                         from adc_page_item_types_v sit
                         left join (
-                               select *
+                               select cpi_id, cpi_cit_id, cpi_conversion, cpi_is_required
                                  from adc_page_items
                                 where cpi_cgr_id = cgr_id) cpi
                           on sit.cit_id = cpi.cpi_cit_id
                        where adc_util.C_TRUE in (cpi_is_required, cit_include_in_view)
                          and cit_col_template is not null
-                      order by cit_include_in_view desc, cpi_id), ',' || C_CR, 14) column_list
+                      order by cit_include_in_view desc, cpi_id), ',' || CR, 14) column_list
                from dual)) resultat
       into l_stmt
       from params p
@@ -1456,16 +1341,38 @@ as
   procedure resequence_rule(
     p_cru_id in adc_rules.cru_id%type)
   as
+    l_cgr_id adc_rule_groups.cgr_id%type;
   begin
     pit.enter_optional(p_params => msg_params(msg_param('p_cru_id', p_cru_id)));
+    
+    begin
+      select cru_cgr_id
+        into l_cgr_id
+        from adc_rules
+       where cru_id = p_cru_id;
+    exception
+      when no_data_found then
+        l_cgr_id := p_cru_id;
+    end;
+
+    -- resequence rules
+    merge into adc_rules t
+    using (select cru_id, cru_cgr_id,
+                  row_number() over (partition by cru_cgr_id order by cru_sort_seq) * 10 cru_sort_seq
+             from adc_rules
+            where cru_cgr_id = l_cgr_id
+              and cru_cgr_id > 0) s
+       on (t.cru_id = s.cru_id and t.cru_cgr_id = s.cru_cgr_id)
+     when matched then update set
+          t.cru_sort_seq = s.cru_sort_seq;
 
     -- resequence rule actions
     merge into adc_rule_actions t
-    using (select rowid row_id,
+    using (select cra_id,
                   row_number() over (partition by cra_cru_id order by cra_on_error, cra_sort_seq) * 10 cra_sort_seq
              from adc_rule_actions
-            where cra_cru_id = p_cru_id) s
-       on (t.rowid = s.row_id)
+            where cra_cgr_id = l_cgr_id) s
+       on (t.cra_id = s.cra_id)
      when matched then update set
           t.cra_sort_seq = s.cra_sort_seq;
 
@@ -2015,7 +1922,7 @@ as
           values(s.cpt_id, s.cpt_pti_id, s.cpt_pmg_name, s.cpt_cpv_id, s.cpt_sort_seq, s.cpt_active);
     
     -- Create generic View statement for static lists (they reference transalatable items)
-    l_stmt := get_param_lov_query(p_row, true);
+    l_stmt := adc_parameter.get_param_lov_query(p_row, true);
     if l_stmt is not null then
       execute immediate l_stmt;
     end if;    
@@ -2056,6 +1963,7 @@ as
     p_row in adc_action_param_types_v%rowtype)
   as
     l_has_view binary_integer;
+    l_stmt adc_util.sql_char;
   begin
     pit.enter_mandatory;
                     
@@ -2070,7 +1978,8 @@ as
              from user_views
             where view_name = C_CPT_VIEW_NAME_PREFIX || p_row.cpt_id);
     if l_has_view = 1 then
-      execute immediate 'drop view ' || C_CPT_VIEW_NAME_PREFIX || p_row.cpt_id;
+      l_stmt := 'drop view ' || C_CPT_VIEW_NAME_PREFIX || p_row.cpt_id;
+      execute immediate l_stmt;
     end if;
     
     pit.leave_mandatory;
@@ -2095,10 +2004,10 @@ as
       pit.assert_not_null(p_row.cpt_select_list_query, msg.ADC_PARAM_MISSING, p_error_code => 'CPV_VIEW_STATEMENT_MISSING');
     end if;
     
-    /*adc_validation.validate_param_lov(
+    adc_parameter.validate_param_lov(
       p_cpt_id => p_row.cpt_id,
       p_cpt_cpv_id => p_row.cpt_cpv_id);
-    */
+      
     pit.leave_mandatory;
   end validate_action_param_type;
 
@@ -2418,8 +2327,8 @@ as
     return blob
   as
     C_UTTM_NAME constant utl_text_templates.uttm_name%type := 'EXPORT_ACTION_TYPE';
-    C_WRAP_START constant varchar2(5) := 'q''{';
-    C_WRAP_END constant varchar2(5) := '}''';
+    C_WRAP_START constant adc_util.tiny_char := 'q''{';
+    C_WRAP_END constant adc_util.tiny_char := '}''';
     l_action_param_visual_types clob;
     l_action_param_types clob;
     l_page_item_type_groups clob;
@@ -2454,7 +2363,7 @@ as
                    utl_text.wrap_string(cpt.cpv_description, C_WRAP_START, C_WRAP_END) cpv_description,
                    cpv_display_name, cpv_sort_seq
               from adc_action_param_visual_types_v cpt
-           ), C_CR)
+           ), adc_util.C_CR)
       into l_action_param_visual_types
       from utl_text_templates p
      where uttm_type = C_ADC
@@ -2470,7 +2379,7 @@ as
                    utl_text.wrap_string(cpt.cpt_select_view_comment, C_WRAP_START, C_WRAP_END) cpt_select_view_comment,
                    cpt_display_name, cpt_sort_seq
               from adc_action_param_types_v cpt
-           ), C_CR)
+           ), adc_util.C_CR)
       into l_action_param_types
       from utl_text_templates p
      where uttm_type = C_ADC
@@ -2524,7 +2433,7 @@ as
                    utl_text.wrap_string(cif_description, C_WRAP_START, C_WRAP_END) cif_description,
                    adc_util.to_bool(cif_actual_page_only) cif_actual_page_only, cif_item_types
               from adc_action_item_focus_v
-           ), C_CR)
+           ), adc_util.C_CR)
       into l_action_item_focus
       from utl_text_templates p
      where uttm_type = C_ADC
@@ -2536,7 +2445,7 @@ as
                    stg.ctg_id, stg.ctg_name, adc_util.to_bool(stg.ctg_active) ctg_active,
                    utl_text.wrap_string(stg.ctg_description, C_WRAP_START, C_WRAP_END) ctg_description
               from adc_action_type_groups_v stg
-           ), C_CR)
+           ), adc_util.C_CR)
       into l_action_type_groups
       from utl_text_templates p
      where uttm_type = C_ADC
@@ -2548,7 +2457,7 @@ as
                    cty_id, cty_name, adc_util.to_bool(cty_active) cty_active,
                    utl_text.wrap_string(cty_description, C_WRAP_START, C_WRAP_END) cty_description
               from adc_apex_action_types_v 
-           ), C_CR)
+           ), adc_util.C_CR)
       into l_apex_action_types
       from utl_text_templates p
      where uttm_type = C_ADC
@@ -2583,7 +2492,7 @@ as
                  cross join params p
                  where uttm_mode = 'ACTION_PARAMS'
                    and ap.cap_cat_id = cat.cat_id
-              ), C_CR) rule_action_params
+              ), adc_util.C_CR) rule_action_params
          from adc_action_types_v cat
         cross join params p
         where (cat.cat_is_editable = p.cat_is_editable
@@ -2608,7 +2517,7 @@ as
                     l_action_types action_types,
                     l_apex_action_types apex_action_types
                from dual
-           ), C_CR) resultat
+           ), adc_util.C_CR) resultat
       into l_stmt
       from utl_text_templates
      where uttm_type = C_ADC
@@ -2620,7 +2529,7 @@ as
                   from adc_action_param_types_v
                  where cpt_cpv_id = C_STATIC_LIST
                     or cpt_select_list_query is not null) loop
-      dbms_lob.append(l_stmt, C_CR || get_param_lov_query(cpt) || C_CR);
+      dbms_lob.append(l_stmt, adc_util.C_CR || adc_parameter.get_param_lov_query(cpt) || adc_util.C_CR);
     end loop; 
     
     apex_zip.add_file(
@@ -3557,7 +3466,7 @@ as
       See <ADC_ADMIN.delete_apex_action_item>
    */ 
   procedure delete_apex_action_item(
-    p_row adc_apex_action_items%rowtype)
+    p_row in adc_apex_action_items%rowtype)
   as
   begin
     pit.enter_mandatory;

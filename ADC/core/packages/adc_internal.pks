@@ -267,7 +267,7 @@ as
       See <adc_api.register_item>
    */
   procedure raise_item_event(
-    p_cpi_id in varchar2);
+    p_cpi_id in adc_page_items.cpi_id%type);
 
 
   /**
@@ -275,7 +275,7 @@ as
       See <adc_api.register_error>
    */
   procedure register_error(
-    p_cpi_id in varchar2,
+    p_cpi_id in adc_page_items.cpi_id%type,
     p_error_msg in varchar2,
     p_internal_error in varchar2);
 
@@ -285,7 +285,7 @@ as
       See <adc_api.register_error>
    */
   procedure register_error(
-    p_cpi_id in varchar2,
+    p_cpi_id in adc_page_items.cpi_id%type,
     p_message_name in varchar2,
     p_msg_args in msg_args default null);
 

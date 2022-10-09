@@ -479,7 +479,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pNoNotify - If true the treeView#event:selectionChange event will be suppressed.
    */
   actions.selectEntry = function(pRegionId, pEntryId, pNoNotify){
-    let region$;
+    let $region;
     let entry;
     const C_IG_SELECTOR = `#${pRegionId}_ig`;
     const C_TREE_SELECTOR = `#${pRegionId}_tree`;
@@ -488,20 +488,20 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       case C_REGION_CR:
         break;
       case C_REGION_IG:
-        region$ = $(C_IG_SELECTOR);
-        entry = region$
+        $region = $(C_IG_SELECTOR);
+        entry = $region
                 .interactiveGrid('getViews', 'grid')
                 .model
                 .getRecord(pEntryId);
         if(entry){
-          region$.interactiveGrid('setSelectedRecords', entry, true, pNoNotify);
+          $region.interactiveGrid('setSelectedRecords', entry, true, pNoNotify);
         }
         break;
       case C_REGION_IR:
         break;
       case C_REGION_TREE:
-        region$ = $(C_TREE_SELECTOR);
-        entry = region$.treeView(
+        $region = $(C_TREE_SELECTOR);
+        entry = $region.treeView(
                   "find",
                   {"depth": -1,
                    "match": function(n){
@@ -509,9 +509,9 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
                             }
                   }
                 );
-        region$.treeView('collapseAll');
-        region$.treeView('expand', entry);
-        region$.treeView('setSelection', entry, true, pNoNotify);
+        $region.treeView('collapseAll');
+        $region.treeView('expand', entry);
+        $region.treeView('setSelection', entry, true, pNoNotify);
         break;
     }
   }; // selectEntry

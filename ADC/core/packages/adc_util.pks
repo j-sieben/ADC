@@ -24,6 +24,7 @@ as
   subtype sql_char is varchar2(4000 byte);
   subtype max_char is varchar2(32767 byte);
   subtype flag_type is &FLAG_TYPE.;
+  subtype tiny_char is varchar2(5 byte);
    
    
   /**
@@ -87,6 +88,8 @@ as
   
   C_PARAM_ITEM_VALUE constant adc_util.ora_name_type := 'ITEM_VALUE';
   C_PARAM_EVENT_DATA constant adc_util.ora_name_type := 'EVENT_DATA';
+  C_PARAM_METHOD constant adc_util.ora_name_type := '#METHOD#';
+  C_PARAM_SELECTOR constant adc_util.ora_name_type := '#SELECTOR#';
   
   C_DELIMITER constant varchar2(1 byte) := ',';
   
@@ -275,6 +278,17 @@ as
    */
   procedure set_test_mode(
     p_flag in boolean);
+    
+    
+  /**
+    Function: get_environment
+      Method to populate an instance of <environment_rec> with actual information.
+      
+    Returns:
+      Instance of <environment_rec>
+   */
+  function get_environment
+    return environment_rec;
     
 end adc_util;
 /

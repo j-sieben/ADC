@@ -76,6 +76,22 @@ begin
     p_pms_pse_id => 70,
     p_pms_pml_name => 'GERMAN');
 
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_UI_PARAM_VALIDATION_FAILED',
+    p_pms_pmg_name => 'ADC_UI',
+    p_pms_text => q'^Der Parameterwert hat folgenden Fehler erzeugt: #1#.^',
+    p_pms_description => q'^Beim Validieren eines Parameterwerts wird diese, abhängig von seinem Typ, auf Plausibilität geprüft. Der fehlerhafter Parameterwert muss korrigiert werden.^',
+    p_pms_pse_id => 30,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_UI_INVALID_JQUERY',
+    p_pms_pmg_name => 'ADC_UI',
+    p_pms_text => q'^Der Selektor "#1#" wird auf der Seite nicht verwendet.^',
+    p_pms_description => q'^Beim Validieren eines jQuery-Selektors muss dieser auf der Seite vorhanden sein.^',
+    p_pms_pse_id => 30,
+    p_pms_pml_name => 'GERMAN');
+
   commit;
   pit_admin.create_message_package;
 end;

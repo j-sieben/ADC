@@ -1,0 +1,1 @@
+﻿NDContentPage.OnToolTipsLoaded({537:"<div class=\"NDToolTip TType LSQL\"><div class=\"TTSummary\">Record that defines environmental information about the actually executed rule Is used in adc_validation for checks against the meta data of ADC</div></div>"});

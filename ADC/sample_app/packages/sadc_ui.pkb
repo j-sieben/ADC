@@ -307,7 +307,7 @@ as
   begin
     pit.enter_mandatory(
       p_params => msg_params(msg_param('p_cat_id', p_cat_id)));
-      
+    
     utl_apex.print(get_help_text(p_cat_id));
    
     pit.leave_mandatory;
@@ -318,15 +318,18 @@ as
     p_cat_id in adc_action_types.cat_id%type)
   return varchar2
   as
+    l_cat_id adc_action_types.cat_id%type;
     l_help_text adc_util.max_char;
   begin
     pit.enter_mandatory('get_help_text',
       p_params => msg_params(msg_param('p_cat_id', p_cat_id)));
       
+    l_cat_id := coalesce(p_cat_id, adc_api.get_event_data);
+    
     select help_text
       into l_help_text
       from adc_bl_cat_help
-     where cat_id = p_cat_id;
+     where cat_id = l_cat_id;
   
     pit.leave_mandatory;
     return(l_help_text);   
