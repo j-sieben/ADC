@@ -1,5 +1,6 @@
 set serveroutput on
 
+prompt &h2.Removing existing tables
 declare
    cursor delete_object_cur is
     select *
@@ -10,48 +11,49 @@ begin
   for obj in delete_object_cur loop
     begin
       execute immediate 'drop ' || obj.object_type || ' ' || obj.object_name || case obj.object_type when 'TABLE' then ' cascade constraints purge' end;
-      dbms_output.put_line(obj.object_type || ' ' || obj.object_name || ' geloescht');
+      dbms_output.put_line('&s1.' || lower(obj.object_type) || ' ' || obj.object_name || ' deleted');
     exception
       when others then
-        dbms_output.put_line('Fehler bei ' || obj.object_type || ' ' || obj.object_name || ': ' || sqlerrm);
+        dbms_output.put_line('&s1.Error at ' || lower(obj.object_type) || ' ' || obj.object_name || ': ' || sqlerrm);
     end;
   end loop;
 end;
 /
 
-Prompt ******  Creating HR_REGIONS table ....
+prompt &h2. Creating tables
+prompt &s1.Creating HR_REGIONS table
 
 create table hr_regions(
-  reg_id number constraint reg_id_nn not null,
+  reg_id number constraint reg_id_notnull not null,
   reg_name varchar2(25 char),
-  constraint hr_regions_pk primary key(reg_id)
+  constraint hr_regions_p primary key(reg_id)
 ) organization index;
 
 
-Prompt ******  Creating hr_countries table ....
+prompt &s1.Creating hr_countries table
 
 create table hr_countries(
-  cou_id char(2 byte) constraint cou_id_nn not null,
+  cou_id char(2 byte) constraint cou_id_notnull not null,
   cou_name varchar2(40 char),
   cou_reg_id number, 
-  constraint hr_countries_pk primary key (cou_id),
+  constraint hr_countries_p primary key (cou_id),
   constraint cou_reg_id_fk foreign key (cou_reg_id)
     references hr_regions(reg_id) 
 ) organization index; 
 
 
 
-Prompt ******  Creating hr_locations table ....
+prompt &s1.Creating hr_locations table
 
 create table hr_locations(
   loc_id number(4),
   loc_street_address varchar2(40 char),
   loc_postal_code varchar2(12 byte),
-  loc_city varchar2(30 char) constraint loc_city_nn not null,
+  loc_city varchar2(30 char) constraint loc_city_notnull not null,
   loc_state_province varchar2(25 char),
   loc_cou_id char(2 byte),
   loc_geometry sdo_geometry,
-  constraint hr_locations_pk primary key (loc_id),
+  constraint hr_locations_p primary key (loc_id),
   constraint loc_cou_id_fk foreign key (loc_cou_id)
     references hr_countries(cou_id) 
 ) organization index;
@@ -63,18 +65,16 @@ create sequence hr_locations_seq
  nocache
  nocycle;
 
-REM ********************************************************************
-REM Create the hr_departments table to hold company department information.
-REM HR.hr_employees and HR.hr_job_history have a foreign key to this table.
+prompt &s1.Creating hr_departments table
 
-Prompt ******  Creating hr_departments table ....
+prompt &s1.Creating hr_departments table
 
 create table hr_departments(
   dep_id number(4),
-  dep_name varchar2(30 char) constraint dept_name_nn not null,
+  dep_name varchar2(30 char) constraint dept_name_notnull not null,
   dep_mgr_id number(6),
   dep_loc_id number(4),
-  constraint hr_departments_pk primary key (dep_id),
+  constraint hr_departments_p primary key (dep_id),
   constraint dep_loc_id_fk foreign key (dep_loc_id)
     references hr_locations (loc_id)
 );
@@ -88,62 +88,61 @@ create sequence hr_departments_seq
  nocycle;
 
 
-Prompt ******  Creating hr_jobs table ....
+prompt &s1.Creating hr_jobs table
 
 create table hr_jobs(
   job_id varchar2(10 byte),
-  job_title varchar2(35 char) constraint job_title_nn not null,
+  job_title varchar2(35 char) constraint job_title_notnull not null,
   job_min_salary number(6),
   job_max_salary number(6),
   job_is_commission_eligible char(1 byte) default on null 'Y' constraint job_is_commission_eligible_chk check (job_is_commission_eligible in ('Y', 'N')),
-  constraint job_id_pk primary key(job_id)
+  constraint job_id_p primary key(job_id)
 )organization index;
 
 
-Prompt ******  Creating hr_employees table ....
+prompt &s1.Creating hr_employees table
 
 create table hr_employees(
   emp_id number(6),
   emp_first_name varchar2(20 char),
-  emp_last_name varchar2(25 char) constraint emp_last_name_nn not null,
-  emp_email varchar2(25 char) constraint emp_email_nn not null,
+  emp_last_name varchar2(25 char) constraint emp_last_name_notnull not null,
+  emp_email varchar2(25 char) constraint emp_email_notnull not null,
   emp_phone_number varchar2(20 byte),
-  emp_hire_date date constraint emp_hire_date_nn not null,
-  emp_job_id varchar2(10) constraint emp_job_nn not null,
+  emp_hire_date date constraint emp_hire_date_notnull not null,
+  emp_job_id varchar2(10) constraint emp_job_notnull not null,
   emp_salary number(8,2),
   emp_commission_pct number(2,2),
   emp_mgr_id number(6),
   emp_dep_id number(4),
   emp_is_manager char(1 byte) default on null 'Y' constraint emp_is_manager_chk check (emp_is_manager in ('Y', 'N')),
-  constraint hr_employees_pk primary key (emp_id),
+  constraint hr_employees_p primary key (emp_id),
   constraint emp_dep_id_fk foreign key (emp_dep_id)
     references hr_departments,
   constraint emp_job_id_fk foreign key (emp_job_id)
     references hr_jobs (job_id),
   constraint emp_mgr_id_fk foreign key (emp_mgr_id)
     references hr_employees,
-  constraint emp_email_uk unique (emp_email),
-  constraint emp_salary_min check (emp_salary > 0)
+  constraint emp_email_u unique (emp_email),
+  constraint emp_salary_gt_0 check (emp_salary > 0)
 );
 
-REM create foreign key constraint here to overcome circular dependency
+prompt &s1.Vreate foreign key constraint here to overcome circular dependency
 alter table hr_departments add (
   constraint dep_mgr_id_fk foreign key (dep_mgr_id)
     references hr_employees (emp_id)
 );
-REM disable integrity constraint to hr_employees to load data
+prompt &s1.Disable integrity constraint to hr_employees to load data
 alter table hr_departments disable constraint dep_mgr_id_fk;
 
 
-Rem 	Useful for any subsequent addition of rows to hr_employees table
-Rem 	Starts with 207 
+prompt &s1.Create sequence hr_employee_seq, starting with 207 
 create sequence hr_employees_seq
  start with     207
  increment by   1
  nocache
  nocycle;
 
-Prompt ******  Creating HR_EMP_DETAILS view ...
+prompt &s1.Creating HR_EMP_DETAILS view
 
 create or replace view hr_emp_details as
 select emp_id, job_id, emp_mgr_id, dep_id, loc_id, cou_id,
@@ -157,33 +156,34 @@ select emp_id, job_id, emp_mgr_id, dep_id, loc_id, cou_id,
   join hr_regions on cou_reg_id = reg_id
 with read only;
 
-Prompt ******  Creating indexes ...
+prompt &s1.Creating indexes
 
-create index emp_department_ix
+create index emp_department_i
        on hr_employees (emp_dep_id);
 
-create index emp_job_ix
+create index emp_job_i
        on hr_employees (emp_job_id);
 
-create index emp_manager_ix
+create index emp_manager_i
        on hr_employees (emp_mgr_id);
 
-create index emp_name_ix
+create index emp_name_i
        on hr_employees (emp_last_name, emp_first_name);
 
-create index dept_location_ix
+create index dept_location_i
        on hr_departments (dep_loc_id);
 
-create index loc_city_ix
+create index loc_city_i
        on hr_locations (loc_city);
 
-create index loc_state_province_ix	
+create index loc_state_province_i	
        on hr_locations (loc_state_province);
 
-create index loc_country_ix
+create index loc_country_i
        on hr_locations (loc_cou_id);
 
-Prompt ******  Populating HR_REGIONS table ....
+prompt &h2.Populating table data
+prompt &s1.Populating HR_REGIONS table
 
 insert into hr_regions(reg_id, reg_name)
 select 1 reg_id, 'Europe' reg_name from dual union all
@@ -193,7 +193,7 @@ select 4, 'Middle East and Africa' from dual;
 
 commit;
 
-Prompt ******  Populating HT_COUNTRIES table ....
+prompt &s1.Populating HT_COUNTRIES table
 
 insert into hr_countries(cou_id, cou_name, cou_reg_id)
 select 'IT' cou_id, 'Italy' cou_name, 1 cou_reg_id  from dual union all
@@ -224,8 +224,7 @@ select 'BE', 'Belgium', 1  from dual;
 
 commit;
 
-
-Prompt ******  Populating HR_LOCATIONS table ....
+prompt &s1.Populating HR_LOCATIONS table
 
 insert into hr_locations(loc_id, loc_street_address, loc_postal_code, loc_city, loc_state_province, loc_cou_id)
 select 1000 loc_id, '1297 Via Cola di Rie' loc_street_address, '00989'loc_postal_code, 'Roma' loc_city, null loc_state_province, 'IT' loc_cou_id from dual union all
@@ -254,8 +253,7 @@ select 3200, 'Mariano Escobedo 9991', '11932', 'Mexico City', 'Distrito Federal,
 
 commit;
 
-Prompt ******  Populating HR_DEPARTMENTS table ....
-
+prompt &s1.Populating HR_DEPARTMENTS table
 
 insert into hr_departments(dep_id, dep_name, dep_mgr_id, dep_loc_id)
 select 10 dep_id, 'Administration' dep_name, 200 dep_mgr_id, 1700 dep_loc_id from dual union all
@@ -288,7 +286,7 @@ select 270, 'Payroll', null, 1700 from dual;
 
 commit;
 
-Prompt ******  Populating HR_JOBS table ....
+prompt &s1.Populating HR_JOBS table
 
 insert into hr_jobs(job_id, job_title, job_min_salary, job_max_salary, job_is_commission_eligible)
 select 'AD_PRES' job_id, 'President' job_title, 20080 job_min_salary, 40000 job_max_salary, 'N' job_is_commission_eligible from dual union all
@@ -313,7 +311,8 @@ select 'PR_REP', 'Public Relations Representative', 4500, 10500, 'N' from dual;
 
 commit;
 
-Prompt ******  Populating HR_EMPLOYEES table ....
+prompt &s1.Populating HR_EMPLOYEES table
+
 insert into hr_employees(emp_id, emp_first_name, emp_last_name, emp_email, emp_phone_number, emp_hire_date, emp_job_id, emp_salary, emp_commission_pct, emp_mgr_id, emp_dep_id)
 select 100 emp_id, 'Steven' emp_first_name, 'King' emp_last_name, 'SKING' emp_email, '515.123.4567' emp_phone_number, to_date('17.06.2003', 'dd.mm.yyyy') emp_hire_date, 'AD_PRES' emp_job_id, 24000 emp_salary, null emp_commission_pct, null emp_mgr_id, 90 emp_dep_id from dual union all
 select 101, 'Neena', 'Kochhar', 'NKOCHHAR', '515.123.4568', to_date('21.09.2005', 'dd.mm.yyyy'), 'AD_VP', 17000, null, 100, 90 from dual union all
@@ -435,6 +434,6 @@ using (select e.emp_id, case count(distinct m.emp_id) when 0 then 'N' else 'Y' e
 
 commit;
 
-REM enable integrity constraint to hr_departments
+prompt &s1.Enable integrity constraint to hr_departments
 
 alter table hr_departments enable constraint dep_mgr_id_fk;

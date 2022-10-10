@@ -8,4 +8,5 @@ define pkg_dir=&install_dir.packages/
 define script_dir=&install_dir.scripts/
 define msg_dir=&install_dir.messages/&DEFAULT_LANGUAGE./
 define apex_version_dir=&install_dir.&APEX_PATH./
-define app_dir=&install_dir.&APEX_PATH./application/
+define app_dir=&APEX_VERSION_DIR./application/
+define app_script_dir=&APEX_VERSION_DIR./scripts/

@@ -4,11 +4,11 @@
 define tool_dir=tools/
 clear screen
 
+@&tool_dir.init_apex.sql &1. &2. SADC
+
 prompt
 prompt &section.
 prompt &h1.APEX Dynamic Controller (ADC) Sample Application Installation
-
-@&tool_dir.init_apex.sql &1. &2. SADC
 
 @&tool_dir.set_compiler_flags.sql
 prompt

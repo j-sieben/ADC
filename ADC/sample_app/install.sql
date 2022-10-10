@@ -1,7 +1,7 @@
-@&tool_dir.set_folder 
+@&tool_dir.set_folder sample_app
 @&tool_dir.init.sql
 
-prompt create HR tables
+prompt &h1.Create Sample Tables and Data
 @&script_dir.install_hr.sql
 
 prompt &h2.Create database objects
