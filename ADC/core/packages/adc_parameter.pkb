@@ -347,7 +347,7 @@ end;~';
     end if;
   exception
     when NO_DATA_FOUND then
-      pit.error(msg.ADC_UI_INVALID_JQUERY);
+      pit.error(msg.ADC_INVALID_JQUERY);
   end validate_is_selector;
 
 
@@ -372,7 +372,7 @@ end;~';
        and cpi_id = upper(p_value);
   exception
     when NO_DATA_FOUND then
-      pit.error(msg.ADC_UI_INVALID_PAGE_ITEM);
+      pit.error(msg.ADC_INVALID_PAGE_ITEM);
   end validate_is_page_item;
 
 
@@ -395,7 +395,7 @@ end;~';
      where sequence_name = upper(p_value);
   exception
     when NO_DATA_FOUND then
-      pit.error(msg.ADC_UI_INVALID_SEQUENCE);
+      pit.error(msg.ADC_INVALID_SEQUENCE);
   end validate_is_sequence;
 
 
@@ -690,20 +690,20 @@ end;~';
         p_cpi_id => p_cpi_id,
         p_message_name => msg.PIT_MSG_NOT_EXISTING,
         p_msg_args => msg_args(p_value));
-    when msg.ADC_UI_INVALID_JQUERY_ERR then
+    when msg.ADC_INVALID_JQUERY_ERR then
       adc_api.register_error(
         p_cpi_id => p_cpi_id,
-        p_message_name => msg.ADC_UI_INVALID_JQUERY,
+        p_message_name => msg.ADC_INVALID_JQUERY,
         p_msg_args => msg_args(p_value));
-    when msg.ADC_UI_INVALID_PAGE_ITEM_ERR then
+    when msg.ADC_INVALID_PAGE_ITEM_ERR then
       adc_api.register_error(
         p_cpi_id => p_cpi_id,
-        p_message_name => msg.ADC_UI_INVALID_PAGE_ITEM,
+        p_message_name => msg.ADC_INVALID_PAGE_ITEM,
         p_msg_args => msg_args(p_value));
-    when msg.ADC_UI_INVALID_SEQUENCE_ERR then
+    when msg.ADC_INVALID_SEQUENCE_ERR then
       adc_api.register_error(
         p_cpi_id => p_cpi_id,
-        p_message_name => msg.ADC_UI_INVALID_SEQUENCE,
+        p_message_name => msg.ADC_INVALID_SEQUENCE,
         p_msg_args => msg_args(p_value));
     when others then
       case when instr(sqlerrm, 'PLS') > 0 then
@@ -713,7 +713,7 @@ end;~';
       end case;
       adc_api.register_error(
         p_cpi_id => p_cpi_id,
-        p_message_name => msg.ADC_UI_PARAM_VALIDATION_FAILED,
+        p_message_name => msg.ADC_PARAM_VALIDATION_FAILED,
         p_msg_args => msg_args(l_error_msg));
   end validate_parameter;
   

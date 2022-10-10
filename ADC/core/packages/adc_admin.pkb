@@ -1197,9 +1197,9 @@ as
           values (s.cru_id, s.cru_cgr_id, s.cru_name, s.cru_condition, s.cru_fire_on_page_load, s.cru_sort_seq, s.cru_active);
 
     pit.leave_mandatory;
-/*  exception
+  exception
     when others then
-      pit.handle_exception(msg.ADC_MERGE_RULE, msg_args(p_row.cru_name));*/
+      pit.handle_exception(msg.ADC_MERGE_RULE, msg_args(p_row.cru_name));
   end merge_rule;
 
 

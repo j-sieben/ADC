@@ -26,6 +26,7 @@ declare
                  '' -- Sequenzen
                  )
              and object_type not like '%BODY'
+             and object_type != 'INDEX'
            order by object_type, object_name;
 begin
   for obj in delete_object_cur loop
@@ -41,6 +42,7 @@ begin
       when object_does_not_exist or table_does_not_exist or sequence_does_not_exist or synonym_does_not_exist then
         dbms_output.put_line('&s1.' || obj.type || ' ' || obj.name || ' does not exist.');
       when others then
+        dbms_output.put_line('&s1.Error at ' || obj.type || ' ' || obj.name || ': ' || sqlerrm);
         raise;
     end;
   end loop;

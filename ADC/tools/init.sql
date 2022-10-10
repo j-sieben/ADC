@@ -23,16 +23,32 @@ select pit.get_default_language default_language,
   
 @settings.sql
   
-select case count(*) when 0 then 'false' else 'true' end with_flows
+/*select case count(*) when 0 then 'false' else 'true' end with_flows
   from all_objects
  where object_name = 'FLOW_API'
-   and object_type = 'PACKAGE';
+   and object_type = 'PACKAGE';*/
+define WITH_FLOWS=false
    
 col ora_name_type new_val ORA_NAME_TYPE format a30
 select 'varchar2(' || data_length || ' byte)' ora_name_type
   from all_tab_columns
  where table_name = 'USER_TABLES'
    and column_name = 'TABLE_NAME';
+   
+-- Copy boolean value type from PIT
+col FLAG_TYPE  new_val FLAG_TYPE format a128
+col C_FALSE  new_val C_FALSE format a128
+col C_TRUE  new_val C_TRUE format a128
+
+select lower(data_type) || '(' ||     
+         case when data_type in ('CHAR', 'VARCHAR2') then data_length || case char_used when 'B' then ' byte)' else ' char)' end
+         else data_precision || ', ' || data_scale || ')'
+       end FLAG_TYPE,
+       case when data_type in ('CHAR', 'VARCHAR2') then dbms_assert.enquote_literal(pit_util.c_true) else pit_util.c_true end C_TRUE, 
+       case when data_type in ('CHAR', 'VARCHAR2') then dbms_assert.enquote_literal(pit_util.c_false) else pit_util.c_false end C_FALSE
+  from all_tab_columns
+ where table_name = 'PARAMETER_LOCAL'
+   and column_name = 'PAL_BOOLEAN_VALUE';
 
 define section="********************************************************************************"
 define h1="*** "
