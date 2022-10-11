@@ -100,7 +100,16 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       pFocusItem - Item to set the focus to if no confirmation is given
    */
   renderer.confirmRequest = function(pEventOrMessage, pCallback, pFocusItem){
-    var message = typeof(pEventOrMessage) === "string" ? pEventOrMessage : pEventOrMessage.data.message;
+    let message;
+    let dialogTitle;
+    
+    if(typeof(pEventOrMessage) === "string"){
+      message = pEventOrMessage;
+    }else{
+      message = pEventOrMessage.data.message;
+      dialogTitle = pEventOrMessage.data.title;
+
+    }
     apex.message.confirm(message, function (pAnswer) {
       if(pAnswer){
         pCallback(pEventOrMessage);
@@ -109,6 +118,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
         apex.item(pFocusItem).setFocus();
       };
     });
+    renderer.setModalDialogTitle(dialogTitle);
   }; // clearNotification
   
 

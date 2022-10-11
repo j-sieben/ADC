@@ -1111,7 +1111,7 @@ as
                     msg_param('p_cgr_app_id', p_cgr_app_id),
                     msg_param('p_cgr_page_id', p_cgr_page_id)));
 
-    -- Recursively delete any existing rulegroup with same APP_ID, PAGE_ID and NAME
+    -- Recursively delete any existing rulegroup with same APP_ID and PAGE_ID
     delete from adc_rule_groups
      where cgr_app_id = p_cgr_app_id
        and cgr_page_id = p_cgr_page_id;
