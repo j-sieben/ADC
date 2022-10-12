@@ -1,8 +1,6 @@
 # ADC
 State Chart Toolkit is a toolkit aimed at APEX designers wanting to simplify the construction of complex forms.
 
-ATTENTION: ADC is not intended to be used widely, rather it is a proof of concept. To use it in your projects, you need to be aware that its usage requires more effort to set up a working repository than for a normal plugin. If you expect ADC to simply be installed and it works, this is not possible due to the nature of the plugin and the lack of integration into the normal APEX API. So use it as a technology demonstration!
-
 ## The problem with complex forms
 A complex form in APEX requires many JavaScript based interactions to be coded by an APEX developer. This is normally achieved by creating Dynamic Actions (DA) on the page. This declarative approach is best suited for minor to medium complex pages but it becomes a nightmare to maintain once many items are on the page or once a more sophisticated control over the page elements is required.
 
@@ -18,9 +16,10 @@ Here, ADC steps in with a new approach. Rather than trying to control many DA on
 
 The basic principle is already known as a [Decision Table](https://en.wikipedia.org/wiki/Decision_table) pattern. But ADC is not an implementation of that pattern in PL/SQL or SQL but lends some basic ideas of this pattern to allow for a meta data driven approach to controling complex state on an APEX page.
 
-To achive this, ADC introduces the concept of *Rule Groups* which collect as many *Rules* as you like in an ordered fashion. Each rule on the other hand is composed of a condition, written in SQL syntax (as if it were part of a `where`-clause) and a collection of *Actions*. These actions get executed in the order that is defined within the rule. Each action on the other hand has a PL/SQL- and JavaScript branch allowing for simultaneous execution of server side and client side code with one action.
+I like to describe an APEX application page that is controlled by ADC a *Dynamic Page* as opposed to a normal APEX page that is static by design. On a dynamic page *use cases* can be defined with a somewhat special meaning: They represent an action the application user performs to achieve a change of the page status.
+Each use case in this regard is composed of a technical condition, written in SQL syntax (as if it were part of a `where`-clause) to describe, when a given use case has been requested. If a specific use case has been detected all *actions* defined for that use case get executed. Each action on the other hand has a PL/SQL- and JavaScript branch allowing for simultaneous execution of server side and client side code with one action.
 
-To make it easier for a developer to create actions, an action is a reference to an *Action Type* that defines the actions to take.
+ADC ships with a list of predefined action types you can choose from, but it's also simple to add your own action types, extending the functionality of ADC.
 
 ## Example
 
@@ -43,22 +42,25 @@ Also, keep in mind that the child select list will refresh anyway, regardless of
 
 ### The ADC approach
 
-In ADC, you define a rule group using a dedicated APEX application. You define the Application- and Page ID the rule group references and give it a descriptive name.
+To make an APEX page a dynamic page, all you have to do is install the ADC plugin on that page and run the page. Installing is possible even on page 0 to make ADC available for any page of your application. Although no use cases have been defined yet for that page, it already behaves differently:
 
-Next, you define two rules for this rule group: `<item> has children` and `<item> has no children`. As a rule to decide whether the parent item has children or not, you create a small function, taking the parent items actual value und retrieving `Y` or `N` to indicate whether child records exist. Image a function called `has_children(p_parent_id)` for that. Based on this function, you define the rules condition to be `has_children(item) = 'Y'` and `has_children(item) = 'N'` respectively.
+- all mandatory items are checked live and dynamically
+- all number or date items are checked for valid numbers or dates live and dynamically
+
+This all comes in for free. But to continue with our example, we need to define use cases for the page: `<item> has children` and `<item> has no children`. In order to decide whether the parent item has children or not, you create a small function, taking the parent items actual value und retrieving `Y` or `N` to indicate whether child records exist. Image a function called `has_children(p_parent_id)` for that. Based on this function, you define the use cases technical condition to be `has_children(item) = 'Y'` and `has_children(item) = 'N'` respectively.
 
 The column `item` in the example are column names derived from the item name on the page. So fi, if the page item is called `P1_PARENT`, a column named `p1_parent` is provided with the item's actual content as its column value.
 
 As actions for rule *<item> has children* you define that three things are going to happen:
 
-- `<child_item>` shall refresh
-- `<child_item>` shall show
-- `<placeholder_item>` shall hide
+- refresh `<child_item>`
+- show `<child_item>`
+- hide `<placeholder_item>`
 
 And the second rule reads:
 
-- `<placeholder_item>` shall show
-- `<child_item>` shall be set to NULL and hidden
+- show `<placeholder_item>`
+- set `<child_item>` to NULL and hide it
 
 That's all there is to it. No hidden element on the page, no sepcialized DA anymore. If you run the page, you will see that the items behave as expected.
 
@@ -66,9 +68,11 @@ That's all there is to it. No hidden element on the page, no sepcialized DA anym
 
 ### On the APEX page
 
-On every page you want ADC to take control for, you implement a single DA per rule group you define for that page. This DA fires on `Page Load` and does not require any parameterization beside the name of the rule group it belongs to. No event handlers, no additional JavaScript code is required on the page.
+As stated, you need to run the ADC plugin on any page you want to control by ADC. It sounds unbelievable, but it's true: There is no configuration or administration required, even if you add use cases to the page. No need to bind event handlers or anything alike, it simply and immediately works.
 
-If the DA initializes, it is told which elements to bind by the database. Plus, it is told which element values the database is interested in. On any occurence of a change event on any bound element, all actual element values of all fields of interest are sent to the database plus the name of the triggering element. After initialization, the plugin fires one time to allow the database to initialize the state of the elements based on the actual content of the items (Keep in mind that the session state might be out of sync when initially showing the page. A default value for an item is known to the browser but not to the session state, for example).
+If the DA initializes, it installs event handler on any page item ADC is interested in. As we have the technical conditions at the use cases, ADC can find out which page items are refeferenced by a technical condition. As only these page items can cause a use case to be performed, this tells ADC indirectly what page items it needs to observer. So creating the technical condition also administers the plugin on the page.
+  
+If an event handler of any of the monitored page items fires, all actual element values of all fields of interest are sent to the database plus the name of the triggering element. This is called the *Page State* in ADC terms. It is similar to the session state but it contains the actual values of the page plus the additional, event related information.
 
 ### Upon PAGE LOAD event
 
@@ -79,16 +83,16 @@ If an event is raised (`change` event on items of interes or `click` event of bo
 
 ### At the database
 
-The request is evaluated by the rules within the database to decide upon the next actions to take. It will perform all PL/SQL actions defined for the chosen rule. After that, and probably based on the outcome of this execution, JavaScript actions are defined, bundled in a `<script>` tag and resent to the plugin. Plus, all element values calculated or changed at the database are sent to the plugin again, refreshing the values shown at the client.
+The request is evaluated based on the technical conditions within the database to decide upon the next actions to take. It will perform all PL/SQL actions defined for the chosen rule. After that, and probably based on the outcome of this execution, JavaScript actions are defined, bundled in a `<script>` tag and resent to the plugin. Plus, all element values calculated or changed at the database are sent to the plugin again, refreshing the values shown at the client.
 
 Any error that occurred during execution is collected at an error object and passed to the plugin. The plugin renders all errors according to the standard AEPX behaviour at the notification box and besides the page item.
 
-The rules are evaluated using plain SQL. To allow for this, all rules get converted to a view that is stored within the database. As an example of the SQL created, review the following query the plugin created based on the rule of our example (code is for database version 12c, 11g is supported as well):
+The rules are evaluated using plain SQL. To allow for this, all rules get converted to a decision table that is stored within the meta data tables of ADC. As an example of the SQL created, review the following query the plugin created based on the rule of our example (code is for database version 12c, 11g is supported as well):
 
 ```
   with session_state as(
-       select ':' || adc_admin.get_firing_item || ':' firing_item,
-              to_number(v('P1_PARENT'), '9990') P1_PARENT
+       select adc_admin.get_firing_item firing_item,
+              adc_api.get_number('P1_PARENT') P1_PARENT
          from dual)
 select /*+ NO_MERGE(s) */ 
        r.cru_id, r.cru_name, r.cru_firing_items,
@@ -96,13 +100,13 @@ select /*+ NO_MERGE(s) */
   from adc_bl_rules r
   join session_state s
     on instr(r.cru_firing_items, s.firing_item) > 0
- where (r.cru_id = 98 and (has_children(p1_parent) = 'Y'))
-    or (r.cru_id = 99 and (has_children(p1_parent) = 'N'))
+ where (r.cru_id = 98 and (has_children(p1_parent) = adc_util.C_TRUE))
+    or (r.cru_id = 99 and (has_children(p1_parent) = adc_util.C_FALSE))
  order by r.cru_sort_seq
  fetch first 1 row only
 ```
 
-All rule conditions entered were converted to the `where` clause of this view. Based on the item values, one or more conditions may apply. Now the first matching condition (based on a `SORT_SEQ` column for each rule) is retrieved along with all defined actions connected to this rule. Should PL/SQL actions be defined for the matching rule, they are executed and the result is persisted at the session state. This puts the session state into a central communication position, allowing for simple API access and maintaining security and session awareness.
+All rule conditions entered were converted to the `where` clause of this view. Based on the item values, one or more conditions may apply. Now the first matching condition (based on a `SORT_SEQ` column for each rule) is retrieved along with all defined actions connected to this rule. Should PL/SQL actions be defined for the matching rule, they are executed and the result is persisted at the page state. This puts the page state into a central communication position, allowing for simple API access and maintaining security and session awareness.
 
 ### Processing the response
 
@@ -110,9 +114,11 @@ This request is answered as follows:
 
 ```
 <script id="RULE_20">
-  de.condes.plugin.adc.setRuleName('Parent has no children')
-  de.condes.plugin.adc.setItemValues({"item":[{"id":"P1_CHILD","value":""}]})
-  de.condes.plugin.adc.setErrors({"count":0,"errors":[]})
+  /** Total duration: 1hsec*/
+  de.condes.plugin.adc.actions.setItemValues({"item":[{"id":"P1_CHILD","value":""}]})
+  de.condes.plugin.adc.actions.setErrors({"count":0,"errors":[]})
+  
+  // Recursion 1, Run 1: Rule 20 (Parent has no children), Auslösendes Element: "P1_CHILD", Dauer: 1hsec
   apex.item('P1_CHILD').hide();
   apex.item('P1_PLACEHOLDER').show();
 </script>
@@ -120,25 +126,29 @@ This request is answered as follows:
 
 The answer tells us that
 
-- Rule `Parent has no children` has been chosen for the reply. The rule is referenced by `RULE_<sort_seq>`, not their ID. This makes it easier to spot the rule. Additionally, the rule name is provided to enable the plugin to show the rule name on the package if required.
 - Item `P1_CHILD` is set to `NULL`
 - No errors have ocurred
+- Rule `Parent has no children` has been chosen for the reply. The rule is referenced by `RULE <sort_seq>`, not their ID. This makes it easier to spot the rule. Additionally, the rule name is provided to enable the plugin to show the rule name on the package if required.
 - Item `P1_CHILD`gets hidden and item `P1_PLACEHOLDER` gets shown
 
 The plugin executes the script by appending it to the document. It will be deleted immediately afterwards.
-If a request comes in, all item values the plugin is interested in were sent to the session state of APEX already. Therefore, it's easy for the database part to get access to the element values in SQL. These values are collected in a dedicated view and presented as columns for the view.
-
+If a request comes in, all item values the plugin is interested in were sent as part of the page state of APEX already. Therefore, it's easy for the database part to get access to the element values in SQL. These values are collected in a dedicated view and presented as columns for the view.
+  
+### Recursive use case evaluation
+It is possible that a use case changes the page state for one or many page items. This could lead to another use case to be executed. ADC takes this into account within the database and within only one roundtrip. If a use case changes a page item which causes another use case to be executed, ADC will do so until all changes are dealt with. This leads to a simpler rule setup.
 
 ## Advantages of this approach
 
 Some important advanteges are realized using this approach:
 
 ### Easier logic control
-As all decision logic is maintained in a single table within the database, it's easier to control complex logic and to see interdependencies. To make maintenance even easier, the plugin ships with a small APEX application allowing to review, create and change the rules.
+As all decision logic is maintained in a single table within the database, it's easier to control complex logic and to see interdependencies. To make maintenance even easier, the plugin ships with a an APEX application allowing to review, create and change the use cases and their actions.
 
-The plugin may be triggered by `change` events of page items as well as `click` events on page buttons. At the moment, only buttons and regions with a static ID are seen by the plugin, so you need to set this attribute if you want the plugin to control the button or region. Declaratively, you are allowed to
+The plugin may be triggered by `change` events of page items as well as `click` events on page buttons. Only buttons and regions with a static ID are visible for the plugin, so you need to set this attribute if you want the plugin to control the button or region. Declaratively, you are allowed to
 
 - set values of page items
+- dynamically validate page item values
+- automatically and dynamically validate mandatory items and number or date values
 - refresh page items such as select lists as well as regions such as reports
 - control visibility of page items, buttons and regions
 
@@ -149,10 +159,10 @@ A rule is checked only if the triggering element is referenced within the rule c
 Nor is it required to create PL/SQL actions with a `NULL` action in order to pass an element value to the database, nor do you need any hidden helper fields on the page to store temporary information. Roundtrips to the database are limited to a total of one per plugin call. Almost no additional roundtrip is required. Additional roundtrips may occur if you want to stick to some declarative functionality APEX exposes, such as when you trigger the `apexrefresh` event. This, in turn, may cause a roundtrip to the database to refresh a report or a select list.
 
 ### Better logic control
-Any call to the plugin results in a response from the database that includes the name of the rule that has been chosen for the given state. Plus, in the request (`post`) to the database, you see each item value that got sent to the database. With this information, it's very easy to follow the logic stream and pin down potential logic flaws.
+Any call to the plugin results in a response from the database that includes the name of the rule that has been chosen for the given state. Plus, in the request to the database, you see each item value that got sent to the database. With this information, it's very easy to follow the logic stream and pin down potential logic flaws.
 
 ### Automatic type detection
-If you compare values entered on the page, it's hard to do so because you need to treat date values different than number values and these different to string values. Based on the fact, that each page item is allowed to have a format mask to define the item's appearance on the page, ADC converts the item value to the respective data type using this format mask. In order to make this work, you have to set the format mask of the respective page items. If the format mask is null, the element will be treated as string.
+If you compare values entered on the page, it's hard to do so because you need to treat date values different than number values and these different to string values. Based on the fact, that each page item is allowed to have a format mask to define the item's appearance on the page, ADC converts the item value to the respective data type using this format mask. Whether a page item is a number or date is either detected based on meta data of APEX (such as with a page item in a form region) or based on a format mask you apply to the given page item. If neither of this is possible, the page item is treated as string.
 
 ## Downsides of this approach
 There are some disadvantages you should be aware of before taking ADC into account for your page
@@ -161,7 +171,8 @@ There are some disadvantages you should be aware of before taking ADC into accou
 As I'm not an APEX team member, I obviously have no possibility to include ADC into the APEX-IDE. Therefore, a separate APEX application ships with ADC to enable developers to create and maintain rules. This is a disadvantage because developing in more than one IDE is somewhat boring.
 
 ### Export of rules is possible, but not with the application itself
-The second disadvantage is closely related to the first downside. If you export a rule set, this then is not incorporated into the »normal« application export created by APEX. You can insert the export into the normal export file or install the rules after having imported the APEX application. But when importing the rules separate from the application, it must be ensured that the ADC import is aware of the application and workspace ID the application is imported to. This is solvable but not really user friendly.
+The second disadvantage is closely related to the first downside. If you export a rule set, this then is not incorporated into the »normal« application export created by APEX. You can choose to do so when exporting the dynamic pages of an application. The dynamic pages are incorporated into the export files, but as additional scripts which do not get installed automatically but must be installed manually.
+As an alternative, you may export all dynamic pages as script files, collected in a zip archive. Running thos scripts after having installed the application is a convenient way to add the dynamic control to the application, but it requires some extra effort.
 
 ### Roundtrips to the database server are required per change
 ADC requires a roundtrip to the database every time a relevant event occurs on the page. This may or may not be a disadvantage. Some events may only result in JavaScript actions to be taken on page, such as hiding or showing items on the page. In this case, the need for a roundtrip to the server adds complexity and consumes time. In most cases though, a roundtrip to the database is required anyway, fi to check values against the database, validate input, refresh items or other examples. In all these cases, the amount of roundtrips required to change the page values may be reduced by ADC as it allows you to do any of the required actions within the database in one roundtrip. Overall, it balances out, keeping in mind that ADC is designed to control complex forms where roundtrips to the server are more likely than on trivial forms.
