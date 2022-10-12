@@ -24,7 +24,7 @@ To make it easier for a developer to create actions, an action is a reference to
 
 ## Example
 
-Imagine a rule set that shall execute a very simple task: Based on the value of a *Selection List* in APEX, it decides whether to show or not to show a child *Select List* item. Problem is that the decision is based on a database query: if child records exist, the page refreshes and shows the child item, otherwise it shows a placeholder item indicating that no child records exist. This item is to be rendered as a *Display Only* item. To make things more interesting, no submit of the page is allowed, anything happens on a single page life cycle.
+Imagine a rule set that executes a very simple task: Based on the value of a *Selection List* in APEX, it decides whether to show or not to show a child *Select List* item. Problem is that the decision is based on a database query: if child records exist, the page refreshes and shows the child item, otherwise it shows a placeholder item indicating that no child records exist. This item is to be rendered as a *Display Only* item. To make things more interesting, no submit of the page is allowed, anything happens on a single page life cycle.
 
 ### The APEX approach
 
