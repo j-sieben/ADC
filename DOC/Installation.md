@@ -29,6 +29,10 @@ In a production environment, there is no need for an administrative ADC applicat
 
 Any rules you create will be exported and imported using a built in scripting mechanism. So you create the business rules on the development machine, export them using the ADC application and run the resulting scripts on the production machine after having installed the target APEX application.
 
+## Installing the ADC sample application
+
+To install the sample application, simply run the `install_sample.bat/sh` script.
+
 ## Removing ADC
 
 To uninstall ADC, simply call the `uninstall.bat` script.
