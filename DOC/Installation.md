@@ -7,7 +7,7 @@ Installation of ADC requires some prerequisites to be met. Make sure that all pr
 
 ### PIT
 
-ADC is based on PIT. You can get a copy of PIT [here] (https://github.com/j-sieben/PIT). To install PIT, you can either install it directly into the APEX workspace schema or in a different utilities schema. Depending on this decision, it is either sufficient to just run install.bat/sh or to run this script and afterwards run install_client.bat/sh for each schema you want to have access to PIT. As a minimum, run this script for your APEX Workspace schema.
+ADC is based on PIT. You can get a copy of PIT (here)[https://github.com/j-sieben/PIT]. To install PIT, you can either install it directly into the APEX workspace schema or in a different utilities schema. Depending on this decision, it is either sufficient to just run install.bat/sh or to run this script and afterwards run install_client.bat/sh for each schema you want to have access to PIT. As a minimum, run this script for your APEX Workspace schema.
 
 Please make a decision on the datatype for boolean flags you want to use. As per default, this will be `char (1 byte)` with the values `Y|N`. You may change that in file PIT/PIT/init/settings.sql. Just apply these settings according to your taste, they will be passed to all other utilities.
 
