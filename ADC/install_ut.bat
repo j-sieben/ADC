@@ -1,6 +1,6 @@
 cls
 @echo off
-set /p InstallUser=Enter owner schema for ADC:
+set /p InstallUser=Enter APEX workspace schema for ADC:
 
 set "PWD=powershell.exe -Command " ^
 $inputPass = read-host 'Enter password for %InstallUser%' -AsSecureString ; ^

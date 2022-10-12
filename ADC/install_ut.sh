@@ -1,5 +1,5 @@
 #!/bin/bash
-echo -n "Enter owner schema for ADC [ENTER] "
+echo -n "Enter APEX workspace schema for ADC [ENTER] "
 read OWNER
 echo ${OWNER}
 

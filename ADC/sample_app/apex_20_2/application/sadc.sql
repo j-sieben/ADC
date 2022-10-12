@@ -541,8 +541,8 @@ wwv_flow_api.create_plugin_setting(
  p_id=>wwv_flow_api.id(301441091045781064)
 ,p_plugin_type=>'ITEM TYPE'
 ,p_plugin=>'NATIVE_YES_NO'
-,p_attribute_01=>'Y'
-,p_attribute_03=>'N'
+,p_attribute_01=>'&TRUE.'
+,p_attribute_03=>'&FALSE.'
 ,p_attribute_05=>'SWITCH_CB'
 );
 wwv_flow_api.create_plugin_setting(
