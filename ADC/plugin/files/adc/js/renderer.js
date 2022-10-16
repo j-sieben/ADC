@@ -63,6 +63,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
   
   // Globals
   var gErrors = []; // Interim solution required until <code>apex.message</code> supports removing a single error
+  var gWarnings = []; // Interim solution required until <code>apex.message</code> supports more error styles
 
 
   /**
@@ -140,8 +141,11 @@ de.condes.plugin.adc.apex_42_20_2 = {};
 
     // Normal element, do not disable, otherwise sessionstate will not be filled.
     // Instead, set readonly and CSS class so that it looks like disabled.
-    $item.prop(C_DISABLED_PROP, true).addClass(C_APEX_DISABLED).attr('aria-disabled', 'true');
-    $item.attr('tabindex', "-1");
+    $item
+      .prop(C_READONLY_PROP, true)
+      .addClass(C_APEX_DISABLED)
+      .attr('aria-disabled', 'true')
+      .attr('tabindex', "-1");
 
     // if the page element is a selection list, readonly must be added differently
     if ($item.hasClass("selectlist")) {
@@ -172,34 +176,40 @@ de.condes.plugin.adc.apex_42_20_2 = {};
   renderer.enableElement = function (pItemId){
     var $item = $(`#${pItemId}`);
     $item
-    .prop(C_READONLY_PROP, false)
-    .removeClass(C_ADC_DISABLED);
+      .prop(C_READONLY_PROP, false)
+      .removeClass(C_ADC_DISABLED)
+      .removeAttr('tabindex');
 
     if ($item.is('select')){
-      $(`#${pItemId}:not(:selected)`).prop(C_DISABLED_PROP, false);
+      $(`#${pItemId}:not(:selected)`)
+        .prop(C_READONLY_PROP, false);
     }
     apex.item(pItemId).show();
     apex.item(pItemId).enable();
     
     // if page item is a date picker, enable button as well
-    if ($item.hasClass("hasDatepicker")) {
+    if ($item.hasClass("hasDatepicker") || $item.hasClass("color_picker") || $item.hasClass("popup_lov")) {
       $item.parent().find("button")
-      .prop(C_READONLY_PROP, false)
-      .removeClass(C_ADC_DISABLED);
+        .prop(C_DISABLED_PROP, false)
+        .removeClass(C_ADC_DISABLED)
+        .removeAttr('tabindex');
     }
 
     // if page item is a colour picker, enable button as well
     else if ($item.hasClass("color_picker")) {
       $('#' + pItemId + '_fieldset')
-      .prop(C_READONLY_PROP, false)
-      .removeClass(C_ADC_DISABLED);
+        .prop(C_READONLY_PROP, false)
+        .removeClass(C_ADC_DISABLED)
+        .removeAttr('tabindex');
     }
 
     // if page item is a popup list, enable button as well
     else if ($item.hasClass("popup_lov")) {
       $item.closest('#' + pItemId + '_fieldset')
-      .find(C_POPUP_LOV_SELECTOR)
-      .prop(C_READONLY_PROP, false).removeClass(C_ADC_DISABLED);
+        .find(C_POPUP_LOV_SELECTOR)
+        .prop(C_READONLY_PROP, false)
+        .removeClass(C_ADC_DISABLED)
+        .removeAttr('tabindex');
     };
   }; // enableElement
   
@@ -288,31 +298,52 @@ de.condes.plugin.adc.apex_42_20_2 = {};
 
   
   /**
-    Function: maintainErrors
+    Function: maintainErrorsAndWarnings
       Maintains the error list on the page.
 
     Parameter:
       pErrorList - List of errors, instance of <errorList>
    */
-  renderer.maintainErrors = function(pErrorList){
+  renderer.maintainErrorsAndWarnings = function(pErrorList){
     apex.debug.log(`Error count plugin: ${pErrorList.count}`);
        
-    // Remove errors for all touched items from our gErrors copy
+    // Remove errors and warnings for all touched items from our gErrors copy
     $.each(pErrorList.firingItems, function(index, pItemId){
       // remove the error from gErrors
       gErrors = $.grep(gErrors, function(e){
         return e.pageItem != pItemId;
       });
+      // remove the error from gWarnings
+      gWarnings = $.grep(gErrors, function(e){
+        return e.pageItem != pItemId;
+      });
+      $(`#${pItemId}`)
+        .removeClass('apex-page-item-warning')
+        .parents('.t-Form-inputContainer').find('.t-Form-warning')
+        .removeClass('t-Form-warning');
+
     });
   
     // Add new errors to our gErrors copy
     for (i = 0; i < pErrorList.errors.length; i++){
-      gErrors.push(pErrorList.errors[i]);
+      const err = pErrorList.errors[i]
+      gErrors.push(err);
+      if(err.type == "warning"){
+        gWarnings.push(err);
+      }
     };
     
     msg.clearErrors();
-    msg.showErrors(gErrors);    
-  }; // maintainErrors
+    msg.showErrors(gErrors);
+
+    // Replace error markup with warning markup
+    $.each(gWarnings, function(index, pItemId){
+      $(`#${pItemId.pageItem}`)
+        .removeClass('apex-page-item-error').addClass('apex-page-item-warning')
+        .parents('.t-Form-inputContainer').find('.t-Form-error')
+        .removeClass('t-Form-error').addClass('t-Form-warning');
+    });
+  }; // maintainErrorsAndWarnings
 
   
   /**
@@ -361,16 +392,24 @@ de.condes.plugin.adc.apex_42_20_2 = {};
 
   
   /**
-    Function: setNotification
+    Function: showDialog
       Shows a message on the page
 
     Parameter:
-      pMessage - Message text to show
+      pMessage - Message of the dialog
+      pTitle - Optional title of the dialog
+      pStyle - One of the predefined styles information|warning|sucess|error
+      pConfirm - Flag to indicate whether this dialog is a confirmation dialog
    */
-  renderer.setNotification = function(pMessage){
-    msg.hidePageSuccess();
-    msg.showPageSuccess(pMessage);
-  }; // setNotification
+  renderer.showDialog = function(pMessage, pTitle, pStyle, pConfirm){
+    let options = {
+      "modern":true,
+      "style":pStyle,
+      "title":pTitle,
+      "confirm":pConfirm
+    }
+    msg.showDialog(pMessage, options);
+  }; // showDialog
 
 
   /**

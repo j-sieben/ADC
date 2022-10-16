@@ -307,7 +307,8 @@ as
       See <adc_response.add_error>
    */
   procedure add_error(
-    p_error in apex_error.t_error)
+    p_error in apex_error.t_error,
+    p_severity in binary_integer default pit.level_error)
   as
     C_MAX_INTEGER constant number := 2147483647; -- Used to limit Hashfunktions to the max of BINARY_INTEGER
     l_error apex_error.t_error;
@@ -338,10 +339,14 @@ as
     if not g_param.error_stack.exists(l_error_hash) then    
       select utl_text.generate_text(cursor(
                select uttm_text template,
+                      case p_severity when pit.level_warn then 'warning' else 'error' end error_type,
                       l_error.page_item_name page_item,
                       l_error.message message,
                       l_error.additional_info additional_info,
-                      case l_error.page_item_name when adc_util.C_NO_FIRING_ITEM  then '"page"' else '["inline","page"]' end location
+                      case 
+                        when l_error.page_item_name = adc_util.C_NO_FIRING_ITEM  then '"page"' 
+                        when p_severity = pit.level_warn then '"inline"'
+                        else '["inline","page"]' end location
                  from utl_text_templates
                 where uttm_type = adc_util.C_PARAM_GROUP
                   and uttm_name = 'JSON_ERRORS'

@@ -111,14 +111,14 @@ end;~';
 
 
   /**
-    Procedure: parse_function
+    Procedure: parse_method
       Validate that p_calue is a string
 
     Parameters:
       p_method - Method to check.
       p_is_function - Flag to indicate whether p_value is a function
    */
-  procedure parse_function(
+  procedure parse_method(
     p_method in out nocopy varchar2,
     p_is_function in boolean default true)
   as
@@ -127,7 +127,7 @@ end;~';
     l_ctx binary_integer;
     l_stmt varchar2(2000);
   begin
-    pit.enter_detailed('parse_function',
+    pit.enter_detailed('parse_method',
       p_params => msg_params(
                     msg_param('p_method', p_method)));
                     
@@ -148,8 +148,11 @@ end;~';
     when others then
       dbms_sql.close_cursor(l_ctx);
       pit.leave_detailed;
-      raise;
-  end parse_function;
+      pit.error(
+        p_message_name => msg.ADC_PARAM_VALIDATION_FAILED, 
+        p_msg_args => msg_args(substr(SQLERRM, instr(SQLERRM, ':', 1, 3) + 1)), 
+        p_error_code => msg.ADC_METHOD_PARSE_EXCEPTION);
+  end parse_method;
 
 
   /**
@@ -177,8 +180,8 @@ end;~';
     if l_exists = 0 then
       adc_api.register_error(
         p_cpi_id => p_value,
-        p_error_msg => substr(sqlerrm, 12),
-        p_internal_error => '');
+        p_message_name => msg.ADC_APEX_ACTION_UNKNOWN,
+        p_msg_args => msg_args(p_value));
     end if;
   end validate_is_apex_action;
 
@@ -213,7 +216,7 @@ end;~';
     p_target in varchar2)
   as
   begin
-    parse_function(p_value);
+    parse_method(p_value);
   end validate_is_function;
 
 
@@ -234,7 +237,7 @@ end;~';
       p_params => msg_params(
                     msg_param('p_value', p_value),
                     msg_param('p_target', p_target)));
-    parse_function(p_value, false);
+    parse_method(p_value, p_is_function => false);
     
     pit.leave_detailed;
   end validate_is_procedure;
@@ -275,7 +278,7 @@ end;~';
     if substr(trim(p_value), 1, 1) =  '''' then
       parse_string(p_value);
     else
-      parse_function(p_value);
+      parse_method(p_value);
     end if;
   end validate_is_string_or_function;
 
@@ -308,15 +311,12 @@ end;~';
 
     Parameters:
       p_value - Value to check.
-      p_target - Page item to link the execption to
+      p_target - Page item to link the exception to
    */
   procedure validate_is_sql_statement(
     p_value in out nocopy varchar2,
     p_target in varchar2)
   as
-    C_STMT constant varchar2(100) := 'select * from (#STMT#)';
-    l_stmt utl_apex.max_char;
-    l_ctx binary_integer;
   begin
     parse_sql(p_value);
   end validate_is_sql_statement;
@@ -347,7 +347,7 @@ end;~';
     end if;
   exception
     when NO_DATA_FOUND then
-      pit.error(msg.ADC_INVALID_JQUERY);
+      pit.error(msg.ADC_PARAM_VALIDATION_FAILED, p_error_code => msg.ADC_INVALID_JQUERY);
   end validate_is_selector;
 
 
@@ -372,7 +372,7 @@ end;~';
        and cpi_id = upper(p_value);
   exception
     when NO_DATA_FOUND then
-      pit.error(msg.ADC_INVALID_PAGE_ITEM);
+      pit.error(msg.ADC_INVALID_JQUERY, p_error_code => msg.ADC_INVALID_PAGE_ITEM);
   end validate_is_page_item;
 
 
@@ -395,7 +395,7 @@ end;~';
      where sequence_name = upper(p_value);
   exception
     when NO_DATA_FOUND then
-      pit.error(msg.ADC_INVALID_SEQUENCE);
+      pit.error(msg.ADC_PARAM_VALIDATION_FAILED, p_error_code => msg.ADC_INVALID_SEQUENCE);
   end validate_is_sequence;
 
 
@@ -508,7 +508,7 @@ end;~';
     l_ctx sys_refcursor;
   begin
     open l_ctx for replace(C_STMT, '#EXPRESSION#', p_stmt);
-    pit.assert_exists(l_ctx);
+    pit.assert_exists(l_ctx, p_error_code => 'SQL_EXPRESSION');
   end evaluate_sql_expression;
   
   
@@ -643,6 +643,7 @@ end;~';
     p_environment in adc_util.environment_rec)
   as
     l_error_msg adc_util.max_char;
+    l_error message_type;
   begin
     pit.enter_mandatory(
       p_params => msg_params(
@@ -685,25 +686,36 @@ end;~';
     
     pit.leave_mandatory;
   exception
+    when msg.ADC_PARAM_VALIDATION_FAILED_ERR then
+      l_error := pit.get_active_message;
+      case l_error.error_code
+        when msg.ADC_INVALID_JQUERY then
+          adc_api.register_error(
+            p_cpi_id => p_cpi_id,
+            p_message_name => msg.ADC_INVALID_JQUERY,
+            p_msg_args => msg_args(p_value));
+        when msg.ADC_INVALID_PAGE_ITEM then
+          adc_api.register_error(
+            p_cpi_id => p_cpi_id,
+            p_message_name => msg.ADC_INVALID_PAGE_ITEM,
+            p_msg_args => msg_args(p_value));
+        when msg.ADC_INVALID_SEQUENCE then
+          adc_api.register_error(
+            p_cpi_id => p_cpi_id,
+            p_message_name => msg.ADC_INVALID_SEQUENCE,
+            p_msg_args => msg_args(p_value));
+        when msg.ADC_METHOD_PARSE_EXCEPTION then
+          adc_api.register_error(
+            p_cpi_id => p_cpi_id,
+            p_message_name => msg.ADC_METHOD_PARSE_EXCEPTION,
+            p_msg_args => msg_args(substr(sqlerrm, 12)));
+      else 
+        null;
+      end case;
     when msg.PIT_MSG_NOT_EXISTING_ERR then
       adc_api.register_error(
         p_cpi_id => p_cpi_id,
         p_message_name => msg.PIT_MSG_NOT_EXISTING,
-        p_msg_args => msg_args(p_value));
-    when msg.ADC_INVALID_JQUERY_ERR then
-      adc_api.register_error(
-        p_cpi_id => p_cpi_id,
-        p_message_name => msg.ADC_INVALID_JQUERY,
-        p_msg_args => msg_args(p_value));
-    when msg.ADC_INVALID_PAGE_ITEM_ERR then
-      adc_api.register_error(
-        p_cpi_id => p_cpi_id,
-        p_message_name => msg.ADC_INVALID_PAGE_ITEM,
-        p_msg_args => msg_args(p_value));
-    when msg.ADC_INVALID_SEQUENCE_ERR then
-      adc_api.register_error(
-        p_cpi_id => p_cpi_id,
-        p_message_name => msg.ADC_INVALID_SEQUENCE,
         p_msg_args => msg_args(p_value));
     when others then
       case when instr(sqlerrm, 'PLS') > 0 then

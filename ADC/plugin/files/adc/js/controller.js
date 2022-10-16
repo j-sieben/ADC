@@ -513,7 +513,34 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     }
     return isOkToRaiseEvent;
   }; // maintainAndCheckEventLock
-  
+
+
+  /**
+    Function: addButtonHandler
+      Binds a confirmation or unsavedConfirmation callback to a button
+
+    Parameters:
+      pTarget - jQuery item representing the page item to bind to
+      pMessage - Message to show within the confirmation
+      pDialogTitle - Title of the dialog
+   */
+  function addButtonHandler(pTarget, pMessage, pDialogTitle, pCallback){
+    let eventList;
+    // Element is also present on page (could be missing due to condition)
+    eventList = $._data(pTarget.get(0), 'events');
+    if (typeof eventList != 'undefined' && eventList[C_CLICK_EVENT]) {
+      pTarget.off(C_CLICK_EVENT);
+    }
+    pTarget.on(C_CLICK_EVENT,
+      { "ajaxIdentifier": props.ajaxIdentifier,
+        "message": pMessage,
+        "props.pageItems": props.pageItems,
+        "title": pDialogTitle
+      },
+      pCallback);
+  }; // addButtonHandler
+
+
   /* +++++ END PRIVATE  ++++++++ */
 
   /* ++++++++++ CORE FUNCTIONALITY ++++++++++ */
@@ -528,14 +555,9 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pDialogTitle - Title of the dialog
    */
   ctl.bindConfirmationHandler = function(pTarget, pMessage, pDialogTitle){
-    pTarget.on(C_CLICK_EVENT,
-      { "ajaxIdentifier": props.ajaxIdentifier,
-        "message": pMessage,
-        "props.pageItems": props.pageItems,
-        "title": pDialogTitle
-      },
-      confirmCallback);
+    addButtonHandler(pTarget, pMessage, pDialogTitle, confirmCallback);
   }; // bindConfirmationHandler
+  
   
   /** 
     Function: bindUnsavedConfirmationHandler
@@ -547,14 +569,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pDialogTitle - Title of the dialog
    */
   ctl.bindUnsavedConfirmationHandler = function(pTarget, pMessage, pDialogTitle){
-    // bind confirmation handler to the click event
-    pTarget.on(C_CLICK_EVENT,
-      { "ajaxIdentifier": props.ajaxIdentifier,
-        "message": pMessage,
-        "props.pageItems": props.pageItems,
-        "title": pDialogTitle
-      },
-      unsavedCallback);
+    addButtonHandler(pTarget, pMessage, pDialogTitle, unsavedCallback);
   }; // bindUnsavedConfirmationHandler
   
 

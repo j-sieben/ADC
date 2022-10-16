@@ -623,7 +623,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_PARAM_VALIDATION_FAILED',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Der Parameterwert hat folgenden Fehler erzeugt: #1#.^',
+    p_pms_text => q'^#1#^',
     p_pms_description => q'^Beim Validieren eines Parameterwerts wird diese, abhängig von seinem Typ, auf Plausibilität geprüft. Der fehlerhafter Parameterwert muss korrigiert werden.^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN');
@@ -633,7 +633,23 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Der Selektor "#1#" wird auf der Seite nicht verwendet.^',
     p_pms_description => q'^Beim Validieren eines jQuery-Selektors muss dieser auf der Seite vorhanden sein.^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => 40,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_APEX_ACTION_UNKNOWN',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Die APEX-Aktion #1# existiert nicht.^',
+    p_pms_description => q'^Beim Validieren eines Parameters vom Typ APEX_ACTION wurde eine nicht existente APEX-Aktion referenziert.^',
+    p_pms_pse_id => 40,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_METHOD_PARSE_EXCEPTION',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^#1#^',
+    p_pms_description => q'^Beim Validieren einer Methode ist ein Parse-Fehler ausgelöst worden. Korrigieren Sie die Methode.^',
+    p_pms_pse_id => 40,
     p_pms_pml_name => 'GERMAN');
 
   pit_admin.merge_message(
@@ -641,7 +657,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Der Seitenelement "#1#" wird auf der Seite nicht verwendet.^',
     p_pms_description => q'^Beim Validieren eines Elementnamens muss dieser auf der Seite vorhanden sein.^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => 40,
     p_pms_pml_name => 'GERMAN');
 
   pit_admin.merge_message(
@@ -649,7 +665,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Die Sequenz "#1#" existiert nicht.^',
     p_pms_description => q'^Es wurde eine nicht vorhandene Sequenz referenziert.^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => 40,
     p_pms_pml_name => 'GERMAN');
 
   commit;

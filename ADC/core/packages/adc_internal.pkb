@@ -758,12 +758,13 @@ as
       See <ADC_INTERNAL.push_error>
    */
   procedure push_error(
-    p_error in apex_error.t_error)
+    p_error in apex_error.t_error,
+    p_severity in binary_integer)
   as
   begin
     pit.enter_optional;
   
-    adc_response.add_error(p_error);
+    adc_response.add_error(p_error, p_severity);
     
     g_param.has_errors := true;
     
@@ -1038,7 +1039,8 @@ as
   procedure register_error(
     p_cpi_id in adc_page_items.cpi_id%type,
     p_error_msg in varchar2,
-    p_internal_error in varchar2)
+    p_internal_error in varchar2,
+    p_severity in binary_integer default pit.level_error)
   as
     l_error apex_error.t_error;
     l_dummy adc_util.max_char;
@@ -1059,7 +1061,7 @@ as
       l_error.message := p_error_msg;
       l_error.additional_info := p_internal_error;
       prepare_error(l_error, p_cpi_id);
-      push_error(l_error);
+      push_error(l_error, p_severity);
     end if;
     
     pit.leave_optional;
@@ -1082,7 +1084,8 @@ as
     register_error(
       p_cpi_id => p_cpi_id,
       p_error_msg => l_message.message_text,
-      p_internal_error => l_message.message_description);    
+      p_internal_error => l_message.message_description,
+      p_severity => l_message.severity);    
   end register_error;
   
   

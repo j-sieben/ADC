@@ -31,3 +31,13 @@
   margin-right:14px;
   margin-bottom:8px;
 }
+
+.apex-item-text.apex-page-item-warning, .apex-item-select.apex-page-item-warning, .apex-item-textarea.apex-page-item-warning, .u-TF-item--text.apex-page-item-warning, 
+.u-TF-item--select.apex-page-item-warning, select.listmanager.apex-page-item-warning, select.group_selectlist.apex-page-item-warning, .apex-item-multi.apex-page-item-warning, 
+.datetimepicker_newMonth.apex-page-item-warning {
+    border-color: #FBCE4A;
+}
+
+.t-Form-warning{
+    color: #FBCE4A;
+}

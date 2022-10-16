@@ -277,7 +277,8 @@ as
   procedure register_error(
     p_cpi_id in adc_page_items.cpi_id%type,
     p_error_msg in varchar2,
-    p_internal_error in varchar2);
+    p_internal_error in varchar2,
+    p_severity in binary_integer default pit.level_error);
 
 
   /**

@@ -74,7 +74,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
    */
   function forEach(pSelector, pAction) {
     if (!($.isArray(pSelector) || pSelector.search(/[\.#\u0020:\[\]]+/) >= 0)) {
-      // übergebenes ITEM ist Elementname, um # erweitern
+      // passed ITEM is element name, extend by #.
       pSelector = `#${pSelector}`;
     }
 
@@ -149,23 +149,17 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       Bind a confirmation dialog to a button to show a confirmation dialog before an event is raised
 
     Parameters:
-      pItemId - ID of the button to bind the event to
+      pButtonId - ID of the button to bind the event to
       pMessage - Confirmation message
       pDialogTitle - Title of the confirmation dialog box
    * @memberof de.condes.plugin.adc
    * @public
    */
-  actions.bindConfirmation = function (pItemId, pMessage, pDialogTitle) {
-    var $this = $(`#${pItemId}`);
-    var eventList;
-
-    if ($this.length > 0) {
-      // Element is also present on page (could be missing due to condition)
-      eventList = $._data($this.get(0), 'events');
-      if (typeof eventList != 'undefined' && eventList[C_CLICK_EVENT]) {
-        $this.off(C_CLICK_EVENT);
-      }
-      controller.bindConfirmationHandler($this, pMessage, pDialogTitle);
+  actions.bindConfirmation = function (pButtonId, pMessage, pDialogTitle) {
+    var $button = $(`#${pButtonId}`);
+    
+    if ($button.length > 0) {
+      controller.bindConfirmationHandler($button, pMessage, pDialogTitle);
     }
   }; // bindConfirmation
 
@@ -175,21 +169,15 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       Bind a confirmation dialog to a button to show a confirmation dialog before an event is raised
 
     Parameters:
-      pItemId - ID of the button to bind the event to
+      pButtonId - ID of the button to bind the event to
       pMessage - Confirmation message
       pDialogTitle - Title of the confirmation dialog box
    */
-  actions.bindUnsavedWarning = function (pItemId, pMessage, pDialogTitle) {
-    var $this = $(`#${pItemId}`);
-      var eventList;
+  actions.bindUnsavedWarning = function (pButtonId, pMessage, pDialogTitle) {
+    var $button = $(`#${pButtonId}`);
 
-    if ($this.length > 0) {
-      // Element is also present on page (could be missing due to condition)
-      eventList = $._data($this.get(0), 'events');
-      if (typeof eventList != 'undefined' && eventList[C_CLICK_EVENT]) {
-        $this.off(C_CLICK_EVENT);
-      }
-      controller.bindUnsavedConfirmationHandler($this, pMessage, pDialogTitle);
+    if ($button.length > 0) {
+      controller.bindUnsavedConfirmationHandler($button, pMessage, pDialogTitle);
     }
   }; // bindUnsavedWarning
 
@@ -361,16 +349,53 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
 
   /**
-    Function: notify
-      Method to show a notification to the user. Delegates implementation to <adc.renderer>.
+    Function: inform
+      Method to show a notification. Delegates implementation to <adc.renderer>.
       A notification is a message that is shown as a success message to the user.
 
     Parameter:
       pMessage - Message that is shown to the user. Replaces any existing messages.
+      pTitle - Optional title of the dialog
+      pStyle - One of the predefined styles information|warning|sucess|error
    */
-  actions.notify = function (pMessage) {
-    adc.renderer.setNotification(pMessage);
-  }; // notify
+  actions.notify = function (pMessage, pTitle, pStyle) {
+    renderer.showDialog(pMessage, pTitle, pStyle, false);
+  }; // inform
+
+
+  /**
+    Function: inform
+      Method to show a dialog. Delegates implementation to <adc.renderer>.
+      A dialog must be accepted by the user.
+
+    Parameter:
+      pMessage - Message that is shown to the user. Replaces any existing messages.
+      pTitle - Optional title of the dialog
+      pStyle - One of the predefined styles information|warning|sucess|error
+   */
+  actions.inform = function (pMessage, pTitle, pStyle) {
+    renderer.showDialog(pMessage, pTitle, pStyle, false);
+  }; // inform
+
+
+  /**
+    Function: confirm
+      Method to show a confirmation dialog. Delegates implementation to <adc.renderer>.
+      A confirmation may be accepted or rejected by the user.
+
+    Parameter:
+      pMessage - Message that is shown to the user. Replaces any existing messages.
+      pTitle - Optional title of the dialog
+      pStyle - One of the predefined styles information|warning|sucess|error
+   */
+  actions.confirm = function (pMessage, pTitle, pStyle) {
+    renderer.showDialog(pMessage, pTitle, pStyle, true);
+  }; // confirm
+
+
+  /**
+    Function: showMessage
+   */
 
   
   /** 
@@ -476,9 +501,9 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     Parameters:
       pRegionId - ID of the region to select an entry in
       pEntryId - ID of the entry to select
-      pNoNotify - If true the treeView#event:selectionChange event will be suppressed.
+      pNoinform - If true the treeView#event:selectionChange event will be suppressed.
    */
-  actions.selectEntry = function(pRegionId, pEntryId, pNoNotify){
+  actions.selectEntry = function(pRegionId, pEntryId, pNoinform){
     let $region;
     let entry;
     const C_IG_SELECTOR = `#${pRegionId}_ig`;
@@ -494,7 +519,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
                 .model
                 .getRecord(pEntryId);
         if(entry){
-          $region.interactiveGrid('setSelectedRecords', entry, true, pNoNotify);
+          $region.interactiveGrid('setSelectedRecords', entry, true, pNoinform);
         }
         break;
       case C_REGION_IR:
@@ -511,7 +536,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
                 );
         $region.treeView('collapseAll');
         $region.treeView('expand', entry);
-        $region.treeView('setSelection', entry, true, pNoNotify);
+        $region.treeView('setSelection', entry, true, pNoinform);
         break;
     }
   }; // selectEntry
@@ -627,7 +652,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       // If errors have occured, no further events must be processed.
       $(C_BODY).clearQueue();
     }
-    adc.renderer.maintainErrors(pErrorList);
+    adc.renderer.maintainErrorsAndWarnings(pErrorList);
   }; // setErrors
 
 

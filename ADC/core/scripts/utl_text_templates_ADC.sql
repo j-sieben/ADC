@@ -163,7 +163,7 @@ q'[}]',
     p_uttm_name => 'JSON_ERRORS',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ERROR',
-    p_uttm_text => q'[{"type":"error","pageItem":"#PAGE_ITEM#","message":#MESSAGE#,"location":#LOCATION#,"additionalInfo":"#ADDITIONAL_INFO#","unsafe":"false"}]',
+    p_uttm_text => q'[{"type":"#ERROR_TYPE#","pageItem":"#PAGE_ITEM#","message":#MESSAGE#,"location":#LOCATION#,"additionalInfo":"#ADDITIONAL_INFO#","unsafe":"false"}]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );

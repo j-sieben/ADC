@@ -51,9 +51,11 @@ as
       
     Parameter:
       p_error - Instance of the error in format <apex_error.t_error>.
+      p_severity - In addition to APEX errors ADC supports severity to differ between error and warning
    */
   procedure add_error(
-    p_error in apex_error.t_error);
+    p_error in apex_error.t_error,
+    p_severity in binary_integer default pit.level_error);
     
    
   /**
