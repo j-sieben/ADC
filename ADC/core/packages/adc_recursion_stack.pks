@@ -48,11 +48,11 @@ as
       - put the initial firing item onto the recursion stack.
                  
     Parameters:
-      p_cgr_id - ID of the rule group. Is used to check whether recursion is allowed for this rule group
+      p_crg_id - ID of the rule group. Is used to check whether recursion is allowed for this rule group
       p_cpi_id - ID of the page item to push. May also be <adc_util.C_NO_FIRING_ITEM>
    */
   procedure reset(
-    p_cgr_id in adc_rule_groups.cgr_id%type,
+    p_crg_id in adc_rule_groups.crg_id%type,
     p_cpi_id in adc_page_items.cpi_id%type);
     
   
@@ -64,7 +64,7 @@ as
       not be pushed, resulting in no recursive rule evaluation
                  
     Parameters:
-      p_cgr_id - ID of the rule group. 
+      p_crg_id - ID of the rule group. 
       p_cpi_id - ID of the page item to push. May also be C_NO_FIRING_ITEM
       p_event - Event that was raised
       p_event_data - Optional event data for a given item. Is required when executing a command,
@@ -77,9 +77,9 @@ as
                 recursive stack.
    */
   procedure push_firing_item(
-    p_cgr_id in adc_rule_groups.cgr_id%type,
+    p_crg_id in adc_rule_groups.crg_id%type,
     p_cpi_id in adc_page_items.cpi_id%type,
-    p_event in adc_page_item_types.cit_cet_id%type,
+    p_event in adc_page_item_types.cpit_cet_id%type,
     p_event_data in adc_util.max_char default null,
     p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE,
     p_force in adc_util.flag_type default adc_util.C_FALSE);
@@ -133,7 +133,7 @@ as
    */
   procedure get_next(
     p_cpi_id out nocopy adc_page_items.cpi_id%type,
-    p_event out nocopy adc_page_item_types.cit_cet_id%type,
+    p_event out nocopy adc_page_item_types.cpit_cet_id%type,
     p_event_data out nocopy varchar2);
     
   

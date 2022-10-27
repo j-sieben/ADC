@@ -15,8 +15,8 @@ declare
            where object_name in (
                  '', -- Typen
                  'SADC_UI', '', -- Packages
-                 'SADC_LOV_DEPARTMENT', 'SADC_LOV_JOB', 'SADC_UI_ADACT', 'SADC_UI_ADPTI', 'EMP_DETAILS_VW', 
-                 'SADC_UI_ADSTA', 'SADC_UI_EDEMP', 'SADC_UI_HOME', 'SADC_UI_ADREP', 'SADC_UI_DOC', 'SADC_UI_MENU_CAT', 'SADC_UI_TUTORIAL', 
+                 'SADC_LOV_DEPARTMENT', 'SADC_LOV_JOB', 'SADCA_UI_ADACT', 'SADCA_UI_ADPTI', 'EMP_DETAILS_VW', 
+                 'SADCA_UI_ADSTA', 'SADCA_UI_EDEMP', 'SADCA_UI_HOME', 'SADCA_UI_ADREP', 'SADCA_UI_DOC', 'SADCA_UI_MENU_CAT', 'SADCA_UI_TUTORIAL', 
                  'EMP_DETAILS_VIEW', -- Views
                  'JOB_HISTORY', 'EMPLOYEES', 'JOBS', 'DEPARTMENTS', 'LOCATIONS', 'REGIONS', 'COUNTRIES',   -- Tabellen
                  '',  -- Synonyme
@@ -49,15 +49,15 @@ end;
 prompt &h3.Removing ADC groups
 declare
   cursor adc_cur is
-    select cgr_id
+    select crg_id
       from adc_rule_groups
-     where cgr_app_id = (
+     where crg_app_id = (
            select application_id
              from apex_applications
             where alias = 'SADC');
 begin
   for r in adc_cur loop
-    adc_admin.delete_rule_group(r.cgr_id);
+    adc_admin.delete_rule_group(r.crg_id);
   end loop;
 exception
   when others then

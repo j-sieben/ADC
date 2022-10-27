@@ -74,7 +74,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       pReportId - Static ID of the report to adjust
    */
   renderer.alignReportVerticalTop = function(pReportId){
-    var $report = $(pReportId);
+    var $report = $(`#${pReportId}`);
 	  $report.find('td').addClass('u-alignTop');
 	  
 	  $report.on(C_APEX_AFTER_REFRESH), function(){

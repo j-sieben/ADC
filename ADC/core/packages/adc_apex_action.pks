@@ -34,15 +34,15 @@ as
     
     
   /**  
-    Function: get_cgr_apex_actions
+    Function: get_crg_apex_actions
       Method returns all apex actions defined for the rule group as a JavaScript install script.
       Called during initialization of ADC plugin.
       
     Parameter:
-      p_cgr_id - Rule Group Id to get the apex actions for
+      p_crg_id - Rule Group Id to get the apex actions for
    */
-  function get_cgr_apex_actions(
-    p_cgr_id in adc_rule_groups.cgr_id%type)
+  function get_crg_apex_actions(
+    p_crg_id in adc_rule_groups.crg_id%type)
     return varchar2;
 
 

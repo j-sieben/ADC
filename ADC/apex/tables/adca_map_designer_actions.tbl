@@ -1,0 +1,48 @@
+create table adca_map_designer_actions(
+  amda_aldm_id varchar2(3 byte), 
+	amda_alda_id varchar2(128 byte),
+  amda_comment varchar2(200 byte),
+	amda_id_value varchar2(128 byte), 
+	amda_remember_page_state &FLAG_TYPE. constraint c_amda_remember_page_state_nn not null, 
+	amda_create_button_visible &FLAG_TYPE. constraint c_amda_create_button_visible_nn not null, 
+	amda_create_target_mode varchar2(3 byte), 
+	amda_update_button_visible &FLAG_TYPE. constraint c_amda_update_button_visible_nn not null,
+	amda_delete_button_visible &FLAG_TYPE. constraint c_amda_delete_button_visible_nn not null,
+	amda_delete_mode varchar2(3 byte), 
+	amda_delete_target_mode varchar2(3 byte), 
+	amda_cancel_button_active &FLAG_TYPE. constraint c_amda_cancel_button_active_nn not null,
+	amda_cancel_target_mode varchar2(3 byte), 
+  constraint p_amda_aldm_alda_id primary key (amda_aldm_id, amda_alda_id),
+  constraint r_amda_aldm_id foreign key (amda_aldm_id)
+	  references adca_lu_designer_modes (aldm_id),
+  constraint r_amda_alda_id foreign key (amda_alda_id)
+	  references adca_lu_designer_actions (alda_id),
+  constraint r_amda_create_target_mode foreign key (amda_create_target_mode)
+	  references adca_lu_designer_modes (aldm_id),
+  constraint r_amda_delete_mode foreign key (amda_delete_mode)
+	  references adca_lu_designer_modes (aldm_id),
+  constraint r_amda_delete_target_mode foreign key (amda_delete_target_mode)
+	  references adca_lu_designer_modes (aldm_id),
+  constraint r_amda_cancel_target_mode foreign key (amda_cancel_target_mode)
+	  references adca_lu_designer_modes (aldm_id),
+  constraint c_amda_remember_page_state check (amda_remember_page_state in (&C_TRUE., &C_FALSE.)),
+  constraint c_amda_create_button_visible check (amda_create_button_visible in (&C_TRUE., &C_FALSE.)),
+  constraint c_amda_update_button_visible check (amda_update_button_visible in (&C_TRUE., &C_FALSE.)),
+  constraint c_amda_delete_button_visible check (amda_delete_button_visible in (&C_TRUE., &C_FALSE.)),
+  constraint c_amda_cancel_button_active check (amda_cancel_button_active in (&C_TRUE., &C_FALSE.))
+) organization index;
+
+comment on table adca_map_designer_actions is 'Decision table for the page state of the ADC designer in response to a combination of Mode and APEX action raised by the user. See <Views.ADC_BL_DESIGNER_ACTION_V>';
+comment on column adca_map_designer_actions.amda_aldm_id is 'Reference to ADCA_LU_DESIGNER_MODES, part of PK';
+comment on column adca_map_designer_actions.amda_alda_id is 'Reference to ADCA_LU_DESIGNER_ACTIONSS, part of PK';
+comment on column adca_map_designer_actions.amda_comment is 'Optional comment for the mapping';
+comment on column adca_map_designer_actions.amda_id_value is 'Target mode for create operations';
+comment on column adca_map_designer_actions.amda_remember_page_state is 'Flag to indicate whether switching to this mode requires the actual page state to be saved';
+comment on column adca_map_designer_actions.amda_create_button_visible is 'Flag to indicate whether CREATE action is visible';
+comment on column adca_map_designer_actions.amda_create_target_mode is 'Mode the designer switches to after performing a CREATE';
+comment on column adca_map_designer_actions.amda_update_button_visible is 'Flag to indicate whether UPDATE action is visible';
+comment on column adca_map_designer_actions.amda_delete_button_visible is 'Flag to indicate whether DELETE action is visible';
+comment on column adca_map_designer_actions.amda_delete_mode is 'Mode the designer uses when performing a DELETE';
+comment on column adca_map_designer_actions.amda_delete_target_mode is 'Mode the designer switches to after performing a DELETE';
+comment on column adca_map_designer_actions.amda_cancel_button_active is 'Flag to indicate whether CANCEL action is visible';
+comment on column adca_map_designer_actions.amda_cancel_target_mode is 'Mode the designer switches to after performing a CANCEL';

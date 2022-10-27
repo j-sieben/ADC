@@ -35,7 +35,7 @@ as
       When ADC responds to a dynamic request, the main task is to analyze the actual "page state"
       The page state is maintained by package <ADC_PAGE_STATE>. See there for further information on the page state.
       
-      The flow is that all page state values are provided to a decision table that is stored in <ADC_RULE_GROUPS>.CGR_DECISION_TABLE
+      The flow is that all page state values are provided to a decision table that is stored in <ADC_RULE_GROUPS>.CRG_DECISION_TABLE
       for the rule group of the APEX page actually executed. Based on this page state, a rule is selected from
       the set of rules. If more than one rule matches the page state (a match is reached if the technical
       condition is true and the triggering element is included in the rule's list of triggering elements), the first rule
@@ -64,14 +64,14 @@ as
     Group: Getter and Setter
    */
   /**
-    Function: get_cgr_id
+    Function: get_crg_id
       Method to retreive the actually processed rule group id
                 
     Returns:
-      CGR_ID actually in use.
+      CRG_ID actually in use.
    */
-  function get_cgr_id
-    return adc_rule_groups.cgr_id%type;
+  function get_crg_id
+    return adc_rule_groups.crg_id%type;
 
 
   /**
@@ -184,7 +184,7 @@ as
       
       - Make session state and metadata (firing item, event, event data etc.) available for the decision table
         (this data is referenced to as the page state)
-      - Query decision table (ADC_RULE_GROUPS.CGR_DECISION_TABLE) against the page state
+      - Query decision table (ADC_RULE_GROUPS.CRG_DECISION_TABLE) against the page state
       - If a rule has to be executed, perform all assigned actions:
         - execute actions PL/SQL code immediately and 
         - collect all JavaScript

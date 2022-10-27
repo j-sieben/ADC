@@ -1,6 +1,6 @@
 create or replace package adc_parameter 
   authid definer
-  accessible by (package adc_internal, package adc_admin, package adc_ui_designer)
+  accessible by (package adc_internal, package adc_admin, package adca_ui_designer)
 as
 
   /** 
@@ -23,7 +23,7 @@ as
 
       For a action parameter of type SELECT_LIST, a LOV view is required to calculate
       the actual display and return values. It must also provide a column with the
-      CGR_ID the values relate to to allow for filtering.
+      CRG_ID the values relate to to allow for filtering.
       This method checks that a LOV view with the correct column structure
       that is able to deliver LOV data exists.
 
@@ -31,19 +31,19 @@ as
 
     Example:
       For a parameter called PAGE_ITEM with parameter type SELECT_LIST, a view called
-      ADC_PARAM_LOV_PAGE_ITEM must exist with a D, R and CGR_ID column.
+      ADC_PARAM_LOV_PAGE_ITEM must exist with a D, R and CRG_ID column.
 
     Parameters:
-      p_cpt_id - Parameter Type
-      p_cpt_cpv_id - Item type
+      p_capt_id - Parameter Type
+      p_capt_capvt_id - Item type
 
     Errors:
       msg.ADC_PARAM_LOV_MISSING - if LOV view is required but missing
       msg.ADC_PARAM_LOV_INCORRECT - if required LOV view exists but with the wrong structure
    */
   procedure validate_param_lov(
-    p_cpt_id in adc_action_param_types.cpt_id%type,
-    p_cpt_cpv_id in adc_action_param_types.cpt_cpv_id%type);
+    p_capt_id in adc_action_param_types.capt_id%type,
+    p_capt_capvt_id in adc_action_param_types.capt_capvt_id%type);
     
 
   /**
@@ -53,13 +53,13 @@ as
 
     Parameters:
       p_value - Parameter value to check and format
-      p_cpt_id - Parameter Type
+      p_capt_id - Parameter Type
       p_cpi_id - UI element to attach the error to
-      p_environment - Record with environmental data such as CGR_ID
+      p_environment - Record with environmental data such as CRG_ID
    */
   procedure validate_parameter(
     p_value in out nocopy adc_rule_actions.cra_param_1%type,
-    p_cpt_id in adc_action_param_types.cpt_id%type,
+    p_capt_id in adc_action_param_types.capt_id%type,
     p_cpi_id in adc_page_items.cpi_id%type,
     p_environment in adc_util.environment_rec);    
   
@@ -68,7 +68,7 @@ as
     Function: get_param_lov_query
       Method to caculate a query for a parameter in case its type mandates for a LOV.
       
-      Is called when create a new parameter typ from within the ADC app as well as
+      Is called when create a new parameter type from within the ADC app as well as
       when exporting. The statement must be present in the export file to circumvent
       the necessity of having a direct CREATE VIEW grant for any user working with ADC.
       
@@ -97,8 +97,6 @@ as
       
     Parameters:
       p_cpi_id - Name of the referenced item or <ADC_UTIL.C_NO_FIRING_ITEM>
-      p_selector - Selector to replace the parameter value with
-      p_code_template - Code template to insert a calculated parameter value into
       p_param - Attribute value to analyze
       
     Returns:
@@ -106,25 +104,26 @@ as
    */
   function analyze_selector_parameter(
     p_cpi_id in adc_page_items.cpi_id%type,
-    p_param in adc_rule_actions.cra_param_2%type,
-    p_code_template in varchar2 default null)
+    p_param in adc_rule_actions.cra_param_2%type)
     return varchar2;
    
   /**
     Function: evaluate_parameter
-      Method to evaluate a parameter value based on its type and value
+      Method to evaluate a parameter value based on its type and value. This method
+      is called when the rule is executed to replace parameter values with calculated
+      values such as the result of function calls or PIT messages.
       
     Parameters:
-      p_cpt_id - Type of the parameter
+      p_capt_id - Type of the parameter
       p_param_value - Actual parameter value
       
     Returns:
       Evaluated parameter value.
    */
   function evaluate_parameter(
-    p_cpt_id adc_action_param_types.cpt_id%type,
+    p_capt_id adc_action_param_types.capt_id%type,
     p_param_value adc_rule_actions.cra_param_1%type,
-    p_cgr_id in adc_rule_groups.cgr_id%type,
+    p_crg_id in adc_rule_groups.crg_id%type,
     p_cpi_id in adc_page_items.cpi_id%type)
     return varchar2;
   

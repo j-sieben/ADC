@@ -1,18 +1,19 @@
 create table adc_apex_action_types(
-  cty_id varchar2(50 char),
-  cty_pti_id varchar2(50 char) constraint nn_cty_pti_id not null,
-  cty_pmg_name varchar2(3 byte) default 'ADC' constraint chk_cty_pmg_name check(cty_pmg_name = 'ADC'),
-	cty_active &FLAG_TYPE. default on null &C_TRUE. constraint nn_cty_active not null,
-  constraint pk_adc_apex_action_types primary key(cty_id),
-  constraint fk_cty_pti_id foreign key(cty_pti_id, cty_pmg_name)
+  caat_id varchar2(50 char),
+  caat_pti_id varchar2(50 char) constraint c_caat_pti_id_nn not null,
+  caat_pmg_name varchar2(3 byte) default on null 'ADC' constraint c_caat_pmg_name_nn not null,
+	caat_active &FLAG_TYPE. default on null &C_TRUE. constraint c_caat_active_nn not null,
+  constraint p_caat_id primary key(caat_id),
+  constraint r_caat_pti_id foreign key(caat_pti_id, caat_pmg_name)
     references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
-  constraint chk_cty_active check (cty_active in (&C_FALSE., &C_TRUE.))
+  constraint c_caat_active check (caat_active in (&C_FALSE., &C_TRUE.)),
+  constraint c_caat_pmg_name check(caat_pmg_name = 'ADC')
 ) organization index;
 
-create unique index idx_cty_pti_pmg_name on adc_apex_action_types(cty_pti_id, cty_pmg_name);
+create unique index idx_caat_pti_pmg_name on adc_apex_action_types(caat_pti_id, caat_pmg_name);
 
 comment on table adc_apex_action_types is 'Table to store the allowed apex action types (ACTION|TOGGLE|RADIO_GROUP)';
-comment on column adc_apex_action_types.cty_id is 'Primary Key. One of the allowed apex action types';
-comment on column adc_apex_action_types.cty_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
-comment on column adc_apex_action_types.cty_pmg_name is 'Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC';
-comment on column adc_apex_action_types.cty_active is 'Flag to indicate whether data is actually in use';
+comment on column adc_apex_action_types.caat_id is 'Primary Key. One of the allowed apex action types';
+comment on column adc_apex_action_types.caat_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
+comment on column adc_apex_action_types.caat_pmg_name is 'Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC';
+comment on column adc_apex_action_types.caat_active is 'Flag to indicate whether data is actually in use';

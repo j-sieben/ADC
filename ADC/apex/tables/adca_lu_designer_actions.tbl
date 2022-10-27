@@ -1,0 +1,12 @@
+create table adca_lu_designer_actions(
+  alda_id varchar2(128 byte), 
+	alda_name varchar2(128 byte), 
+	alda_active &FLAG_TYPE. default on null &C_TRUE. constraint c_alda_active_nn not null, 
+	constraint p_alda_id primary key (alda_id),
+  constraint c_alda_active check (alda_active in (&C_TRUE., &C_FALSE.))
+) organization index;
+
+comment on table adca_lu_designer_actions is 'Lookup for actions the ADC designer supports';
+comment on column adca_lu_designer_actions.alda_id is 'Technical Key';
+comment on column adca_lu_designer_actions.alda_name is 'Display name';
+comment on column adca_lu_designer_actions.alda_active is 'Flag to indicate whether this action is actually in use';

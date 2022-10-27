@@ -53,7 +53,7 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'LOV_EXPORT_CGR_ALL_CGR',
+    p_pti_id => 'LOV_EXPORT_CRG_ALL_CGR',
     p_pti_pml_name => q'^AMERICAN^',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^All dynamic use cases of all applications^',
@@ -62,7 +62,7 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'LOV_EXPORT_CGR_APP',
+    p_pti_id => 'LOV_EXPORT_CRG_APP',
     p_pti_pml_name => q'^AMERICAN^',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^APEX applications incl. dynamic use cases^',
@@ -71,7 +71,7 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'LOV_EXPORT_CGR_PAGE',
+    p_pti_id => 'LOV_EXPORT_CRG_PAGE',
     p_pti_pml_name => q'^AMERICAN^',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^All dynamic use cases of an application^',

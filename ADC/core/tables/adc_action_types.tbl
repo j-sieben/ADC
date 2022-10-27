@@ -1,36 +1,37 @@
 create table adc_action_types(
   cat_id varchar2(50 char),
-  cat_ctg_id varchar2(50 char),
-  cat_cif_id varchar2(50 char),
-	cat_pti_id varchar2(50 char) constraint nn_cat_pti_id not null, 
-  cat_pmg_name varchar2(3 byte) default 'ADC' constraint chk_cat_pmg_name check(cat_pmg_name = 'ADC'),
+  cat_catg_id varchar2(50 char),
+  cat_caif_id varchar2(50 char),
+	cat_pti_id varchar2(50 char) constraint c_cat_pti_id_nn not null, 
+  cat_pmg_name varchar2(3 byte) default on null 'ADC' constraint c_cat_pmg_name_nn not null,
 	cat_pl_sql varchar2(200 byte), 
 	cat_js varchar2(200 byte), 
-  cat_is_editable &FLAG_TYPE. default &C_TRUE., 
-	cat_raise_recursive &FLAG_TYPE. default &C_TRUE.,
-	cat_active &FLAG_TYPE. default &C_TRUE.,
-	constraint pk_adc_action_types primary key (cat_id),
-  constraint fk_cat_ctg_id foreign key(cat_ctg_id)
-    references adc_action_type_groups(ctg_id),
-  constraint fk_cat_cif_id foreign key(cat_cif_id)
-    references adc_action_item_focus(cif_id),
-  constraint fk_cat_pti_id foreign key(cat_pti_id, cat_pmg_name)
+  cat_is_editable &FLAG_TYPE. default on null &C_TRUE. constraint c_cat_is_editable_nn not null,
+	cat_raise_recursive &FLAG_TYPE. default on null &C_TRUE. constraint c_cat_raise_recursive_nn not null,
+	cat_active &FLAG_TYPE. default on null &C_TRUE. constraint c_cat_active_nn not null,
+	constraint p_cat_id primary key (cat_id),
+  constraint r_cat_catg_id foreign key(cat_catg_id)
+    references adc_action_type_groups(catg_id),
+  constraint r_cat_caif_id foreign key(cat_caif_id)
+    references adc_action_item_focus(caif_id),
+  constraint r_cat_pti_id foreign key(cat_pti_id, cat_pmg_name)
     references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
-  constraint chk_cat_is_editable check (cat_is_editable in (&C_FALSE., &C_TRUE.)),
-  constraint chk_cat_raise_recursive check(cat_raise_recursive in (&C_FALSE., &C_TRUE.)),
-  constraint chk_cat_active check(cat_active in (&C_FALSE., &C_TRUE.))
+  constraint c_cat_is_editable check (cat_is_editable in (&C_FALSE., &C_TRUE.)),
+  constraint c_cat_raise_recursive check(cat_raise_recursive in (&C_FALSE., &C_TRUE.)),
+  constraint c_cat_active check(cat_active in (&C_FALSE., &C_TRUE.)),
+  constraint c_cat_pmg_name check(cat_pmg_name = 'ADC')
 ) 
 organization index;
 
-create index idx_fk_cat_ctg_id on adc_action_types(cat_ctg_id);
-create index idx_fk_cat_cif_id on adc_action_types(cat_cif_id);
+create index idx_fk_cat_catg_id on adc_action_types(cat_catg_id);
+create index idx_fk_cat_caif_id on adc_action_types(cat_caif_id);
 create unique index idx_cat_pti_pmg_name on adc_action_types(cat_pti_id, cat_pmg_name);
 
 
 comment on table adc_action_types is 'Tabel to store different action types as template for actions';
 comment on column adc_action_types.cat_id is 'PK, alphanumeric key';
-comment on column adc_action_types.cat_ctg_id is 'FK, Reference to adc_action_types_GROUP, used to group action types on the UI';
-comment on column adc_action_types.cat_cif_id is 'FK, Reference to ADC_ACTION_ITEM_FOCUS, used to limit the kind of items the action may reference';
+comment on column adc_action_types.cat_catg_id is 'FK, Reference to adc_action_types_GROUP, used to group action types on the UI';
+comment on column adc_action_types.cat_caif_id is 'FK, Reference to ADC_ACTION_ITEM_FOCUS, used to limit the kind of items the action may reference';
 comment on column adc_action_types.cat_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
 comment on column adc_action_types.cat_pmg_name is 'Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC';
 comment on column adc_action_types.cat_pl_sql is 'PL/SQL pattern to implement the functionality in PL/SQL';

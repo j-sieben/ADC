@@ -16,9 +16,9 @@ as
   C_PAGE_ADMIN_CGR constant number := 1;
   
   -- Rule groups
-  C_CGR_ADMIN_CGR constant utl_apex.ora_name_type := 'ADC_ADMIN_CGR';
-  C_CGR_EDIT_CRU constant utl_apex.ora_name_type := 'ADC_EDIT_CRU';
-  C_CGR_TEST constant utl_apex.ora_name_type := 'ADC_TEST';
+  C_CRG_ADMIN_CGR constant utl_apex.ora_name_type := 'ADC_ADMIN_CGR';
+  C_CRG_EDIT_CRU constant utl_apex.ora_name_type := 'ADC_EDIT_CRU';
+  C_CRG_TEST constant utl_apex.ora_name_type := 'ADC_TEST';
   
   -- Events
   C_EVENT_CHANGE constant utl_apex.ora_name_type := 'change';
@@ -26,12 +26,12 @@ as
   
   -- Items
   C_NO_ITEM constant utl_apex.ora_name_type := 'DOCUMENT';
-  C_ITEM_CGR_ID constant utl_apex.ora_name_type := 'P1_CGR_ID';
+  C_ITEM_CRG_ID constant utl_apex.ora_name_type := 'P1_CRG_ID';
   C_ITEM_CRU_ACTIVE constant utl_apex.ora_name_type := 'P5_CRU_ACTIVE';
   C_ITEM_TEST_DATE constant utl_apex.ora_name_type := 'P98_TEST_DATE';
   C_ITEM_TEST_NUMBER constant utl_apex.ora_name_type := 'P98_TEST_NUMBER';
   
-  g_cgr_id adc_rule_groups.cgr_id%type;
+  g_crg_id adc_rule_groups.crg_id%type;
   g_application_id number;  
   g_da_type apex_plugin.t_dynamic_action;
   g_plugin_type apex_plugin.t_plugin;
@@ -159,14 +159,14 @@ as
   begin
     insert into ut_adc_outcome(test_name, sort_seq, cru_id, cru_sort_seq, cru_name, cru_firing_items, cru_fire_on_page_load, 
              item, pl_sql, js, cra_sort_seq, cra_param_1, cra_param_2, cra_param_3, cra_on_error, cru_on_error, is_first_row, 
-             id, cgr_id, firing_item, firing_event, error_dependent_items, bind_items, page_items, firing_items, error_stack, 
+             id, crg_id, firing_item, firing_event, error_dependent_items, bind_items, page_items, firing_items, error_stack, 
              recursive_stack, js_action_stack, is_recursive, level_length, allow_recursion, notification_stack, stop_flag, now)
     with data as(
            select adc.get_test_result result
              from dual)
     select g_test_name test_name, l_run + rownum sort_seq, 
            cru_id, cru_sort_seq, cru_name, cru_firing_items, cru_fire_on_page_load, item, pl_sql, js, cra_sort_seq, cra_param_1, cra_param_2, cra_param_3,
-           cra_on_error, cru_on_error, is_first_row, id, cgr_id, firing_item, firing_event, error_dependent_items, 
+           cra_on_error, cru_on_error, is_first_row, id, crg_id, firing_item, firing_event, error_dependent_items, 
            utl_text.table_to_string(bind_items, chr(10)) bind_items, 
            utl_text.table_to_string(page_items, chr(10)) page_items, 
            utl_text.table_to_string(firing_items, chr(10)) firing_items, 
@@ -191,16 +191,16 @@ as
   begin
     g_test_name := 'render_plugin';
     get_session;
-    set_environment(C_CGR_ADMIN_CGR, C_NO_ITEM, C_EVENT_INITIALIZE);
+    set_environment(C_CRG_ADMIN_CGR, C_NO_ITEM, C_EVENT_INITIALIZE);
     
     g_render_result := adc_plugin.render(g_da_type, g_plugin_type);
     
-    ut.expect(g_render_result.attribute_02).to_equal('P1_CGR_APP_ID,P1_CGR_ID,P1_CGR_PAGE_ID');
+    ut.expect(g_render_result.attribute_02).to_equal('P1_CRG_APP_ID,P1_CRG_ID,P1_CRG_PAGE_ID');
   end render_plugin;
   
   
   --
-  -- test refresh_plugin: Checks whether setting P1_CGR_ID to 1 leads to 1 executed rule with 1 action
+  -- test refresh_plugin: Checks whether setting P1_CRG_ID to 1 leads to 1 executed rule with 1 action
   --
   procedure refresh_plugin
   as
@@ -211,8 +211,8 @@ as
     -- populate actual
     g_test_name := 'refresh_plugin';
     get_session;
-    utl_apex.set_value(C_ITEM_CGR_ID, g_cgr_id);
-    set_environment(C_CGR_ADMIN_CGR, C_ITEM_CGR_ID, C_EVENT_CHANGE);
+    utl_apex.set_value(C_ITEM_CRG_ID, g_crg_id);
+    set_environment(C_CRG_ADMIN_CGR, C_ITEM_CRG_ID, C_EVENT_CHANGE);
     
     g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
     l_result := adc.get_test_result;
@@ -234,8 +234,8 @@ as
   begin
     g_test_name := 'get_event';
     get_session;
-    utl_apex.set_value(C_ITEM_CGR_ID, g_cgr_id);
-    set_environment(C_CGR_ADMIN_CGR, C_ITEM_CGR_ID, C_EVENT_CHANGE);    
+    utl_apex.set_value(C_ITEM_CRG_ID, g_crg_id);
+    set_environment(C_CRG_ADMIN_CGR, C_ITEM_CRG_ID, C_EVENT_CHANGE);    
     g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
     
     ut.expect(adc.get_event()).to_equal(C_EVENT_CHANGE);
@@ -250,8 +250,8 @@ as
   begin
     g_test_name := 'get_firing_item';
     get_session;
-    utl_apex.set_value(C_ITEM_CGR_ID, g_cgr_id);
-    set_environment(C_CGR_ADMIN_CGR, C_ITEM_CGR_ID, C_EVENT_CHANGE);    
+    utl_apex.set_value(C_ITEM_CRG_ID, g_crg_id);
+    set_environment(C_CRG_ADMIN_CGR, C_ITEM_CRG_ID, C_EVENT_CHANGE);    
     g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
     
     ut.expect(adc.get_event()).to_equal(C_EVENT_CHANGE);
@@ -264,11 +264,11 @@ as
   begin
     g_test_name := 'get_char';
     get_session;
-    utl_apex.set_value(C_ITEM_CGR_ID, g_cgr_id);
-    set_environment(C_CGR_ADMIN_CGR, C_ITEM_CGR_ID, C_EVENT_CHANGE);    
+    utl_apex.set_value(C_ITEM_CRG_ID, g_crg_id);
+    set_environment(C_CRG_ADMIN_CGR, C_ITEM_CRG_ID, C_EVENT_CHANGE);    
     g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
     
-    ut.expect(adc.get_char(C_ITEM_CGR_ID)).to_equal(to_char(g_cgr_id));
+    ut.expect(adc.get_char(C_ITEM_CRG_ID)).to_equal(to_char(g_crg_id));
   end get_char;
 
   --
@@ -278,7 +278,7 @@ as
   begin
     g_test_name := 'get_char_default';
     get_session;
-    set_environment(C_CGR_EDIT_CRU, C_NO_ITEM, C_EVENT_INITIALIZE);    
+    set_environment(C_CRG_EDIT_CRU, C_NO_ITEM, C_EVENT_INITIALIZE);    
     g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
     ut.expect(adc.get_char(C_ITEM_CRU_ACTIVE)).to_equal(adc_util.C_TRUE);
   end get_char_default;
@@ -291,7 +291,7 @@ as
     g_test_name := 'get_date';
     get_session(C_PAGE_TEST);
     utl_apex.set_value(C_ITEM_TEST_DATE, C_VALID_DATE_STRING);
-    set_environment(C_CGR_TEST, C_ITEM_TEST_DATE, C_EVENT_CHANGE);    
+    set_environment(C_CRG_TEST, C_ITEM_TEST_DATE, C_EVENT_CHANGE);    
     g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
     ut.expect(adc.get_date(C_ITEM_TEST_DATE)).to_equal(C_DATE);
   end get_date;
@@ -304,7 +304,7 @@ as
     g_test_name := 'check_date';
     get_session(C_PAGE_TEST);
     utl_apex.set_value(C_ITEM_TEST_DATE, C_VALID_DATE_STRING);
-    set_environment(C_CGR_TEST, C_ITEM_TEST_DATE, C_EVENT_CHANGE);
+    set_environment(C_CRG_TEST, C_ITEM_TEST_DATE, C_EVENT_CHANGE);
     g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
   end check_date;
 
@@ -317,7 +317,7 @@ as
     g_test_name := 'check_no_date';
     get_session(C_PAGE_TEST);
     utl_apex.set_value(C_ITEM_TEST_DATE, C_INVALID_DATE_STRING);
-    set_environment(C_CGR_TEST, C_ITEM_TEST_DATE, C_EVENT_CHANGE);
+    set_environment(C_CRG_TEST, C_ITEM_TEST_DATE, C_EVENT_CHANGE);
     g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
   end check_no_date;
 
@@ -329,7 +329,7 @@ as
     g_test_name := 'get_number';
     get_session(C_PAGE_TEST);
     utl_apex.set_value(C_ITEM_TEST_NUMBER, C_VALID_NUMBER_STRING);
-    set_environment(C_CGR_TEST, C_ITEM_TEST_NUMBER, C_EVENT_CHANGE);    
+    set_environment(C_CRG_TEST, C_ITEM_TEST_NUMBER, C_EVENT_CHANGE);    
     --g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
     ut.expect(adc.get_number(C_ITEM_TEST_NUMBER)).to_equal(C_NUMBER);
   end get_number;
@@ -342,7 +342,7 @@ as
     g_test_name := 'check_number';
     get_session(C_PAGE_TEST);
     utl_apex.set_value(C_ITEM_TEST_NUMBER, C_VALID_NUMBER_STRING);
-    set_environment(C_CGR_TEST, C_ITEM_TEST_NUMBER, C_EVENT_CHANGE);
+    set_environment(C_CRG_TEST, C_ITEM_TEST_NUMBER, C_EVENT_CHANGE);
     g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
   end check_number;
 
@@ -354,7 +354,7 @@ as
     g_test_name := 'check_no_number';
     get_session(C_PAGE_TEST);
     utl_apex.set_value(C_ITEM_TEST_NUMBER, C_INVALID_NUMBER_STRING);
-    set_environment(C_CGR_TEST, C_ITEM_TEST_NUMBER, C_EVENT_CHANGE);
+    set_environment(C_CRG_TEST, C_ITEM_TEST_NUMBER, C_EVENT_CHANGE);
     g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
   end check_no_number;
 

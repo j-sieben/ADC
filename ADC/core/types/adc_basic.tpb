@@ -51,6 +51,31 @@ as
   begin
     adc_api.clear_page_state;
   end clear_page_state;
+  
+  
+  static procedure confirm_click(
+    p_button_id in varchar2,
+    p_message_name in varchar2,
+    p_msg_args in msg_args default null,
+    p_dialog_title in varchar2 default null)
+  as
+    l_message message_type;
+  begin
+    pit.enter_optional(
+      p_params => msg_params(
+                    msg_param('p_button_id', p_button_id),
+                    msg_param('p_message_name', p_message_name),
+                    msg_param('p_dialog_title', p_dialog_title)));
+
+    l_message := pit.get_message(p_message_name, p_msg_args);
+    adc_api.execute_action(
+      p_cat_id => 'CONFIRM_CLICK',
+      p_cpi_id => p_button_id,
+      p_param_1 => l_message.message_text,
+      p_param_2 => p_dialog_title);
+      
+    pit.leave_optional;
+  end confirm_click;
 
 
   static procedure exclusive_or(
@@ -216,7 +241,7 @@ as
       p_cpi_id => adc_util.C_NO_FIRING_ITEM,
       p_param_1 => p_page_items,
       p_param_2 => p_message,
-      p_param_3 => coalesce(p_title, pit.get_trans_item_name('ADC_UI', 'ADC_UNSAVED_ITEM_TITLE')));
+      p_param_3 => coalesce(p_title, pit.get_trans_item_name('ADCA', 'ADC_UNSAVED_ITEM_TITLE')));
 
     pit.leave_optional;
   end remember_page_status;

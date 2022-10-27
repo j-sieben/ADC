@@ -1,25 +1,30 @@
 create table adc_page_item_types(
-  cit_id varchar2(50 char), 
-  cit_pti_id varchar2(50 char) constraint nn_cit_pti_id not null,
-  cit_pmg_name varchar2(3 byte) default 'ADC' constraint chk_cit_pmg_name check(cit_pmg_name = 'ADC'),
-	cit_cig_id varchar2(50 char), 
-	cit_cet_id varchar2(30 byte), 
-	cit_col_template varchar2(100 char), 
-	cit_init_template varchar2(100 char),
-  constraint pk_adc_page_item_types primary key (cit_id),
-  constraint fk_cit_pti_id foreign key(cit_pti_id, cit_pmg_name)
+  cpit_id varchar2(50 char), 
+  cpit_pti_id varchar2(50 char) constraint c_cpit_pti_id_nn not null,
+  cpit_pmg_name varchar2(3 byte) default on null 'ADC' constraint c_cpit_pmg_name_NN not null,
+	cpit_cpitg_id varchar2(50 char), 
+	cpit_cet_id varchar2(30 byte), 
+	cpit_col_template varchar2(100 char), 
+	cpit_init_template varchar2(100 char),
+  constraint p_cpit_id primary key (cpit_id),
+  constraint r_cpit_pti_id foreign key(cpit_pti_id, cpit_pmg_name)
     references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
-  constraint fk_cit_cig_id foreign key(cit_cig_id)
-    references adc_page_item_type_groups(cig_id),
-  constraint fk_cit_cet_id foreign key(cit_cet_id)
-    references adc_event_types(cet_id)
+  constraint r_cpit_cpitg_id foreign key(cpit_cpitg_id)
+    references adc_page_item_type_groups(cpitg_id),
+  constraint r_cpit_cet_id foreign key(cpit_cet_id)
+    references adc_event_types(cet_id),
+  constraint c_cpit_pmg_name check(cpit_pmg_name = 'ADC')
 ) organization index;
 
+create index idx_cpit_pti_id on adc_page_item_types(cpit_pti_id, cpit_pmg_name);
+create index idx_cpit_cpitg_id on adc_page_item_types(cpit_cpitg_id);
+create index idx_cpit_cet_id on adc_page_item_types(cpit_cet_id);
+
 comment on table adc_page_item_types  is 'Table to store page item types which are supported by ADC.';
-comment on column adc_page_item_types.cit_id is 'PK, alphanumerical key';
-comment on column adc_page_item_types.cit_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
-comment on column adc_page_item_types.cit_pmg_name is 'Part of the FK, reference to PIT_TRANSLATABLE_ITEM, criteria to group messages and translatables items per group';
-comment on column adc_page_item_types.cit_cig_id is 'Group of the page item type, reference to ADC_PAGE_ITEM_TYPE_GROUPS';
-comment on column adc_page_item_types.cit_cet_id is 'JavaScript event to be bound to this element type by the plugin. If null, ADC won''t react on changes.. Reference to PIT_EVENT_TYPES';
-comment on column adc_page_item_types.cit_col_template is 'Template for creating a column in the decision table.';
-comment on column adc_page_item_types.cit_init_template is 'Template for generating the initialization code';
+comment on column adc_page_item_types.cpit_id is 'PK, alphanumerical key';
+comment on column adc_page_item_types.cpit_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
+comment on column adc_page_item_types.cpit_pmg_name is 'Part of the FK, reference to PIT_TRANSLATABLE_ITEM, criteria to group messages and translatables items per group';
+comment on column adc_page_item_types.cpit_cpitg_id is 'Group of the page item type, reference to ADC_PAGE_ITEM_TYPE_GROUPS';
+comment on column adc_page_item_types.cpit_cet_id is 'JavaScript event to be bound to this element type by the plugin. If null, ADC won''t react on changes.. Reference to PIT_EVENT_TYPES';
+comment on column adc_page_item_types.cpit_col_template is 'Template for creating a column in the decision table.';
+comment on column adc_page_item_types.cpit_init_template is 'Template for generating the initialization code';

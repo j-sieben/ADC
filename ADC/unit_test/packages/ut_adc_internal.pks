@@ -22,11 +22,11 @@ as
   
   --%context(Getter methods (indirectly tests read_settings))
   
-  --%test (... get_cgr_id reads the actually selected CGR_ID)
-  procedure get_cgr_id;
+  --%test (... get_crg_id reads the actually selected CRG_ID)
+  procedure get_crg_id;
   
-  --%test (... get_cgr_id reads the actually selected CGR_ID even if read_settings was not called before)
-  procedure get_cgr_id_without_preparation;
+  --%test (... get_crg_id reads the actually selected CRG_ID even if read_settings was not called before)
+  procedure get_crg_id_without_preparation;
   
   --%test (... get_event reads the actually raised event)
   procedure get_event;

@@ -134,7 +134,7 @@ as
                     p_action_rec_rec.cra_sort_seq, p_action_rec_rec.cra_param_1, p_action_rec_rec.cra_param_2, p_action_rec_rec.cra_param_3, 
                     p_action_rec_rec.cra_on_error, p_action_rec_rec.cru_on_error, p_action_rec_rec.is_first_row,
                     -- Parameters
-                    g_param.id, g_param.cgr_id, g_param.firing_item, g_param.firing_event, null,
+                    g_param.id, g_param.crg_id, g_param.firing_item, g_param.firing_event, null,
                     to_char_table(g_param.bind_items), to_char_table(g_param.page_items), to_char_table(g_param.firing_items),
                     to_char_table(g_param.error_stack),  to_char_table(g_param.recursive_stack), g_param.is_recursive, 
                     to_ut_adc_js_list(g_param.js_action_stack), to_char_table(g_param.level_length),

@@ -15,7 +15,7 @@ as
   type recursive_entry_t is record(
     cpi_id adc_page_items.cpi_id%type,
     recursive_level binary_integer,
-    event adc_page_item_types.cit_cet_id%type,
+    event adc_page_item_types.cpit_cet_id%type,
     event_data adc_util.max_char);
   
   /**
@@ -111,30 +111,30 @@ as
       See <ADC_RECURSION_STACK.reset>
    */
   procedure reset(
-    p_cgr_id in adc_rule_groups.cgr_id%type,
+    p_crg_id in adc_rule_groups.crg_id%type,
     p_cpi_id in adc_page_items.cpi_id%type)
   as
   begin
     pit.enter_optional('reset',
       p_params => msg_params(
-                    msg_param('p_cgr_id', p_cgr_id),
+                    msg_param('p_crg_id', p_crg_id),
                     msg_param('p_cpi_id', p_cpi_id)));
     
-    pit.assert_not_null(p_cgr_id);
+    pit.assert_not_null(p_crg_id);
     pit.assert_not_null(p_cpi_id);
     
     pop_firing_item(null, adc_util.C_TRUE);
     g_recursion.firing_items.delete;
         
     -- set recursion flag
-    select coalesce(cgr_with_recursion, adc_util.C_TRUE)
+    select coalesce(crg_with_recursion, adc_util.C_TRUE)
       into g_recursion.allow_recursion
       from adc_rule_groups
-     where cgr_id = p_cgr_id;
+     where crg_id = p_crg_id;
     
     -- Register firing item on recursion level 1 to start evaluation
     push_firing_item(
-      p_cgr_id => p_cgr_id, 
+      p_crg_id => p_crg_id, 
       p_cpi_id => p_cpi_id,
       p_event => 'initialize',
       p_force => adc_util.C_TRUE);
@@ -150,9 +150,9 @@ as
       See <ADC_RECURSION_STACK.push_firing_item>
    */
   procedure push_firing_item(
-    p_cgr_id in adc_rule_groups.cgr_id%type,
+    p_crg_id in adc_rule_groups.crg_id%type,
     p_cpi_id in adc_page_items.cpi_id%type,
-    p_event in adc_page_item_types.cit_cet_id%type,
+    p_event in adc_page_item_types.cpit_cet_id%type,
     p_event_data in adc_util.max_char default null,
     p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE,
     p_force in adc_util.flag_type default adc_util.C_FALSE)
@@ -162,13 +162,13 @@ as
   begin
     pit.enter_optional('push_firing_item',
       p_params => msg_params(
-                    msg_param('p_cgr_id', p_cgr_id),
+                    msg_param('p_crg_id', p_crg_id),
                     msg_param('p_cpi_id', p_cpi_id),
                     msg_param('p_event', p_event),
                     msg_param('p_event_data', p_event_data),
                     msg_param('p_allow_recursion', p_allow_recursion)));
     
-    pit.assert_not_null(p_cgr_id, p_msg_args => msg_args('P_CGR_ID'));
+    pit.assert_not_null(p_crg_id, p_msg_args => msg_args('P_CRG_ID'));
     pit.assert_not_null(p_cpi_id, p_msg_args => msg_args('P_CPI_ID'));
     
     -- check recursion level does not exceeded max level
@@ -194,8 +194,8 @@ as
                    join adc_page_items
                      on instr(',' || cru_firing_items || ',', ',' || cpi_id || ',') > 0
                   where cpi_id = p_cpi_id
-                    and (instr(cpi_cit_id, 'ITEM') > 0)
-                    and cru_cgr_id = p_cgr_id);
+                    and (instr(cpi_cpit_id, 'ITEM') > 0)
+                    and cru_crg_id = p_crg_id);
         else
           l_must_be_processed := 0;
         end case;
@@ -278,7 +278,7 @@ as
    */
   procedure get_next(
     p_cpi_id out nocopy adc_page_items.cpi_id%type,
-    p_event out nocopy adc_page_item_types.cit_cet_id%type,
+    p_event out nocopy adc_page_item_types.cpit_cet_id%type,
     p_event_data out nocopy varchar2)
   as
     l_stack_entry recursive_entry_t;

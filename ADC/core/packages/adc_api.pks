@@ -226,16 +226,16 @@ as
       Action Parameter of type <SELECT_LIST>
       
     Parameters:
-      p_cpt_id - Type of the Action Parameter
-      p_cgr_id - ID of the rule group. Is used to filter the LOV statement
+      p_capt_id - Type of the Action Parameter
+      p_crg_id - ID of the rule group. Is used to filter the LOV statement
     
     Returns:
       Select statement to be executed by the ADC_UI to retrieve values for an Action Parameter#
       of type <SELECT_LIST>
    */
   function get_lov_sql(
-    p_cpt_id in adc_action_param_types.cpt_id%type,
-    p_cgr_id in adc_rule_groups.cgr_id%type)
+    p_capt_id in adc_action_param_types.capt_id%type,
+    p_crg_id in adc_rule_groups.crg_id%type)
     return varchar2;
 
 

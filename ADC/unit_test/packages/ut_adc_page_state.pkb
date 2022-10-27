@@ -26,7 +26,7 @@ as
   C_NUMBER_ITEM constant adc_util.ora_name_type := 'SALARY';
   C_DATE_ITEM constant adc_util.ora_name_type := 'HIRE_DATE';
   
-  g_cgr_id adc_rule_groups.cgr_id%type;
+  g_crg_id adc_rule_groups.crg_id%type;
   g_application_id number;
   g_page_prefix adc_util.ora_name_type;
   
@@ -48,11 +48,11 @@ as
     apex_application.g_date_format := C_DATE_FORMAT;
     
     -- get CGR for the rule group of the selected page
-    select cgr_id
-      into g_cgr_id
+    select crg_id
+      into g_crg_id
       from adc_rule_groups
-     where cgr_app_id = g_application_id
-       and cgr_page_id = p_page_id;
+     where crg_app_id = g_application_id
+       and crg_page_id = p_page_id;
        
     g_page_prefix := utl_apex.get_page_prefix;
   end create_session;
@@ -115,7 +115,7 @@ as
   as
   begin
     create_session(C_PAGE_UNITTEST);
-    adc_page_state.set_value(g_cgr_id, g_page_prefix || C_STRING_ITEM, C_STRING);
+    adc_page_state.set_value(g_crg_id, g_page_prefix || C_STRING_ITEM, C_STRING);
     
     ut.expect(utl_apex.get_string(C_STRING_ITEM)).to_equal(C_STRING);
   end set_item_value_as_string;
@@ -128,9 +128,9 @@ as
   as
   begin
     create_session(C_PAGE_UNITTEST);
-    adc_page_state.set_value(g_cgr_id, g_page_prefix || C_STRING_ITEM, C_STRING, p_throw_error => adc_util.C_TRUE);
+    adc_page_state.set_value(g_crg_id, g_page_prefix || C_STRING_ITEM, C_STRING, p_throw_error => adc_util.C_TRUE);
     
-    ut.expect(adc_page_state.get_string(g_cgr_id, g_page_prefix || C_STRING_ITEM)).to_equal(C_STRING);
+    ut.expect(adc_page_state.get_string(g_crg_id, g_page_prefix || C_STRING_ITEM)).to_equal(C_STRING);
   end set_and_read_item_value;
   
   
@@ -142,7 +142,7 @@ as
   begin
     create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_NUMBER_ITEM, 
       p_number_value => C_NUMBER, 
       p_throw_error => adc_util.C_TRUE);
@@ -159,7 +159,7 @@ as
   begin
     create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_NUMBER_ITEM, 
       p_value => C_VALID_NUMBER_STRING, 
       p_throw_error => adc_util.C_TRUE);
@@ -176,7 +176,7 @@ as
   begin
     create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_NUMBER_ITEM, 
       p_value => C_INVALID_NUMBER_STRING, 
       p_throw_error => adc_util.C_TRUE);
@@ -186,19 +186,19 @@ as
   --
   -- test ADC_PAGE_STATE case 6: Sets a number item value as String, explicit format mask provided
   --
-  procedure set_number_item_value_explicit_format
+  procedure set_number_item_value_explicpit_format
   as
   begin
     create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_NUMBER_ITEM, 
       p_value => C_VALID_NUMBER_STRING,
       p_format_mask => C_NUMBER_FORMAT,
       p_throw_error => adc_util.C_TRUE);
     
     ut.expect(adc_api.get_number(g_page_prefix || C_NUMBER_ITEM)).to_equal(C_NUMBER);
-  end set_number_item_value_explicit_format;
+  end set_number_item_value_explicpit_format;
   
   
   --
@@ -209,7 +209,7 @@ as
   begin
     create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_NUMBER_ITEM, 
       p_value => C_VALID_NUMBER_STRING,
       p_format_mask => 'ABC',
@@ -227,7 +227,7 @@ as
   begin
     create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_NUMBER_ITEM, 
       p_value => C_VALID_NUMBER_STRING,
       p_format_mask => 'fm990',
@@ -245,12 +245,12 @@ as
   begin
     create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_DATE_ITEM, 
       p_date_value => C_DATE, 
       p_throw_error => adc_util.C_TRUE);
     
-    ut.expect(adc_page_state.get_date(g_cgr_id, g_page_prefix || C_DATE_ITEM, null)).to_equal(C_DATE);
+    ut.expect(adc_page_state.get_date(g_crg_id, g_page_prefix || C_DATE_ITEM, null)).to_equal(C_DATE);
   end set_item_value_as_date;
   
   
@@ -262,31 +262,31 @@ as
   begin
     create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_DATE_ITEM, 
       p_value => C_VALID_DATE_STRING, 
       p_throw_error => adc_util.C_TRUE);
     
-    ut.expect(adc_page_state.get_date(g_cgr_id, g_page_prefix || C_DATE_ITEM, null)).to_equal(C_DATE);
+    ut.expect(adc_page_state.get_date(g_crg_id, g_page_prefix || C_DATE_ITEM, null)).to_equal(C_DATE);
   end set_date_item_value_as_string;
   
   
   --
   -- test ADC_PAGE_STATE case 11: Sets a date item value as String, explicit format mask provided
   --
-  procedure set_date_item_value_explicit_format
+  procedure set_date_item_value_explicpit_format
   as
   begin
     create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_DATE_ITEM, 
       p_value => C_VALID_DATE_STRING,
       p_format_mask => C_DATE_FORMAT,
       p_throw_error => adc_util.C_TRUE);
     
-    ut.expect(adc_page_state.get_date(g_cgr_id, g_page_prefix || C_DATE_ITEM, C_DATE_FORMAT)).to_equal(C_DATE);
-  end set_date_item_value_explicit_format;
+    ut.expect(adc_page_state.get_date(g_crg_id, g_page_prefix || C_DATE_ITEM, C_DATE_FORMAT)).to_equal(C_DATE);
+  end set_date_item_value_explicpit_format;
   
   
   --
@@ -297,7 +297,7 @@ as
   begin
     create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_DATE_ITEM, 
       p_value => C_INVALID_DATE_STRING, 
       p_throw_error => adc_util.C_TRUE);
@@ -312,7 +312,7 @@ as
   begin
     create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_DATE_ITEM, 
       p_value => C_VALID_DATE_STRING,
       p_format_mask => 'ABC', 
@@ -328,7 +328,7 @@ as
   begin
     create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_DATE_ITEM, 
       p_value => replace(C_VALID_DATE_STRING, '05', '04'),
       p_format_mask => C_DATE_FORMAT, 
@@ -344,18 +344,18 @@ as
   begin
     create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_STRING_ITEM, 
       p_value => C_STRING,
       p_throw_error => adc_util.C_TRUE);
       
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_STRING_ITEM, 
       p_value => null,
       p_throw_error => adc_util.C_TRUE);
     
-    ut.expect(adc_page_state.get_string(g_cgr_id, g_page_prefix || C_STRING_ITEM)).to_be_null;
+    ut.expect(adc_page_state.get_string(g_crg_id, g_page_prefix || C_STRING_ITEM)).to_be_null;
   end reset_string_item_value_to_null;
   
   
@@ -367,18 +367,18 @@ as
   begin
     create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_NUMBER_ITEM, 
       p_number_value => C_NUMBER,
       p_throw_error => adc_util.C_TRUE);
       
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_NUMBER_ITEM, 
       p_number_value => null,
       p_throw_error => adc_util.C_TRUE);
     
-    ut.expect(adc_page_state.get_string(g_cgr_id, g_page_prefix || C_NUMBER_ITEM)).to_be_null;
+    ut.expect(adc_page_state.get_string(g_crg_id, g_page_prefix || C_NUMBER_ITEM)).to_be_null;
   end reset_number_item_value_to_null;
   
   
@@ -390,18 +390,18 @@ as
   begin
     create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_DATE_ITEM, 
       p_date_value => C_DATE,
       p_throw_error => adc_util.C_TRUE);
       
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_DATE_ITEM, 
       p_date_value => null,
       p_throw_error => adc_util.C_TRUE);
     
-    ut.expect(adc_page_state.get_string(g_cgr_id, g_page_prefix || C_DATE_ITEM)).to_be_null;
+    ut.expect(adc_page_state.get_string(g_crg_id, g_page_prefix || C_DATE_ITEM)).to_be_null;
   end reset_date_item_value_to_null;
   
   
@@ -417,12 +417,12 @@ as
       p_value => C_STRING);
       
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_STRING_ITEM, 
       p_value => adc_page_state.C_FROM_SESSION_STATE,
       p_throw_error => adc_util.C_TRUE);
     
-    ut.expect(adc_page_state.get_string(g_cgr_id, g_page_prefix || C_STRING_ITEM)).to_equal(C_STRING);
+    ut.expect(adc_page_state.get_string(g_crg_id, g_page_prefix || C_STRING_ITEM)).to_equal(C_STRING);
   end read_string_item_value_from_session_state;
   
   
@@ -438,13 +438,13 @@ as
       p_value => C_VALID_NUMBER_STRING);
       
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_NUMBER_ITEM, 
       p_value => adc_page_state.C_FROM_SESSION_STATE,
       p_throw_error => adc_util.C_TRUE);
     
-    ut.expect(adc_page_state.get_number(g_cgr_id, g_page_prefix || C_NUMBER_ITEM, null)).to_equal(C_NUMBER);
-    ut.expect(adc_page_state.get_string(g_cgr_id, g_page_prefix || C_NUMBER_ITEM)).to_equal(C_VALID_NUMBER_STRING);
+    ut.expect(adc_page_state.get_number(g_crg_id, g_page_prefix || C_NUMBER_ITEM, null)).to_equal(C_NUMBER);
+    ut.expect(adc_page_state.get_string(g_crg_id, g_page_prefix || C_NUMBER_ITEM)).to_equal(C_VALID_NUMBER_STRING);
   end read_number_item_value_from_session_state;
   
   
@@ -460,13 +460,13 @@ as
       p_value => C_VALID_DATE_STRING);
       
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_DATE_ITEM, 
       p_value => adc_page_state.C_FROM_SESSION_STATE,
       p_throw_error => adc_util.C_TRUE);
     
-    ut.expect(adc_page_state.get_date(g_cgr_id, g_page_prefix || C_DATE_ITEM, null)).to_equal(C_DATE);
-    ut.expect(adc_page_state.get_string(g_cgr_id, g_page_prefix || C_DATE_ITEM)).to_equal(C_VALID_DATE_STRING);
+    ut.expect(adc_page_state.get_date(g_crg_id, g_page_prefix || C_DATE_ITEM, null)).to_equal(C_DATE);
+    ut.expect(adc_page_state.get_string(g_crg_id, g_page_prefix || C_DATE_ITEM)).to_equal(C_VALID_DATE_STRING);
   end read_date_item_value_from_session_state;
   
   
@@ -479,12 +479,12 @@ as
     create_session(C_PAGE_UNITTEST);
       
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
       p_value => C_STRING,
       p_throw_error => adc_util.C_TRUE);
     
-    ut.expect(adc_page_state.get_string(g_cgr_id, adc_util.C_NO_FIRING_ITEM)).to_be_null;
+    ut.expect(adc_page_state.get_string(g_crg_id, adc_util.C_NO_FIRING_ITEM)).to_be_null;
   end set_non_value_item;
   
   
@@ -496,7 +496,7 @@ as
   begin
     create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_STRING_ITEM, 
       p_value => C_STRING,
       p_throw_error => adc_util.C_TRUE);
@@ -516,26 +516,26 @@ as
   begin
     create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_STRING_ITEM, 
       p_value => C_STRING,
       p_throw_error => adc_util.C_TRUE);
       
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_NUMBER_ITEM, 
       p_number_value => C_NUMBER,
       p_format_mask => C_NUMBER_FORMAT,
       p_throw_error => adc_util.C_TRUE);
       
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_DATE_ITEM, 
       p_date_value => C_DATE,
       p_throw_error => adc_util.C_TRUE);
       
     adc_page_state.get_item_values_as_char_table(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_list => g_page_prefix || C_STRING_ITEM || ',' || g_page_prefix || C_NUMBER_ITEM || ',' || g_page_prefix || C_DATE_ITEM,
       p_value_list => l_value_list);
     
@@ -556,20 +556,20 @@ as
   begin
     create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_STRING_ITEM, 
       p_value => C_STRING,
       p_throw_error => adc_util.C_TRUE);
       
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_NUMBER_ITEM, 
       p_number_value => C_NUMBER,
       p_format_mask => C_NUMBER_FORMAT,
       p_throw_error => adc_util.C_TRUE);
       
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => g_page_prefix || C_DATE_ITEM, 
       p_date_value => C_DATE,
       p_throw_error => adc_util.C_TRUE);
@@ -594,7 +594,7 @@ as
   begin
     create_session(C_PAGE_UNITTEST);
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => l_page_item, 
       p_number_value => C_NUMBER,
       p_throw_error => adc_util.C_TRUE);
@@ -630,7 +630,7 @@ as
     create_session(C_PAGE_UNITTEST);
     l_page_item := g_page_prefix || C_DATE_ITEM;
     adc_page_state.set_value(
-      p_cgr_id => g_cgr_id, 
+      p_crg_id => g_crg_id, 
       p_cpi_id => l_page_item, 
       p_date_value => C_DATE,
       p_throw_error => adc_util.C_TRUE);

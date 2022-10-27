@@ -72,19 +72,19 @@ as
       Administration of RULE GROUPS. Is used to create a rule group.
 
     Parameters:
-      p_cgr_app_id - APEX application id
-      p_cgr_page_id - APEX application page id
-      p_cgr_id - Optional technical ID of the rule group. Upon script based import this parameter is used as
+      p_crg_app_id - APEX application id
+      p_crg_page_id - APEX application page id
+      p_crg_id - Optional technical ID of the rule group. Upon script based import this parameter is used as
                  a foreign key for rules in order to organize the relationship even if new IDs are created
-     p_cgr_with_recursion - Optional flag to indicate whehter this rule allows recursive calls
-     p_cgr_active - Optional flag to indicate, whether this rule group is actually used. Defaults to ADC_UTIL.C_TRUE
+     p_crg_with_recursion - Optional flag to indicate whehter this rule allows recursive calls
+     p_crg_active - Optional flag to indicate, whether this rule group is actually used. Defaults to ADC_UTIL.C_TRUE
    */
   procedure merge_rule_group(
-    p_cgr_app_id in adc_rule_groups.cgr_app_id%type,
-    p_cgr_page_id in adc_rule_groups.cgr_page_id%type,
-    p_cgr_id in adc_rule_groups.cgr_id%type default null,
-    p_cgr_with_recursion in adc_rule_groups.cgr_with_recursion%type default adc_util.C_TRUE,
-    p_cgr_active in adc_rule_groups.cgr_active%type default adc_util.C_TRUE);
+    p_crg_app_id in adc_rule_groups.crg_app_id%type,
+    p_crg_page_id in adc_rule_groups.crg_page_id%type,
+    p_crg_id in adc_rule_groups.crg_id%type default null,
+    p_crg_with_recursion in adc_rule_groups.crg_with_recursion%type default adc_util.C_TRUE,
+    p_crg_active in adc_rule_groups.crg_active%type default adc_util.C_TRUE);
     
   /**
     Procedure: merge_rule_group
@@ -102,10 +102,10 @@ as
       Is called from the ADC UI to remove a rule group
 
     Parameter:
-      p_cgr_id - Technical ID of the rule group to delete
+      p_crg_id - Technical ID of the rule group to delete
    */
   procedure delete_rule_group(
-    p_cgr_id in adc_rule_groups.cgr_id%type);
+    p_crg_id in adc_rule_groups.crg_id%type);
 
   /**
     Procedure: delete_rule_group
@@ -125,9 +125,9 @@ as
       p_row - Row record
       
     Errors:
-      CGR_APP_ID_MISSING - if Parameter CGR_APP_ID IS NULL
-      CGR_PAGE_ID_MISSING - if Parameter CGR_PAGE_ID IS NULL
-      ADC_CGR_MUST_BE_UNIQUE - if provided CGR_APP_ID/CGR_PAGE_ID combination already exists as a dynamic page
+      CRG_APP_ID_MISSING - if Parameter CRG_APP_ID IS NULL
+      CRG_PAGE_ID_MISSING - if Parameter CRG_PAGE_ID IS NULL
+      ADC_CRG_MUST_BE_UNIQUE - if provided CRG_APP_ID/CRG_PAGE_ID combination already exists as a dynamic page
    */
   procedure validate_rule_group(
     p_row in adc_rule_groups%rowtype);
@@ -138,13 +138,13 @@ as
       Method checks all rules of a rule group to find invalid rules. Is called before a rule group is exported.
    
     Parameter:
-      p_cgr_id - Rule group ID to check
+      p_crg_id - Rule group ID to check
       
     Returns:
       Returns an error message if any error has occurred
    */
   function validate_rule_group(
-    p_cgr_id in adc_rule_groups.cgr_id%type)
+    p_crg_id in adc_rule_groups.crg_id%type)
     return varchar2;
 
 
@@ -159,10 +159,10 @@ as
       The export script calls this method automatically after a rule group has been imported completely
    
     Parameter:
-      p_cgr_id - ID of the rule group that has changed
+      p_crg_id - ID of the rule group that has changed
    */
   procedure propagate_rule_change(
-    p_cgr_id in adc_rule_groups.cgr_id%type);
+    p_crg_id in adc_rule_groups.crg_id%type);
 
 
   /** 
@@ -170,7 +170,7 @@ as
       Method to export one rule group. If called, the respective rule group is exported as a CLOB instance.
                 
     Parameters:
-      p_cgr_id  Rule group ID of the rule group that is to be exported
+      p_crg_id  Rule group ID of the rule group that is to be exported
       p_mode - Optional information, needed to switch the frame template accordingly
       p_ionstall_id - Optional Installation ID of the supporting install scripts. Used internally
       
@@ -178,7 +178,7 @@ as
       Script to import a rule group, including all necessary information, excluding action type definitions
    */
   function export_rule_group(
-    p_cgr_id in adc_rule_groups.cgr_id%type,
+    p_crg_id in adc_rule_groups.crg_id%type,
     p_mode in varchar2 default C_APP_GROUPS,
     p_install_id in number default null)
     return clob;
@@ -191,12 +191,12 @@ as
       Based on the parameters passed in this method will export one or more rule groups.
       
       - If no parameter is passed in, all existing rule groups are exported.
-      - If only parameter P_CGR_APP_ID is passed in all rule groups of the respective APEX application are exported.
-      - If parameters P_CGR_APP_ID and P_CGR_PAGE_ID is passed in only the rule group of the respecite APEX application page are exported.
+      - If only parameter P_CRG_APP_ID is passed in all rule groups of the respective APEX application are exported.
+      - If parameters P_CRG_APP_ID and P_CRG_PAGE_ID is passed in only the rule group of the respecite APEX application page are exported.
    
     Parameters:
-      p_cgr_app_id - Optional APEX application ID of the application of which all rule groups are to be exported
-      p_cgr_page_id - Optional APEX page ID
+      p_crg_app_id - Optional APEX application ID of the application of which all rule groups are to be exported
+      p_crg_page_id - Optional APEX page ID
       p_mode - Optional flag to indicate what to export. Options include:
                 
                 - C_ALL_GROUPS: Exports all rule groups of that workspace
@@ -213,8 +213,8 @@ as
       msg.ADC_UNKNOWN_EXPORT_MODE - if an export mode other than C_ALL_GROUPS, C_APP_GROUPS, C_PAGE_GROUPS was requested
    */
   function export_rule_groups(
-    p_cgr_app_id in adc_rule_groups.cgr_app_id%type default null,
-    p_cgr_page_id in adc_rule_groups.cgr_page_id%type default null,
+    p_crg_app_id in adc_rule_groups.crg_app_id%type default null,
+    p_crg_page_id in adc_rule_groups.crg_page_id%type default null,
     p_mode in varchar2 default C_APP_GROUPS)
     return blob;
 
@@ -242,19 +242,19 @@ as
    */
   procedure prepare_rule_group_import(
     p_workspace in varchar2,
-    p_app_id in adc_rule_groups.cgr_app_id%type);
+    p_app_id in adc_rule_groups.crg_app_id%type);
 
   /**
     Procedure: prepare_rule_group_import
       Overload, is used when application ID and page ID is known
                  
     Parameters:
-      p_cgr_app_id - Application ID
-      p_cgr_page_id - Application Page ID
+      p_crg_app_id - Application ID
+      p_crg_page_id - Application Page ID
    */
   procedure prepare_rule_group_import(
-    p_cgr_app_id in adc_rule_groups.cgr_app_id%type,
-    p_cgr_page_id in adc_rule_groups.cgr_page_id%type);
+    p_crg_app_id in adc_rule_groups.crg_app_id%type,
+    p_crg_page_id in adc_rule_groups.crg_page_id%type);
 
 
 
@@ -265,7 +265,7 @@ as
     
     Parameters:
       p_cru_id - ID of the rule
-      p_cru_cgr_id - ID of the rule group
+      p_cru_crg_id - ID of the rule group
       p_cru_name - Name of the rule
       p_cru_condition - rule condition
       p_cru_fire_on_page_load - Flag to indicate whether this rule is part of the page initialization
@@ -274,7 +274,7 @@ as
    */
   procedure merge_rule(
     p_cru_id in adc_rules.cru_id%type default null,
-    p_cru_cgr_id in adc_rules.cru_cgr_id%type,
+    p_cru_crg_id in adc_rules.cru_crg_id%type,
     p_cru_name in adc_rules.cru_name%type,
     p_cru_condition in adc_rules.cru_condition%type,
     p_cru_fire_on_page_load in adc_rules.cru_fire_on_page_load%type,
@@ -334,7 +334,7 @@ as
       
     Errors:
       msg.ADC_INVALID_SQL - if any invalid conditions are entered
-      CRU_CGR_ID_MISSING - if Parameter CRU_CGR_ID IS NULL
+      CRU_CRG_ID_MISSING - if Parameter CRU_CRG_ID IS NULL
       CRU_NAME_MISSING - if Parameter CRU_NAME IS NULL
       CRU_CONDITION_MISSING - if Parameter CRU_CONDITION IS NULL
    */
@@ -362,7 +362,7 @@ as
     Parameters:
       p_cra_id - ID of the rule action
       p_cra_cru_id - Reference to adc_rules
-      p_cra_cgr_id - Reference to adc_rule_groups
+      p_cra_crg_id - Reference to adc_rule_groups
       p_cra_cpi_id - Reference to ADC_PAGE_ITEM
       p_cra_cat_id - Reference to ADC_ACTION_TYPE
       p_sort_seq - Sort criteria to organize the order of execution
@@ -378,7 +378,7 @@ as
   procedure merge_rule_action(
     p_cra_id in adc_rule_actions.cra_id%type,
     p_cra_cru_id in adc_rule_actions.cra_cru_id%type,
-    p_cra_cgr_id in adc_rule_actions.cra_cgr_id%type,
+    p_cra_crg_id in adc_rule_actions.cra_crg_id%type,
     p_cra_cpi_id in adc_rule_actions.cra_cpi_id%type,
     p_cra_cat_id in adc_rule_actions.cra_cat_id%type,
     p_cra_sort_seq in adc_rule_actions.cra_sort_seq%type,
@@ -387,7 +387,7 @@ as
     p_cra_param_3 in adc_rule_actions.cra_param_3%type default null,
     p_cra_on_error in adc_rule_actions.cra_on_error%type default adc_util.C_FALSE,
     p_cra_raise_recursive in adc_rule_actions.cra_raise_recursive%type default adc_util.C_TRUE,
-    p_cra_raise_on_validation in adc_rule_actions.cra_raise_on_validation%type default adc_util.C_TRUE,
+    p_cra_raise_on_validation in adc_rule_actions.cra_raise_on_validation%type default adc_util.C_FALSE,
     p_cra_active in adc_rule_actions.cra_active%type default adc_util.C_TRUE,
     p_cra_comment in adc_rule_actions.cra_comment%type default null);
 
@@ -430,10 +430,10 @@ as
     
     Errors
       CRA_CRU_ID_MISSING - if Parameter CRA_CRU_ID IS NULL
-      CRA_CGR_ID_MISSING - if Parameter CRA_CGR_ID IS NULL
+      CRA_CRG_ID_MISSING - if Parameter CRA_CRG_ID IS NULL
       CRA_CPI_ID_MISSING - if Parameter CRA_CPI_ID IS NULL
       CRA_CAT_ID_MISSING - if Parameter CRA_CAT_ID IS NULL
-      ADC_RULE_ACTION_EXISTS - if combination of attributes CRA_CGR_ID, CRA_CRU_ID, CRA_CPI_ID, CRA_CAT_ID and CRA_ON_ERROR already exists for this rule.
+      ADC_RULE_ACTION_EXISTS - if combination of attributes CRA_CRG_ID, CRA_CRU_ID, CRA_CPI_ID, CRA_CAT_ID and CRA_ON_ERROR already exists for this rule.
    */
   procedure validate_rule_action(
     p_row in adc_rule_actions%rowtype);
@@ -445,16 +445,16 @@ as
       Administration of ACTION TYPE GROUPS
                  
     Parameters:
-      p_ctg_id - ID of the action type group
+      p_catg_id - ID of the action type group
       p_srg_name - Name of the action type group
-      p_ctg_description - Optional description of the action type group
-      p_ctg_active - Flag to indicate whether this action type group is actually in use. Defaults to ADC_UTIL.C_TRUE
+      p_catg_description - Optional description of the action type group
+      p_catg_active - Flag to indicate whether this action type group is actually in use. Defaults to ADC_UTIL.C_TRUE
    */
   procedure merge_action_type_group(
-    p_ctg_id in adc_action_type_groups_v.ctg_id%type,
-    p_ctg_name in adc_action_type_groups_v.ctg_name%type,
-    p_ctg_description in adc_action_type_groups_v.ctg_description%type,
-    p_ctg_active in adc_action_type_groups_v.ctg_active%type default adc_util.C_TRUE);
+    p_catg_id in adc_action_type_groups_v.catg_id%type,
+    p_catg_name in adc_action_type_groups_v.catg_name%type,
+    p_catg_description in adc_action_type_groups_v.catg_description%type,
+    p_catg_active in adc_action_type_groups_v.catg_active%type default adc_util.C_TRUE);
 
   /**
     Procedure: merge_action_type_group
@@ -471,10 +471,10 @@ as
       Overload with a row record
                  
     Parameter:
-      p_ctg_id - ID of the action type group to delete
+      p_catg_id - ID of the action type group to delete
    */
   procedure delete_action_type_group(
-    p_ctg_id in adc_action_type_groups_v.ctg_id%type);
+    p_catg_id in adc_action_type_groups_v.catg_id%type);
 
   /**
     Procedure: delete_action_type_group
@@ -494,8 +494,8 @@ as
       p_row - Row record
       
     Errors:
-      CTG_ID_MISSING - if parameter P_ROW.CTG_ID is null
-      CTG_NAME_MISSING - if parameter P_ROW.CTG_NAME is null
+      CATG_ID_MISSING - if parameter P_ROW.CATG_ID is null
+      CATG_NAME_MISSING - if parameter P_ROW.CATG_NAME is null
    */
   procedure validate_action_type_group(
     p_row in adc_action_type_groups_v%rowtype);
@@ -509,20 +509,20 @@ as
       is shown as a text input field, a select list or a switch.
                  
     Parameters:
-      p_cpv_id - ID of the action visual type
-      p_cpv_name - Name of the action visual type
-      p_cpv_display_name - Display name of the action visual type
-      p_cpv_description - Optional description
-      p_cpt_sort_seq - Optional sort criteria
-      p_cpv_active - Flag to indicate whether this action parameter type is used. Defaults to ADC_UTIL.C_TRUE
+      p_capvt_id - ID of the action visual type
+      p_capvt_name - Name of the action visual type
+      p_capvt_display_name - Display name of the action visual type
+      p_capvt_description - Optional description
+      p_capt_sort_seq - Optional sort criteria
+      p_capvt_active - Flag to indicate whether this action parameter type is used. Defaults to ADC_UTIL.C_TRUE
    */
   procedure merge_action_param_visual_type(
-    p_cpv_id in adc_action_param_visual_types_v.cpv_id%type,
-    p_cpv_name in adc_action_param_visual_types_v.cpv_name%type,
-    p_cpv_display_name in adc_action_param_visual_types_v.cpv_display_name%type default null,
-    p_cpv_description in adc_action_param_visual_types_v.cpv_description%type default null,
-    p_cpv_sort_seq in adc_action_param_visual_types_v.cpv_sort_seq%type default 10,
-    p_cpv_active in adc_action_param_visual_types_v.cpv_active%type default ADC_UTIL.C_TRUE);
+    p_capvt_id in adc_action_param_visual_types_v.capvt_id%type,
+    p_capvt_name in adc_action_param_visual_types_v.capvt_name%type,
+    p_capvt_display_name in adc_action_param_visual_types_v.capvt_display_name%type default null,
+    p_capvt_description in adc_action_param_visual_types_v.capvt_description%type default null,
+    p_capvt_sort_seq in adc_action_param_visual_types_v.capvt_sort_seq%type default 10,
+    p_capvt_active in adc_action_param_visual_types_v.capvt_active%type default ADC_UTIL.C_TRUE);
 
   /**
     Procedure: merge_action_param_visual_type
@@ -539,10 +539,10 @@ as
       Overload with a row record
                  
     Parameter:
-      p_cpv_id - ID of the Action Parameter Type to delete
+      p_capvt_id - ID of the Action Parameter Type to delete
    */
   procedure delete_action_param_visual_type(
-    p_cpv_id in adc_action_param_visual_types_v.cpv_id%type);
+    p_capvt_id in adc_action_param_visual_types_v.capvt_id%type);
 
   /**
     Procedure: delete_action_param_visual_type
@@ -561,9 +561,9 @@ as
     Errors:
       msg.ADC_PARAM_LOV_MISSING - if LOV view is required but missing
       msg.ADC_PARAM_LOV_INCORRECT - if required LOV view exists but with the wrong structure
-      cpv_ID_MISSING - if parameter P_cpv_ID is NULL
-      cpv_NAME_MISSING - if parameter P_cpv_NAME is NULL
-      cpv_ITEM_TYPE_MISSING - if parameter p_cpv_cpv_id is NULL
+      capvt_ID_MISSING - if parameter P_capvt_ID is NULL
+      capvt_NAME_MISSING - if parameter P_capvt_NAME is NULL
+      capvt_ITEM_TYPE_MISSING - if parameter p_capvt_capvt_id is NULL
    */
   procedure validate_action_param_visual_type(
     p_row in adc_action_param_visual_types_v%rowtype);
@@ -574,29 +574,29 @@ as
       Administration of ACTION PARAMETER TYPES
                  
     Parameters:
-      p_cpt_id - ID of the action parameter type
-      p_cpt_name - Name of the action parameter type
-      p_cpt_display_name - Display name of the action parameter type
-      p_cpt_description - Optional description
-      p_cpt_cpv_id - Reference to <ADC_ACTION_PARAM_VISUAL_TYPES>, controls how the parameter is displayed visually.
+      p_capt_id - ID of the action parameter type
+      p_capt_name - Name of the action parameter type
+      p_capt_display_name - Display name of the action parameter type
+      p_capt_description - Optional description
+      p_capt_capvt_id - Reference to <ADC_ACTION_PARAM_VISUAL_TYPES>, controls how the parameter is displayed visually.
                      
-                     If set to SELECT_LIST or STATIC_LIST, a view of name ADC_PARAM_LOV_<CPT_ID> must be provided to calculate
-                     the available values. This list may be filtered using CGR_ID.
-      p_cpt_select_list_query - Optional select statement for the parameter value list
-      p_cpt_select_view_comment - Optional comment for the select/static_list view
-      p_cpt_sort_seq - Optional sort criteria
-      p_cpt_active - Flag to indicate whether this action parameter type is used. Defaults to ADC_UTIL.C_TRUE
+                     If set to SELECT_LIST or STATIC_LIST, a view of name ADC_PARAM_LOV_<CAPT_ID> must be provided to calculate
+                     the available values. This list may be filtered using CRG_ID.
+      p_capt_select_list_query - Optional select statement for the parameter value list
+      p_capt_select_view_comment - Optional comment for the select/static_list view
+      p_capt_sort_seq - Optional sort criteria
+      p_capt_active - Flag to indicate whether this action parameter type is used. Defaults to ADC_UTIL.C_TRUE
    */
   procedure merge_action_param_type(
-    p_cpt_id in adc_action_param_types_v.cpt_id%type,
-    p_cpt_name in adc_action_param_types_v.cpt_name%type,
-    p_cpt_display_name in adc_action_param_types_v.cpt_display_name%type default null,
-    p_cpt_description in adc_action_param_types_v.cpt_description%type default null,
-    p_cpt_cpv_id in adc_action_param_types_v.cpt_cpv_id%type,
-    p_cpt_select_list_query in adc_action_param_types_v.cpt_select_list_query%type default null, 
-    p_cpt_select_view_comment in adc_action_param_types_v.cpt_select_view_comment%type default null,
-    p_cpt_sort_seq in adc_action_param_types_v.cpt_sort_seq%type default 10,
-    p_cpt_active in adc_action_param_types_v.cpt_active%type default ADC_UTIL.C_TRUE);
+    p_capt_id in adc_action_param_types_v.capt_id%type,
+    p_capt_name in adc_action_param_types_v.capt_name%type,
+    p_capt_display_name in adc_action_param_types_v.capt_display_name%type default null,
+    p_capt_description in adc_action_param_types_v.capt_description%type default null,
+    p_capt_capvt_id in adc_action_param_types_v.capt_capvt_id%type,
+    p_capt_select_list_query in adc_action_param_types_v.capt_select_list_query%type default null, 
+    p_capt_select_view_comment in adc_action_param_types_v.capt_select_view_comment%type default null,
+    p_capt_sort_seq in adc_action_param_types_v.capt_sort_seq%type default 10,
+    p_capt_active in adc_action_param_types_v.capt_active%type default ADC_UTIL.C_TRUE);
 
   /**
     Procedure: merge_action_param_type
@@ -613,10 +613,10 @@ as
       Overload with a row record
                  
     Parameter:
-      p_cpt_id - ID of the Action Parameter Type to delete
+      p_capt_id - ID of the Action Parameter Type to delete
    */
   procedure delete_action_param_type(
-    p_cpt_id in adc_action_param_types_v.cpt_id%type);
+    p_capt_id in adc_action_param_types_v.capt_id%type);
 
   /**
     Procedure: delete_action_param_type
@@ -635,9 +635,9 @@ as
     Errors:
       msg.ADC_PARAM_LOV_MISSING - if LOV view is required but missing
       msg.ADC_PARAM_LOV_INCORRECT - if required LOV view exists but with the wrong structure
-      CPT_ID_MISSING - if parameter P_CPT_ID is NULL
-      CPT_NAME_MISSING - if parameter P_CPT_NAME is NULL
-      CPT_ITEM_TYPE_MISSING - if parameter p_cpt_cpv_id is NULL
+      CAPT_ID_MISSING - if parameter P_CAPT_ID is NULL
+      CAPT_NAME_MISSING - if parameter P_CAPT_NAME is NULL
+      CAPT_ITEM_TYPE_MISSING - if parameter p_capt_capvt_id is NULL
    */
   procedure validate_action_param_type(
     p_row in adc_action_param_types_v%rowtype);
@@ -648,22 +648,22 @@ as
       Method for generating an ITEM focus. Used to define the ITEM focus of an action
                  
     Parameters:
-      p_cif_id - ID of the item focus
-      p_cif_name - Name of the item focus
-      p_cif_description - Optional description
-      p_cif_actual_page_only - Flag to indicate whether only items from the actual APEX page are recognized
-      p_cif_item_types - List of item types to include
-      p_cif_default - Optional default value for the item type
-      p_cif_active - Flag, das anzeigt, ob dieser Parametertyp verwendet wird. Defaults to ADC_UTIL.C_TRUE
+      p_caif_id - ID of the item focus
+      p_caif_name - Name of the item focus
+      p_caif_description - Optional description
+      p_caif_actual_page_only - Flag to indicate whether only items from the actual APEX page are recognized
+      p_caif_item_types - List of item types to include
+      p_caif_default - Optional default value for the item type
+      p_caif_active - Flag, das anzeigt, ob dieser Parametertyp verwendet wird. Defaults to ADC_UTIL.C_TRUE
    */
   procedure merge_action_item_focus(
-    p_cif_id in adc_action_item_focus_v.cif_id%type,
-    p_cif_name in adc_action_item_focus_v.cif_name%type,
-    p_cif_description in adc_action_item_focus_v.cif_description%type,
-    p_cif_actual_page_only in adc_action_item_focus_v.cif_actual_page_only%type default adc_util.C_TRUE,
-    p_cif_item_types in adc_action_item_focus_v.cif_item_types%type,
-    p_cif_default adc_action_item_focus_v.cif_default%type,
-    p_cif_active in adc_action_item_focus_v.cif_active%type default adc_util.C_TRUE);
+    p_caif_id in adc_action_item_focus_v.caif_id%type,
+    p_caif_name in adc_action_item_focus_v.caif_name%type,
+    p_caif_description in adc_action_item_focus_v.caif_description%type,
+    p_caif_actual_page_only in adc_action_item_focus_v.caif_actual_page_only%type default adc_util.C_TRUE,
+    p_caif_item_types in adc_action_item_focus_v.caif_item_types%type,
+    p_caif_default adc_action_item_focus_v.caif_default%type,
+    p_caif_active in adc_action_item_focus_v.caif_active%type default adc_util.C_TRUE);
 
   /**
     Procedure: merge_action_item_focus
@@ -680,10 +680,10 @@ as
       Overload with a row record
                  
     Parameter:
-      p_cif_id - ID of the Action Item Focus to delete
+      p_caif_id - ID of the Action Item Focus to delete
    */
   procedure delete_action_item_focus(
-    p_cif_id in adc_action_item_focus_v.cif_id%type);
+    p_caif_id in adc_action_item_focus_v.caif_id%type);
 
   /**
     Procedure: delete_action_item_focus
@@ -712,10 +712,10 @@ as
                  
     Paarmeters:
       p_cat_id - ID of the action type
-      p_cat_ctg_id - Reference to adc_action_type_groups
-      p_cat_cif_id - Reference to ADC_ACTION_ITEM_FOCUS
+      p_cat_catg_id - Reference to adc_action_type_groups
+      p_cat_caif_id - Reference to ADC_ACTION_ITEM_FOCUS
       p_cat_name - Name of the action type
-      p_cat_display_name - Verbose name of the action type
+      p_cat_display_name - Optional verbose name of the action type
       p_cat_description - Optional description
       p_cat_pl_sql - PL/SQL code that is to be executed
       p_cat_js - JavaScript code that is to be executed
@@ -725,10 +725,10 @@ as
    */    
   procedure merge_action_type(
     p_cat_id in adc_action_types_v.cat_id%type,
-    p_cat_ctg_id in adc_action_types_v.cat_ctg_id%type,
-    p_cat_cif_id in adc_action_types_v.cat_cif_id%type,
+    p_cat_catg_id in adc_action_types_v.cat_catg_id%type,
+    p_cat_caif_id in adc_action_types_v.cat_caif_id%type,
     p_cat_name in adc_action_types_v.cat_name%type,
-    p_cat_display_name in adc_action_types_v.cat_display_name%type,
+    p_cat_display_name in adc_action_types_v.cat_display_name%type default null,
     p_cat_description in adc_action_types_v.cat_description%type default null,
     p_cat_pl_sql in adc_action_types_v.cat_pl_sql%type,
     p_cat_js in adc_action_types_v.cat_js%type,
@@ -775,8 +775,8 @@ as
       
     Errors:
       CAT_ID_MISSING - if parameter P_CAT_ID is NULL
-      CAT_CTG_ID_MISSING - if parameter P_CAT_CTG_ID is NULL
-      CAT_CIF_ID_MISSING - if parameter P_CAT_CIF_ID is NULL
+      CAT_CATG_ID_MISSING - if parameter P_CAT_CATG_ID is NULL
+      CAT_CAIF_ID_MISSING - if parameter P_CAT_CAIF_ID is NULL
       CAT_NAME_MISSING - if parameter P_CAT_NAME is NULL
    */
   procedure validate_action_type(
@@ -805,7 +805,7 @@ as
                  
     Parameters:
       p_cap_cat_id - Reference to ADC_ACTION_TYPE
-      p_cap_cpt_id - Reference to adc_action_parameters_TYPE
+      p_cap_capt_id - Reference to adc_action_parameters_TYPE
       p_cap_sort_seq - Sort order and restriction of number of parameters
       p_cap_default - Optional standard value of the parameter
       p_cap_description - Optional description
@@ -815,7 +815,7 @@ as
    */
   procedure merge_action_parameter(
     p_cap_cat_id in adc_action_parameters_v.cap_cat_id%type,
-    p_cap_cpt_id in adc_action_parameters_v.cap_cpt_id%type,
+    p_cap_capt_id in adc_action_parameters_v.cap_capt_id%type,
     p_cap_sort_seq in adc_action_parameters_v.cap_sort_seq%type,
     p_cap_default in adc_action_parameters_v.cap_default%type,
     p_cap_description in adc_action_parameters_v.cap_description%type,
@@ -839,12 +839,12 @@ as
                  
     Parameter:
       p_cap_cat_id - ID of the Action Type the parameter belongs to
-      p_cap_cpt_id - ID of the Parameter Type the parameter belongs to
+      p_cap_capt_id - ID of the Parameter Type the parameter belongs to
       p_cap_sort_seq - Sort sequence of the parameter
    */
   procedure delete_action_parameter(
     p_cap_cat_id in adc_action_parameters_v.cap_cat_id%type,
-    p_cap_cpt_id in adc_action_parameters_v.cap_cpt_id%type,
+    p_cap_capt_id in adc_action_parameters_v.cap_capt_id%type,
     p_cap_sort_seq in adc_action_parameters_v.cap_sort_seq%type);
 
   /**
@@ -886,14 +886,14 @@ as
       Administration of PAGE ITEM TYPE GROUPS
                  
     Parameters:
-      p_cig_id - Technical ID of the item type
-      p_cig_has_value - Flag to indicate whether this is an item containing a session state value
-      p_cig_include_in_view - Flag to indicate whether this item has to be included in the session state view
+      p_cpitg_id - Technical ID of the item type
+      p_cpitg_has_value - Flag to indicate whether this is an item containing a session state value
+      p_cpitg_include_in_view - Flag to indicate whether this item has to be included in the session state view
    */
   procedure merge_page_item_type_group(
-    p_cig_id              in adc_page_item_type_groups.cig_id%type,
-    p_cig_has_value       in adc_page_item_type_groups.cig_has_value%type,
-    p_cig_include_in_view in adc_page_item_type_groups.cig_include_in_view%type);
+    p_cpitg_id              in adc_page_item_type_groups.cpitg_id%type,
+    p_cpitg_has_value       in adc_page_item_type_groups.cpitg_has_value%type,
+    p_cpitg_include_in_view in adc_page_item_type_groups.cpitg_include_in_view%type);
     
   /**
     Procedure: merge_page_item_type_group
@@ -978,20 +978,20 @@ as
       Administration of PAGE ITEM TYPES
                  
     Parameters:
-      p_cit_id - Technical ID of the item type
-      p_cit_name - Display name
-      p_cit_cig_id - Grouping of the page item type, Reference to <PAGE_ITEM_TYPE_GROUPS>
-      p_cit_cet_id - Event thas has to be bound if a rule requires this item
-      p_cit_col_template - Template for the session state view to retrieve the session state value
-      p_cit_init_template . Template to get the initial session state value
+      p_cpit_id - Technical ID of the item type
+      p_cpit_name - Display name
+      p_cpit_cpitg_id - Grouping of the page item type, Reference to <PAGE_ITEM_TYPE_GROUPS>
+      p_cpit_cet_id - Event thas has to be bound if a rule requires this item
+      p_cpit_col_template - Template for the session state view to retrieve the session state value
+      p_cpit_init_template . Template to get the initial session state value
    */
   procedure merge_page_item_type(
-    p_cit_id in adc_page_item_types_v.cit_id%type,
-    p_cit_name in adc_page_item_types_v.cit_name%type,
-    p_cit_cig_id in adc_page_item_types_v.cit_cig_id%type,
-    p_cit_cet_id in adc_page_item_types_v.cit_cet_id%type,
-    p_cit_col_template in adc_page_item_types_v.cit_col_template%type,
-    p_cit_init_template in adc_page_item_types_v.cit_init_template%type);
+    p_cpit_id in adc_page_item_types_v.cpit_id%type,
+    p_cpit_name in adc_page_item_types_v.cpit_name%type,
+    p_cpit_cpitg_id in adc_page_item_types_v.cpit_cpitg_id%type,
+    p_cpit_cet_id in adc_page_item_types_v.cpit_cet_id%type,
+    p_cpit_col_template in adc_page_item_types_v.cpit_col_template%type,
+    p_cpit_init_template in adc_page_item_types_v.cpit_init_template%type);
     
   /**
     Procedure: merge_page_item_type
@@ -1030,16 +1030,16 @@ as
       Administration of APEX ACTION TYPES
                  
     Parameters:
-      p_cty_id - Technical ID
-      p_cty_display_name - Display name of the action type
-      p_cty_description - Description
-      p_cty_active - Flag to indicate whether this action type is in use
+      p_caat_id - Technical ID
+      p_caat_display_name - Display name of the action type
+      p_caat_description - Description
+      p_caat_active - Flag to indicate whether this action type is in use
    */
   procedure merge_apex_action_type(
-    p_cty_id in adc_apex_action_types_v.cty_id%type,
-    p_cty_name in adc_apex_action_types_v.cty_name%type,
-    p_cty_description in adc_apex_action_types_v.cty_description%type,
-    p_cty_active in adc_apex_action_types_v.cty_active%type);
+    p_caat_id in adc_apex_action_types_v.caat_id%type,
+    p_caat_name in adc_apex_action_types_v.caat_name%type,
+    p_caat_description in adc_apex_action_types_v.caat_description%type,
+    p_caat_active in adc_apex_action_types_v.caat_active%type);
 
   /**
     Procedure: merge_apex_action_type
@@ -1056,10 +1056,10 @@ as
       Deletes an APEX Action Type
                  
     Parameter:
-      p_cty_id - ID of the APEX Action Type
+      p_caat_id - ID of the APEX Action Type
    */
   procedure delete_apex_action_type(
-    p_cty_id in adc_apex_action_types_v.cty_id%type);
+    p_caat_id in adc_apex_action_types_v.caat_id%type);
 
   /**
     Procedure: delete_apex_action_type
@@ -1087,9 +1087,9 @@ as
       Administration of APEX ACTIONS
                  
     Parameters:
-      p_caa_cgr_id - Reference to a rule group
+      p_caa_crg_id - Reference to a rule group
       p_caa_name - APEX action name as referenced by apex.actions as data-<name> attribute.
-      p_caa_cty_id - Type of Action (ACTION|TOGGLE|RADIO_GROUP),
+      p_caa_caat_id - Type of Action (ACTION|TOGGLE|RADIO_GROUP),
       p_caa_label - Display name,
       p_caa_context_label - Extended name, is used in select list or on the UI
       p_caa_icon - Icon of the action
@@ -1114,8 +1114,8 @@ as
    */
   procedure merge_apex_action(
     p_caa_id in adc_apex_actions_v.caa_id%type,
-    p_caa_cgr_id in adc_apex_actions_v.caa_cgr_id%type,
-    p_caa_cty_id in adc_apex_actions_v.caa_cty_id%type,
+    p_caa_crg_id in adc_apex_actions_v.caa_crg_id%type,
+    p_caa_caat_id in adc_apex_actions_v.caa_caat_id%type,
     p_caa_name in adc_apex_actions_v.caa_name%type,
     p_caa_label in adc_apex_actions_v.caa_label%type,
     p_caa_context_label in adc_apex_actions_v.caa_context_label%type default null,
@@ -1147,11 +1147,11 @@ as
                  
     Parameter:
       p_row - Row record
-      p_caa_cai_list - Optionasl list of page item an APEX action has to be attached to (such as buttons)
+      p_caa_caai_list - Optionasl list of page item an APEX action has to be attached to (such as buttons)
    */
   procedure merge_apex_action(
     p_row in out nocopy adc_apex_actions_v%rowtype,
-    p_caa_cai_list in char_table default null);
+    p_caa_caai_list in char_table default null);
 
   /**
     Procedure: delete_apex_action
@@ -1189,16 +1189,16 @@ as
       Administration of APEX ACTION ITEMS
                  
     Parameters:
-      p_cai_caa_id - Reference to a adc_apex_actions
-      p_cai_cpi_cgr_id - ID of the rule group, Reference to ADC_PAGE_ITEM
-      p_cai_cpi_id - Page item, Reference to ADC_PAGE_ITEM
-      p_cai_active - Optional flag to indicate whether this apex action item is actually used. Defaults to ADC_UTIL.C_TRUE
+      p_caai_caa_id - Reference to a adc_apex_actions
+      p_caai_cpi_crg_id - ID of the rule group, Reference to ADC_PAGE_ITEM
+      p_caai_cpi_id - Page item, Reference to ADC_PAGE_ITEM
+      p_caai_active - Optional flag to indicate whether this apex action item is actually used. Defaults to ADC_UTIL.C_TRUE
    */
   procedure merge_apex_action_item(
-    p_cai_caa_id in adc_apex_action_items.cai_caa_id%type,
-    p_cai_cpi_cgr_id in adc_apex_action_items.cai_cpi_cgr_id%type,
-    p_cai_cpi_id in adc_apex_action_items.cai_cpi_id%type,
-    p_cai_active in adc_apex_action_items.cai_active%type default adc_util.C_TRUE);
+    p_caai_caa_id in adc_apex_action_items.caai_caa_id%type,
+    p_caai_cpi_crg_id in adc_apex_action_items.caai_cpi_crg_id%type,
+    p_caai_cpi_id in adc_apex_action_items.caai_cpi_id%type,
+    p_caai_active in adc_apex_action_items.caai_active%type default adc_util.C_TRUE);
 
   /**
     Procedure: merge_apex_action_item
@@ -1215,10 +1215,10 @@ as
       Deletes an APEX Action Item
                  
     Parameter:
-      p_cai_caa_id - ID of the APEX Action Item to delete
+      p_caai_caa_id - ID of the APEX Action Item to delete
    */
   procedure delete_apex_action_item(
-    p_cai_caa_id in adc_apex_action_items.cai_caa_id%type);
+    p_caai_caa_id in adc_apex_action_items.caai_caa_id%type);
 
   /**
     Procedure: delete_apex_action_item

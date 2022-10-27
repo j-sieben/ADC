@@ -159,7 +159,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       props.eventData - Additional event data that is passed with the event. May be accessed by ADC.GET_EVENT_DATA within the database
       pWait - Flag to indicate whether a wait spinner should be shown during processing
    */
-  function changeCallback(pEvent, pEventData, pWait) {
+  const changeCallback = function(pEvent, pEventData, pWait) {
     getTriggeringElement(pEvent);
 
     $(C_BODY).queue(function () {
@@ -167,25 +167,6 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       ctl.execute(pEvent, pEventData);
     });
   }; // changeCallback
-
-
-  /** 
-    Function: confirmCallback
-      Wraps the call to the database in a confirmation dialog to enable the user to surpress this event.
-      
-    Parameters:    
-      pEvent - Event that occured
-      pWait - Flag to indicate whether a wait spinner should be shown during processing
-   */
-  function confirmCallback(pEvent, pWait) {
-    getTriggeringElement(pEvent);
-
-    $(C_BODY).queue(function () {
-      adc.actions.showWaitSpinner(pWait);
-      // Handle event only after confirmation from the user
-      adc.renderer.confirmRequest(pEvent, changeCallback);
-    });
-  }; // confirmCallback
       
     
   /** 
@@ -196,7 +177,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pEvent - Event that occured
       pEventData - <props.eventData> instance that goes along with the event
     */
-  function enterCallback(pEvent, pEventData, pWait){
+  const enterCallback = function (pEvent, pEventData, pWait){
     getTriggeringElement(pEvent);
 
     // Place request in queue to process multiple events in sequence
@@ -219,7 +200,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pEvent - Event that occured
       pWait - Flag to indicate whether a wait spinner should be shown during processing
     */
-  function unsavedCallback(pEvent, pWait) {
+  const unsavedCallback = function (pEvent, pWait) {
     getTriggeringElement(pEvent);
 
     $(C_BODY).queue(function () {
@@ -249,7 +230,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pEvent - Nmae of the event to bind.
       pAction - Optional callback method. Overrides default behaviour of calling <changeCallback>
    */
-  function bindEvent(pItemId, pEvent, pAction) {
+  const bindEvent = function (pItemId, pEvent, pAction) {
     var $this;
     var callback;
 
@@ -289,7 +270,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       Upon initialization, all relevant page items are collected along with the required events.
       This method then binds all items with the respective event.
    */
-  function bindEvents() {
+  const bindEvents = function () {
     $.each(props.bindItems, function () {
       bindEvent(this.id, this.event, this.action);
       if (this.event === C_CHANGE_EVENT) {
@@ -312,7 +293,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     Parameter:
       pSelector - jQuery selector to identify the item(s) that must be observed explicitly
    */
-  function bindObserverItems(pSelector) {
+  const bindObserverItems = function (pSelector) {
     var selectorList;
     if (pSelector) {
       selectorList = pSelector.split(',');
@@ -339,7 +320,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     Parameter:
       pItemId - ID of the page item that ahould be added
    */
-  function addPageItem(pItemId) {
+  const addPageItem = function (pItemId) {
     if ($.inArray(pItemId, props.pageItems) === -1) {
       props.pageItems.push(pItemId);
     }
@@ -357,7 +338,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     Parameter:
       pCode - JavaScript code to execute
    */
-  function executeCode(pCode) {
+  const executeCode = function (pCode) {
     var ScriptSelector;
     if (pCode) {
       console.log('Response received: \n' + pCode);
@@ -376,7 +357,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     Parameter:
       e - Event to get the triggering element for
    */
-  function getTriggeringElement(pEvent) {
+  const getTriggeringElement =function (pEvent) {
     var $element;
     var $button;
 
@@ -451,7 +432,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     Returns:
       Converted String
    */
-  function hexToChar(pRawString) {
+  const hexToChar = function (pRawString) {
     var code = '';
     var hexString;
 
@@ -476,7 +457,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       To cater for this, an event is put on a props.quarantineList for a certain amount of time. This method administers this
       quarantine list and checks whether it is ok to raise an event.
    */
-  function maintainAndCheckEventLock(){
+  const maintainAndCheckEventLock = function (){
     var isOkToRaiseEvent = true;
     var e = props.triggeringElement;
 
@@ -524,7 +505,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pMessage - Message to show within the confirmation
       pDialogTitle - Title of the dialog
    */
-  function addButtonHandler(pTarget, pMessage, pDialogTitle, pCallback){
+  const addButtonHandler = function (pTarget, pMessage, pDialogTitle, pCallback){
     let eventList;
     // Element is also present on page (could be missing due to condition)
     eventList = $._data(pTarget.get(0), 'events');
@@ -553,11 +534,20 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pTarget - jQuery item representing the page item to bind to
       pMessage - Message to show within the confirmation
       pDialogTitle - Title of the dialog
+      pApexAction - Optional Apex action command name
    */
-  ctl.bindConfirmationHandler = function(pTarget, pMessage, pDialogTitle){
-    addButtonHandler(pTarget, pMessage, pDialogTitle, confirmCallback);
+  ctl.bindConfirmationHandler = function(pTarget, pMessage, pDialogTitle, pApexAction){
+    let callback;
+    // Handle event only after confirmation from the user
+    if (pApexAction){
+      callback = function(pApexAction) {apex.actions.invoke(pApexAction);};
+    } else {
+      callback = changeCallback;
+    }
+    callback = function(pEvent) {adc.renderer.confirmRequest(pEvent, callback);};
+    addButtonHandler(pTarget, pMessage, pDialogTitle, callback);
   }; // bindConfirmationHandler
-  
+
   
   /** 
     Function: bindUnsavedConfirmationHandler

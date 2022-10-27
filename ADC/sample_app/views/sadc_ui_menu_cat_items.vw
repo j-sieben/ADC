@@ -8,7 +8,7 @@ select null status,
        null image_alt_value, 
        null attribute_01, 
        null attribute_02, 
-       cat_ctg_id
+       cat_catg_id
   from adc_action_types_v
  order by cat_name;
  

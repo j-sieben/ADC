@@ -8,7 +8,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAA_126',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Dynamische Seite exportieren^',
     p_pti_display_name => q'^Dynamische Seite exportieren^',
@@ -17,7 +17,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAA_51',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Abbrechen^',
     p_pti_display_name => q'^Aktion abbrechen^',
@@ -26,7 +26,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAA_53',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Speichern^',
     p_pti_display_name => q'^Änderungen speichern^',
@@ -35,7 +35,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAA_55',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Löschen^',
     p_pti_display_name => q'^Daten löschen^',
@@ -44,7 +44,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAA_57',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Aktiv^',
     p_pti_display_name => q'^^',
@@ -53,7 +53,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAA_59',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Erstellen^',
     p_pti_display_name => q'^Datensatz erstellen^',
@@ -62,7 +62,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAA_61',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Dynamische Seite exportieren^',
     p_pti_display_name => q'^Dynamische Seite exportieren^',
@@ -71,7 +71,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_CONFIRM_CLICK_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Bestätigungsabfrage^',
     p_pti_display_name => q'^^',
@@ -80,7 +80,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_CONFIRM_CLICK_PARAM_2',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Titel des Dialogfensters^',
     p_pti_display_name => q'^^',
@@ -89,7 +89,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_DYNAMIC_JAVASCRIPT_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -98,7 +98,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_GET_REPORT_SELECTION_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -107,7 +107,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_GET_REPORT_SELECTION_PARAM_2',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Ordinalzahl der Wertespalte^',
     p_pti_display_name => q'^^',
@@ -116,7 +116,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_IS_MANDATORY_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -125,7 +125,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_IS_MANDATORY_PARAM_2',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -134,7 +134,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_IS_OPTIONAL_PARAM_2',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -143,7 +143,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_MONITOR_EVENT_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -152,7 +152,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_MONITOR_EVENT_PARAM_2',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -161,7 +161,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_NOTIFY_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Meldung^',
     p_pti_display_name => q'^^',
@@ -170,7 +170,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_NOT_NULL_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Liste der Seitenelemente^',
     p_pti_display_name => q'^^',
@@ -179,7 +179,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_NOT_NULL_PARAM_2',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -188,7 +188,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_PLSQL_CODE_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -197,7 +197,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_REFRESH_AND_SET_VALUE_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -206,7 +206,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_REMEMBER_PAGE_STATE_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Array der Eingabefelder^',
     p_pti_display_name => q'^^',
@@ -215,7 +215,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_SELECT_REGION_ENTRY_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^ID der Zeile^',
     p_pti_display_name => q'^^',
@@ -224,7 +224,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_SEND_VALIDATE_PAGE_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -233,7 +233,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_SEND_VALIDATE_PAGE_PARAM_2',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Request^',
     p_pti_display_name => q'^^',
@@ -242,7 +242,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_SEND_VALIDATE_PAGE_PARAM_3',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -251,7 +251,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_SET_ELEMENT_FROM_STMT_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -260,7 +260,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_SET_ITEM_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -269,7 +269,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_SET_ITEM_PARAM_2',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -278,7 +278,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_SET_ITEM_PARAM_3',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -287,7 +287,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_SET_REGION_CONTENT_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^HTML-Code^',
     p_pti_display_name => q'^^',
@@ -296,7 +296,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_SET_VISUAL_STATE_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -305,7 +305,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_SET_VISUAL_STATE_PARAM_2',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -314,7 +314,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_SHOW_ERROR_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Fehlermeldung^',
     p_pti_display_name => q'^^',
@@ -323,7 +323,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_SHOW_HIDE_ITEMS_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Einzublendende Seitenelemente^',
     p_pti_display_name => q'^^',
@@ -332,7 +332,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_SHOW_HIDE_ITEMS_PARAM_2',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Auszublendende Seitenelemente^',
     p_pti_display_name => q'^^',
@@ -341,7 +341,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_WARN_BEFORE_CLICK_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Warnhinweis^',
     p_pti_display_name => q'^^',
@@ -350,7 +350,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_XOR_PARAM_1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Liste der Seitenelemente^',
     p_pti_display_name => q'^^',
@@ -359,7 +359,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_XOR_PARAM_2',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -368,7 +368,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAP_XOR_PARAM_3',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Null ist erlaubt^',
     p_pti_display_name => q'^^',
@@ -377,7 +377,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_CONFIRM_CLICK',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Schaltfläche an Bestätigungsfrage binden^',
     p_pti_display_name => q'^<p><strong>binde</strong> Schaltfläche “#ITEM#” and <strong>Bestätigungsabfrage</strong></p>^',
@@ -386,7 +386,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_DYNAMIC_JAVASCRIPT',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Dynamisches JavaScript ausführen^',
     p_pti_display_name => q'^<p><strong>berechne JavaScript </strong>mittels “#PARAM_1#” und führe es aus</p>^',
@@ -395,7 +395,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_GET_REPORT_SELECTION',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Gewählte Zeilen-ID melden oder in Element speichern^',
     p_pti_display_name => q'^<p>#PARAM_2|<strong>Spalte </strong>||<strong>Primärschlüssel</strong># aus Bericht “#ITEM#” #PARAM_1|<strong>in Feld</strong> “|” ablegen|an ADC melden#</p>^',
@@ -404,7 +404,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_HIDE_IR_IG_FILTER',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Filterbank von IR/IG ausblenden^',
     p_pti_display_name => q'^<p><strong>blende Filterbank</strong> von IR/IG “#ITEM#” aus</p>^',
@@ -413,7 +413,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_IG_ALIGN_VERTICAL',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Tabellenzellen vertikal oben formatieren^',
     p_pti_display_name => q'^<p><strong>richte Zellinhalt </strong>von “#ITEM#” <strong>vertikal oben aus</strong></p>^',
@@ -422,7 +422,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_INITIALIZE_FORM_REGION',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Formularregion initialiisieren^',
     p_pti_display_name => q'^<p><strong>initialisiere Formular</strong> #PARAM_1#</p>^',
@@ -431,7 +431,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_IS_MANDATORY',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Feld ist Pflichtfeld^',
     p_pti_display_name => q'^<p><strong>mache </strong>#PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“^ITEM^#” zum <strong>Pflichtfeld</strong></p>^',
@@ -440,7 +440,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_IS_OPTIONAL',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Feld ist optional^',
     p_pti_display_name => q'^<p><strong>mache </strong>#PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“^ITEM^#” <strong>optional</strong></p>^',
@@ -449,7 +449,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_MONITOR_EVENT',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^JavaScript-Ereignis überwachen^',
     p_pti_display_name => q'^<p><strong>beobachte Ereignis</strong> “#PARAM_1#” auf Seitenelement “#ITEM#” und #PARAM_2|<strong>führe Funktion</strong> “|” aus|<strong>melde Ereignis</strong> an ADC#</p>^',
@@ -458,7 +458,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_NOOP',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^nichts tun^',
     p_pti_display_name => q'^<p><strong>tue nichts</strong>.</p>^',
@@ -467,7 +467,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_NOTIFY',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Benachrichtigung zeigen^',
     p_pti_display_name => q'^<p><strong>zeige Hinweis </strong>“#PARAM_1#”</p>^',
@@ -476,7 +476,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_NOT_NULL',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Mindestens einen Wert wählen^',
     p_pti_display_name => q'^<p>wähle <strong>mindestens einen Wert</strong> aus “#PARAM_1#”</p>^',
@@ -485,7 +485,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_PLSQL_CODE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^PL/SQL-Code ausführen^',
     p_pti_display_name => q'^<p>führe <strong>PL/SQL-Code</strong> “#PARAM_1#” aus</p>^',
@@ -494,7 +494,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_RAISE_ITEM_EVENT',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Feld-Event auslösen^',
     p_pti_display_name => q'^<p><strong>führe Anwendungsfälle </strong>des Elements “#ITEM#” aus</p>^',
@@ -503,7 +503,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_REFRESH_AND_SET_VALUE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Feld aktualisieren und Wert setzen^',
     p_pti_display_name => q'^<p><strong>aktualisiere</strong> Feld “#ITEM#” und <strong>setze Feldwert </strong>auf #PARAM_1|Wert “|”|aktuellen Sessionstatus#</p>^',
@@ -512,7 +512,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_REFRESH_ITEM',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Ziel aktualisieren (Refresh)^',
     p_pti_display_name => q'^<p><strong>aktualisiere Seitenelement </strong>“#ITEM#”</p>^',
@@ -521,7 +521,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_REGISTER_OBSERVER',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Feld beobachten^',
     p_pti_display_name => q'^<p><strong>beobachte Feld </strong>“#ITEM#”</p>^',
@@ -530,7 +530,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_REMEMBER_PAGE_STATE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^speichere aktuellen Seitenstatus^',
     p_pti_display_name => q'^<p><strong>speichere</strong> den aktuellen <strong>Seitenstatus</strong></p>^',
@@ -539,7 +539,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_SELECT_REGION_ENTRY',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Wähle Zeile in Region^',
     p_pti_display_name => q'^<p><strong>wähle Zeile</strong> ‘#PARAM_1#' <strong>in Bericht</strong> #ITEM#</p>^',
@@ -548,7 +548,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_SEND_VALIDATE_PAGE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Seite absenden und/oder validieren^',
     p_pti_display_name => q'^<p><strong>fordere Verarbeitung</strong> der Seite im Modus “#PARAM<i>1#” <strong>an. </strong>PARAM</i>2| Request: ||#</p>^',
@@ -557,7 +557,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_SET_ELEMENT_FROM_STMT',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Elementwert mit SQL-Anweisung setzen^',
     p_pti_display_name => q'^<p><strong>setze Feldwert </strong>aus SQL-Anweisung</p>^',
@@ -566,7 +566,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_SET_FOCUS',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Focus in Feld setzen^',
     p_pti_display_name => q'^<p><strong>setze Fokus</strong> in Feld “#ITEM#”</p>^',
@@ -575,7 +575,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_SET_ITEM',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Feld auf Wert setzen^',
     p_pti_display_name => q'^<p><strong>setze </strong>#PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“^ITEM^#” auf #PARAM_1|Wert “|”|NULL#, Status #PARAM_3#</p>^',
@@ -584,7 +584,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_SET_ITEM_LABEL',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Feldbezeichner auf Wert setzen^',
     p_pti_display_name => q'^<p><strong>setze Feldbezeichner</strong> auf “#PARAM_1#”</p>^',
@@ -593,7 +593,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_SET_REGION_CONTENT',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^HTML-Inhalt einer Region setzen^',
     p_pti_display_name => q'^<p><strong>setze Inhalt der Region</strong> “#ITEM#” auf berechneten Wert</p>^',
@@ -602,7 +602,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_SET_VISUAL_STATE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Anzeigestatus eines Seitenelements kontrollieren^',
     p_pti_display_name => q'^<p><strong>setze die Sichtbarkeit</strong> des Seitenelements “#ITEM#” <strong>auf Status </strong>“#PARAM_1#”</p>^',
@@ -611,7 +611,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_SHOW_ERROR',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Fehler anzeigen^',
     p_pti_display_name => q'^<p><strong>zeige Fehler </strong>“#PARAM_1#”</p>^',
@@ -620,7 +620,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_SHOW_HIDE_ITEMS',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Seitenlemente ein- und ausblenden^',
     p_pti_display_name => q'^<p><strong>blende</strong> Selektoren "#PARAM_1#” <strong>ein und</strong> '#PARAM_2#" <strong>aus</strong></p>^',
@@ -629,7 +629,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_STOP_RULE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Regel stoppen^',
     p_pti_display_name => q'^<p><strong>stoppe</strong> Anwendungsfall</p>^',
@@ -638,7 +638,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_WARN_BEFORE_CLICK',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Bestätigungsnachricht ausgeben, falls Änderungen vorliegen^',
     p_pti_display_name => q'^<p><strong>zeige eine Warnmeldung</strong>, falls <strong>ungesicherte Änderungen</strong> existieren, bevor die Schaltfläche auslöst</p>^',
@@ -647,7 +647,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAT_XOR',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Genau einen Wert wählen^',
     p_pti_display_name => q'^<p>wähle <strong>genau einen Wert</strong> aus “#PARAM_1#”</p>^',
@@ -655,8 +655,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIF_ALL',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAIF_ALL',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Alle Seitenelemente^',
     p_pti_display_name => q'^^',
@@ -664,8 +664,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIF_DATE_ITEM',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAIF_DATE_ITEM',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Seitenelement (Datum)^',
     p_pti_display_name => q'^^',
@@ -673,8 +673,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIF_DOCUMENT',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAIF_DOCUMENT',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Keine Seitenelemente^',
     p_pti_display_name => q'^^',
@@ -682,8 +682,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIF_ENABLE_DISABLE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAIF_ENABLE_DISABLE',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Seitenelemente, die aktiviert und deaktiviert werden können^',
     p_pti_display_name => q'^^',
@@ -691,8 +691,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIF_FOCUSABLE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAIF_FOCUSABLE',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Seitenelemente, die einen Focus erhalten können^',
     p_pti_display_name => q'^^',
@@ -700,8 +700,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIF_FORM_REGION',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAIF_FORM_REGION',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Formularregion^',
     p_pti_display_name => q'^^',
@@ -709,8 +709,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIF_ITEM_OR_JQUERY',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAIF_ITEM_OR_JQUERY',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Seitenelement oder jQuery-Selektor^',
     p_pti_display_name => q'^^',
@@ -718,8 +718,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIF_NONE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAIF_NONE',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Keine Seitenelemente^',
     p_pti_display_name => q'^^',
@@ -727,8 +727,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIF_NUMBER_ITEM',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAIF_NUMBER_ITEM',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Seitenelement (Zahl)^',
     p_pti_display_name => q'^^',
@@ -736,8 +736,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIF_PAGE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAIF_PAGE',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Alle Seitenelemente der aktuellen Seite^',
     p_pti_display_name => q'^^',
@@ -745,8 +745,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIF_PAGE_BUTTON',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAIF_PAGE_BUTTON',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Schaltflächen der aktuellen Seite^',
     p_pti_display_name => q'^^',
@@ -754,8 +754,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIF_PAGE_DOCUMENT',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAIF_PAGE_DOCUMENT',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Seitenelement oder jQuery-Selektor^',
     p_pti_display_name => q'^^',
@@ -763,8 +763,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIF_PAGE_ITEM',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAIF_PAGE_ITEM',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Seitenelement^',
     p_pti_display_name => q'^^',
@@ -772,8 +772,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIF_PAGE_ITEM_OR_DOCUMENT',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAIF_PAGE_ITEM_OR_DOCUMENT',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Eingabefeld oder Dokument^',
     p_pti_display_name => q'^^',
@@ -781,8 +781,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIF_PAGE_ITEM_OR_JQUERY',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAIF_PAGE_ITEM_OR_JQUERY',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Eingabefeld oder jQuery-Selektor^',
     p_pti_display_name => q'^^',
@@ -790,8 +790,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIF_PAGE_REGION',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAIF_PAGE_REGION',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Regionen der aktuellen Seite^',
     p_pti_display_name => q'^^',
@@ -799,8 +799,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIF_REFRESHABLE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAIF_REFRESHABLE',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Seitenelemente, die aktualisiert werden können^',
     p_pti_display_name => q'^^',
@@ -808,8 +808,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIT_AFTER_REFRESH',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CPIT_AFTER_REFRESH',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Nach Refresh^',
     p_pti_display_name => q'^^',
@@ -817,8 +817,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIT_ALL',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CPIT_ALL',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Alle^',
     p_pti_display_name => q'^^',
@@ -826,8 +826,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIT_APP_ITEM',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CPIT_APP_ITEM',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Anwendungselement^',
     p_pti_display_name => q'^^',
@@ -835,8 +835,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIT_BUTTON',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CPIT_BUTTON',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Schaltfläche^',
     p_pti_display_name => q'^^',
@@ -844,8 +844,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIT_COMMAND',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CPIT_COMMAND',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Seitenkommando^',
     p_pti_display_name => q'^^',
@@ -853,8 +853,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIT_DATE_ITEM',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CPIT_DATE_ITEM',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Element (Datum)^',
     p_pti_display_name => q'^^',
@@ -862,8 +862,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIT_DIALOG_CLOSED',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CPIT_DIALOG_CLOSED',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Dialog geschlossen^',
     p_pti_display_name => q'^^',
@@ -871,8 +871,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIT_DOCUMENT',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CPIT_DOCUMENT',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Dokument^',
     p_pti_display_name => q'^^',
@@ -880,8 +880,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIT_DOUBLE_CLICK',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CPIT_DOUBLE_CLICK',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Doppelklick^',
     p_pti_display_name => q'^^',
@@ -889,8 +889,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIT_ELEMENT',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CPIT_ELEMENT',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Element^',
     p_pti_display_name => q'^^',
@@ -898,8 +898,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIT_ENTER_KEY',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CPIT_ENTER_KEY',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Enter-Taste^',
     p_pti_display_name => q'^^',
@@ -907,8 +907,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIT_FIRING_ITEM',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CPIT_FIRING_ITEM',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Firing Item^',
     p_pti_display_name => q'^^',
@@ -916,8 +916,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIT_FORM_REGION',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CPIT_FORM_REGION',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Formularregion^',
     p_pti_display_name => q'^^',
@@ -925,8 +925,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIT_INITIALIZING',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CPIT_INITIALIZING',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Initialize Flag^',
     p_pti_display_name => q'^^',
@@ -934,8 +934,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIT_ITEM',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CPIT_ITEM',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Element^',
     p_pti_display_name => q'^^',
@@ -943,8 +943,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIT_NUMBER_ITEM',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CPIT_NUMBER_ITEM',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Element (Zahl)^',
     p_pti_display_name => q'^^',
@@ -952,8 +952,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIT_REGION',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CPIT_REGION',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Region^',
     p_pti_display_name => q'^^',
@@ -961,8 +961,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CIT_SELECTION_CHANGED',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CPIT_SELECTION_CHANGED',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Zeile in Bericht gewählt^',
     p_pti_display_name => q'^^',
@@ -970,8 +970,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CPT_APEX_ACTION',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAPT_APEX_ACTION',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^APEX-Aktion^',
     p_pti_display_name => q'^^',
@@ -979,8 +979,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CPT_EVENT',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAPT_EVENT',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Zusätzliche JavaScript-Events^',
     p_pti_display_name => q'^^',
@@ -988,8 +988,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CPT_FUNCTION',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAPT_FUNCTION',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^PL/SQL-Funktion^',
     p_pti_display_name => q'^^',
@@ -997,8 +997,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CPT_ITEM_STATUS',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAPT_ITEM_STATUS',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Anzeigestatus^',
     p_pti_display_name => q'^^',
@@ -1006,8 +1006,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CPT_JAVA_SCRIPT',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAPT_JAVA_SCRIPT',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^JavaScript-Ausdruck^',
     p_pti_display_name => q'^^',
@@ -1015,8 +1015,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CPT_JAVA_SCRIPT_FUNCTION',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAPT_JAVA_SCRIPT_FUNCTION',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^JavaScript-Funktion^',
     p_pti_display_name => q'^^',
@@ -1024,8 +1024,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CPT_JQUERY_SELECTOR',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAPT_JQUERY_SELECTOR',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^jQuery-Selektor^',
     p_pti_display_name => q'^^',
@@ -1033,8 +1033,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CPT_PAGE_ITEM',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAPT_PAGE_ITEM',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Seitenelement^',
     p_pti_display_name => q'^^',
@@ -1042,8 +1042,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CPT_PIT_MESSAGE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAPT_PIT_MESSAGE',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Name der Meldung^',
     p_pti_display_name => q'^^',
@@ -1051,8 +1051,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CPT_PROCEDURE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAPT_PROCEDURE',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^PL/SQL-Prozedur^',
     p_pti_display_name => q'^^',
@@ -1060,8 +1060,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CPT_SEQUENCE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAPT_SEQUENCE',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Sequenz^',
     p_pti_display_name => q'^^',
@@ -1069,8 +1069,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CPT_SQL_STATEMENT',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAPT_SQL_STATEMENT',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^SQL-Anweisung^',
     p_pti_display_name => q'^^',
@@ -1078,8 +1078,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CPT_STRING',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAPT_STRING',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Zeichenkette^',
     p_pti_display_name => q'^^',
@@ -1087,8 +1087,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CPT_STRING_OR_FUNCTION',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAPT_STRING_OR_FUNCTION',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Zeichenkette oder PL/SQL-Funktion^',
     p_pti_display_name => q'^^',
@@ -1096,8 +1096,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CPT_STRING_OR_JAVASCRIPT',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAPT_STRING_OR_JAVASCRIPT',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Zeichenkette oder JS-Ausdruck^',
     p_pti_display_name => q'^^',
@@ -1105,8 +1105,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CPT_STRING_OR_PIT_MESSAGE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAPT_STRING_OR_PIT_MESSAGE',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Zeichenkette oder Meldungsname^',
     p_pti_display_name => q'^^',
@@ -1114,8 +1114,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CPT_SUBMIT_TYPE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAPT_SUBMIT_TYPE',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Submit und/oder Validierung^',
     p_pti_display_name => q'^^',
@@ -1123,8 +1123,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CPT_SWITCH',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAPT_SWITCH',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Schalter^',
     p_pti_display_name => q'^^',
@@ -1133,7 +1133,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CRU_INITIAL_RULE_NAME',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^die Seite öffnet^',
     p_pti_display_name => q'^^',
@@ -1141,8 +1141,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CTG_ADC',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CATG_ADC',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Framework^',
     p_pti_display_name => q'^^',
@@ -1150,8 +1150,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CTG_BUTTON',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CATG_BUTTON',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Schaltlfäche^',
     p_pti_display_name => q'^^',
@@ -1159,8 +1159,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CTG_IG',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CATG_IG',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Interactive Grid^',
     p_pti_display_name => q'^^',
@@ -1168,8 +1168,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CTG_ITEM',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CATG_ITEM',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Seitenelemente^',
     p_pti_display_name => q'^^',
@@ -1177,8 +1177,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CTG_JAVA_SCRIPT',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CATG_JAVA_SCRIPT',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^JavaScript^',
     p_pti_display_name => q'^^',
@@ -1186,8 +1186,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CTG_PAGE_ITEM',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CATG_PAGE_ITEM',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Eingabefelder^',
     p_pti_display_name => q'^^',
@@ -1195,8 +1195,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CTG_PL_SQL',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CATG_PL_SQL',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^PL/SQL^',
     p_pti_display_name => q'^^',
@@ -1204,8 +1204,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CTY_ACTION',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAAT_ACTION',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Befehl/Verweis^',
     p_pti_display_name => q'^^',
@@ -1213,8 +1213,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CTY_RADIO_GROUP',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAAT_RADIO_GROUP',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Optionsgruppe^',
     p_pti_display_name => q'^^',
@@ -1222,8 +1222,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'CTY_TOGGLE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_id => 'CAAT_TOGGLE',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Schalter^',
     p_pti_display_name => q'^^',
@@ -1232,7 +1232,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'ITEM_STATUS_A_SHOW_ENABLE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^sichtbar und aktiv^',
     p_pti_display_name => q'^^',
@@ -1241,7 +1241,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'ITEM_STATUS_B_SHOW_DISABLE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^sichtbar, aber deaktiv^',
     p_pti_display_name => q'^^',
@@ -1250,7 +1250,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'ITEM_STATUS_C_HIDE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^ausgeblendet^',
     p_pti_display_name => q'^^',
@@ -1258,53 +1258,8 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'ITEM_TYPE_BUTTON',
-    p_pti_pml_name => q'^GERMAN^',
-    p_pti_pmg_name => q'^ADC^',
-    p_pti_name => q'^Schaltfläche^',
-    p_pti_display_name => q'^^',
-    p_pti_description => q'^^'
-  );
-
-  pit_admin.merge_translatable_item(
-    p_pti_id => 'ITEM_TYPE_DOCUMENT',
-    p_pti_pml_name => q'^GERMAN^',
-    p_pti_pmg_name => q'^ADC^',
-    p_pti_name => q'^Dokument^',
-    p_pti_display_name => q'^^',
-    p_pti_description => q'^^'
-  );
-
-  pit_admin.merge_translatable_item(
-    p_pti_id => 'ITEM_TYPE_ELEMENT',
-    p_pti_pml_name => q'^GERMAN^',
-    p_pti_pmg_name => q'^ADC^',
-    p_pti_name => q'^Element^',
-    p_pti_display_name => q'^^',
-    p_pti_description => q'^^'
-  );
-
-  pit_admin.merge_translatable_item(
-    p_pti_id => 'ITEM_TYPE_PAGE_ELEMENT',
-    p_pti_pml_name => q'^GERMAN^',
-    p_pti_pmg_name => q'^ADC^',
-    p_pti_name => q'^Seitenelement^',
-    p_pti_display_name => q'^^',
-    p_pti_description => q'^^'
-  );
-
-  pit_admin.merge_translatable_item(
-    p_pti_id => 'ITEM_TYPE_REGION',
-    p_pti_pml_name => q'^GERMAN^',
-    p_pti_pmg_name => q'^ADC^',
-    p_pti_name => q'^Region^',
-    p_pti_display_name => q'^^',
-    p_pti_description => q'^^'
-  );
-
-  pit_admin.merge_translatable_item(
     p_pti_id => 'SUBMIT_TYPE_A_VALIDATE_AND_SUBMIT',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Seite validieren und weiterleiten^',
     p_pti_display_name => q'^^',
@@ -1313,7 +1268,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'SUBMIT_TYPE_B_VALIDATE_ONLY',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Seite validieren, nicht weiterleiten^',
     p_pti_display_name => q'^^',
@@ -1322,7 +1277,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'SUBMIT_TYPE_C_SUBMIT_ONLY',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Seite nicht validieren, aber weiterleiten^',
     p_pti_display_name => q'^^',
@@ -1331,7 +1286,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'VISUAL_TYPE_SELECT_LIST',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Dynamische Auswahlliste^',
     p_pti_display_name => q'^^',
@@ -1340,7 +1295,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'VISUAL_TYPE_STATIC_LIST',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Statische Auswahlliste^',
     p_pti_display_name => q'^^',
@@ -1349,7 +1304,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'VISUAL_TYPE_SWITCH',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Schalter^',
     p_pti_display_name => q'^^',
@@ -1358,7 +1313,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'VISUAL_TYPE_TEXT',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Textfeld^',
     p_pti_display_name => q'^^',
@@ -1367,7 +1322,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'VISUAL_TYPE_TEXT_AREA',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Textbereich^',
     p_pti_display_name => q'^^',
@@ -1376,7 +1331,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAG',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Seitenkommandos^',
     p_pti_display_name => q'^^',
@@ -1385,7 +1340,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'FLG',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Workflows^',
     p_pti_display_name => q'^^',
@@ -1394,7 +1349,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'FLS',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Workflow^',
     p_pti_display_name => q'^^',

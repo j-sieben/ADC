@@ -8,7 +8,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADACT_PAGE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -17,7 +17,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADACT_S1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -26,7 +26,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADACT_S2',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -35,7 +35,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADADC_PAGE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -44,7 +44,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADANF_PAGE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -53,7 +53,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADC_APP',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -62,7 +62,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADC_NO_RULES',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -71,7 +71,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADREP_PAGE1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -80,7 +80,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADREP_PAGE2',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -89,7 +89,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADREP_PAGE3',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -98,7 +98,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADREP_S1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -107,7 +107,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADREP_S2',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -116,7 +116,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADSTA_PAGE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -125,7 +125,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADSTA_S1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -134,7 +134,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADSTA_S2',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -143,7 +143,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADVAL_PAGE',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -152,7 +152,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ANF_S1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -161,7 +161,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ANF_S2',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -170,7 +170,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_INIT_S1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -179,7 +179,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_OVERVIEW',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -188,7 +188,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_TEXT_MISSING',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^<p>Text "#1#" ist nicht vorhanden.</p>^',
     p_pti_display_name => q'^^',
@@ -197,7 +197,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_TUTORIAL',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -206,7 +206,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_USE_ADC',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -215,7 +215,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_VAL_S1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -224,7 +224,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_VAL_S2',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -233,7 +233,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_VAL2_S1',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -242,7 +242,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_VAL2_S2',
-    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',

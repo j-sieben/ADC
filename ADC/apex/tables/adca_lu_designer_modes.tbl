@@ -1,0 +1,12 @@
+create table adca_lu_designer_modes(
+  aldm_id varchar2(128 byte), 
+	aldm_name varchar2(128 byte), 
+	aldm_active &FLAG_TYPE. default on null &C_TRUE. constraint c_aldm_active_nn not null, 
+	constraint adca_lu_designer_modes_pk primary key (aldm_id),
+  constraint c_aldm_active check (aldm_active in (&C_TRUE., &C_FALSE.))
+) organization index;
+
+comment on table adca_lu_designer_modes is 'Lookup for modes the ADC designer can be at';
+comment on column adca_lu_designer_modes.aldm_id is 'Technical Key';
+comment on column adca_lu_designer_modes.aldm_name is 'Display name';
+comment on column adca_lu_designer_modes.aldm_active is 'Flag to indicate whether this mode is actually in use';

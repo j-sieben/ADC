@@ -73,9 +73,9 @@ as
   --%test (... cleans the stack and initializes it with a firing item passed in by P_CPI_ID)
   procedure reset_with_item;
     
-  --%test (... throws an exception if P_CGR_ID is missing)
+  --%test (... throws an exception if P_CRG_ID is missing)
   --%throws (msg.ASSERT_IS_NOT_NULL_ERR)
-  procedure reset_without_cgr_id;
+  procedure reset_without_crg_id;
   
   --%endcontext
   

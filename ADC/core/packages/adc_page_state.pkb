@@ -18,14 +18,14 @@ as
       C_NUMBER_ITEM - Number page item
       C_DATE_ITEM - Date page item
    */
-  C_ITEM constant adc_page_item_types.cit_id%type := 'ITEM';
-  C_APP_ITEM constant adc_page_item_types.cit_id%type := 'APP_ITEM';
-  C_NUMBER_ITEM constant adc_page_item_types.cit_id%type := 'NUMBER_ITEM';
-  C_DATE_ITEM constant adc_page_item_types.cit_id%type := 'DATE_ITEM';
+  C_ITEM constant adc_page_item_types.cpit_id%type := 'ITEM';
+  C_APP_ITEM constant adc_page_item_types.cpit_id%type := 'APP_ITEM';
+  C_NUMBER_ITEM constant adc_page_item_types.cpit_id%type := 'NUMBER_ITEM';
+  C_DATE_ITEM constant adc_page_item_types.cpit_id%type := 'DATE_ITEM';
   C_DEFAULT_NUMBER_MASK constant adc_util.sql_char := 'fm9999999999999999990D999999999999';
   C_NUMBER_GROUP_MASK constant adc_util.sql_char := 'G';
   C_DELIMITER constant adc_util.sql_char := ',';
-  C_COLLECTION_NAME constant adc_util.ora_name_type := adc_util.C_PARAM_GROUP || '_CGR_STATUS_';
+  C_COLLECTION_NAME constant adc_util.ora_name_type := adc_util.C_PARAM_GROUP || '_CRG_STATUS_';
   
   /**
     Group: Types
@@ -92,14 +92,14 @@ as
       Is used to retrieve the default value if a mandatory item is NULL and  a default value was defined.
       
     Parameters:
-      p_cgr_id - ID of the rule group. Required to retrieve format mask and default value
+      p_crg_id - ID of the rule group. Required to retrieve format mask and default value
       p_cpi_id - ID of the page item
       
     Returns:
       Default value for that page item.
    */
   function get_mandatory_default_value(
-    p_cgr_id in adc_rule_groups.cgr_id%type, 
+    p_crg_id in adc_rule_groups.crg_id%type, 
     p_cpi_id in adc_page_items.cpi_id%type)
     return varchar2
   as
@@ -107,7 +107,7 @@ as
   begin
     pit.enter_optional('get_mandatory_default_value',
       p_params => msg_params(
-                    msg_param('p_cgr_id', p_cgr_id),
+                    msg_param('p_crg_id', p_crg_id),
                     msg_param('p_cpi_id', p_cpi_id)));
                     
     select cpi_item_default
@@ -115,7 +115,7 @@ as
       from adc_page_items
      where cpi_is_mandatory = adc_util.c_true
        and cpi_id = p_cpi_id
-       and cpi_cgr_id = p_cgr_id;
+       and cpi_crg_id = p_crg_id;
     
     pit.leave_optional(
       p_params => msg_params(
@@ -146,7 +146,7 @@ as
       Error message for missing value
    */
   function get_mandatory_message(
-    p_cgr_id in adc_rule_groups.cgr_id%type, 
+    p_crg_id in adc_rule_groups.crg_id%type, 
     p_cpi_id in adc_page_items.cpi_id%type)
     return varchar2
   as
@@ -159,7 +159,7 @@ as
     select coalesce(cgs_cpi_mandatory_message, to_char(pit.get_message_text(msg.ADC_ITEM_IS_MANDATORY, msg_args(cgs_cpi_label))))
       into l_mandatory_message
       from adc_rule_group_status
-     where cgs_cgr_id = p_cgr_id
+     where cgs_crg_id = p_crg_id
        and cgs_cpi_id = p_cpi_id;
     
     pit.leave_optional(
@@ -182,7 +182,7 @@ as
       See <ADC_PAGE_STATE.check_mandatory>
    */
   procedure check_mandatory(
-    p_cgr_id in adc_rule_groups.cgr_id%type, 
+    p_crg_id in adc_rule_groups.crg_id%type, 
     p_cpi_id in adc_page_items.cpi_id%type)
   as
     l_is_mandatory pls_integer;
@@ -190,17 +190,17 @@ as
   begin
     pit.enter_optional('check_mandatory',
       p_params => msg_params(
-                    msg_param('p_cgr_id', p_cgr_id),
+                    msg_param('p_crg_id', p_crg_id),
                     msg_param('p_cpi_id', p_cpi_id)));
                     
     select count(*), max(cgs_cpi_mandatory_message)
       into l_is_mandatory, l_message
       from adc_rule_group_status
-     where cgs_cgr_id = p_cgr_id
+     where cgs_crg_id = p_crg_id
        and cgs_cpi_id = p_cpi_id;
        
     if l_is_mandatory = 1 then
-      pit.assert_not_null(get_string(p_cgr_id, p_cpi_id), msg.ADC_ITEM_IS_MANDATORY, msg_args(l_message));
+      pit.assert_not_null(get_string(p_crg_id, p_cpi_id), msg.ADC_ITEM_IS_MANDATORY, msg_args(l_message));
     end if;
        
     pit.leave_optional;
@@ -212,7 +212,7 @@ as
       See <ADC_PAGE_STATE.item_may_have_value>
    */
   function item_may_have_value(
-    p_cgr_id in adc_rule_groups.cgr_id%type, 
+    p_crg_id in adc_rule_groups.crg_id%type, 
     p_cpi_id in adc_page_items.cpi_id%type)
     return boolean
   as
@@ -222,7 +222,7 @@ as
   begin
     pit.enter_optional(
       p_params => msg_params(
-                    msg_param('p_cgr_id', p_cgr_id),
+                    msg_param('p_crg_id', p_crg_id),
                     msg_param('p_cpi_id', p_cpi_id)));
     
     l_item_name := harmonize_page_item_name(p_cpi_id);
@@ -230,9 +230,9 @@ as
     select count(*)
       into l_count
       from adc_page_items
-     where cpi_cgr_id = p_cgr_id
+     where cpi_crg_id = p_crg_id
        and cpi_id = l_item_name
-       and cpi_cit_id in (C_ITEM, C_APP_ITEM, C_NUMBER_ITEM, C_DATE_ITEM);
+       and cpi_cpit_id in (C_ITEM, C_APP_ITEM, C_NUMBER_ITEM, C_DATE_ITEM);
        
     l_is_value_item := l_count = 1;
        
@@ -253,7 +253,7 @@ as
       See <ADC_PAGE_STATE.register_mandatory>
    */
   procedure register_mandatory(
-    p_cgr_id in adc_rule_groups.cgr_id%type, 
+    p_crg_id in adc_rule_groups.crg_id%type, 
     p_cpi_id in adc_page_items.cpi_id%type,
     p_cpi_mandatory_message in varchar2,
     p_is_mandatory in adc_util.flag_type)
@@ -263,17 +263,17 @@ as
     cursor mandatory_items_cur is
       select cpi_id, cpi_label, cpi_mandatory_message
         from adc_page_items
-       where cpi_cgr_id = p_cgr_id
+       where cpi_crg_id = p_crg_id
          and cpi_is_mandatory = adc_util.C_TRUE;
   begin
     pit.enter_optional(
       p_params => msg_params(
-                    msg_param('p_cgr_id', p_cgr_id),
+                    msg_param('p_crg_id', p_crg_id),
                     msg_param('p_cpi_id', p_cpi_id),
                     msg_param('p_cpi_mandatory_message', p_cpi_mandatory_message),
                     msg_param('p_is_mandatory', p_is_mandatory)));
     
-    l_collection_name := C_COLLECTION_NAME || p_cgr_id;
+    l_collection_name := C_COLLECTION_NAME || p_crg_id;
     
     if p_cpi_id = adc_util.C_NO_FIRING_ITEM then
       -- This option is called during page initialization only
@@ -297,13 +297,13 @@ as
       end loop;
     else
       -- Item ist registered or de-registered as mandatory explicitly
-      select cgs_cgr_id, cgs_id, cpi_id, cpi_label, cgs_cpi_mandatory_message
+      select cgs_crg_id, cgs_id, cpi_id, cpi_label, cgs_cpi_mandatory_message
         into l_cgs_row
         from adc_page_items
         left join adc_rule_group_status
-          on cpi_cgr_id = cgs_cgr_id
+          on cpi_crg_id = cgs_crg_id
          and cpi_id = cgs_cpi_id
-       where cpi_cgr_id = p_cgr_id
+       where cpi_crg_id = p_crg_id
          and cpi_id = p_cpi_id;
          
       case when p_is_mandatory = adc_util.C_TRUE and l_cgs_row.cgs_id is null then
@@ -312,7 +312,7 @@ as
           p_collection_name => l_collection_name,
           p_c001 => l_cgs_row.cgs_cpi_id,
           p_c002 => l_cgs_row.cgs_cpi_label,
-          p_c003 => coalesce(p_cpi_mandatory_message, get_mandatory_message(p_cgr_id, l_cgs_row.cgs_cpi_id), 'null'),
+          p_c003 => coalesce(p_cpi_mandatory_message, get_mandatory_message(p_crg_id, l_cgs_row.cgs_cpi_id), 'null'),
           p_generate_md5 => 'NO');
       when p_is_mandatory = adc_util.C_FALSE and l_cgs_row.cgs_id is not null then
         pit.info(msg.PIT_PASS_MESSAGE, msg_args('Page item must be removed from the list of mandatory elements'));
@@ -348,7 +348,7 @@ as
       See <ADC_PAGE_STATE.set_value>
    */
   procedure set_value(
-    p_cgr_id in adc_rule_groups.cgr_id%type, 
+    p_crg_id in adc_rule_groups.crg_id%type, 
     p_cpi_id in adc_page_items.cpi_id%type,
     p_value in varchar2 default null,
     p_number_value in number default null,
@@ -356,7 +356,7 @@ as
     p_format_mask in varchar2 default null,
     p_throw_error in adc_util.flag_type default adc_util.C_FALSE)
   as
-    l_cpi_cit_id adc_page_items.cpi_cit_id%type;
+    l_cpi_cpit_id adc_page_items.cpi_cpit_id%type;
     l_cpi_conversion adc_page_items.cpi_conversion%type;
     l_format_mask adc_util.ora_name_type;
     l_value session_value_rec;
@@ -364,7 +364,7 @@ as
   begin
     pit.enter_optional(
       p_params => msg_params(
-                    msg_param('p_cgr_id', p_cgr_id),
+                    msg_param('p_crg_id', p_crg_id),
                     msg_param('p_cpi_id', p_cpi_id),
                     msg_param('p_value', p_value),
                     msg_param('p_number_value', p_number_value),
@@ -375,16 +375,16 @@ as
     l_item_name := harmonize_page_item_name(p_cpi_id);
     
     -- Check whether page item is allowed to have a value and get the item type and format mask
-    select cpi_cit_id, cpi_conversion
-      into l_cpi_cit_id, l_cpi_conversion
+    select cpi_cpit_id, cpi_conversion
+      into l_cpi_cpit_id, l_cpi_conversion
       from adc_page_items
-     where cpi_cgr_id = p_cgr_id
+     where cpi_crg_id = p_crg_id
        and cpi_id = l_item_name
-       and cpi_cit_id in (C_ITEM, C_APP_ITEM, C_NUMBER_ITEM, C_DATE_ITEM);
+       and cpi_cpit_id in (C_ITEM, C_APP_ITEM, C_NUMBER_ITEM, C_DATE_ITEM);
     
     -- If requested, get the value from the session state
     if p_value = C_FROM_SESSION_STATE then
-      l_value.string_value := coalesce(utl_apex.get_string(l_item_name), get_mandatory_default_value(p_cgr_id, p_cpi_id));
+      l_value.string_value := coalesce(utl_apex.get_string(l_item_name), get_mandatory_default_value(p_crg_id, p_cpi_id));
       g_session_values(p_cpi_id) := l_value;
     else
       l_value.string_value := p_value;
@@ -393,7 +393,7 @@ as
     
     -- Explicitly set the value and harmonize with the session state (fi when changing a session values during rule execution)
     case
-    when l_cpi_cit_id = C_NUMBER_ITEM then
+    when l_cpi_cpit_id = C_NUMBER_ITEM then
       -- first, get string value from parameter values
       l_format_mask := coalesce(p_format_mask, l_cpi_conversion, C_DEFAULT_NUMBER_MASK);
       l_value.string_value := coalesce(to_char(p_number_value, l_format_mask), g_session_values(p_cpi_id).string_value);
@@ -402,7 +402,7 @@ as
       l_format_mask := replace(l_format_mask, C_NUMBER_GROUP_MASK);
       g_session_values(p_cpi_id).number_value := coalesce(p_number_value, to_number(l_value.string_value, l_format_mask));
       pit.info(msg.ADC_NUMBER_ITEM_SET, msg_args(l_item_name , to_char(g_session_values(p_cpi_id).number_value), g_session_values(p_cpi_id).string_value));
-    when l_cpi_cit_id = C_DATE_ITEM then
+    when l_cpi_cpit_id = C_DATE_ITEM then
       -- first, get string value from parameter values
       l_format_mask := coalesce(p_format_mask, l_cpi_conversion, apex_application.g_date_format);
       l_value.string_value := coalesce(to_char(p_date_value, l_format_mask), g_session_values(p_cpi_id).string_value);
@@ -415,7 +415,7 @@ as
     end case;
     
     if p_throw_error = adc_util.C_TRUE then
-      check_mandatory(p_cgr_id, p_cpi_id);
+      check_mandatory(p_crg_id, p_cpi_id);
     end if;
     
     apex_util.set_session_state(l_item_name, g_session_values(p_cpi_id).string_value);
@@ -458,7 +458,7 @@ as
       See <ADC_PAGE_STATE.get_string>
    */
   function get_string(
-    p_cgr_id in adc_rule_groups.cgr_id%type,
+    p_crg_id in adc_rule_groups.crg_id%type,
     p_cpi_id in adc_page_items.cpi_id%type)
     return varchar2
   as
@@ -466,17 +466,17 @@ as
   begin
     pit.enter_optional('get_string',
       p_params => msg_params(
-                    msg_param('p_cgr_id', p_cgr_id),
+                    msg_param('p_crg_id', p_crg_id),
                     msg_param('p_cpi_id', p_cpi_id)));
     
     case
       when g_session_values.exists(p_cpi_id) then
         l_string_value := g_session_values(p_cpi_id).string_value;
-      when not item_may_have_value(p_cgr_id, p_cpi_id) then
+      when not item_may_have_value(p_crg_id, p_cpi_id) then
         null;
       else
         set_value(
-          p_cgr_id => p_cgr_id,
+          p_crg_id => p_crg_id,
           p_cpi_id => p_cpi_id,
           p_value => C_FROM_SESSION_STATE);
         l_string_value := g_session_values(p_cpi_id).string_value;
@@ -494,7 +494,7 @@ as
       See <ADC_PAGE_STATE.get_date>
    */
   function get_date(
-    p_cgr_id in adc_rule_groups.cgr_id%type,
+    p_crg_id in adc_rule_groups.crg_id%type,
     p_cpi_id in adc_page_items.cpi_id%type,
     p_format_mask in varchar2)
     return date
@@ -503,18 +503,18 @@ as
   begin
     pit.enter_optional('get_date',
       p_params => msg_params(
-                    msg_param('p_cgr_id', p_cgr_id),
+                    msg_param('p_crg_id', p_crg_id),
                     msg_param('p_cpi_id', p_cpi_id),
                     msg_param('p_format_mask', p_format_mask)));
                     
     case
       when g_session_values.exists(p_cpi_id) then
         l_date_value := g_session_values(p_cpi_id).date_value;
-      when not item_may_have_value(p_cgr_id, p_cpi_id) then
+      when not item_may_have_value(p_crg_id, p_cpi_id) then
         null;
       else
         set_value(
-          p_cgr_id => p_cgr_id,
+          p_crg_id => p_crg_id,
           p_cpi_id => p_cpi_id,
           p_value => C_FROM_SESSION_STATE, 
           p_format_mask => p_format_mask);
@@ -533,7 +533,7 @@ as
       See <ADC_PAGE_STATE.get_number>
    */
   function get_number(
-    p_cgr_id in adc_rule_groups.cgr_id%type,
+    p_crg_id in adc_rule_groups.crg_id%type,
     p_cpi_id in adc_page_items.cpi_id%type,
     p_format_mask in varchar2)
     return number
@@ -542,18 +542,18 @@ as
   begin
     pit.enter_optional('get_number',
       p_params => msg_params(
-                    msg_param('p_cgr_id', p_cgr_id),
+                    msg_param('p_crg_id', p_crg_id),
                     msg_param('p_cpi_id', p_cpi_id),
                     msg_param('p_format_mask', p_format_mask)));
     
     case
       when g_session_values.exists(p_cpi_id) then
         l_number_value := g_session_values(p_cpi_id).number_value;
-      when not item_may_have_value(p_cgr_id, p_cpi_id) then
+      when not item_may_have_value(p_crg_id, p_cpi_id) then
         null;
       else
         set_value(
-          p_cgr_id => p_cgr_id,
+          p_crg_id => p_crg_id,
           p_cpi_id => p_cpi_id,
           p_value => C_FROM_SESSION_STATE, 
           p_format_mask => p_format_mask);
@@ -609,7 +609,7 @@ as
       See <ADC_PAGE_STATE.get_item_values_as_char_table>
    */
   procedure get_item_values_as_char_table(
-    p_cgr_id in adc_rule_groups.cgr_id%type,
+    p_crg_id in adc_rule_groups.crg_id%type,
     p_cpi_list in varchar2,
     p_value_list out nocopy char_table)
   as
@@ -632,7 +632,7 @@ as
                  join table(l_filter_list) t
                    on t.column_value = cpi_id
                    or instr(cpi_css, '|' || replace(t.column_value, '.') || '|') > 0
-                where cpi_cgr_id = p_cgr_id
+                where cpi_crg_id = p_crg_id
              ) as char_table
            ) cpi_value
       into p_value_list

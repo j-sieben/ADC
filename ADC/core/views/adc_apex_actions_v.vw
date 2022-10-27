@@ -1,7 +1,7 @@
 create or replace editionable view adc_apex_actions_v as 
 select caa_id,
-       caa_cgr_id,
-       caa_cty_id, 
+       caa_crg_id,
+       caa_caat_id, 
        caa_name,
        pti_name caa_label,
        to_char(pti_description) caa_context_label,

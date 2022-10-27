@@ -1,6 +1,6 @@
 create or replace view adc_param_lov_sequence
 as
-select sequence_name d, sequence_name r, null cgr_id
+select sequence_name d, sequence_name r, null crg_id
   from user_sequences
        -- exclude column identity sequences
  where sequence_name not like 'ISEQ$$%';

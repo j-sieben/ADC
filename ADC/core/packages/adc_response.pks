@@ -116,11 +116,11 @@ as
       
     Parameters:
       p_initialize_mode - Flag to indicate whether the page initializes.
-      p_cgr_id - ID of the rule group to evaluate. Is used to create the initialization JavaScript code.
+      p_crg_id - ID of the rule group to evaluate. Is used to create the initialization JavaScript code.
    */
   procedure initialize_response(
     p_initialize_mode in boolean,
-    p_cgr_id in adc_rule_groups.cgr_id%type);
+    p_crg_id in adc_rule_groups.crg_id%type);
     
     
   /**

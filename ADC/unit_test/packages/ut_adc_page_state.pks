@@ -37,7 +37,7 @@ as
   procedure set_number_item_value_as_invalid_string;
         
   --%test (... sets a number item valueif passed in as String with explicit format mask)
-  procedure set_number_item_value_explicit_format;
+  procedure set_number_item_value_explicpit_format;
   
   --%test (... throws an exception if an invalid format mask is passed in)
   --%throws (msg.ADC_INVALID_NUMBER_ERR)
@@ -54,7 +54,7 @@ as
   procedure set_date_item_value_as_string;
         
   --%test (... sets a date item value as String with explicit format mask)
-  procedure set_date_item_value_explicit_format;
+  procedure set_date_item_value_explicpit_format;
         
   --%test (... raises an exception if a date item value is set using an invalid date string)
   --%throws (msg.ADC_INVALID_DATE_ERR)

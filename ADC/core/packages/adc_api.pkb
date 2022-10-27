@@ -120,7 +120,10 @@ as
       adc_internal.stop_rule;
     when others then
       pit.handle_exception(msg.ADC_UNHANDLED_EXCEPTION, msg_args(l_plsql));
-      adc_internal.register_error(adc_util.C_NO_FIRING_ITEM, msg.ADC_UNHANDLED_EXCEPTION, msg_args(apex_escape.json(l_plsql)));
+      adc_internal.register_error(
+        p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
+        p_message_name => msg.ADC_UNHANDLED_EXCEPTION, 
+        p_msg_args => msg_args(apex_escape.json(l_plsql)));
       -- surpress recursion
       adc_internal.stop_rule;
   end execute_plsql;
@@ -139,7 +142,7 @@ as
                     msg_param('p_item_list', p_item_list)));
                     
     -- Tracing done in ADC_API  
-    adc_page_state.get_item_values_as_char_table(adc_internal.get_cgr_id, p_item_list, l_value_list);
+    adc_page_state.get_item_values_as_char_table(adc_internal.get_crg_id, p_item_list, l_value_list);
     
     select count(*)
       into l_value_counter
@@ -164,7 +167,7 @@ as
     return date
   as
   begin
-    return adc_page_state.get_date(adc_internal.get_cgr_id, p_cpi_id, p_format_mask);
+    return adc_page_state.get_date(adc_internal.get_crg_id, p_cpi_id, p_format_mask);
   end get_date;
     
     
@@ -194,20 +197,20 @@ as
 
 
   function get_lov_sql(
-    p_cpt_id in adc_action_param_types.cpt_id%type,
-    p_cgr_id in adc_rule_groups.cgr_id%type)
+    p_capt_id in adc_action_param_types.capt_id%type,
+    p_crg_id in adc_rule_groups.crg_id%type)
     return varchar2
   as
     C_STMT constant varchar2(200) := q'^select d, r
-  from adc_param_lov_#CPT_ID#
- where cgr_id = #CGR_ID#
-    or cgr_id is null^';
+  from adc_param_lov_#CAPT_ID#
+ where crg_id = #CRG_ID#
+    or crg_id is null^';
     l_stmt varchar2(1000);
   begin
-    if p_cpt_id is not null then
+    if p_capt_id is not null then
       l_stmt := utl_text.bulk_replace(C_STMT, char_table(
-                  'CPT_ID', lower(p_cpt_id),
-                  'CGR_ID', coalesce(p_cgr_id, 0)));
+                  'CAPT_ID', lower(p_capt_id),
+                  'CRG_ID', coalesce(p_crg_id, 0)));
     else
       l_stmt := 'select null d, null r from dual';
     end if;
@@ -222,7 +225,7 @@ as
     return number
   as
   begin
-    return adc_page_state.get_number(adc_internal.get_cgr_id, p_cpi_id, p_format_mask);
+    return adc_page_state.get_number(adc_internal.get_crg_id, p_cpi_id, p_format_mask);
   end get_number;
   
   
@@ -231,7 +234,7 @@ as
     return varchar2
   as
   begin
-    return adc_page_state.get_string(adc_internal.get_cgr_id, p_cpi_id);
+    return adc_page_state.get_string(adc_internal.get_crg_id, p_cpi_id);
   end get_string;
   
 
@@ -388,7 +391,7 @@ as
                     msg_param('p_item_list', p_item_list)));
     
     -- Tracing done in ADC_API
-    adc_page_state.get_item_values_as_char_table(adc_internal.get_cgr_id, p_item_list, l_value_list);
+    adc_page_state.get_item_values_as_char_table(adc_internal.get_crg_id, p_item_list, l_value_list);
     select count(*)
       into l_value_counter
       from table(l_value_list)

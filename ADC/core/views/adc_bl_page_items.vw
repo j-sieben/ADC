@@ -1,10 +1,10 @@
 create or replace editionable view adc_bl_page_items
 as 
   with pti as(
-       select pti_id, pti_name, replace(pti_id, 'ITEM_TYPE_') item_type
+       select pti_id, pti_name, replace(pti_id, 'CPIT_') item_type
          from pit_translatable_item_v
         where pti_pmg_name = 'ADC'
-          and pti_id like 'ITEM_TYPE%')
+          and pti_id like 'CPIT%')
 select pti_name || ' ' || item_name item_name, item_name item_id,
        application_id app_id, page_id, item_type
   from apex_application_page_items

@@ -33,14 +33,14 @@ as
       Is used in adc_validation for checks against the meta data of ADC
       
     Properties:
-      cgr_id - ID of the rule group actually in use
+      crg_id - ID of the rule group actually in use
       app_id - APEX application ID
       page_id - APEX application page ID
    */
   type environment_rec is record(
-    cgr_id adc_rule_groups.cgr_id%type,
-    app_id adc_rule_groups.cgr_app_id%type,
-    page_id adc_rule_groups.cgr_page_id%type);
+    crg_id adc_rule_groups.crg_id%type,
+    app_id adc_rule_groups.crg_app_id%type,
+    page_id adc_rule_groups.crg_page_id%type);
   
 
   /**
@@ -70,7 +70,7 @@ as
       C_CR - Carriage return 
   */
   C_PARAM_GROUP constant adc_util.ora_name_type := 'ADC';
-  C_ADC constant ora_name_type := 'ADC_UI';
+  C_ADC constant ora_name_type := 'ADCA';
   
   C_WITH_UNIT_TESTS constant boolean := &WITH_UT.;
   C_WITH_FLOWS constant boolean := &WITH_FLOWS.;

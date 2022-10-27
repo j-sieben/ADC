@@ -95,7 +95,7 @@ begin
     p_error_number => -20000);
 
   pit_admin.merge_message(
-    p_pms_name => 'ADC_INITIALZE_CGR_FAILED',
+    p_pms_name => 'ADC_INITIALZE_CRG_FAILED',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Error during initialization of rule group #1#: #2#^',
     p_pms_description => q'^^',
@@ -383,7 +383,7 @@ begin
     p_error_number => null);
 
   pit_admin.merge_message(
-    p_pms_name => 'ADC_CGR_MUS_BE_UNIQUE',
+    p_pms_name => 'ADC_CRG_MUS_BE_UNIQUE',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^The name of the rule group must be unique for this application.^',
     p_pms_description => q'^^',
@@ -392,7 +392,7 @@ begin
     p_error_number => -20000);
 
   pit_admin.merge_message(
-    p_pms_name => 'ADC_CGR_MUST_BE_UNIQUE',
+    p_pms_name => 'ADC_CRG_MUST_BE_UNIQUE',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^The rule group already exists. Choose a unique name.^',
     p_pms_description => q'^^',

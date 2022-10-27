@@ -9,7 +9,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
  * @namespace de.condes.plugin.adc
  * @since 5.1
  * @description
-   <p>This file implements the client-side component of APEX Dynamic Controller.<br>
+   <p>This file implements the client-side component of APEX Dynamic adc.controller.<br>
     Its task is to
       <ul>
         <li>create the necessary event handlers when the page is rendered>li>
@@ -17,7 +17,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
         <li>implement the returned response with instructions to modify the application page.>li>
       >ul>
     >p>
-    <p>The controller works on the server side with a decision tree that computes a list of action instructions for a given situation.<br>
+    <p>The adc.controller works on the server side with a decision tree that computes a list of action instructions for a given situation.<br>
     During the calculation, the state of the application page can be changed by actions, which leads to a recursive check of the changed 
     page state against the decision tree. The response includes all change instructions for the application page, 
     including the recursive change instructions.>p>
@@ -52,7 +52,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   // Event constants
   const C_CLICK_EVENT = 'click';
   const C_SELECTION_CHANGE_EVENT = 'adcselectionchange';
-  const C_MODAL_DIALOG_CANCEL_EVENT = 'apexaftercanceldialog';  
+  const C_MODAL_DIALOG_CANCEL_EVENT = 'apexaftercanceldialog';
 
   // Modal dialog constants
   const C_MODAL_DIALOG_CLASS = 'ui-dialog';
@@ -61,7 +61,6 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   // Global vars
   adc.actions = adc.actions || {};
   var actions = adc.actions;
-  var controller = adc.controller;
 
   /*++++++++ HELPER START ++++++++++++*/
   /**
@@ -72,7 +71,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pSelector - jQuery selector to identify page items
       pAction - Action to execute on the found page items
    */
-  function forEach(pSelector, pAction) {
+  const forEach = function (pSelector, pAction) {
     if (!($.isArray(pSelector) || pSelector.search(/[\.#\u0020:\[\]]+/) >= 0)) {
       // passed ITEM is element name, extend by #.
       pSelector = `#${pSelector}`;
@@ -96,7 +95,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     Returns:
       One of the constants <C_REGION_IG>,  <C_REGION_IR>, <C_REGION_CR>, <C_REGION_TREE>, <C_REGION_TAB>
    */
-  function getRegionType(pRegionId){
+  const getRegionType = function (pRegionId){
     const $report = $(`#${pRegionId}`);
     const C_CR_SELECTOR = `#report_table_${pRegionId}`;
     const C_IR_SELECTOR = `#${pRegionId}_ir`;
@@ -155,11 +154,11 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
    * @memberof de.condes.plugin.adc
    * @public
    */
-  actions.bindConfirmation = function (pButtonId, pMessage, pDialogTitle) {
+  actions.bindConfirmation = function (pButtonId, pMessage, pDialogTitle, pApexAction) {
     var $button = $(`#${pButtonId}`);
     
     if ($button.length > 0) {
-      controller.bindConfirmationHandler($button, pMessage, pDialogTitle);
+        adc.controller.bindConfirmationHandler($button, pMessage, pDialogTitle, pApexAction);
     }
   }; // bindConfirmation
 
@@ -177,7 +176,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     var $button = $(`#${pButtonId}`);
 
     if ($button.length > 0) {
-      controller.bindUnsavedConfirmationHandler($button, pMessage, pDialogTitle);
+      adc.controller.bindUnsavedConfirmationHandler($button, pMessage, pDialogTitle);
     }
   }; // bindUnsavedWarning
 
@@ -207,21 +206,6 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     apex.debug.info('cancelModalDialog - triggeringElement:' + pTriggeringItemId);
     apex.navigation.dialog.cancel(true);
   }; // cancelModalDialog
-  
-
-  /**
-    Function: confirmAndExecuteCommand
-      Method to bind the execution of a page command to a positive result of a confirmation dialog.
-      
-    Parameters:
-      pMessage - Message to show in the confirmation dialog
-      pData - Name of the command to execute or a JSON instance containing the command name and additional information.
-      pItem - Item that gets focus if the confirmation is not given.
-   */
-  actions.confirmAndExecuteCommand = function (pMessage, pData, pItem){
-    // Handle event only after confirmation from the user
-    adc.renderer.confirmRequest(pMessage, function() {actions.executeCommand(pData);}, pItem);
-  };  // confirmAndExecuteCommand
 
   
   /**
@@ -265,17 +249,17 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       data.monitorChanges = data.monitorChanges || false;
     }
     
-    controller.setTriggeringElement(C_COMMAND, C_COMMAND_NAME, data);
+    adc.controller.setTriggeringElement(C_COMMAND, C_COMMAND_NAME, data);
     
-    if(pData.monitorChanges && controller.hasUnsavedChanges()){
+    if(pData.monitorChanges && adc.controller.hasUnsavedChanges()){
       // Unsaved changes among the observed page items, check with user
-      var pageState = controller.getPageState();
+      var pageState = adc.controller.getPageState();
       event.data = pData;
       event.data.message = pageState.message;
       event.data.title = pageState.title;
-      adc.renderer.confirmRequest(event, controller.execute);      
+      adc.renderer.confirmRequest(event, adc.controller.execute);      
     }else{
-      controller.execute();
+      adc.controller.execute();
     }
   }; // executeCommand
 
@@ -324,8 +308,8 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       }
       else{
         // No item present, submit ID with event C_SELECTION_CHANGE_EVENT
-        controller.setTriggeringElement(pReportId, C_SELECTION_CHANGE_EVENT, pValue);
-        controller.execute();
+        adc.controller.setTriggeringElement(pReportId, C_SELECTION_CHANGE_EVENT, pValue);
+        adc.controller.execute();
       }
     };
 
@@ -359,7 +343,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pStyle - One of the predefined styles information|warning|sucess|error
    */
   actions.notify = function (pMessage, pTitle, pStyle) {
-    renderer.showDialog(pMessage, pTitle, pStyle, false);
+    adc.renderer.showDialog(pMessage, pTitle, pStyle, false);
   }; // inform
 
 
@@ -374,7 +358,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pStyle - One of the predefined styles information|warning|sucess|error
    */
   actions.inform = function (pMessage, pTitle, pStyle) {
-    renderer.showDialog(pMessage, pTitle, pStyle, false);
+    adc.renderer.showDialog(pMessage, pTitle, pStyle, false);
   }; // inform
 
 
@@ -389,7 +373,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pStyle - One of the predefined styles information|warning|sucess|error
    */
   actions.confirm = function (pMessage, pTitle, pStyle) {
-    renderer.showDialog(pMessage, pTitle, pStyle, true);
+    adc.renderer.showDialog(pMessage, pTitle, pStyle, true);
   }; // confirm
 
 
@@ -406,7 +390,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pItemList - Array of page item names
    */
   actions.registerPageItemsOnce = function(pItemList){
-    controller.setAdditionalItems(pItemList);
+    adc.controller.setAdditionalItems(pItemList);
   }; // registerPageItemsOnce
 
   
@@ -426,7 +410,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     var pageState;
     
     // Initialize
-    pageState = controller.getPageState();
+    pageState = adc.controller.getPageState();
     pageState.itemMap.clear();
     pageState.message = pMessage;
     pageState.title = pTitle;
@@ -443,7 +427,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
         apex.debug.info(`Saving ${item} with value ${itemValue}`);
       }
     );
-    controller.setPageState(pageState);
+    adc.controller.setPageState(pageState);
   }; // rememberPageItemStatus
 
 
@@ -462,7 +446,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       apex.item(pItemId).show();
       apex.item(pItemId).enable();
       apex.item(pItemId).refresh();
-      controller.pauseChangeEventDuringRefresh(pItemId);
+      adc.controller.pauseChangeEventDuringRefresh(pItemId);
     };
   }; // refresh
 
@@ -483,11 +467,11 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pValue - Optional value. If not set, method looks for actual item value in cache or on page.
    */
   actions.refreshAndSetValue = function (pItemId, pValue) {
-    var itemValue = pValue || apex.item(pItemId).getValue() || controller.findItemValue(pItemId);
+    var itemValue = pValue || apex.item(pItemId).getValue() || adc.controller.findItemValue(pItemId);
     var $item = $(`#${pItemId}`);
     var node = $item.get(0);
 
-    controller.pauseChangeEventDuringRefresh(pItemId, itemValue);
+    adc.controller.pauseChangeEventDuringRefresh(pItemId, itemValue);
     apex.item(pItemId).show();
     apex.item(pItemId).enable();
     apex.item(pItemId).refresh();
@@ -682,7 +666,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
    */
   actions.setItemValues = function (pPageItems) {
     // Store the object for later reference by asynchronous calls
-    controller.setLastItemValues(pPageItems);
+    adc.controller.setLastItemValues(pPageItems);
 
     // harmonize the session state with the page items
     $.each(pPageItems, function () {
@@ -712,7 +696,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     forEach(pSelector, function () {
       var pItemId = $(this).attr('id').replace('_CONTAINER', '');
       if (pIsMandatory) {
-        controller.pushPageItem(pItemId)
+        adc.controller.pushPageItem(pItemId)
       }
       adc.renderer.enableElement(pItemId);
       adc.renderer.setItemMandatory(pItemId, pIsMandatory);

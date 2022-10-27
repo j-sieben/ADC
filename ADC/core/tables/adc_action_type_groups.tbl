@@ -1,20 +1,21 @@
 create table adc_action_type_groups(
-  ctg_id varchar2(50 char),
-  ctg_pti_id varchar2(50 char) constraint nn_ctg_pti_id not null,
-  ctg_pmg_name varchar2(3 byte) default on null 'ADC' constraint chk_ctg_pmg_name check(ctg_pmg_name = 'ADC'),
-  ctg_active &FLAG_TYPE. default &C_TRUE.,
-  constraint pk_adc_action_type_groups primary key(ctg_id),
-  constraint fk_ctg_pti_id foreign key(ctg_pti_id, ctg_pmg_name)
+  catg_id varchar2(50 char),
+  catg_pti_id varchar2(50 char) constraint c_catg_pti_id_nn not null,
+  catg_pmg_name varchar2(3 byte) default on null 'ADC' constraint c_catg_pmg_name_nn not null,
+  catg_active &FLAG_TYPE. default on null &C_TRUE. constraint c_catg_active_nn not null,
+  constraint p_catg_id primary key(catg_id),
+  constraint r_catg_pti_id foreign key(catg_pti_id, catg_pmg_name)
     references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
-  constraint chk_ctg_active check(ctg_active in (&C_FALSE., &C_TRUE.))
+  constraint c_catg_active check(catg_active in (&C_FALSE., &C_TRUE.)),
+  constraint c_catg_pmg_name check(catg_pmg_name = 'ADC')
 ) 
 organization index;
 
-create unique index idx_ctg_pti_pmg_name on adc_action_type_groups(ctg_pti_id, ctg_pmg_name);
+create unique index idx_catg_pti_pmg_name on adc_action_type_groups(catg_pti_id, catg_pmg_name);
 
 comment on table adc_action_type_groups is 'Table to store ADC Action Type groups';
-comment on column adc_action_type_groups.ctg_id is 'PK, technical key';
-comment on column adc_action_type_groups.ctg_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
-comment on column adc_action_type_groups.ctg_pmg_name is 'Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC';
-comment on column adc_action_type_groups.ctg_active is 'Flag to indicate whether rule group is in use';
+comment on column adc_action_type_groups.catg_id is 'PK, technical key';
+comment on column adc_action_type_groups.catg_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
+comment on column adc_action_type_groups.catg_pmg_name is 'Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC';
+comment on column adc_action_type_groups.catg_active is 'Flag to indicate whether rule group is in use';
 

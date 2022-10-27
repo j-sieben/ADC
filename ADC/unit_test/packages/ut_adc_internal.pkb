@@ -2,7 +2,7 @@ create or replace package body ut_adc_internal
 as
 
   C_APEX_USER constant adc_util.ora_name_type := $$PLSQL_UNIT_OWNER;  
-  C_COLLECTION_NAME constant adc_util.ora_name_type := 'ADC_CGR_STATUS_';
+  C_COLLECTION_NAME constant adc_util.ora_name_type := 'ADC_CRG_STATUS_';
   
   C_STRING constant adc_util.ora_name_type := 'WILLI';
   C_JSON_STRING constant adc_util.ora_name_type := '{"id":12345,"name": "WILLI"}';
@@ -35,7 +35,7 @@ as
   C_OPTIONAL_ITEM constant adc_util.ora_name_type := C_PREFIX || 'FIRST_NAME';
   
   g_application_id pls_integer;
-  g_cgr_id pls_integer;
+  g_crg_id pls_integer;
   g_page_prefix adc_util.ora_name_type;
   g_scenario adc_util.ora_name_type;
   
@@ -101,11 +101,11 @@ as
       from apex_applications
      where alias = C_APP_ALIAS;
      
-    select cgr_id
-      into g_cgr_id
+    select crg_id
+      into g_crg_id
       from adc_rule_groups
-     where cgr_app_id = g_application_id
-       and cgr_page_id = C_PAGE_TEST;
+     where crg_app_id = g_application_id
+       and crg_page_id = C_PAGE_TEST;
   end initialize;
   
   
@@ -231,9 +231,9 @@ as
   end execute_ut_scenario;
   
   --
-  -- test case 1: Get the actually selected CGR_ID
+  -- test case 1: Get the actually selected CRG_ID
   --
-  procedure get_cgr_id
+  procedure get_crg_id
   as
   begin
     create_session;
@@ -243,20 +243,20 @@ as
       p_event => 'initialize',
       p_event_data => null);
       
-    ut.expect(adc_internal.get_cgr_id()).to_equal(g_cgr_id);
-  end get_cgr_id;
+    ut.expect(adc_internal.get_crg_id()).to_equal(g_crg_id);
+  end get_crg_id;
   
   
   --
-  -- test case 2: Get the actually selected CGR_ID even without calling read_settings before
+  -- test case 2: Get the actually selected CRG_ID even without calling read_settings before
   --
-  procedure get_cgr_id_without_preparation
+  procedure get_crg_id_without_preparation
   as
   begin
     create_session;
       
-    ut.expect(adc_internal.get_cgr_id()).to_equal(g_cgr_id);
-  end get_cgr_id_without_preparation;
+    ut.expect(adc_internal.get_crg_id()).to_equal(g_crg_id);
+  end get_crg_id_without_preparation;
   
   
   --
@@ -1021,7 +1021,7 @@ as
     select count(*)
       into l_is_mandatory
       from apex_collections
-     where collection_name = C_COLLECTION_NAME || g_cgr_id
+     where collection_name = C_COLLECTION_NAME || g_crg_id
        and c001 = C_OPTIONAL_ITEM;
        
     ut.expect(l_is_mandatory).to_equal(1);
@@ -1043,7 +1043,7 @@ as
     select count(*)
       into l_is_mandatory
       from apex_collections
-     where collection_name = C_COLLECTION_NAME || g_cgr_id
+     where collection_name = C_COLLECTION_NAME || g_crg_id
        and c001 = C_OPTIONAL_ITEM;
        
     ut.expect(l_is_mandatory).to_equal(1);
@@ -1066,7 +1066,7 @@ as
     select count(*)
       into l_is_mandatory
       from apex_collections
-     where collection_name = C_COLLECTION_NAME || g_cgr_id
+     where collection_name = C_COLLECTION_NAME || g_crg_id
        and c001 = C_OPTIONAL_ITEM;
        
     ut.expect(l_is_mandatory).to_equal(0);
@@ -1088,7 +1088,7 @@ as
     select count(*)
       into l_is_mandatory
       from apex_collections
-     where collection_name = C_COLLECTION_NAME || g_cgr_id
+     where collection_name = C_COLLECTION_NAME || g_crg_id
        and c001 = C_OPTIONAL_ITEM;
        
     ut.expect(l_is_mandatory).to_equal(0);

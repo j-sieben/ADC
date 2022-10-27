@@ -17,7 +17,7 @@ create table ut_adc_outcome(
 	cru_on_error &FLAG_TYPE., 
 	is_first_row &FLAG_TYPE., 
 	id number, 
-	cgr_id number, 
+	crg_id number, 
 	firing_item varchar2(128 byte), 
 	firing_event varchar2(128 byte), 
 	error_dependent_items varchar2(2000 byte), 
@@ -55,7 +55,7 @@ comment on column ut_adc_outcome.cra_on_error is 'Flag to indicate whether the e
 comment on column ut_adc_outcome.cru_on_error is 'Flag to indicate whether the executed rule has an error';
 comment on column ut_adc_outcome.is_first_row is 'Flag to indicate the first output row of a test';
 comment on column ut_adc_outcome.id is 'Name of the test executed';
-comment on column ut_adc_outcome.cgr_id is 'Rule Group ID';
+comment on column ut_adc_outcome.crg_id is 'Rule Group ID';
 comment on column ut_adc_outcome.firing_item is 'Page item that actually caused the ADC activity';
 comment on column ut_adc_outcome.firing_event is 'Event that actually caused the ADC activity';
 comment on column ut_adc_outcome.error_dependent_items is 'List of page items to disable if at least one error was registered';

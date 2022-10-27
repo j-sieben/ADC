@@ -1,24 +1,26 @@
 create table adc_action_param_types(
-  cpt_id varchar2(50 char),
-  cpt_pti_id varchar2(50 char) constraint nn_cpt_pti_id not null,
-  cpt_pmg_name varchar2(3 byte) default 'ADC' constraint chk_cpt_pmg_name check(cpt_pmg_name = 'ADC'),
-  cpt_cpv_id varchar2(50 char) default 'TEXT'constraint nn_cpt_cpv_id not null,
-  cpt_sort_seq number default on null 10 constraint nn_cpt_soprt_seq not null,
-  cpt_active &FLAG_TYPE. default on null &C_TRUE. constraint chk_cpt_active check(cpt_active in (&C_TRUE., &C_FALSE.)),
-  constraint pk_adc_action_param_types primary key(cpt_id),
-  constraint fk_pti_id foreign key(cpt_pti_id, cpt_pmg_name)
+  capt_id varchar2(50 char),
+  capt_pti_id varchar2(50 char) constraint c_capt_pti_id_nn not null,
+  capt_pmg_name varchar2(3 byte) default on null 'ADC' constraint c_capt_pmg_name_nn not null,
+  capt_capvt_id varchar2(50 char) default on null 'TEXT'constraint c_capt_capvt_id_nn not null,
+  capt_sort_seq number default on null 10 constraint c_capt_soprt_seq_nn not null,
+  capt_active &FLAG_TYPE. default on null &C_TRUE. constraint c_capt_active_nn not null,
+  constraint p_capt_id primary key(capt_id),
+  constraint r_capt_pti_id foreign key(capt_pti_id, capt_pmg_name)
     references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
-  constraint fk_cpt_cpv_id foreign key(cpt_cpv_id)
-    references adc_action_param_visual_types(cpv_id)
+  constraint r_capt_capvt_id foreign key(capt_capvt_id)
+    references adc_action_param_visual_types(capvt_id),
+  constraint c_capt_pmg_name check(capt_pmg_name = 'ADC'),
+  constraint c_capt_active check(capt_active in (&C_TRUE., &C_FALSE.))
 ) 
 organization index;
 
-create unique index idx_cpt_pti_pmg_name on adc_action_param_types(cpt_pti_id, cpt_pmg_name);
+create unique index idx_capt_pti_pmg_name on adc_action_param_types(capt_pti_id, capt_pmg_name);
 
 comment on table adc_action_param_types is 'Table to store ADC Action Parameter types. Is not maintained by the UI, as entries require package methods for validation';
-comment on column adc_action_param_types.cpt_id is 'PK, technical key';
-comment on column adc_action_param_types.cpt_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
-comment on column adc_action_param_types.cpt_pmg_name is 'Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC';
-comment on column adc_action_param_types.cpt_cpv_id is 'Reference to ADC_ACTION_PARAM_VISUAL_TYPES, type of visual control to use for this parameter type';
-comment on column adc_action_param_types.cpt_sort_seq is 'Sort criteria';
-comment on column adc_action_param_types.cpt_active is 'Flag to indicate whether parameter type is in use';
+comment on column adc_action_param_types.capt_id is 'PK, technical key';
+comment on column adc_action_param_types.capt_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
+comment on column adc_action_param_types.capt_pmg_name is 'Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC';
+comment on column adc_action_param_types.capt_capvt_id is 'Reference to ADC_ACTION_PARAM_VISUAL_TYPES, type of visual control to use for this parameter type';
+comment on column adc_action_param_types.capt_sort_seq is 'Sort criteria';
+comment on column adc_action_param_types.capt_active is 'Flag to indicate whether parameter type is in use';

@@ -261,11 +261,11 @@ as
   begin
     l_rec.app_id := utl_apex.get_application_id;
     l_rec.page_id := utl_apex.get_page_id;
-    select cgr_id
-      into l_rec.cgr_id
+    select crg_id
+      into l_rec.crg_id
       from adc_rule_groups
-     where cgr_app_id = l_rec.app_id
-       and cgr_page_id = l_rec.page_id;
+     where crg_app_id = l_rec.app_id
+       and crg_page_id = l_rec.page_id;
        
     return l_rec;
   exception

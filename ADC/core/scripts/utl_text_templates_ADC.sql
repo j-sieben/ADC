@@ -13,28 +13,28 @@ q'[begin\CR\]' ||
 q'[  l_foo := adc_admin.map_id;\CR\]' || 
 q'[  l_app_id := apex_application_install.get_application_id;\CR\]' || 
 q'[\CR\]' || 
-q'[  dbms_output.put_line('Rulegroup page #CGR_PAGE_ID#');\CR\]' || 
+q'[  dbms_output.put_line('Rulegroup page #CRG_PAGE_ID#');\CR\]' || 
 q'[\CR\]' || 
 q'[  adc_admin.prepare_rule_group_import(\CR\]' || 
-q'[    p_cgr_app_id => l_app_id,\CR\]' || 
-q'[    p_cgr_page_id => #CGR_PAGE_ID#);\CR\]' || 
+q'[    p_crg_app_id => l_app_id,\CR\]' || 
+q'[    p_crg_page_id => #CRG_PAGE_ID#);\CR\]' || 
 q'[\CR\]' || 
 q'[  adc_admin.merge_rule_group(\CR\]' || 
-q'[    p_cgr_id => adc_admin.map_id(#CGR_ID#),\CR\]' || 
-q'[    p_cgr_app_id => l_app_id,\CR\]' || 
-q'[    p_cgr_page_id => #CGR_PAGE_ID#,\CR\]' || 
-q'[    p_cgr_with_recursion => #CGR_WITH_RECURSION#,\CR\]' || 
-q'[    p_cgr_active => #CGR_ACTIVE#);\CR\]' || 
+q'[    p_crg_id => adc_admin.map_id(#CRG_ID#),\CR\]' || 
+q'[    p_crg_app_id => l_app_id,\CR\]' || 
+q'[    p_crg_page_id => #CRG_PAGE_ID#,\CR\]' || 
+q'[    p_crg_with_recursion => #CRG_WITH_RECURSION#,\CR\]' || 
+q'[    p_crg_active => #CRG_ACTIVE#);\CR\]' || 
 q'[  #RULES#\CR\]' || 
 q'[  #APEX_ACTIONS#\CR\]' || 
-q'[  adc_admin.propagate_rule_change(adc_admin.map_id(#CGR_ID#));\CR\]' || 
+q'[  adc_admin.propagate_rule_change(adc_admin.map_id(#CRG_ID#));\CR\]' || 
 q'[\CR\]' || 
 q'[  commit;\CR\]' || 
 q'[end;\CR\]' || 
 q'[/\CR\]' || 
 q'[\CR\]' || 
 q'[]',
-    p_uttm_log_text => q'[Rule group page #CGR_PAGE_ID# exported.]',
+    p_uttm_log_text => q'[Rule group page #CRG_PAGE_ID# exported.]',
     p_uttm_log_severity => 70
   );
 
@@ -49,28 +49,28 @@ q'[begin\CR\]' ||
 q'[  l_foo := adc_admin.map_id;\CR\]' || 
 q'[  l_app_id := wwv_flow.g_flow_id;\CR\]' || 
 q'[\CR\]' || 
-q'[  dbms_output.put_line('  -- Rulegroup #CGR_ID#, page #CGR_APP_ID#');\CR\]' || 
+q'[  dbms_output.put_line('  -- Rulegroup #CRG_ID#, page #CRG_APP_ID#');\CR\]' || 
 q'[\CR\]' || 
 q'[  adc_admin.prepare_rule_group_import(\CR\]' || 
-q'[    p_cgr_app_id => l_app_id,\CR\]' || 
-q'[    p_cgr_page_id => #CGR_PAGE_ID#);\CR\]' || 
+q'[    p_crg_app_id => l_app_id,\CR\]' || 
+q'[    p_crg_page_id => #CRG_PAGE_ID#);\CR\]' || 
 q'[\CR\]' || 
 q'[  adc_admin.merge_rule_group(\CR\]' || 
-q'[    p_cgr_id => adc_admin.map_id(#CGR_ID#),\CR\]' || 
-q'[    p_cgr_app_id => l_app_id,\CR\]' || 
-q'[    p_cgr_page_id => #CGR_PAGE_ID#,\CR\]' || 
-q'[    p_cgr_with_recursion => #CGR_WITH_RECURSION#,\CR\]' || 
-q'[    p_cgr_active => #CGR_ACTIVE#);\CR\]' || 
+q'[    p_crg_id => adc_admin.map_id(#CRG_ID#),\CR\]' || 
+q'[    p_crg_app_id => l_app_id,\CR\]' || 
+q'[    p_crg_page_id => #CRG_PAGE_ID#,\CR\]' || 
+q'[    p_crg_with_recursion => #CRG_WITH_RECURSION#,\CR\]' || 
+q'[    p_crg_active => #CRG_ACTIVE#);\CR\]' || 
 q'[  #RULES#\CR\]' || 
 q'[  #APEX_ACTIONS#\CR\]' || 
 q'[\CR\]' || 
-q'[  adc_admin.propagate_rule_change(adc_admin.map_id(#CGR_ID#));\CR\]' || 
+q'[  adc_admin.propagate_rule_change(adc_admin.map_id(#CRG_ID#));\CR\]' || 
 q'[\CR\]' || 
 q'[  commit;\CR\]' || 
 q'[end;\CR\]' || 
 q'[/\CR\]' || 
 q'[]',
-    p_uttm_log_text => q'[APEX application #CGR_APP_ID# including all rule groups exported.]',
+    p_uttm_log_text => q'[APEX application #CRG_APP_ID# including all rule groups exported.]',
     p_uttm_log_severity => 70
   );
 
@@ -195,7 +195,7 @@ q'[</script>]',
     p_uttm_name => 'ACTION_TYPE_HELP',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'PARAMETERS',
-    p_uttm_text => q'[<dt>#CPT_NAME#</dt><dd>#CAP_DESCRIPTION##CPT_DESCRIPTION#</dd>]',
+    p_uttm_text => q'[<dt>#CAPT_NAME#</dt><dd>#CAP_DESCRIPTION##CAPT_DESCRIPTION#</dd>]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
@@ -205,10 +205,10 @@ q'[</script>]',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'APEX_ACTION_TYPE',
     p_uttm_text => q'[  adc_admin.merge_apex_action_type(\CR\]' || 
-q'[    p_cty_id => '#CTY_ID#',\CR\]' || 
-q'[    p_cty_name => '#CTY_NAME#',\CR\]' || 
-q'[    p_cty_description => #CTY_DESCRIPTION#,\CR\]' || 
-q'[    p_cty_active  => #CTY_ACTIVE#);\CR\]' || 
+q'[    p_caat_id => '#CAAT_ID#',\CR\]' || 
+q'[    p_caat_name => '#CAAT_NAME#',\CR\]' || 
+q'[    p_caat_description => #CAAT_DESCRIPTION#,\CR\]' || 
+q'[    p_caat_active  => #CAAT_ACTIVE#);\CR\]' || 
 q'[]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
@@ -219,9 +219,9 @@ q'[]',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'PAGE_ITEM_TYPE_GROUP',
     p_uttm_text => q'[  adc_admin.merge_page_item_type_group(\CR\]' || 
-q'[    p_cig_id => '#CIG_ID#',\CR\]' || 
-q'[    p_cig_has_value => #CIG_HAS_VALUE#,\CR\]' || 
-q'[    p_cig_include_in_view => #CIG_INCLUDE_IN_VIEW#);\CR\]' || 
+q'[    p_cpitg_id => '#CPITG_ID#',\CR\]' || 
+q'[    p_cpitg_has_value => #CPITG_HAS_VALUE#,\CR\]' || 
+q'[    p_cpitg_include_in_view => #CPITG_INCLUDE_IN_VIEW#);\CR\]' || 
 q'[]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
@@ -232,12 +232,12 @@ q'[]',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'PAGE_ITEM_TYPE',
     p_uttm_text => q'[  adc_admin.merge_page_item_type(\CR\]' || 
-q'[    p_cit_id => '#CIT_ID#',\CR\]' || 
-q'[    p_cit_name => '#CIT_NAME#',\CR\]' || 
-q'[    p_cit_cig_id => '#CIT_CIG_ID#',\CR\]' || 
-q'[    p_cit_cet_id => '#CIT_CET_ID#',\CR\]' || 
-q'[    p_cit_col_template => #CIT_COL_TEMPLATE#,\CR\]' || 
-q'[    p_cit_init_template => #CIT_INIT_TEMPLATE#);\CR\]' || 
+q'[    p_cpit_id => '#CPIT_ID#',\CR\]' || 
+q'[    p_cpit_name => '#CPIT_NAME#',\CR\]' || 
+q'[    p_cpit_cpitg_id => '#CPIT_CPITG_ID#',\CR\]' || 
+q'[    p_cpit_cet_id => '#CPIT_CET_ID#',\CR\]' || 
+q'[    p_cpit_col_template => #CPIT_COL_TEMPLATE#,\CR\]' || 
+q'[    p_cpit_init_template => #CPIT_INIT_TEMPLATE#);\CR\]' || 
 q'[]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
@@ -258,9 +258,9 @@ q'[              adc_api.get_firing_item p_firing_item\CR\]' ||
 q'[         from dual),\CR\]' || 
 q'[     parameter_types as(\CR\]' || 
 q'[       select cap_cat_id,\CR\]' || 
-q'[              max(decode(cap_sort_seq, 1, cap_cpt_id)) cra_param_1_type,\CR\]' || 
-q'[              max(decode(cap_sort_seq, 2, cap_cpt_id)) cra_param_2_type,\CR\]' || 
-q'[              max(decode(cap_sort_seq, 3, cap_cpt_id)) cra_param_3_type\CR\]' || 
+q'[              max(decode(cap_sort_seq, 1, cap_capt_id)) cra_param_1_type,\CR\]' || 
+q'[              max(decode(cap_sort_seq, 2, cap_capt_id)) cra_param_2_type,\CR\]' || 
+q'[              max(decode(cap_sort_seq, 3, cap_capt_id)) cra_param_3_type\CR\]' || 
 q'[         from adc_action_parameters\CR\]' || 
 q'[        group by cap_cat_id),\CR\]' || 
 q'[     session_state as(\CR\]' || 
@@ -278,7 +278,7 @@ q'[         join session_state s\CR\]' ||
 q'[           on instr(',' || r.cru_firing_items || ',', ',' || s.firing_item || ',') > 0\CR\]' || 
 q'[           or (cru_fire_on_page_load = initializing\CR\]' || 
 q'[          and initializing = C_TRUE)\CR\]' || 
-q'[        where r.cgr_id = #CGR_ID#\CR\]' || 
+q'[        where r.crg_id = #CRG_ID#\CR\]' || 
 q'[          and (#WHERE_CLAUSE#)),\CR\]' || 
 q'[     decision_table as(\CR\]' || 
 q'[       select cru_id, cru_name, cra_cpi_id, cra_cat_id, cra_param_1, cra_param_2, cra_param_3, cra_on_error, cra_raise_recursive, cra_sort_seq, c_true, c_false, c_clicked\CR\]' || 
@@ -296,10 +296,10 @@ q'[  join adc_rules cru\CR\]' ||
 q'[    on crg.cru_id = cru.cru_id\CR\]' || 
 q'[  join adc_action_types cat\CR\]' || 
 q'[    on crg.cra_cat_id = cat.cat_id\CR\]' || 
-q'[  join parameter_types cap\CR\]' || 
+q'[  left join parameter_types cap\CR\]' || 
 q'[    on cat.cat_id = cap.cap_cat_id\CR\]' || 
 q'[ order by cru.cru_sort_seq desc, crg.cra_sort_seq]',
-    p_uttm_log_text => q'[Rule View #PREFIX##CGR_ID# created.]',
+    p_uttm_log_text => q'[Rule View #PREFIX##CRG_ID# created.]',
     p_uttm_log_severity => 70
   );
 
@@ -323,7 +323,7 @@ q'[         from params)\CR\]' ||
 q'[select *\CR\]' || 
 q'[  from session_state\CR\]' || 
 q'[ where #CONDITION#]',
-    p_uttm_log_text => q'[Rule View #PREFIX##CGR_ID# validated.]',
+    p_uttm_log_text => q'[Rule View #PREFIX##CRG_ID# validated.]',
     p_uttm_log_severity => 70
   );
 
@@ -332,29 +332,29 @@ q'[ where #CONDITION#]',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'DEFAULT',
     p_uttm_text => q'[\CR\]' || 
-q'[set define ø\CR\]' || 
+q'[set define ^\CR\]' || 
 q'[\CR\]' || 
 q'[declare\CR\]' || 
 q'[  l_foo number;\CR\]' || 
 q'[  l_app_id number;\CR\]' || 
 q'[begin\CR\]' || 
 q'[  l_foo := adc_admin.map_id;\CR\]' || 
-q'[  l_app_id := coalesce(apex_application_install.get_application_id, øAPP_ID.);\CR\]' || 
+q'[  l_app_id := coalesce(apex_application_install.get_application_id, ^APP_ID.);\CR\]' || 
 q'[\CR\]' || 
 q'[  adc_admin.prepare_rule_group_import(\CR\]' || 
-q'[    p_cgr_app_id => l_app_id,\CR\]' || 
-q'[    p_cgr_page_id => #CGR_PAGE_ID#);\CR\]' || 
+q'[    p_crg_app_id => l_app_id,\CR\]' || 
+q'[    p_crg_page_id => #CRG_PAGE_ID#);\CR\]' || 
 q'[\CR\]' || 
 q'[  adc_admin.merge_rule_group(\CR\]' || 
-q'[    p_cgr_id => adc_admin.map_id(#CGR_ID#),\CR\]' || 
-q'[    p_cgr_app_id => l_app_id,\CR\]' || 
-q'[    p_cgr_page_id => #CGR_PAGE_ID#,\CR\]' || 
-q'[    p_cgr_with_recursion => #CGR_WITH_RECURSION#,\CR\]' || 
-q'[    p_cgr_active => #CGR_ACTIVE#);\CR\]' || 
+q'[    p_crg_id => adc_admin.map_id(#CRG_ID#),\CR\]' || 
+q'[    p_crg_app_id => l_app_id,\CR\]' || 
+q'[    p_crg_page_id => #CRG_PAGE_ID#,\CR\]' || 
+q'[    p_crg_with_recursion => #CRG_WITH_RECURSION#,\CR\]' || 
+q'[    p_crg_active => #CRG_ACTIVE#);\CR\]' || 
 q'[  #RULES#\CR\]' || 
 q'[  #APEX_ACTIONS#\CR\]' || 
 q'[\CR\]' || 
-q'[  adc_admin.propagate_rule_change(adc_admin.map_id(#CGR_ID#));\CR\]' || 
+q'[  adc_admin.propagate_rule_change(adc_admin.map_id(#CRG_ID#));\CR\]' || 
 q'[\CR\]' || 
 q'[  commit;\CR\]' || 
 q'[end;\CR\]' || 
@@ -362,7 +362,7 @@ q'[/\CR\]' ||
 q'[\CR\]' || 
 q'[set define on\CR\]' || 
 q'[]',
-    p_uttm_log_text => q'[Rule group #CGR_ID# exported.]',
+    p_uttm_log_text => q'[Rule group #CRG_ID# exported.]',
     p_uttm_log_severity => 70
   );
 
@@ -373,7 +373,7 @@ q'[]',
     p_uttm_text => q'[\CR\]' || 
 q'[  adc_admin.merge_rule(\CR\]' || 
 q'[    p_cru_id => adc_admin.map_id(#CRU_ID#),\CR\]' || 
-q'[    p_cru_cgr_id => adc_admin.map_id(#CRU_CGR_ID#),\CR\]' || 
+q'[    p_cru_crg_id => adc_admin.map_id(#CRU_CRG_ID#),\CR\]' || 
 q'[    p_cru_name => '#CRU_NAME#',\CR\]' || 
 q'[    p_cru_condition => q'|#CRU_CONDITION#|',\CR\]' || 
 q'[    p_cru_sort_seq => #CRU_SORT_SEQ#,\CR\]' || 
@@ -392,7 +392,7 @@ q'[  #RULE_ACTIONS#]',
 q'[  adc_admin.merge_rule_action(\CR\]' || 
 q'[    p_cra_id => adc_admin.map_id(#CRA_ID#),\CR\]' || 
 q'[    p_cra_cru_id => adc_admin.map_id(#CRA_CRU_ID#),\CR\]' || 
-q'[    p_cra_cgr_id => adc_admin.map_id(#CRA_CGR_ID#),\CR\]' || 
+q'[    p_cra_crg_id => adc_admin.map_id(#CRA_CRG_ID#),\CR\]' || 
 q'[    p_cra_cpi_id => '#CRA_CPI_ID#',\CR\]' || 
 q'[    p_cra_cat_id => '#CRA_CAT_ID#',\CR\]' || 
 q'[    p_cra_param_1 => q'|#CRA_PARAM_1#|',\CR\]' || 
@@ -414,8 +414,8 @@ q'[    p_cra_active => #CRA_ACTIVE#);]',
     p_uttm_text => q'[\CR\]' || 
 q'[  adc_admin.merge_apex_action(    \CR\]' || 
 q'[    p_caa_id => adc_admin.map_id(#CAA_ID#),\CR\]' || 
-q'[    p_caa_cgr_id => adc_admin.map_id(#CGR_ID#),\CR\]' || 
-q'[    p_caa_cty_id => '#CAA_CTY_ID#',\CR\]' || 
+q'[    p_caa_crg_id => adc_admin.map_id(#CRG_ID#),\CR\]' || 
+q'[    p_caa_caat_id => '#CAA_CAAT_ID#',\CR\]' || 
 q'[    p_caa_name => '#CAA_NAME#',\CR\]' || 
 q'[    p_caa_label => '#CAA_LABEL#',\CR\]' || 
 q'[    p_caa_context_label => '#CAA_CONTEXT_LABEL#',\CR\]' || 
@@ -440,7 +440,7 @@ q'[]',
     p_uttm_text => q'[\CR\]' || 
 q'[  adc_admin.merge_apex_action(    \CR\]' || 
 q'[    p_caa_id => adc_admin.map_id(#CAA_ID#),\CR\]' || 
-q'[    p_caa_cgr_id => adc_admin.map_id(#CGR_ID#),\CR\]' || 
+q'[    p_caa_crg_id => adc_admin.map_id(#CRG_ID#),\CR\]' || 
 q'[    p_caa_name => '#CAA_NAME#',\CR\]' || 
 q'[    p_caa_type => '#CAA_TYPE#',\CR\]' || 
 q'[    p_caa_label => '#CAA_LABEL#',\CR\]' || 
@@ -470,8 +470,8 @@ q'[]',
     p_uttm_text => q'[\CR\]' || 
 q'[  adc_admin.merge_apex_action(    \CR\]' || 
 q'[    p_caa_id => adc_admin.map_id(#CAA_ID#),\CR\]' || 
-q'[    p_caa_cgr_id => adc_admin.map_id(#CGR_ID#),\CR\]' || 
-q'[    p_caa_cty_id => '#CAA_CTY_ID#',\CR\]' || 
+q'[    p_caa_crg_id => adc_admin.map_id(#CRG_ID#),\CR\]' || 
+q'[    p_caa_caat_id => '#CAA_CAAT_ID#',\CR\]' || 
 q'[    p_caa_name => '#CAA_NAME#',\CR\]' || 
 q'[    p_caa_label => '#CAA_LABEL#',\CR\]' || 
 q'[    p_caa_context_label => '#CAA_CONTEXT_LABEL#',\CR\]' || 
@@ -501,10 +501,10 @@ q'[]',
     p_uttm_mode => 'APEX_ACTION_ITEM',
     p_uttm_text => q'[\CR\]' || 
 q'[  adc_admin.merge_apex_action_item(\CR\]' || 
-q'[    p_cai_caa_id => adc_admin.map_id(#CAI_CAA_ID#),\CR\]' || 
-q'[    p_cai_cpi_cgr_id => adc_admin.map_id(#CAI_CPI_CGR_ID#),\CR\]' || 
-q'[    p_cai_cpi_id => '#CAI_CPI_ID#',\CR\]' || 
-q'[    p_cai_active => #CAI_ACTIVE#);\CR\]' || 
+q'[    p_caai_caa_id => adc_admin.map_id(#CAAI_CAA_ID#),\CR\]' || 
+q'[    p_caai_cpi_crg_id => adc_admin.map_id(#CAAI_CPI_CRG_ID#),\CR\]' || 
+q'[    p_caai_cpi_id => '#CAAI_CPI_ID#',\CR\]' || 
+q'[    p_caai_active => #CAAI_ACTIVE#);\CR\]' || 
 q'[]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
@@ -695,11 +695,11 @@ q'[]',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'PARAM_VISUAL_TYPE',
     p_uttm_text => q'[  adc_admin.merge_action_param_visual_type(\CR\]' || 
-q'[    p_cpv_id => '#CPV_ID#',\CR\]' || 
-q'[    p_cpv_name => '#CPV_NAME#',\CR\]' || 
-q'[    p_cpv_display_name => '#CPV_DISPLAY_NAME#',\CR\]' || 
-q'[    p_cpv_description => #CPV_DESCRIPTION#,\CR\]' || 
-q'[    p_cpv_active => #CPV_ACTIVE#);\CR\]' || 
+q'[    p_capvt_id => '#CAPVT_ID#',\CR\]' || 
+q'[    p_capvt_name => '#CAPVT_NAME#',\CR\]' || 
+q'[    p_capvt_display_name => '#CAPVT_DISPLAY_NAME#',\CR\]' || 
+q'[    p_capvt_description => #CAPVT_DESCRIPTION#,\CR\]' || 
+q'[    p_capvt_active => #CAPVT_ACTIVE#);\CR\]' || 
 q'[]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
@@ -710,15 +710,15 @@ q'[]',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'PARAM_TYPE',
     p_uttm_text => q'[  adc_admin.merge_action_param_type(\CR\]' || 
-q'[    p_cpt_id => '#CPT_ID#',\CR\]' || 
-q'[    p_cpt_name => '#CPT_NAME#',\CR\]' || 
-q'[    p_cpt_display_name => '#CPT_DISPLAY_NAME#',\CR\]' || 
-q'[    p_cpt_description => #CPT_DESCRIPTION#,\CR\]' || 
-q'[    p_cpt_cpv_id => '#CPT_CPV_ID#',\CR\]' || 
-q'[    p_cpt_select_list_query => #CPT_SELECT_LIST_QUERY#,\CR\]' || 
-q'[    p_cpt_select_view_comment => #CPT_SELECT_VIEW_COMMENT#,\CR\]' || 
-q'[    p_cpt_sort_seq => #CPT_SORT_SEQ#,\CR\]' || 
-q'[    p_cpt_active => #CPT_ACTIVE#);\CR\]' || 
+q'[    p_capt_id => '#CAPT_ID#',\CR\]' || 
+q'[    p_capt_name => '#CAPT_NAME#',\CR\]' || 
+q'[    p_capt_display_name => '#CAPT_DISPLAY_NAME#',\CR\]' || 
+q'[    p_capt_description => #CAPT_DESCRIPTION#,\CR\]' || 
+q'[    p_capt_capvt_id => '#CAPT_CAPVT_ID#',\CR\]' || 
+q'[    p_capt_select_list_query => #CAPT_SELECT_LIST_QUERY#,\CR\]' || 
+q'[    p_capt_select_view_comment => #CAPT_SELECT_VIEW_COMMENT#,\CR\]' || 
+q'[    p_capt_sort_seq => #CAPT_SORT_SEQ#,\CR\]' || 
+q'[    p_capt_active => #CAPT_ACTIVE#);\CR\]' || 
 q'[]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
@@ -729,13 +729,13 @@ q'[]',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ITEM_FOCUS',
     p_uttm_text => q'[  adc_admin.merge_action_item_focus(\CR\]' || 
-q'[    p_cif_id => '#CIF_ID#',\CR\]' || 
-q'[    p_cif_name => '#CIF_NAME#',\CR\]' || 
-q'[    p_cif_description => #CIF_DESCRIPTION#,\CR\]' || 
-q'[    p_cif_actual_page_only => #CIF_ACTUAL_PAGE_ONLY#,\CR\]' || 
-q'[    p_cif_item_types => '#CIF_ITEM_TYPES#',\CR\]' || 
-q'[    p_cif_default => '#CIF_DEFAULT#',\CR\]' || 
-q'[    p_cif_active => #CIF_ACTIVE#);\CR\]' || 
+q'[    p_caif_id => '#CAIF_ID#',\CR\]' || 
+q'[    p_caif_name => '#CAIF_NAME#',\CR\]' || 
+q'[    p_caif_description => #CAIF_DESCRIPTION#,\CR\]' || 
+q'[    p_caif_actual_page_only => #CAIF_ACTUAL_PAGE_ONLY#,\CR\]' || 
+q'[    p_caif_item_types => '#CAIF_ITEM_TYPES#',\CR\]' || 
+q'[    p_caif_default => '#CAIF_DEFAULT#',\CR\]' || 
+q'[    p_caif_active => #CAIF_ACTIVE#);\CR\]' || 
 q'[]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
@@ -747,7 +747,7 @@ q'[]',
     p_uttm_mode => 'ACTION_PARAMS',
     p_uttm_text => q'[  adc_admin.merge_action_parameter(\CR\]' || 
 q'[    p_cap_cat_id => '#CAP_CAT_ID#',\CR\]' || 
-q'[    p_cap_cpt_id => '#CAP_cpt_ID#',\CR\]' || 
+q'[    p_cap_capt_id => '#CAP_capt_ID#',\CR\]' || 
 q'[    p_cap_sort_seq => #CAP_SORT_SEQ#,\CR\]' || 
 q'[    p_cap_default => #CAP_DEFAULT#,\CR\]' || 
 q'[    p_cap_description => #CAP_DESCRIPTION#,\CR\]' || 
@@ -764,10 +764,10 @@ q'[]',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ACTION_TYPE_GROUP',
     p_uttm_text => q'[  adc_admin.merge_action_type_group(\CR\]' || 
-q'[    p_ctg_id => '#CTG_ID#',\CR\]' || 
-q'[    p_ctg_name => '#CTG_NAME#',\CR\]' || 
-q'[    p_ctg_description => #CTG_DESCRIPTION#,\CR\]' || 
-q'[    p_ctg_active => #CTG_ACTIVE#);\CR\]' || 
+q'[    p_catg_id => '#CATG_ID#',\CR\]' || 
+q'[    p_catg_name => '#CATG_NAME#',\CR\]' || 
+q'[    p_catg_description => #CATG_DESCRIPTION#,\CR\]' || 
+q'[    p_catg_active => #CATG_ACTIVE#);\CR\]' || 
 q'[]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
@@ -785,7 +785,7 @@ q'[  for itm in item_cur loop\CR\]' ||
 q'[    #ITEM_STMT#\CR\]' || 
 q'[  end loop;\CR\]' || 
 q'[end;]',
-    p_uttm_log_text => q'[Initialization code for rule group #CGR_ID# created.]',
+    p_uttm_log_text => q'[Initialization code for rule group #CRG_ID# created.]',
     p_uttm_log_severity => 70
   );
 
@@ -817,8 +817,8 @@ q'[ where #ATTRIBUTE_04# = (select v('#ATTRIBUTE_03#') from dual)]',
     p_uttm_mode => 'ACTION_TYPE',
     p_uttm_text => q'[  adc_admin.merge_action_type(\CR\]' || 
 q'[    p_cat_id => '#CAT_ID#',\CR\]' || 
-q'[    p_cat_ctg_id => '#CAT_CTG_ID#',\CR\]' || 
-q'[    p_cat_cif_id => '#CAT_CIF_ID#',\CR\]' || 
+q'[    p_cat_catg_id => '#CAT_CATG_ID#',\CR\]' || 
+q'[    p_cat_caif_id => '#CAT_CAIF_ID#',\CR\]' || 
 q'[    p_cat_name => '#CAT_NAME#',\CR\]' || 
 q'[    p_cat_display_name => #CAT_DISPLAY_NAME#,\CR\]' || 
 q'[    p_cat_description => #CAT_DESCRIPTION#,\CR\]' || 
@@ -846,7 +846,7 @@ q'[]',
     p_uttm_name => 'PAGE_ITEM_ERROR',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
-    p_uttm_text => q'[<p>Regelgruppe "#CGR_ID#" kann nicht exportiert werden:</p><ul>#ERROR_LIST#</ul>]',
+    p_uttm_text => q'[<p>Regelgruppe "#CRG_ID#" kann nicht exportiert werden:</p><ul>#ERROR_LIST#</ul>]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
@@ -855,7 +855,7 @@ q'[]',
     p_uttm_name => 'PAGE_ITEM_ERROR',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'DEFAULT',
-    p_uttm_text => q'[<li>#CIT_NAME# "#CPI_ID#" existiert in Anwendung #CGR_APP_ID# nicht</li>]',
+    p_uttm_text => q'[<li>#CPIT_NAME# "#CPI_ID#" existiert in Anwendung #CRG_APP_ID# nicht</li>]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
@@ -920,15 +920,15 @@ q'[natural join session_state]',
     p_uttm_name => 'EXPORT_RULE_GROUP',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'DEFAULT_APP_FRAME',
-    p_uttm_text => q'[prompt --application/deployment/install/install_merge_rule_group_#CGR_PAGE_ALIAS#\CR\]' || 
+    p_uttm_text => q'[prompt --application/deployment/install/install_merge_rule_group_#CRG_PAGE_ALIAS#\CR\]' || 
 q'[begin\CR\]' || 
 q'[  wwv_flow_api.create_install_script(\CR\]' || 
-q'[    p_id => wwv_flow_api.id(#CGR_ID_SQUARE#),\CR\]' || 
-q'[    p_install_id => wwv_flow_api.id(#CGR_INSTALL_ID#),\CR\]' || 
-q'[    p_name => 'merge_rule_group_#CGR_PAGE_ALIAS#',\CR\]' || 
-q'[    p_sequence => #CGR_SORT_SEQ#,\CR\]' || 
+q'[    p_id => wwv_flow_api.id(#CRG_ID_SQUARE#),\CR\]' || 
+q'[    p_install_id => wwv_flow_api.id(#CRG_INSTALL_ID#),\CR\]' || 
+q'[    p_name => 'merge_rule_group_#CRG_PAGE_ALIAS#',\CR\]' || 
+q'[    p_sequence => #CRG_SORT_SEQ#,\CR\]' || 
 q'[    p_script_type => 'INSTALL',\CR\]' || 
-q'[    p_script_clob => wwv_flow_string.join(wwv_flow_t_varchar2(#CGR_SCRIPT#))\CR\]' || 
+q'[    p_script_clob => wwv_flow_string.join(wwv_flow_t_varchar2(#CRG_SCRIPT#))\CR\]' || 
 q'[  );\CR\]' || 
 q'[end;\CR\]' || 
 q'[/\CR\]' || 
@@ -944,7 +944,7 @@ q'[]',
     p_uttm_text => q'[prompt --application/deployment/definition\CR\]' || 
 q'[begin\CR\]' || 
 q'[wwv_flow_api.create_install(\CR\]' || 
-q'[ p_id=>wwv_flow_api.id(#CGR_INSTALL_ID#)\CR\]' || 
+q'[ p_id=>wwv_flow_api.id(#CRG_INSTALL_ID#)\CR\]' || 
 q'[);\CR\]' || 
 q'[end;\CR\]' || 
 q'[/\CR\]' || 

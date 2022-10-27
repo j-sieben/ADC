@@ -117,25 +117,25 @@ as
   return varchar2
   as
     l_url adc_util.sql_char;
-    l_cgr_id adc_rule_groups.cgr_id%type;
+    l_crg_id adc_rule_groups.crg_id%type;
     C_URL_TEMPLATE constant adc_util.sql_char := q'^javascript:apex.navigation.openInNewWindow('#URL#', 'ADC');^';
   begin
     with params as (
            select /*+ no_merge */utl_apex.get_application_id(adc_util.C_FALSE) p_app_id,
                   utl_apex.get_page_id p_page_id
              from dual)
-    select cgr_id
-      into l_cgr_id
+    select crg_id
+      into l_crg_id
       from adc_rule_groups
       join params p
-        on cgr_app_id = p_app_id
-       and cgr_page_id = p_page_id;
+        on crg_app_id = p_app_id
+       and crg_page_id = p_page_id;
        
     l_url := apex_page.get_url(
                p_application => 'ADC',
                p_page => 'DESIGNER',
-               p_items => 'P13_CGR_ID,P13_CGR_APP_ID,P13_SELECTED_NODE',
-               p_values => l_cgr_id || ',' || utl_apex.get_application_id(adc_util.C_FALSE) || ', CGR_' || l_cgr_id);
+               p_items => 'P13_CRG_ID,P13_CRG_APP_ID,P13_SELECTED_NODE',
+               p_values => l_crg_id || ',' || utl_apex.get_application_id(adc_util.C_FALSE) || ', CRG_' || l_crg_id);
     return replace(C_URL_TEMPLATE, '#URL#', l_url);
   exception
     when NO_DATA_FOUND then
@@ -328,7 +328,7 @@ as
     
     select help_text
       into l_help_text
-      from adc_bl_cat_help
+      from adca_bl_cat_help
      where cat_id = l_cat_id;
   
     pit.leave_mandatory;

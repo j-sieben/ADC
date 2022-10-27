@@ -39,14 +39,14 @@ as
       Method checks whether an item is allowed to have a page state value.
       
     Parameters:
-      p_cgr_id - ID of the rule group.
+      p_crg_id - ID of the rule group.
       p_cpi_id - ID of the page item
       
     Returns:
       Flag to indicate whether this item is allowed to have a value (TRUE) or not (FALSE).
    */
   function item_may_have_value(
-    p_cgr_id in adc_rule_groups.cgr_id%type, 
+    p_crg_id in adc_rule_groups.crg_id%type, 
     p_cpi_id in adc_page_items.cpi_id%type)
     return boolean;
  
@@ -56,14 +56,14 @@ as
       Method checks whether an item is actually mandatory.
       
     Parameters:
-      p_cgr_id - ID of the rule group.
+      p_crg_id - ID of the rule group.
       p_cpi_id - ID of the page item
       
     Errors:
       msg.ADC_IS_MANDATORY_ERR - Error with the mandatory message. Either the message passed in or a default mandatory message
    */
   procedure check_mandatory(
-    p_cgr_id in adc_rule_groups.cgr_id%type, 
+    p_crg_id in adc_rule_groups.crg_id%type, 
     p_cpi_id in adc_page_items.cpi_id%type);
     
     
@@ -72,13 +72,13 @@ as
       Registers a page item to be mandatory or optional
       
     Parameters:
-      p_cgr_id - ID of the rule group.
+      p_crg_id - ID of the rule group.
       p_cpi_id - ID of the page item
       p_cpi_mandatory_message - Optional mandatory message. If NULL, a predefined mandatory message is used
       p_is_mandatory - Flag to indicate whether this item is mandatory (C_TRUE) or optional (C_FALSE)
    */
   procedure register_mandatory(
-    p_cgr_id in adc_rule_groups.cgr_id%type, 
+    p_crg_id in adc_rule_groups.crg_id%type, 
     p_cpi_id in adc_page_items.cpi_id%type,
     p_cpi_mandatory_message in varchar2,
     p_is_mandatory in adc_util.flag_type);
@@ -103,7 +103,7 @@ as
       - it converts the item value and stores a formatted version in the session state
                  
     Parameters:
-      p_cgr_id - ID of the rule group, necessary to read format masks from the ADC metadata
+      p_crg_id - ID of the rule group, necessary to read format masks from the ADC metadata
       p_cpi_id - ID of the page item to set
       p_value - Optional string value. May be NULL, but if omitted, it will default to C_FROM_SESSION_STATE, 
                 meaning that the value will be taken from the actual APEX session state value.
@@ -121,7 +121,7 @@ as
       msg.SQL_ERROR_ERR - if any other exception occurs
    */
   procedure set_value(
-    p_cgr_id in adc_rule_groups.cgr_id%type, 
+    p_crg_id in adc_rule_groups.crg_id%type, 
     p_cpi_id in adc_page_items.cpi_id%type,
     p_value in varchar2 default null,
     p_number_value in number default null,
@@ -138,14 +138,14 @@ as
       it must assure that no value is returned if C_NO_FIRING_ITEM is requested.
    
     Parameters:
-      p_cgr_id - Id of the rule group to enable the logic to decide upon possible conversion and format masks
+      p_crg_id - Id of the rule group to enable the logic to decide upon possible conversion and format masks
       p_cpi_id - Id of the item to retrieve.
       
     Returns:
       String value of the page state for the requested item.
    */
   function get_string(
-    p_cgr_id in adc_rule_groups.cgr_id%type,
+    p_crg_id in adc_rule_groups.crg_id%type,
     p_cpi_id in adc_page_items.cpi_id%type)
     return varchar2;
   
@@ -155,7 +155,7 @@ as
       Getter method to retrieve a page state value as date.
    
     Parameters:
-      p_cgr_id - Id of the rule group to enable the logic to decide upon possible conversion and format masks
+      p_crg_id - Id of the rule group to enable the logic to decide upon possible conversion and format masks
       p_cpi_id - Id of the item to retrieve.
       p_format_mask - Format mask in case the page state is not yet aware of the item value
    
@@ -164,7 +164,7 @@ as
       Date value of the page state for the requested item.
    */
   function get_date(
-    p_cgr_id in adc_rule_groups.cgr_id%type,
+    p_crg_id in adc_rule_groups.crg_id%type,
     p_cpi_id in adc_page_items.cpi_id%type,
     p_format_mask in varchar2)
     return date;
@@ -175,7 +175,7 @@ as
       Getter method to retrieve a page state value as number.
    
     Parameters:
-      p_cgr_id - Id of the rule group to enable the logic to decide upon possible conversion and format masks
+      p_crg_id - Id of the rule group to enable the logic to decide upon possible conversion and format masks
       p_cpi_id - Id of the item to retrieve.
       p_format_mask - Format mask in case the page state is not yet aware of the item value
    
@@ -184,7 +184,7 @@ as
       Number value of the page state for the requested item.
    */
   function get_number(
-    p_cgr_id in adc_rule_groups.cgr_id%type,
+    p_crg_id in adc_rule_groups.crg_id%type,
     p_cpi_id in adc_page_items.cpi_id%type,
     p_format_mask in varchar2)
     return number;
@@ -215,12 +215,12 @@ as
       It is called by EXCLUSIVE_OR and NOT_NULL to check whether the respective rules are obeyed.
                  
     Parameters:
-      p_cgr_id - Id of the rule group to enable the logic to decide upon possible conversion and format masks
+      p_crg_id - Id of the rule group to enable the logic to decide upon possible conversion and format masks
       p_cpi_list - comma-separated list of page item names for which the session state values have to be returned
       p_value_list - CHAR_TABLE instance with the session state values of the page items passed in via P_CPI_LIST
    */
   procedure get_item_values_as_char_table(
-    p_cgr_id in adc_rule_groups.cgr_id%type,
+    p_crg_id in adc_rule_groups.crg_id%type,
     p_cpi_list in varchar2,
     p_value_list out nocopy char_table);
     

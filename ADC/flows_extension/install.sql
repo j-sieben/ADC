@@ -6,4 +6,4 @@ prompt &h2.Remove existing installation
 prompt &h2.Create database objects
 
 prompt &h2.Create Package dependent Views
-@&tool_dir.create_view adc_ui_designer_tree
+@&tool_dir.create_view adca_ui_designer_tree

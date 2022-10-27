@@ -12,16 +12,16 @@ declare
             from user_objects
            where object_name in (
                  '', -- Typen
-                 'ADC_UI', 'SPLITTER_PLUGIN', -- Packages
-                 'ADC_UI_ADMIN_CAT', 'ADC_UI_ADMIN_CGR_MAIN', 'ADC_UI_ADMIN_CGR_COMMANDS', 'ADC_UI_ADMIN_CGR_OVERVIEW', 'ADC_UI_ADMIN_CIF', 'ADC_UI_ADMIN_CGR_RULES', 
-                 'ADC_UI_EDIT_RULE', 'ADC_UI_EDIT_RULE_ACTION', 'ADC_UI_EDIT_CAA', 'ADC_UI_EDIT_CAT', 'ADC_UI_EDIT_CIF', 'ADC_UI_EDIT_CIT', 'ADC_UI_EDIT_CGR',  'ADC_UI_EDIT_CTG', 
-                 'ADC_UI_EDIT_CGR_APEX_ACTION', 'ADC_UI_EDIT_CRA', 'ADC_UI_EDIT_CRU', 'ADC_UI_EDIT_CRU_ACTION', 'ADC_UI_EDIT_CPT_STATIC_LIST', 
-                 'ADC_UI_EDIT_CPT', 'ADC_UI_LIST_ACTION_TYPE', 'ADC_UI_LIST_PAGE_ITEMS', 'ADC_UI_LOV_ACTION_ITEM_FOCUS', 
-                 'ADC_UI_LOV_ACTION_PARAM_TYPE', 'ADC_UI_LOV_ACTION_TYPE_GROUP', 'ADC_UI_LOV_APEX_ACTION_ITEMS', 'ADC_UI_LOV_PAGE_ITEM_TYPE_GROUP', 
-                 'ADC_UI_LOV_APEX_ACTION_TYPE', 'ADC_UI_LOV_APPLICATIONS', 'ADC_UI_LOV_APP_PAGES', 'ADC_UI_LOV_EXPORT_TYPES', 'ADC_UI_LOV_EXPORT_CAT', 
-                 'ADC_UI_LOV_PAGE_ITEMS', 'ADC_UI_LOV_PAGE_ITEMS_P11', 'ADC_UI_LOV_CGR_APPLICATIONS', 'ADC_UI_LOV_PAGE_ITEM_TYPE',
-                 'ADC_UI_LOV_CGR_APP_PAGES', 'ADC_UI_LOV_CGR_PAGE_ITEMS', 'ADC_UI_LOV_YES_NO', -- Views
-                 'ADC_LU_DESIGNER_ACTIONS', 'ADC_LU_DESIGNER_MODES', 'ADC_MAP_DESIGNER_ACTIONS',   -- Tabellen
+                 'ADCA', 'SPLITTER_PLUGIN', -- Packages
+                 'ADCA_UI_ADMIN_CAT', 'ADCA_UI_ADMIN_CRG_MAIN', 'ADCA_UI_ADMIN_CRG_COMMANDS', 'ADCA_UI_ADMIN_CRG_OVERVIEW', 'ADCA_UI_ADMIN_CAIF', 'ADCA_UI_ADMIN_CRG_RULES', 
+                 'ADCA_UI_EDIT_RULE', 'ADCA_UI_EDIT_RULE_ACTION', 'ADCA_UI_EDIT_CAA', 'ADCA_UI_EDIT_CAT', 'ADCA_UI_EDIT_CAIF', 'ADCA_UI_EDIT_CPIT', 'ADCA_UI_EDIT_CGR',  'ADCA_UI_EDIT_CTG', 
+                 'ADCA_UI_EDIT_CRG_APEX_ACTION', 'ADCA_UI_EDIT_CRA', 'ADCA_UI_EDIT_CRU', 'ADCA_UI_EDIT_CRU_ACTION', 'ADCA_UI_EDIT_CAPT_STATIC_LIST', 
+                 'ADCA_UI_EDIT_CAPT', 'ADCA_UI_LIST_ACTION_TYPE', 'ADCA_UI_LIST_PAGE_ITEMS', 'ADCA_UI_LOV_ACTION_ITEM_FOCUS', 
+                 'ADCA_UI_LOV_ACTION_PARAM_TYPE', 'ADCA_UI_LOV_ACTION_TYPE_GROUP', 'ADCA_UI_LOV_APEX_ACTION_ITEMS', 'ADCA_UI_LOV_PAGE_ITEM_TYPE_GROUP', 
+                 'ADCA_UI_LOV_APEX_ACTION_TYPE', 'ADCA_UI_LOV_APPLICATIONS', 'ADCA_UI_LOV_APP_PAGES', 'ADCA_UI_LOV_EXPORT_TYPES', 'ADCA_UI_LOV_EXPORT_CAT', 
+                 'ADCA_UI_LOV_PAGE_ITEMS', 'ADCA_UI_LOV_PAGE_ITEMS_P11', 'ADCA_UI_LOV_CRG_APPLICATIONS', 'ADCA_UI_LOV_PAGE_ITEM_TYPE',
+                 'ADCA_UI_LOV_CRG_APP_PAGES', 'ADCA_UI_LOV_CRG_PAGE_ITEMS', 'ADCA_UI_LOV_YES_NO', -- Views
+                 'ADCA_LU_DESIGNER_ACTIONS', 'ADCA_LU_DESIGNER_MODES', 'ADCA_MAP_DESIGNER_ACTIONS',   -- Tabellen
                  '',  -- Synonyme
                  '' -- Sequenzen
                  )
@@ -52,7 +52,7 @@ end;
 
 prompt &h3.Removing ADC_UI translatable items
 begin
-  pit_admin.delete_message_group('ADC_UI', true);
+  pit_admin.delete_message_group('ADCA', true);
   commit;
 end;
 /
@@ -60,16 +60,16 @@ end;
 
 prompt &h3.Removing ADC groups
 declare
-  c_stmt varchar2(1000 byte) := 'select cgr_id from adc_rule_groups where cgr_app_id = &APP_ID.';
+  c_stmt varchar2(1000 byte) := 'select crg_id from adc_rule_groups where crg_app_id = &APP_ID.';
   l_cur sys_refcursor;
-  l_cgr_id binary_integer;
+  l_crg_id binary_integer;
 begin
   if &APP_ID. is not null then
     open l_cur for c_stmt;
-    fetch l_cur into l_cgr_id;
+    fetch l_cur into l_crg_id;
     while l_cur%found loop
-      adc_admin.delete_rule_group(l_cgr_id);
-      fetch l_cur into l_cgr_id;
+      adc_admin.delete_rule_group(l_crg_id);
+      fetch l_cur into l_crg_id;
     end loop;
   end if;
 exception

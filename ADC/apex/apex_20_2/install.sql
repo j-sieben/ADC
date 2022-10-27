@@ -6,11 +6,13 @@ prompt &s1.Prepare installation
 @&apex_version_dir.prepare_apex_import.sql
 
 prompt &s1.Install application
-@&app_dir.adc.sql
+@&app_dir.adca.sql
+
+set verify off
 
 prompt &s1.Add rule groups
-@&script_dir.merge_rule_group_adc_admin_cat
-@&script_dir.merge_rule_group_adc_designer
-@&script_dir.merge_rule_group_adc_edit_cpt
-@&script_dir.merge_rule_group_adc_export_cat
-@&script_dir.merge_rule_group_adc_export_cgr
+@&script_dir.merge_rule_group_adca_admin_cat
+@&script_dir.merge_rule_group_adca_designer
+@&script_dir.merge_rule_group_adca_edit_capt
+@&script_dir.merge_rule_group_adca_export_cat
+@&script_dir.merge_rule_group_adca_export_crg

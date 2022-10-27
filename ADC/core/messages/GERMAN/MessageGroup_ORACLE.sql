@@ -94,6 +94,15 @@ begin
     p_pms_pml_name => 'GERMAN',
     p_error_number => -1841);
 
+  pit_admin.merge_message(
+    p_pms_name => 'SQL_ACCESS_DENIED',
+    p_pms_pmg_name => 'ORACLE',
+    p_pms_text => q'^#1#^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 30,
+    p_pms_pml_name => 'GERMAN',
+    p_error_number => -29471);
+
   commit;
   pit_admin.create_message_package;
 end;

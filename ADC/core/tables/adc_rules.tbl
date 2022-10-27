@@ -1,30 +1,30 @@
 create table adc_rules(
   cru_id number default on null adc_seq.nextval constraint nn_cru_id not null, 
-	cru_cgr_id number, 
-	cru_name varchar2(200 byte), 
-	cru_condition varchar2(4000 byte), 
-	cru_sort_seq number, 
+	cru_crg_id number constraint c_cru_crg_id_nn not null, 
+	cru_name varchar2(200 byte) constraint c_cru_name_nn not null, 
+	cru_condition varchar2(4000 byte) constraint c_cru_condition_nn not null, 
+	cru_sort_seq number default on null 10 constraint c_cru_sort_seq_nn not null, 
 	cru_firing_items varchar2(300 byte), 
-	cru_active &FLAG_TYPE. default &C_TRUE., 
-	cru_fire_on_page_load &FLAG_TYPE. default &C_FALSE., 
-	cru_has_error &FLAG_TYPE. default &C_FALSE.,
-  constraint pk_adc_ruless primary key (cru_id),
-  constraint fk_cru_cgr_id foreign key (cru_cgr_id)
-	  references adc_rule_groups (cgr_id) on delete cascade,
-  constraint chk_cru_active check (cru_active in (&C_TRUE., &C_FALSE.)),
-  constraint chk_cru_has_error check (cru_has_error in (&C_TRUE., &C_FALSE.)),
-  constraint chk_cru_fire_on_page_load check (cru_fire_on_page_load in (&C_TRUE., &C_FALSE.))  
+	cru_active &FLAG_TYPE. default on null &C_TRUE. constraint c_cru_active_nn not null, 
+	cru_fire_on_page_load &FLAG_TYPE. default on null &C_FALSE. constraint c_cru_fire_on_page_load_nn not null, 
+	cru_has_error &FLAG_TYPE. default on null &C_FALSE. constraint c_cru_has_error_nn not null, 
+  constraint p_cru_id primary key (cru_id),
+  constraint r_cru_crg_id foreign key (cru_crg_id)
+	  references adc_rule_groups (crg_id) on delete cascade,
+  constraint c_cru_active check (cru_active in (&C_TRUE., &C_FALSE.)),
+  constraint c_cru_has_error check (cru_has_error in (&C_TRUE., &C_FALSE.)),
+  constraint c_cru_fire_on_page_load check (cru_fire_on_page_load in (&C_TRUE., &C_FALSE.))  
 );
-create index idx_r_cru_cgr_id on adc_rules (cru_cgr_id, cru_id);
+create index idx_r_cru_crg_id on adc_rules (cru_crg_id, cru_id);
 
 comment on table adc_rules  is 'Table to store a single rule';
 comment on column adc_rules.cru_id is 'PK, technical key';
-comment on column adc_rules.cru_cgr_id is 'FK, reference to ADC_GROUP';
+comment on column adc_rules.cru_crg_id is 'FK, reference to ADC_GROUP';
 comment on column adc_rules.cru_name is 'Descriptive Name';
 comment on column adc_rules.cru_condition is 'Condition, syntactically in the form of a partial where-clause';
-comment on column adc_rules.cru_sort_seq is 'Sortierkriterium, definiert Ausführungsreihenfolge';
+comment on column adc_rules.cru_sort_seq is 'Sort criterion, defines execution order. Defaults to 10';
 comment on column adc_rules.cru_firing_items is 'List of page items that are referenced within cru_condition';
-comment on column adc_rules.cru_active is 'Flag, das anzeigt, ob die Regel aktuell verwendet werden soll';
-comment on column adc_rules.cru_fire_on_page_load is 'Flag, das anzeigt, ob diese Regel beim Initialisiern der Seite gefeuert werden soll';
-comment on column adc_rules.cru_has_error is 'Flag, das anzeigt, ob diese Regel einen Fehler enthaelt oder nicht';
+comment on column adc_rules.cru_active is 'Flag indicating whether the rule should be used currently. Defaults to TRUE';
+comment on column adc_rules.cru_fire_on_page_load is 'Flag indicating whether this rule should be fired when the page is initialized. Defaults to FALSE';
+comment on column adc_rules.cru_has_error is 'flag indicating whether this rule contains an error or not. Defaults to FALSE';
 

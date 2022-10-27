@@ -195,28 +195,28 @@ as
   
   /**  
     Procedure: append_apex_actions
-      See <ADC_APEX_ACTIONS.get_cgr_apex_actions>
+      See <ADC_APEX_ACTIONS.get_crg_apex_actions>
    */
-  function get_cgr_apex_actions(
-    p_cgr_id in adc_rule_groups.cgr_id%type)
+  function get_crg_apex_actions(
+    p_crg_id in adc_rule_groups.crg_id%type)
     return varchar2
   as
     l_actions_js adc_util.max_char;
     l_has_actions binary_integer;
   begin
-    pit.enter_optional('get_cgr_apex_actions');
+    pit.enter_optional('get_crg_apex_actions');
         
     -- check whether APEX actions exist
     select count(*)
       into l_has_actions
       from adc_apex_action_items
-     where cai_cpi_cgr_id = p_cgr_id
+     where caai_cpi_crg_id = p_crg_id
        and rownum = 1;
     pit.assert(l_has_actions > 0);
                 
     -- Generate initalization JavaScript for APEX actions based on UTL_TEXT templates of name APEX_ACTION
     with templates as (
-           select uttm_name, uttm_mode, uttm_text, p_cgr_id cgr_id
+           select uttm_name, uttm_mode, uttm_text, p_crg_id crg_id
              from utl_text_templates
             where uttm_type = adc_util.C_PARAM_GROUP
               and uttm_name = 'APEX_ACTION')
@@ -229,20 +229,20 @@ as
                              cpi_id, caa_name
                         from adc_apex_action_items
                         join adc_apex_actions
-                          on cai_caa_id = caa_id
+                          on caai_caa_id = caa_id
                         join adc_page_items
-                          on cai_cpi_cgr_id = cpi_cgr_id
-                         and cai_cpi_id = cpi_id
+                          on caai_cpi_crg_id = cpi_crg_id
+                         and caai_cpi_id = cpi_id
                         join adc_page_item_types
-                          on cpi_cit_id = cit_id
+                          on cpi_cpit_id = cpit_id
                         join templates
-                          on cit_id = uttm_mode
-                         and cai_cpi_cgr_id = cgr_id),
+                          on cpit_id = uttm_mode
+                         and caai_cpi_crg_id = crg_id),
                       p_delimiter => adc_util.C_CR
                     ) bind_action_items,
                     utl_text.generate_text(cursor(
                       select uttm_text template, adc_util.C_CR || '    ' cr,
-                             caa_cgr_id, caa_cty_id, caa_name, 
+                             caa_crg_id, caa_caat_id, caa_name, 
                              apex_escape.json(caa_label) caa_label,
                              apex_escape.json(caa_label) caa_label_key, 
                              apex_escape.json(caa_context_label) caa_context_label, 
@@ -257,10 +257,10 @@ as
                              coalesce(caa_action, g_default_apex_action) caa_action
                         from adc_apex_actions_v saa
                         join adc_rule_groups cgr
-                          on saa.caa_cgr_id = cgr.cgr_id
+                          on saa.caa_crg_id = cgr.crg_id
                         join templates t
-                          on t.cgr_id = cgr.cgr_id
-                         and uttm_mode = caa_cty_id),
+                          on t.crg_id = cgr.crg_id
+                         and uttm_mode = caa_caat_id),
                       p_delimiter => adc_util.C_DELIMITER || adc_util.C_CR || '   '
                     ) action_list
                from templates
@@ -278,7 +278,7 @@ as
       -- not during initialization or no apex actions, ignore.
       pit.leave_optional;
       return null;
-  end get_cgr_apex_actions;
+  end get_crg_apex_actions;
 
 
   /**

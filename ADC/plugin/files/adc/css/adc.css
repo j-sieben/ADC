@@ -41,3 +41,7 @@
 .t-Form-warning{
     color: #FBCE4A;
 }
+
+.a-GV-header{
+    vertical-align: top !important;
+}

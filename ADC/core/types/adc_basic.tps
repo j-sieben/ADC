@@ -60,6 +60,20 @@ as object (
       Method to clear the ADC page state for the actual page
    */
   static procedure clear_page_state,
+  
+  
+  /**
+    Procedure: confirm_click
+      Registers a confirmation message prior to raising the click event.
+
+    Parameters:
+      p_javascript - JavaScript to execute on page
+   */
+  static procedure confirm_click(
+    p_button_id in varchar2,
+    p_message_name in varchar2,
+    p_msg_args in msg_args default null,
+    p_dialog_title in varchar2 default null),
 
 
   /** 

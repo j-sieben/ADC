@@ -78,7 +78,7 @@ begin
     p_error_number => -20000);
 
   pit_admin.merge_message(
-    p_pms_name => 'ADC_INITIALZE_CGR_FAILED',
+    p_pms_name => 'ADC_INITIALZE_CRG_FAILED',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Fehler bei der Initialisierung der Regelgruppe #1#: #2#^',
     p_pms_description => q'^^',
@@ -189,7 +189,7 @@ begin
     p_pms_name => 'ADC_RULE_ACTION_EXISTS',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Diese Kombination aus Attributen einer Regelaktion existiert bereits.^',
-    p_pms_description => q'^Die Attribute CRA_CGR_ID, CRA_CRU_ID, CRA_CPI_ID, CRA_CAT_ID und CRA_ON_ERROR müssen eindeutig sein.^',
+    p_pms_description => q'^Die Attribute CRA_CRG_ID, CRA_CRU_ID, CRA_CPI_ID, CRA_CAT_ID und CRA_ON_ERROR müssen eindeutig sein.^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
     p_error_number => -20000);
@@ -305,8 +305,8 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_PARAM_LOV_INCORRECT',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Die LOV-View #1# hat nicht die vorgegebenen Spalten D, R und CGR_ID.^',
-    p_pms_description => q'^Damit eine LOV-View genutzt werden kann, muss sie über genau 3 Spalten mit den Bezeichnern D, R und CGR_ID verfügen.^',
+    p_pms_text => q'^Die LOV-View #1# hat nicht die vorgegebenen Spalten D, R und CRG_ID.^',
+    p_pms_description => q'^Damit eine LOV-View genutzt werden kann, muss sie über genau 3 Spalten mit den Bezeichnern D, R und CRG_ID verfügen.^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
     p_error_number => -20000);
@@ -438,7 +438,7 @@ begin
     p_error_number => null);
 
   pit_admin.merge_message(
-    p_pms_name => 'ADC_CGR_MUS_BE_UNIQUE',
+    p_pms_name => 'ADC_CRG_MUS_BE_UNIQUE',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Der Name der Regelgruppe muss für diese Anwendung eindeutig sein.^',
     p_pms_description => q'^^',
@@ -447,7 +447,7 @@ begin
     p_error_number => -20000);
 
   pit_admin.merge_message(
-    p_pms_name => 'ADC_CGR_MUST_BE_UNIQUE',
+    p_pms_name => 'ADC_CRG_MUST_BE_UNIQUE',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Die Regelgruppe existiert bereits. Wählen Sie einen eindeutigen Namen.^',
     p_pms_description => q'^^',

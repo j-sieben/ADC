@@ -8,11 +8,14 @@ as
   C_PAGE_DESIGNER constant number := 13;
   
   -- Items
-  g_cgr_id adc_rule_groups.cgr_id%type;
+  g_crg_id adc_rule_groups.crg_id%type;
   g_application_id number;
   g_page_prefix adc_util.ora_name_type := 'P' || C_PAGE_DESIGNER || '_';
+  g_cpi_id adc_page_items.cpi_id%type;
+  g_event adc_page_item_types.cpit_cet_id%type;
+  g_event_data adc_util.max_char;
   
-  C_CGR_APP_ID_ITEM constant adc_util.ora_name_type := g_page_prefix || 'CGR_APP_ID';
+  C_CRG_APP_ID_ITEM constant adc_util.ora_name_type := g_page_prefix || 'CRG_APP_ID';
   C_CRA_CAT_ID_ITEM constant adc_util.ora_name_type := g_page_prefix || 'CRA_CAT_ID';
   C_CRU_CONDITION_ITEM constant adc_util.ora_name_type := g_page_prefix || 'CRU_CONDITION';  
   C_COMMAND constant adc_util.ora_name_type := 'COMMAND';
@@ -29,11 +32,11 @@ as
        p_username => C_APEX_USER);
     
     -- get CGR for the rule group of the selected page
-    select cgr_id
-      into g_cgr_id
+    select crg_id
+      into g_crg_id
       from adc_rule_groups
-     where cgr_app_id = g_application_id
-       and cgr_page_id = C_PAGE_DESIGNER;
+     where crg_app_id = g_application_id
+       and crg_page_id = C_PAGE_DESIGNER;
   end create_session;
 
 
@@ -73,7 +76,7 @@ as
   as
   begin
     adc_recursion_stack.reset(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => adc_util.C_NO_FIRING_ITEM);
   end after_each;
   
@@ -97,10 +100,11 @@ as
     create_session;
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
-      p_cpi_id => adc_util.C_NO_FIRING_ITEM);
-    
-    ut.expect(adc_recursion_stack.get_next).to_be_null;
+      p_crg_id => g_crg_id,
+      p_cpi_id => adc_util.C_NO_FIRING_ITEM,
+      p_event => 'initialize');
+    adc_recursion_stack.get_next(g_cpi_id, g_event, g_event_data);
+    ut.expect(g_cpi_id).to_be_null;
   end push_no_firing_item;
   
   
@@ -113,8 +117,9 @@ as
     create_session;
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => C_CRA_CAT_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     ut.expect(adc_recursion_stack.get_level).to_equal(1);
@@ -130,11 +135,13 @@ as
     create_session;
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => C_CRA_CAT_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
-    ut.expect(adc_recursion_stack.get_next).to_equal(C_CRA_CAT_ID_ITEM);
+    adc_recursion_stack.get_next(g_cpi_id, g_event, g_event_data);
+    ut.expect(g_cpi_id).to_equal(C_CRA_CAT_ID_ITEM);
   end push_and_get_firing_item;
   
   
@@ -147,13 +154,15 @@ as
     create_session;
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => C_CRA_CAT_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => C_CRA_CAT_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     ut.expect(adc_recursion_stack.get_level).to_equal(1);
@@ -169,16 +178,18 @@ as
     create_session;
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => C_CRA_CAT_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     adc_recursion_stack.pop_firing_item(
       p_cpi_id => C_CRA_CAT_ID_ITEM);
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => C_CRA_CAT_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     ut.expect(adc_recursion_stack.get_level).to_equal(0);
@@ -194,13 +205,15 @@ as
     create_session;
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => C_CRA_CAT_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
-      p_cpi_id => C_CGR_APP_ID_ITEM,
+      p_crg_id => g_crg_id,
+      p_cpi_id => C_CRG_APP_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     ut.expect(adc_recursion_stack.get_level).to_equal(2);
@@ -216,13 +229,15 @@ as
     create_session;
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => C_CRA_CAT_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
-      p_cpi_id => C_CGR_APP_ID_ITEM,
+      p_crg_id => g_crg_id,
+      p_cpi_id => C_CRG_APP_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     adc_recursion_stack.pop_firing_item(
@@ -241,16 +256,18 @@ as
     create_session;
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => C_CRA_CAT_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     adc_recursion_stack.pop_firing_item(
       p_cpi_id => C_CRA_CAT_ID_ITEM);
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
-      p_cpi_id => C_CGR_APP_ID_ITEM,
+      p_crg_id => g_crg_id,
+      p_cpi_id => C_CRG_APP_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     ut.expect(adc_recursion_stack.get_level).to_equal(1);
@@ -266,20 +283,22 @@ as
     create_session;
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => C_CRA_CAT_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
-      p_cpi_id => C_CGR_APP_ID_ITEM,
+      p_crg_id => g_crg_id,
+      p_cpi_id => C_CRG_APP_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     adc_recursion_stack.pop_firing_item(
       p_cpi_id => C_CRA_CAT_ID_ITEM);
     
     adc_recursion_stack.pop_firing_item(
-      p_cpi_id => C_CGR_APP_ID_ITEM);
+      p_cpi_id => C_CRG_APP_ID_ITEM);
     
     ut.expect(adc_recursion_stack.get_level).to_equal(0);
   end push_pop;
@@ -294,8 +313,9 @@ as
     create_session;
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => C_CRA_CAT_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     adc_recursion_stack.pop_firing_item(
@@ -329,13 +349,15 @@ as
     create_session;
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => C_CRA_CAT_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
-      p_cpi_id => C_CGR_APP_ID_ITEM,
+      p_crg_id => g_crg_id,
+      p_cpi_id => C_CRG_APP_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     adc_recursion_stack.pop_firing_item(
@@ -355,12 +377,13 @@ as
     create_session;
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => C_CRA_CAT_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     adc_recursion_stack.pop_firing_item(
-      p_cpi_id => C_CGR_APP_ID_ITEM);
+      p_cpi_id => C_CRG_APP_ID_ITEM);
     
     ut.expect(adc_recursion_stack.get_level).to_equal(1);
   end pop_item_not_on_stack;
@@ -375,15 +398,17 @@ as
     create_session;
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => C_CRA_CAT_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     adc_recursion_stack.reset(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => adc_util.C_NO_FIRING_ITEM);
     
-    ut.expect(adc_recursion_stack.get_next).to_be_null;
+    adc_recursion_stack.get_next(g_cpi_id, g_event, g_event_data);
+    ut.expect(g_cpi_id).to_be_null;
   end reset_initial;
   
   
@@ -396,31 +421,33 @@ as
     create_session;
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => C_CRA_CAT_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     adc_recursion_stack.reset(
-      p_cgr_id => g_cgr_id,
-      p_cpi_id => C_CGR_APP_ID_ITEM);
+      p_crg_id => g_crg_id,
+      p_cpi_id => C_CRG_APP_ID_ITEM);
     
-    ut.expect(adc_recursion_stack.get_next).to_equal(C_CGR_APP_ID_ITEM);
+    adc_recursion_stack.get_next(g_cpi_id, g_event, g_event_data);
+    ut.expect(g_cpi_id).to_equal(C_CRG_APP_ID_ITEM);
   end reset_with_item;
   
   
   --
-  -- test ADC_RECURSION_STACK case 16: throws an exception if P_CGR_ID is missing
+  -- test ADC_RECURSION_STACK case 16: throws an exception if P_CRG_ID is missing
   --
-  procedure reset_without_cgr_id
+  procedure reset_without_crg_id
   as
   begin
     create_session;
     
     adc_recursion_stack.reset(
-      p_cgr_id => null,
+      p_crg_id => null,
       p_cpi_id => adc_util.C_NO_FIRING_ITEM);
     
-  end reset_without_cgr_id;
+  end reset_without_crg_id;
   
   
   --
@@ -434,16 +461,18 @@ as
     create_session;
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => C_CRA_CAT_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
-      p_cpi_id => C_CGR_APP_ID_ITEM,
+      p_crg_id => g_crg_id,
+      p_cpi_id => C_CRG_APP_ID_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
-    l_expected := json_element_t.parse('["' || C_CRA_CAT_ID_ITEM || '","' || C_CGR_APP_ID_ITEM || '"]');
+    l_expected := json_element_t.parse('["' || C_CRA_CAT_ID_ITEM || '","' || C_CRG_APP_ID_ITEM || '"]');
     l_actual := json_element_t.parse(adc_recursion_stack.get_firing_items_as_json);
     
     ut.expect(l_expected).to_equal(l_actual);    
@@ -461,13 +490,15 @@ as
     create_session;
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => adc_util.C_NO_FIRING_ITEM,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     adc_recursion_stack.push_firing_item(
-      p_cgr_id => g_cgr_id,
+      p_crg_id => g_crg_id,
       p_cpi_id => C_COMMAND,
+      p_event => 'change',
       p_allow_recursion => adc_util.C_TRUE);
     
     l_expected := json_element_t.parse('[]');

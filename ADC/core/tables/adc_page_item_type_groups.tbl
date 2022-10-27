@@ -1,13 +1,13 @@
 create table adc_page_item_type_groups(
-  cig_id varchar2(50 char), 
-	cig_has_value &FLAG_TYPE. default &C_TRUE., 
-	cig_include_in_view &FLAG_TYPE. default &C_FALSE., 
-  constraint pk_adc_page_item_type_groups primary key (cig_id),
-  constraint chk_cig_has_value check (cig_has_value in (&C_TRUE., &C_FALSE.)),
-  constraint chk_cig_include_in_view check (cig_include_in_view in (&C_TRUE., &C_FALSE.))
+  cpitg_id varchar2(50 char), 
+	cpitg_has_value &FLAG_TYPE. default on null &C_TRUE. constraint c_cpitg_has_value_nn not null, 
+	cpitg_include_in_view &FLAG_TYPE. default on null &C_FALSE. constraint c_cpitg_include_in_view_nn not null, 
+  constraint p_cpitg_id primary key (cpitg_id),
+  constraint c_cpitg_has_value check (cpitg_has_value in (&C_TRUE., &C_FALSE.)),
+  constraint c_cpitg_include_in_view check (cpitg_include_in_view in (&C_TRUE., &C_FALSE.))
 ) organization index;
 
 comment on table adc_page_item_type_groups  is 'Table to store page item type groups which are supported by ADC. An item type group is a grouping criteria one or more item types.';
-comment on column adc_page_item_type_groups.cig_id is 'PK, alphanumerical key';
-comment on column adc_page_item_type_groups.cig_has_value is 'Flag to indicate whether item types of this group contain a session state';
-comment on column adc_page_item_type_groups.cig_include_in_view is 'Flag to indicate whether item types of this group have to be added to the decision table regardless of whether they contain a session state value.';
+comment on column adc_page_item_type_groups.cpitg_id is 'PK, alphanumerical key';
+comment on column adc_page_item_type_groups.cpitg_has_value is 'Flag to indicate whether item types of this group contain a session state';
+comment on column adc_page_item_type_groups.cpitg_include_in_view is 'Flag to indicate whether item types of this group have to be added to the decision table regardless of whether they contain a session state value.';

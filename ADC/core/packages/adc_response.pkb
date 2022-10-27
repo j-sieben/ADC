@@ -81,7 +81,7 @@ as
     js_action_stack javascript_list,
     error_stack error_stack_t,
     level_length level_length_t,
-    cgr_id adc_rule_groups.cgr_id%type,
+    crg_id adc_rule_groups.crg_id%type,
     cru_name adc_rules.cru_name%type,
     request_start binary_integer,
     rule_start binary_integer);
@@ -202,7 +202,7 @@ as
     g_param.level_length(adc_util.C_JS_COMMENT) := 0;
     g_param.level_length(adc_util.C_JS_DETAIL) := 0;
     g_param.level_length(adc_util.C_JS_VERBOSE) := 0;
-    g_param.cgr_id := null;
+    g_param.crg_id := null;
     
     pit.leave_detailed;
   end reset;
@@ -439,18 +439,18 @@ as
    */
   procedure initialize_response(
     p_initialize_mode in boolean,
-    p_cgr_id in adc_rule_groups.cgr_id%type)
+    p_crg_id in adc_rule_groups.crg_id%type)
   as
   begin
     pit.enter_optional;
     
     reset;
     
-    g_param.cgr_id := p_cgr_id;
+    g_param.crg_id := p_crg_id;
     g_param.request_start := dbms_utility.get_time;
     
     if p_initialize_mode then
-      add_javascript(adc_apex_action.get_cgr_apex_actions(g_param.cgr_id));
+      add_javascript(adc_apex_action.get_crg_apex_actions(g_param.crg_id));
     end if;
     
     pit.leave_optional;
@@ -522,7 +522,7 @@ as
                        to_char(p_cru_sort_seq), 
                        convert(p_cru_name, 'AL32UTF8'), 
                        p_firing_item,
-                       adc_page_state.get_string(g_param.cgr_id, p_firing_item)));
+                       adc_page_state.get_string(g_param.crg_id, p_firing_item)));
                        
   end register_recursion_start;
 

@@ -126,7 +126,7 @@ create table hr_employees(
   constraint emp_salary_gt_0 check (emp_salary > 0)
 );
 
-prompt &s1.Vreate foreign key constraint here to overcome circular dependency
+prompt &s1.Create foreign key constraint here to overcome circular dependency
 alter table hr_departments add (
   constraint dep_mgr_id_fk foreign key (dep_mgr_id)
     references hr_employees (emp_id)

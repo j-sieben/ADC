@@ -1,15 +1,15 @@
 create table adc_apex_actions(
-  caa_id number default on null adc_seq.nextval constraint nn_caa_id not null, 
-	caa_cgr_id number, 
-	caa_cty_id varchar2(11 char), 
+  caa_id number default on null adc_seq.nextval constraint c_caa_id_nn not null, 
+	caa_crg_id number, 
+	caa_caat_id varchar2(11 char), 
 	caa_name varchar2(50 char), 
 	caa_pti_id varchar2(128 byte), 
 	caa_pmg_name varchar2(128 byte), 
 	caa_icon varchar2(50 char), 
-	caa_icon_type varchar2(50 char) default 'fa', 
+	caa_icon_type varchar2(50 char) default on null 'fa', 
 	caa_shortcut varchar2(50 char), 
-	caa_initially_disabled &FLAG_TYPE. default &C_FALSE., 
-	caa_initially_hidden &FLAG_TYPE. default &C_FALSE., 
+	caa_initially_disabled &FLAG_TYPE. default on null &C_FALSE. constraint c_caa_initially_disabled_nn not null, 
+	caa_initially_hidden &FLAG_TYPE. default on null &C_FALSE. constraint c_caa_initially_hidden_nn not null, 
 	caa_href varchar2(200 char), 
 	caa_action varchar2(200 char), 
 	caa_on_label varchar2(50 char), 
@@ -21,26 +21,26 @@ create table adc_apex_actions(
 	caa_label_start_classes varchar2(50 char), 
 	caa_label_end_classes varchar2(50 char), 
 	caa_item_wrap_class varchar2(50 char),
-  constraint pk_adc_apex_actions primary key (caa_id),
-  constraint fk_caa_cgr_id foreign key (caa_cgr_id)
-	  references adc_rule_groups (cgr_id) on delete cascade,
-  constraint fk_caa_cty_id foreign key (caa_cty_id)
-	  references adc_apex_action_types (cty_id) on delete cascade,
-  constraint fk_caa_pti_id foreign key (caa_pti_id, caa_pmg_name)
+  constraint p_caa_id primary key (caa_id),
+  constraint r_caa_crg_id foreign key (caa_crg_id)
+	  references adc_rule_groups (crg_id) on delete cascade,
+  constraint r_caa_caat_id foreign key (caa_caat_id)
+	  references adc_apex_action_types (caat_id) on delete cascade,
+  constraint r_caa_pti_id foreign key (caa_pti_id, caa_pmg_name)
 	  references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
-  constraint chk_caa_initially_disabled check (caa_initially_disabled in (&C_TRUE., &C_FALSE.)),
-  constraint chk_caa_initially_hidden check (caa_initially_hidden in (&C_TRUE., &C_FALSE.))
+  constraint c_caa_initially_disabled check (caa_initially_disabled in (&C_TRUE., &C_FALSE.)),
+  constraint c_caa_initially_hidden check (caa_initially_hidden in (&C_TRUE., &C_FALSE.))
 );
 
-create unique index idx_caa_cgr_name on adc_apex_actions (caa_cgr_id, caa_name);
-create index idx_fk_caa_cgr_id on adc_apex_actions (caa_cgr_id);
-create index idx_fk_caa_cty_id on adc_apex_actions (caa_cty_id);
+create unique index idx_caa_crg_name on adc_apex_actions (caa_crg_id, caa_name);
+create index idx_fk_caa_crg_id on adc_apex_actions (caa_crg_id);
+create index idx_fk_caa_caat_id on adc_apex_actions (caa_caat_id);
 create index idx_fk_caa_pti_id on adc_apex_actions (caa_pti_id, caa_pmg_name);
 
 comment on table adc_apex_actions  is 'Table to store apex actions to be maintained by ADC';
 
-comment on column adc_apex_actions.caa_cgr_id is 'Part of Unique, Reference to ADC_RULE_GROUP';
-comment on column adc_apex_actions.caa_cty_id is 'Type of the action. Reference to adc_apex_actions_TYPE';
+comment on column adc_apex_actions.caa_crg_id is 'Part of Unique, Reference to ADC_RULE_GROUP';
+comment on column adc_apex_actions.caa_caat_id is 'Type of the action. Reference to adc_apex_actions_TYPE';
 comment on column adc_apex_actions.caa_name is 'Part of Unique, a unique name for the action within that ADC_RULE_GROPU. By convention the style of names uses a dash to separate words as in clear-log. Name must not contain spaces, >, :, quote, or double quote, or non-printing characters.';
 comment on column adc_apex_actions.caa_icon is 'The icon for action may be used in buttons and menus';
 comment on column adc_apex_actions.caa_icon_type is 'The icon type. Defaults to fa (FontApex). Updates to the iconType may not be supported by all control types that can be associated with actions.';

@@ -2,7 +2,7 @@ create or replace type ut_adc_param
   authid definer
 as object(
   id number,                               -- internal ID of the record
-  cgr_id number,                           -- actual CGR_ID
+  crg_id number,                           -- actual CRG_ID
   firing_item varchar2(128 byte),          -- actual firing item (or adc_util.C_NO_FIRING_ITEM)
   firing_event varchar2(128 byte),         -- actual firing event (normally change or click, but can be any event)
   error_dependent_items varchar2(2000),    -- List of items to deactivate if the page contains errors
