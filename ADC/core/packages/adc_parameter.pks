@@ -7,7 +7,7 @@ as
     Package: ADC_PARAMETER
       Package to handle parameter values. There are two main tasks to perform:
       
-        - Validate any parameter upon creation or changing of the rule action
+        - Validate any parameter upon creation or change of the rule action
         - Evaluate the parameter value upon execution
                
     Author::
@@ -21,7 +21,7 @@ as
     Procedure: validate_param_lov
       Method checks that a LOV view exists.
 
-      For a action parameter of type SELECT_LIST, a LOV view is required to calculate
+      For an action parameter of type SELECT_LIST, a LOV view is required to calculate
       the actual display and return values. It must also provide a column with the
       CRG_ID the values relate to to allow for filtering.
       This method checks that a LOV view with the correct column structure
@@ -55,13 +55,11 @@ as
       p_value - Parameter value to check and format
       p_capt_id - Parameter Type
       p_cpi_id - UI element to attach the error to
-      p_environment - Record with environmental data such as CRG_ID
    */
   procedure validate_parameter(
     p_value in out nocopy adc_rule_actions.cra_param_1%type,
     p_capt_id in adc_action_param_types.capt_id%type,
-    p_cpi_id in adc_page_items.cpi_id%type,
-    p_environment in adc_util.environment_rec);    
+    p_cpi_id in adc_page_items.cpi_id%type);    
   
   
   /**

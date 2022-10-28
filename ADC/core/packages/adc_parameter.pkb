@@ -168,7 +168,7 @@ end;~';
 
   /**
     Procedure: parse_method
-      Validate that p_calue is a string
+      Validate that p_calue is an executable method
 
     Parameters:
       p_method - Method to check.
@@ -194,7 +194,9 @@ end;~';
       l_stmt := C_PROCEDURE_STMT;
     end if;
     l_stmt := replace(l_stmt, '#STMT#', p_method);
-    pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Statement: ' || l_stmt));
+    pit.log_state(
+      p_params => msg_params(msg_param('Statement', l_stmt)));
+      
     l_ctx := dbms_sql.open_cursor;
     dbms_sql.parse(l_ctx, l_stmt, dbms_sql.NATIVE);
     dbms_sql.close_cursor(l_ctx);
@@ -217,28 +219,34 @@ end;~';
 
     Parameters:
       p_value - Method to check.
-      p_environment - Calling environment
    */
   procedure validate_is_apex_action(
-    p_value in out nocopy varchar2,
-    p_environment in adc_util.environment_rec)
+    p_value in out nocopy varchar2)
   as
     l_exists binary_integer;
+    l_environment adc_util.environment_rec;
   begin
+    pit.enter_optional('validate_is_apex_action',
+      p_params => msg_params(msg_param('p_value', p_value)));
+      
+    l_environment := adc_util.get_environment;
     select count(*)
       into l_exists
       from dual
      where exists(
            select null
              from adc_apex_actions
-            where caa_crg_id = p_environment.crg_id
+            where caa_crg_id = l_environment.crg_id
               and caa_name = p_value);
+              
     if l_exists = 0 then
       adc_api.register_error(
         p_cpi_id => p_value,
         p_message_name => msg.ADC_APEX_ACTION_UNKNOWN,
         p_msg_args => msg_args(p_value));
     end if;
+    
+    pit.leave_optional;
   end validate_is_apex_action;
 
 
@@ -310,6 +318,7 @@ end;~';
       p_params => msg_params(
                     msg_param('p_value', p_value),
                     msg_param('p_target', p_target)));
+                    
     parse_method(p_value, p_is_function => false);
 
     pit.leave_detailed;
@@ -405,19 +414,25 @@ end;~';
    */
   procedure validate_is_selector(
     p_value in out nocopy varchar2,
-    p_target in varchar2,
-    p_environment in adc_util.environment_rec)
+    p_target in varchar2)
   as
+    l_environment adc_util.environment_rec;
   begin
+    pit.enter_optional('validate_is_selector',
+      p_params => msg_params(msg_param('p_value', p_value)));
+      
+    l_environment := adc_util.get_environment;
     p_value := trim(p_value);
     -- If selector starts with # or ., take it as is, otherwise try to find item and prefix it with #
     if not substr(p_value, 1, 1) in ('#', '.') then
       select '#' || cpi_id
         into p_value
         from adc_page_items
-       where cpi_crg_id = p_environment.crg_id
+       where cpi_crg_id = l_environment.crg_id
          and cpi_id = upper(p_value);
     end if;
+    
+    pit.leave_optional;
   exception
     when NO_DATA_FOUND then
       pit.error(msg.ADC_PARAM_VALIDATION_FAILED, p_error_code => msg.ADC_INVALID_JQUERY);
@@ -434,15 +449,21 @@ end;~';
    */
   procedure validate_is_page_item(
     p_value in out nocopy varchar2,
-    p_target in varchar2,
-    p_environment in adc_util.environment_rec)
+    p_target in varchar2)
   as
+    l_environment adc_util.environment_rec;
   begin
+    pit.enter_optional('validate_is_page_item',
+      p_params => msg_params(msg_param('p_value', p_value)));
+      
+    l_environment := adc_util.get_environment;
     select cpi_id
       into p_value
       from adc_page_items
-     where cpi_crg_id = p_environment.crg_id
+     where cpi_crg_id = l_environment.crg_id
        and cpi_id = upper(p_value);
+    
+    pit.leave_optional;
   exception
     when NO_DATA_FOUND then
       pit.error(msg.ADC_INVALID_JQUERY, p_error_code => msg.ADC_INVALID_PAGE_ITEM);
@@ -782,8 +803,7 @@ end;~';
   procedure validate_parameter(
     p_value in out nocopy adc_rule_actions.cra_param_1%type,
     p_capt_id in adc_action_param_types.capt_id%type,
-    p_cpi_id in adc_page_items.cpi_id%type,
-    p_environment in adc_util.environment_rec)
+    p_cpi_id in adc_page_items.cpi_id%type)
   as
     l_error_msg adc_util.max_char;
     l_error message_type;
@@ -796,7 +816,7 @@ end;~';
 
     case p_capt_id
       when C_APEX_ACTION then
-        validate_is_apex_action(p_value, p_environment);
+        validate_is_apex_action(p_value);
       when C_FUNCTION then
         validate_is_function(p_value, p_cpi_id);
       when C_JAVA_SCRIPT then
@@ -804,9 +824,9 @@ end;~';
       when C_JAVA_SCRIPT_FUNCTION then
         validate_is_function(p_value, p_cpi_id);
       when C_JQUERY_SELECTOR then
-        validate_is_selector(p_value, p_cpi_id, p_environment);
+        validate_is_selector(p_value, p_cpi_id);
       when C_PAGE_ITEM then
-        validate_is_page_item(p_value, p_cpi_id, p_environment);
+        validate_is_page_item(p_value, p_cpi_id);
       when C_PIT_MESSAGE then
         validate_is_pit_message(p_value, p_cpi_id);
       when C_PROCEDURE then

@@ -1599,7 +1599,6 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
     l_firing_item adc_util.ora_name_type;
     l_param_index binary_integer;
     l_param_value adc_rule_actions.cra_param_1%type;
-    l_environment adc_util.environment_rec;
   begin
     pit.enter_mandatory;
     
@@ -1607,7 +1606,6 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
     l_param_index := to_number(substr(l_firing_item, -1, 1));
     l_cat_id := adc_api.get_string('CRA_CAT_ID');
     l_param_value := adc_api.get_string(l_firing_item);
-    l_environment := adc_util.get_environment;
     
     select cap_capt_id
       into l_capt_id
@@ -1618,8 +1616,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
     adc_parameter.validate_parameter(
       p_value => l_param_value,
       p_capt_id => l_capt_id,
-      p_cpi_id => l_firing_item,
-      p_environment => l_environment);
+      p_cpi_id => l_firing_item);
     
     pit.leave_mandatory;
   end check_parameter_value;

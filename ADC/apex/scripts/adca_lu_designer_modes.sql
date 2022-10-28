@@ -3,7 +3,7 @@ using (select 'CAA'	aldm_id, 'CAA' aldm_name,	adc_util.C_TRUE aldm_active
          from dual
        union all
        select 'CAG', 'CAG',	adc_util.C_TRUE from dual union all
-       select 'CGR', 'CGR',	adc_util.C_TRUE from dual union all
+       select 'CRG', 'CRG',	adc_util.C_TRUE from dual union all
        select 'CRA', 'CRA',	adc_util.C_TRUE from dual union all
        select 'CRU', 'CRU',	adc_util.C_TRUE from dual union all
        select 'FLG', 'FLG',	adc_util.C_TRUE from dual union all
