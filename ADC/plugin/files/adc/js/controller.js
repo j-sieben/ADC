@@ -537,14 +537,15 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pApexAction - Optional Apex action command name
    */
   ctl.bindConfirmationHandler = function(pTarget, pMessage, pDialogTitle, pApexAction){
+    let innerCallback;
     let callback;
     // Handle event only after confirmation from the user
     if (pApexAction){
-      callback = function(pApexAction) {apex.actions.invoke(pApexAction);};
+      innerCallback = function() {apex.actions.invoke(pApexAction);};
     } else {
-      callback = changeCallback;
+      innerCallback = changeCallback;
     }
-    callback = function(pEvent) {adc.renderer.confirmRequest(pEvent, callback);};
+    callback = function(pEvent) {adc.renderer.confirmRequest(pEvent, innerCallback);};
     addButtonHandler(pTarget, pMessage, pDialogTitle, callback);
   }; // bindConfirmationHandler
 
