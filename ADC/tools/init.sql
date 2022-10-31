@@ -17,8 +17,11 @@ define MIN_UT_VERSION=3.1
 define core_dir=core/
 define plugin_dir=plugin/
 
-select pit.get_default_language default_language,
-       case when utl_apex.get_apex_version >= 20.2 then 'apex_20_2' end apex_path
+select pit.get_default_language default_language,       
+       case 
+         when utl_apex.get_apex_version >= 22.2 then 'apex_22_2'
+         when utl_apex.get_apex_version >= 20.2 then 'apex_20_2'
+       end apex_path
   from dual;
   
 @settings.sql

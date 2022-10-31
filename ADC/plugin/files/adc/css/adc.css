@@ -39,7 +39,16 @@
 }
 
 .t-Form-warning{
-    color: #FBCE4A;
+    color: black;
+}
+
+.t-Form-warning:before{
+  content: "\f071";
+  font-family: 'Font APEX Small'!important;
+  font-size: 1.6rem;
+  line-height: 1.2rem;
+  vertical-align: bottom;
+  color: #FBCE4A;
 }
 
 .a-GV-header{
