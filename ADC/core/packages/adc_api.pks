@@ -307,6 +307,23 @@ as
 
 
   /**
+    Function: has_class
+      Method to check whether the actual firing item has got a css class passed in as parameter
+      
+      Is used within technical conditions to bind all items with a given class
+      
+    Parameter:
+      p_class - Class that is checked against the firing item.
+                
+    Returns:
+      adc_util.C_TRUE, if firing item has got the actual class, adc_util.C_FALSE otherwise
+   */
+  function has_class(
+    p_class in varchar2)
+    return adc_util.flag_type;
+
+
+  /**
     Function: has_errors
       Method to learn whether the actual rule flow has receieved errors.
       

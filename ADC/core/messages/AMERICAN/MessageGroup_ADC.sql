@@ -717,6 +717,14 @@ begin
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_HARMONIZE_CPI_STEP_1',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Step 1: Remove the REQUIRED flags and mark each element as incorrect, this will be corrected later.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => pit.level_debug,
+    p_pms_pml_name => 'AMERICAN');
+    
   commit;
   pit_admin.create_message_package;
 end;

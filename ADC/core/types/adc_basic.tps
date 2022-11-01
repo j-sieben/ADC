@@ -152,6 +152,19 @@ as object (
     p_mapping in char_table default null),
     
     
+  /**
+    Function: firing_item_has_class
+      Method returns adc_util.C_TRUE, if the firing item has class <p_class>.
+      
+      Is used to bind an observer to more than one item based on a CSS class attached to a 
+      group of page items. This method allows to detect whether the actual firing item is part
+      of that group. This method is used within technical conditions.
+   */
+  static function firing_item_has_class(
+    p_class in varchar2)
+    return varchar2,
+    
+    
   /** 
     Procedure: initialize_form_region
       Method to initialize a form region with data

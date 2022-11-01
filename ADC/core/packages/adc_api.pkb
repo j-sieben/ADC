@@ -289,6 +289,34 @@ as
   end handle_bulk_errors;
   
   
+  function has_class(
+    p_class in varchar2)
+    return adc_util.flag_type
+  as
+    l_class_found binary_integer;
+    l_result adc_util.flag_type;
+    l_crg_id adc_rule_groups.crg_id%type;
+    l_firing_item adc_util.ora_name_type;
+  begin
+    pit.enter_mandatory('has_class');
+
+    l_crg_id := adc_internal.get_crg_id;
+    l_firing_item := adc_internal.get_firing_item;
+    
+    select count(*)
+      into l_class_found
+      from adc_page_items
+     where cpi_crg_id = l_crg_id
+       and cpi_id = l_firing_item
+       and instr(lower(cpi_css), '|' || lower(p_class) || '|') > 0;
+     
+    l_result := adc_util.bool_to_flag(l_class_found = 1);
+
+    pit.leave_mandatory(p_params => msg_params(msg_param('Result', l_result)));
+    return l_result;
+  end has_class;
+  
+  
   function has_errors
     return boolean
   as

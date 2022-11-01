@@ -162,6 +162,15 @@ as
   end handle_bulk_errors;
   
   
+  static function firing_item_has_class(
+    p_class in varchar2)
+    return varchar2
+  as
+  begin
+    return adc_api.has_class(p_class);
+  end firing_item_has_class;
+  
+  
   static procedure initialize_form_region(
     p_static_id in varchar2)
   as

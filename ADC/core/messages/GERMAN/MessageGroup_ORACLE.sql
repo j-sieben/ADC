@@ -9,7 +9,7 @@ begin
     p_pms_pmg_name => 'ORACLE',
     p_pms_text => q'^Der Datensatz konnte nicht gelöscht werden, es existieren abhängige Datensätze.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'GERMAN',
     p_error_number => -2292);
 
@@ -18,7 +18,7 @@ begin
     p_pms_pmg_name => 'ORACLE',
     p_pms_text => q'^Eine Umwandlung konnte nicht ausgeführt werden^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 20,
+    p_pms_pse_id => pit.level_fatal,
     p_pms_pml_name => 'GERMAN',
     p_error_number => -20000);
 
@@ -27,7 +27,7 @@ begin
     p_pms_pmg_name => 'ORACLE',
     p_pms_text => q'^Ungültiges Datum: #1#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'GERMAN',
     p_error_number => -1858);
 
@@ -36,7 +36,7 @@ begin
     p_pms_pmg_name => 'ORACLE',
     p_pms_text => q'^Ungültiges Datumsformat: #1#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'GERMAN',
     p_error_number => -1821);
 
@@ -45,7 +45,7 @@ begin
     p_pms_pmg_name => 'ORACLE',
     p_pms_text => q'^Ungültige Länge des Datums: #1#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'GERMAN',
     p_error_number => -1840);
 
@@ -54,7 +54,7 @@ begin
     p_pms_pmg_name => 'ORACLE',
     p_pms_text => q'^#1#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'GERMAN',
     p_error_number => -1847);
 
@@ -63,7 +63,7 @@ begin
     p_pms_pmg_name => 'ORACLE',
     p_pms_text => q'^#1#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'GERMAN',
     p_error_number => -1839);
 
@@ -72,7 +72,7 @@ begin
     p_pms_pmg_name => 'ORACLE',
     p_pms_text => q'^#1#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'GERMAN',
     p_error_number => -1843);
 
@@ -81,7 +81,7 @@ begin
     p_pms_pmg_name => 'ORACLE',
     p_pms_text => q'^Ungültiges Zahlformat: #1#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'GERMAN',
     p_error_number => -1481);
 
@@ -90,7 +90,7 @@ begin
     p_pms_pmg_name => 'ORACLE',
     p_pms_text => q'^#1#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'GERMAN',
     p_error_number => -1841);
 
@@ -99,7 +99,7 @@ begin
     p_pms_pmg_name => 'ORACLE',
     p_pms_text => q'^#1#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'GERMAN',
     p_error_number => -29471);
 
