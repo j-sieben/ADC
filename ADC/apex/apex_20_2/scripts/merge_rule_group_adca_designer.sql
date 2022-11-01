@@ -29,12 +29,12 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(17),
+    p_cra_id => adc_admin.map_id(782),
     p_cra_cru_id => adc_admin.map_id(15),
     p_cra_crg_id => adc_admin.map_id(13),
-    p_cra_cpi_id => 'R13_RULES',
-    p_cra_cat_id => 'IG_ALIGN_VERTICAL',
-    p_cra_param_1 => q'||',
+    p_cra_cpi_id => 'DOCUMENT',
+    p_cra_cat_id => 'EXECUTE_JAVASCRIPT',
+    p_cra_param_1 => q'|adca.hideNavigationMenu();|',
     p_cra_param_2 => q'||',
     p_cra_param_3 => q'||',
     p_cra_sort_seq => 40,
@@ -90,7 +90,7 @@ begin
     p_cru_name => 'eine Anwendung wählt',
     p_cru_condition => q'|firing_item = 'P13_CRG_APP_ID'|',
     p_cru_sort_seq => 20,
-    p_cru_fire_on_page_load => adc_util.C_TRUE,
+    p_cru_fire_on_page_load => adc_util.C_FALSE,
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
@@ -277,9 +277,7 @@ begin
     p_cru_id => adc_admin.map_id(297),
     p_cru_crg_id => adc_admin.map_id(13),
     p_cru_name => 'einen Aktionsparameter ändert',
-    p_cru_condition => q'|firing_item in ('P13_CRA_PARAM_1', 'P13_CRA_PARAM_LOV_1', 'P13_CRA_PARAM_CB_1', 'P13_CRA_PARAM_AREA_1', 'P13_CRA_PARAM_SWITCH_1',
-                'P13_CRA_PARAM_2', 'P13_CRA_PARAM_LOV_2', 'P13_CRA_PARAM_CB_2', 'P13_CRA_PARAM_AREA_2', 'P13_CRA_PARAM_SWITCH_2',
-                'P13_CRA_PARAM_3', 'P13_CRA_PARAM_LOV_3', 'P13_CRA_PARAM_CB_3', 'P13_CRA_PARAM_AREA_3', 'P13_CRA_PARAM_SWITCH_3')|',
+    p_cru_condition => q'|adc.firing_item_has_class('adc-param') = C_TRUE|',
     p_cru_sort_seq => 90,
     p_cru_fire_on_page_load => adc_util.C_FALSE,
     p_cru_active => adc_util.C_TRUE);

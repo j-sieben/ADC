@@ -29,20 +29,6 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(5),
-    p_cra_cru_id => adc_admin.map_id(3),
-    p_cra_crg_id => adc_admin.map_id(1),
-    p_cra_cpi_id => 'R2_ACTION_TYPE',
-    p_cra_cat_id => 'HIDE_IR_IG_FILTER',
-    p_cra_param_1 => q'||',
-    p_cra_param_2 => q'||',
-    p_cra_param_3 => q'||',
-    p_cra_sort_seq => 20,
-    p_cra_on_error => adc_util.C_FALSE,
-    p_cra_raise_recursive => adc_util.C_TRUE,
-    p_cra_raise_on_validation => adc_util.C_FALSE,
-    p_cra_active => adc_util.C_TRUE);
-  adc_admin.merge_rule_action(
     p_cra_id => adc_admin.map_id(7),
     p_cra_cru_id => adc_admin.map_id(3),
     p_cra_crg_id => adc_admin.map_id(1),
