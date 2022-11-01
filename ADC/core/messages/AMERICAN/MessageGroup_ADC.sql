@@ -724,6 +724,70 @@ begin
     p_pms_description => q'^^',
     p_pms_pse_id => pit.level_debug,
     p_pms_pml_name => 'AMERICAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_HARMONIZE_CPI_STEP_2',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Step 2: Merge APEX page items into ADC_PAGE_ITEMS^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => pit.level_debug,
+    p_pms_pml_name => 'AMERICAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_HARMONIZE_CPI_STEP_3',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Step 3: mark page items referenced in a technical condition as relevant^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => pit.level_debug,
+    p_pms_pml_name => 'AMERICAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_HARMONIZE_CPI_STEP_4',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Step 4: remove elements which are irreleveant, erroneus, not referenced^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => pit.level_debug,
+    p_pms_pml_name => 'AMERICAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_HARMONIZE_CPI_STEP_5',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Step 5: Mark errors in adc_rules and ADC_RULE_ACTION and reset all error flags for rule to FALSE^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => pit.level_debug,
+    p_pms_pml_name => 'AMERICAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_HARMONIZE_CPI_STEP_6',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Step 6: Mark rules that refer to elements with an error flag^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => pit.level_debug,
+    p_pms_pml_name => 'AMERICAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_HARMONIZE_CPI_STEP_7',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Step 7: Reset all error flags for rule actions to FALSE^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => pit.level_debug,
+    p_pms_pml_name => 'AMERICAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_HARMONIZE_CPI_STEP_8',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Step 8: Mark rule actions that refer to elements with an error flag^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => pit.level_debug,
+    p_pms_pml_name => 'AMERICAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_HARMONIZE_CPI_STEP_9',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Step 9: Re-create initialization code for fast page initialization and store it in table adc_rule_groups^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => pit.level_debug,
+    p_pms_pml_name => 'AMERICAN');
     
   commit;
   pit_admin.create_message_package;

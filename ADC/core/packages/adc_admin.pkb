@@ -256,13 +256,13 @@ as
       p_params => msg_params(
                     msg_param('p_crg_id', p_crg_id)));
 
-      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Step 1: Remove REQUIRED flags and mark any element as erroneus, will be cleared later on'));
+      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_1);
       update adc_page_items
          set cpi_is_required = adc_util.C_FALSE,
              cpi_has_error = adc_util.C_TRUE
        where cpi_crg_id = p_crg_id;
 
-      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Step 2: Merge APEX page items into ADC_PAGE_ITEMS'));
+      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_2);
       --         Mark any item with a conversion or mandatory as required to enable ADC to dynamically validate the format
       --         Mark any item with a required label as mandatory to dynamically check for NOT NULL
       merge into adc_page_items t
@@ -294,7 +294,7 @@ as
        when not matched then insert(cpi_id, cpi_cpit_id, cpi_caat_id, cpi_label, cpi_crg_id, cpi_conversion, cpi_item_default, cpi_css, cpi_is_required, cpi_is_mandatory)
             values(s.cpi_id, s.cpi_cpit_id, s.cpi_caat_id, s.cpi_label, s.cpi_crg_id, s.cpi_conversion, s.cpi_item_default, s.cpi_css, s.cpi_is_required, s.cpi_is_mandatory);
 
-      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Step 3: mark page items referenced in a technical condition as relevant'));
+      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_3);
       merge into adc_page_items t
       using (select distinct cpi_crg_id, cpi_id
                from (select cgr.crg_id cpi_crg_id, i.column_value cpi_id
@@ -315,7 +315,7 @@ as
        when matched then update set
             t.cpi_is_required = adc_util.C_TRUE;
 
-      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Step 4: remove elements which are irreleveant, erroneus, not referenced'));
+      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_4);
       -- - irrelevant and
       -- - erroneus (fi not existing anymore) and
       -- - not referenced by rule actions
@@ -328,12 +328,12 @@ as
                from adc_rule_actions
               where cra_crg_id = p_crg_id);
 
-      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Mark errors in adc_rules and ADC_RULE_ACTION and reset all error flags for rule to FALSE'));
+      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_5);
       update adc_rules
          set cru_has_error = adc_util.C_FALSE
        where cru_crg_id = p_crg_id;
       
-      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Mark rules that reference items with error flag'));
+      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_6);
       merge into adc_rules t
       using (select distinct cru.cru_id
                from adc_page_items cpi
@@ -345,12 +345,12 @@ as
        when matched then update set
             t.cru_has_error = adc_util.C_TRUE;
 
-      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Reset all error flags for rule actions to FALSE'));
+      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_7);
       update adc_rule_actions
          set cra_has_error = adc_util.C_FALSE
        where cra_crg_id = p_crg_id;
 
-      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Mark rule actions that reference items with error flag'));
+      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_8);
       merge into adc_rule_actions t
       using (select cpi_crg_id cra_crg_id, cpi_id cra_cpi_id
                from adc_page_items
@@ -361,7 +361,7 @@ as
        when matched then update set
             t.cra_has_error = adc_util.C_TRUE;
 
-      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('create initialization code and persist at adc_rule_groups for fast page initialization'));
+      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_9);
       l_initialization_code := create_initialization_code(p_crg_id);
 
       update adc_rule_groups
