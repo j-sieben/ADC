@@ -115,7 +115,9 @@ as
                 reference the Rule Group (CRG) ID instead.
       form_id - Static ID of the actually selected form
       crg_id - ID of the rule group the selecte node belongs to
+      cru_id - ID of the rule the selecte node belongs to
       action - Name of the APEX action that triggered the event
+      firing_item - ID of the item that fired the event
    */ 
   type environment_rec is record(
     selected_node adc_util.ora_name_type,
@@ -124,7 +126,9 @@ as
     node_id adc_rule_groups.crg_id%type,
     form_id adc_util.ora_name_type,
     crg_id adc_rule_groups.crg_id%type,
-    action adc_util.ora_name_type);
+    cru_id adc_rules.cru_id%type,
+    action adc_util.ora_name_type,
+    firing_item adc_util.ora_name_type);
     
   /**
     Type: form_item_list_tab
@@ -800,21 +804,30 @@ as
       
       This method deals with the first use case. In this use case, the ID of the
       selected node is passed in in the form <mode>_<id>, fi CRA_1234 for a Rule Action.
-      This method performs two tasks with this information:
+      This method performs these tasks with this information:
       
       - It sets the ID of page item CRA_ID to the value 1234
       - It retrieves the related CRG_ID and compares it to the actually set CRG_ID.
         Should they differ, the new CRG_ID is set and a refresh of the Rule Report
         is requested.
+      - It retrieves the related CRU_ID and compares it to the actually set CRU_ID.
+        Should they differ, the new CRU_ID is set and selected at the respective report,
+        fi on the R13_RULES report if the firing item is R13_HIERARCHY and vice versa
         
       If a new tupel is created, the ID is set there after succesful creation.
    */
   procedure set_id_values
   as
     l_crg_id adc_rule_groups.crg_id%type;
-    l_cru_id adc_rules.cru_id%type;
+    l_target_region adc_util.ora_name_type;
   begin
     pit.enter_optional('set_id_values');
+    
+    if g_environment.firing_item = C_REGION_RULES then
+      l_target_region := C_REGION_HIERARCHY;
+    else
+      l_target_region := C_REGION_RULES;
+    end if;
     
     -- Retrieve CRG_ID
     case g_environment.target_mode
@@ -824,23 +837,27 @@ as
           from adc_apex_actions
          where caa_id = g_environment.node_id;
       when C_MODE_CRU then
-        select cru_crg_id
-          into g_environment.crg_id
+        select cru_crg_id, cru_id
+          into g_environment.crg_id, g_environment.cru_id
           from adc_rules
          where cru_id = g_environment.node_id;
         -- Persist CRU in CRA to prepare creation of new CRA
+        if coalesce(adc_api.get_number(C_ITEM_CRA_CRU_ID), 0) != g_environment.cru_id then
+          adc.select_region_entry(l_target_region, 'CRU_' || g_environment.cru_id, adc_util.C_TRUE);
+        end if;
         adc.set_item(
           p_cpi_id => C_ITEM_CRA_CRU_ID,
-          p_item_value => g_environment.node_id);
+          p_item_value => g_environment.cru_id);
       when C_MODE_CRA then
         select cra_crg_id, cra_cru_id
-          into g_environment.crg_id, l_cru_id
+          into g_environment.crg_id, g_environment.cru_id
           from adc_rule_actions
          where cra_id = g_environment.node_id;
-        if coalesce(adc_api.get_number(C_ITEM_CRU_ID), 0) != l_cru_id then   
+        if coalesce(adc_api.get_number(C_ITEM_CRU_ID), 0) != g_environment.cru_id then
+          adc.select_region_entry(l_target_region, 'CRU_' || g_environment.cru_id, adc_util.C_TRUE);
           adc.set_item(
             p_cpi_id => C_ITEM_CRU_ID,
-            p_item_value => l_cru_id);
+            p_item_value => g_environment.cru_id);
         end if;
       else
         g_environment.crg_id := g_environment.node_id;
@@ -932,7 +949,8 @@ as
   begin
     pit.enter_optional('read_environment');
     
-    case when adc_api.get_firing_item = C_ITEM_CRG_APP_ID then
+    g_environment.firing_item := adc_api.get_firing_item;
+    case when g_environment.firing_item = C_ITEM_CRG_APP_ID then
       -- Application selection changed, return to initial state
       l_crg_id := get_first_crg_for_app;
       adc.set_item(
@@ -975,7 +993,10 @@ as
       msg_param('action_mode', g_environment.action_mode),
       msg_param('node_id', g_environment.node_id),
       msg_param('form_id', g_environment.form_id),
-      msg_param('action', g_environment.action)));
+      msg_param('crg_id', g_environment.crg_id),
+      msg_param('cru_id', g_environment.cru_id),
+      msg_param('action', g_environment.action),
+      msg_param('firing_item', g_environment.firing_item)));
 
     pit.leave_optional;
   end read_environment;
@@ -1454,6 +1475,37 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
   begin
     return adc_api.get_lov_sql(p_capt_id, p_crg_id);
   end get_lov_sql;
+  
+  
+  /** 
+    Function: get_cru_id
+      See <ADCA_UI_DESIGNER.get_cru_id>
+   */
+  function get_cru_id
+    return varchar2
+  as
+    l_selected_node adc_util.ora_name_type;
+    l_cru_id adc_util.ora_name_type;
+  begin
+    pit.enter_mandatory;
+    
+    l_selected_node := adc_api.get_event_data;
+    case substr(l_selected_node, 1, 3)
+      when 'CRA' then
+        select 'CRU_' || cra_cru_id
+          into l_cru_id
+          from adc_rule_actions
+         where cra_id = to_number(replace(l_selected_node, 'CRA_'));
+      when 'CRU' then
+        l_cru_id := l_selected_node;
+      else
+        null;
+    end case;
+    
+    pit.leave_mandatory(
+      p_params => msg_params(msg_param('CRU-ID', l_cru_id)));
+    return l_cru_id;
+  end get_cru_id;
 
 
   /**

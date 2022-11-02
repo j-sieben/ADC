@@ -19,10 +19,11 @@ with session_state as (
              '<span class="adc-disabled">(disabled) ' span_disabled,
              '</i><span class="adc-deprecated">(deprecated) ' span_deprecated,
              '</span>' close_span,
-             '<ul style="margin: 0.1rem 1rem;">' ul_open,
+             '<ul class="adca-rule-list">' ul_open,
              '</ul>' ul_close,
-             '<li style="font-size:1.2rem;">' li_open,
+             '<li>' li_open,
              '</li>' li_close,
+             q'^<a class="fa fa-arrow-circle-o-right u-color-5-text" href="javascript:de.condes.plugin.adc.actions.selectEntry('R13_HIERARCHY', 'CRA_#ID#', true);"></a>^' href,
              '<br>' br,
              'fa-play' c_initialize,
              'fa-check' c_yes,
@@ -68,7 +69,7 @@ with session_state as (
                when cra_on_error = p.c_true then p.span_on_error || cat_name || p.close_span
                when cra_active = p.c_false then p.span_disabled || cat_name || p.close_span
                when cat_active = p.c_false then p.span_deprecated || cat_name || p.close_span
-               else cat_name
+               else replace(href, '#ID#', cra_id) || cat_name
              end cra_name,
              ul_open, ul_close, li_open, li_close, br
         from params p
