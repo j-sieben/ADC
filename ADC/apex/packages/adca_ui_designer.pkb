@@ -302,10 +302,41 @@ as
     pit.leave_detailed;
   end copy_flow;
   $END
+  
 
   /**
     Group: Private Methods
+   */  
+  /**
+    Function: get_form_items
+      Method to retrieve a list of items for a given form
+      
+    Parameter:
+      p_form_id - ID of the form for which to get the item list for.
+  
+    Returns:
+      List of items for the requested form, empty array string if the form does not exist
    */
+  function get_form_items(
+    p_form_id in adca_bl_designer_actions.amda_form_id%type)
+    return varchar2
+  as
+    l_item_list adc_util.sql_char;
+  begin
+    pit.enter_detailed('get_form_items',
+      p_params => msg_params(msg_param('p_form_id', p_form_id)));
+      
+    if g_form_item_list.exists(p_form_id) then 
+      l_item_list := g_form_item_list(p_form_id);
+    else
+        l_item_list := '[]';
+    end if;
+    
+    pit.leave_detailed;
+    return l_item_list;
+  end get_form_items;
+  
+  
   /**
     Function: assemble_action
       Method to calculate the action attribute of an APEX Action based on the action name, the node type and its ID.
@@ -356,11 +387,8 @@ as
 
     -- Calculate values for replacement
     -- Decide whether a list of page items for a given form are required
-    if p_action in (C_ACTION_CREATE, C_ACTION_UPDATE) and g_form_item_list.exists(p_row.amda_form_id)
-    then
-      l_page_items := g_form_item_list(p_row.amda_form_id);
-    else
-      l_page_items := '[]';
+    if p_action in (C_ACTION_CREATE, C_ACTION_UPDATE) then
+      l_page_items := get_form_items(p_row.amda_form_id);
     end if;
 
     -- calculate modes and id based on action type
@@ -1569,7 +1597,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
 
       if act.amda_remember_page_state = adc_util.C_TRUE then
         adc.remember_page_status(
-          p_page_items => case when g_form_item_list.exists(act.amda_form_id) then g_form_item_list(act.amda_form_id) else '[]' end,
+          p_page_items => get_form_items(act.amda_form_id),
           p_message => pit.get_message_text(msg.ADCA_UI_UNSAVED_DATA),
           p_title => pit.get_trans_item_name(C_PTI_PMG, 'ADC_WARNING'));
       end if;
