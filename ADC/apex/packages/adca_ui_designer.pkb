@@ -150,12 +150,9 @@ as
    */
   /**
     Variables: State variables
-      g_environment - Variable of type <environment_rec> to hold all relevant attributes of the actual designer state.
-      g_page_values - PL/SQL table to hold key value pairs for page items (key) and their values
+      g_form_item_list - PL/SQL table to hold a list of page items per supported form type (CRA, CRU, CAA etc.)
    */
-  g_environment environment_rec;
 
-  g_caai_list char_table;
   g_form_item_list form_item_list_tab;
 
 
@@ -176,7 +173,8 @@ as
       mandatory identification with a static ID so that the method can uniquely identify the region.
    */
   procedure copy_apex_action(
-    p_row in out nocopy adc_apex_actions_v%rowtype)
+    p_row in out nocopy adc_apex_actions_v%rowtype,
+    p_caai_list out char_table)
   as
   begin
     pit.enter_detailed('copy_apex_action');
@@ -205,20 +203,21 @@ as
     p_row.caa_label_end_classes := utl_apex.get_string('caa_label_end_classes');
     p_row.caa_item_wrap_class := utl_apex.get_string('caa_item_wrap_class');
 
-    utl_text.string_to_table(utl_apex.get_string('caa_caai_list'), g_caai_list);
+    utl_text.string_to_table(utl_apex.get_string('caa_caai_list'), p_caai_list);
 
     pit.leave_detailed;
   end copy_apex_action;
   
   
   procedure copy_rule(
-    p_row in out nocopy adc_rules%rowtype)
+    p_row in out nocopy adc_rules%rowtype,
+    p_environment environment_rec)
   as
   begin
     pit.enter_detailed('copy_rule');
 
     p_row.cru_id := utl_apex.get_number('cru_id');
-    p_row.cru_crg_id := coalesce(utl_apex.get_number('cru_crg_id'), g_environment.crg_id);
+    p_row.cru_crg_id := coalesce(utl_apex.get_number('cru_crg_id'), p_environment.crg_id);
     p_row.cru_sort_seq := utl_apex.get_number('cru_sort_seq');
     p_row.cru_name := utl_apex.get_string('cru_name');
     p_row.cru_condition := utl_apex.get_string('cru_condition');
@@ -230,7 +229,8 @@ as
 
 
   procedure copy_rule_action(
-    p_row in out nocopy adc_rule_actions%rowtype)
+    p_row in out nocopy adc_rule_actions%rowtype,
+    p_environment environment_rec)
   as
     l_param_name_1 adc_util.ora_name_type;
     l_param_name_2 adc_util.ora_name_type;
@@ -239,7 +239,7 @@ as
     pit.enter_detailed('copy_rule_action');
 
     p_row.cra_id := utl_apex.get_number('cra_id');
-    p_row.cra_crg_id := coalesce(utl_apex.get_number('cra_crg_id'), g_environment.crg_id);
+    p_row.cra_crg_id := coalesce(utl_apex.get_number('cra_crg_id'), p_environment.crg_id);
     p_row.cra_cru_id := utl_apex.get_number('cra_cru_id');
     p_row.cra_sort_seq := utl_apex.get_number('cra_sort_seq');
     p_row.cra_cpi_id := utl_apex.get_string('cra_cpi_id');
@@ -464,18 +464,19 @@ as
   function get_first_crg_for_app
     return adc_rule_groups.crg_id%type
   as
+    l_crg_id adc_rule_groups.crg_id%type;
   begin
     pit.enter_optional('get_first_crg_for_app');
     
     select crg_id
-      into g_environment.crg_id
+      into l_crg_id
       from adc_rule_groups
      where crg_app_id = (select utl_apex.get_number('CRG_APP_ID') from dual)
      order by crg_page_id
      fetch first 1 row only;
      
-    pit.leave_optional(p_params => msg_params(msg_param('CRG_ID', g_environment.crg_id)));
-    return g_environment.crg_id;
+    pit.leave_optional(p_params => msg_params(msg_param('CRG_ID', l_crg_id)));
+    return l_crg_id;
   exception
     when NO_DATA_FOUND then
       pit.leave_optional;
@@ -494,7 +495,8 @@ as
       The attributes of the selected row control the outcome of this method.
    */
   procedure maintain_actions(
-    p_row in adca_bl_designer_actions%rowtype)
+    p_row in adca_bl_designer_actions%rowtype,
+    p_environment in environment_rec)
   as
     l_cancel_pti pit_translatable_item_v.pti_name%type;
     l_disabled boolean;
@@ -554,7 +556,7 @@ as
       select crg_app_id
         into l_crg_app_id
         from adc_rule_groups
-       where crg_id = g_environment.crg_id;
+       where crg_id = p_environment.crg_id;
       if l_crg_app_id is not null then
         adc_apex_action.action_init(C_EXPORT_CRG);
         l_javascript := utl_apex.get_page_url(
@@ -575,7 +577,222 @@ as
 
     pit.leave_optional;
   end maintain_actions;
+  
+  
+  /**
+    Procedure: set_id_values
+      Maintains the session state of CRG_ID and others based on the environment.
+      
+      IDs can change as a consequence of two use cases only:
+      
+      - A row in the hierarchy or the rule report is selected
+      - A new tupel is generated.
+      
+      This method deals with the first use case. In this use case, the ID of the
+      selected node is passed in in the form <mode>_<id>, fi CRA_1234 for a Rule Action.
+      This method performs these tasks with this information:
+      
+      - It sets the ID of page item CRA_ID to the value 1234
+      - It retrieves the related CRG_ID and compares it to the actually set CRG_ID.
+        Should they differ, the new CRG_ID is set and a refresh of the Rule Report
+        is requested.
+      - It retrieves the related CRU_ID and compares it to the actually set CRU_ID.
+        Should they differ, the new CRU_ID is set and selected at the respective report,
+        fi on the R13_RULES report if the firing item is R13_HIERARCHY and vice versa
+        
+      If a new tupel is created, the ID is set there after succesful creation.
+      
+    Parameter:
+      p_environment - Information about the status the designer is in
+   */
+  procedure set_id_values(
+    p_environment in out nocopy environment_rec)
+  as
+    l_crg_id adc_rule_groups.crg_id%type;
+    l_target_region adc_util.ora_name_type;
+  begin
+    pit.enter_optional('set_id_values');
+    
+    if p_environment.firing_item = C_REGION_RULES then
+      l_target_region := C_REGION_HIERARCHY;
+    else
+      l_target_region := C_REGION_RULES;
+    end if;
+    
+    -- Retrieve CRG_ID
+    case p_environment.target_mode
+      when C_MODE_CAA then
+        select caa_crg_id
+          into p_environment.crg_id
+          from adc_apex_actions
+         where caa_id = p_environment.node_id;
+      when C_MODE_CRU then
+        select cru_crg_id, cru_id
+          into p_environment.crg_id, p_environment.cru_id
+          from adc_rules
+         where cru_id = p_environment.node_id;
+        -- Persist CRU in CRA to prepare creation of new CRA
+        if coalesce(adc_api.get_number(C_ITEM_CRA_CRU_ID), 0) != p_environment.cru_id then
+          adc.select_region_entry(l_target_region, 'CRU_' || p_environment.cru_id, adc_util.C_TRUE);
+        end if;
+        adc.set_item(
+          p_cpi_id => C_ITEM_CRA_CRU_ID,
+          p_item_value => p_environment.cru_id);
+      when C_MODE_CRA then
+        select cra_crg_id, cra_cru_id
+          into p_environment.crg_id, p_environment.cru_id
+          from adc_rule_actions
+         where cra_id = p_environment.node_id;
+        if coalesce(adc_api.get_number(C_ITEM_CRU_ID), 0) != p_environment.cru_id then
+          adc.select_region_entry(l_target_region, 'CRU_' || p_environment.cru_id, adc_util.C_TRUE);
+          adc.set_item(
+            p_cpi_id => C_ITEM_CRU_ID,
+            p_item_value => p_environment.cru_id);
+        end if;
+      else
+        p_environment.crg_id := p_environment.node_id;
+    end case;
+    
+    -- Compare CRG_ID with session state. If changed, refresh rule report
+    l_crg_id := coalesce(adc_api.get_number(C_ITEM_CRG_ID), 0);
+    if l_crg_id != p_environment.crg_id then
+      if p_environment.target_mode not in (C_MODE_FLG, C_MODE_FLS) then
+        -- Make sure that the rule group is based on actual application data
+        adc_admin.propagate_rule_change(l_crg_id);
+        -- control page
+        adc.set_item(
+          p_cpi_id => C_ITEM_CRG_ID,
+          p_item_value => p_environment.crg_id);
+        adc.set_item(
+          p_cpi_id => C_ITEM_CRU_CRG_ID,
+          p_item_value => p_environment.crg_id);
+        adc.set_item(
+          p_cpi_id => C_ITEM_CRA_CRG_ID,
+          p_item_value => p_environment.crg_id);
+        adc.set_item(
+          p_cpi_id => C_ITEM_CAA_CRG_ID,
+          p_item_value => p_environment.crg_id);
+        adc.refresh_item(
+          p_cpi_id => C_REGION_RULES,
+          p_set_item => adc_util.C_FALSE);
+        adc.refresh_item(
+          p_cpi_id => C_REGION_FINDINGS,
+          p_set_item => adc_util.C_FALSE);
+      else
+        -- Workflow modes
+        adc.set_item(
+          p_cpi_id => C_ITEM_DIAGRAM_ID,
+          p_item_value => p_environment.node_id);
+        adc.refresh_item(
+          p_cpi_id => C_REGION_FINDINGS,
+          p_set_item => adc_util.C_FALSE);
+      end if;
+    end if;
+    
+    -- Set ID of the selected mode if not CRG and set SELECTD_NODE to enable the tree to remember its state
+    case 
+      when p_environment.target_mode = C_MODE_FLS then
+        adc.set_item(
+          p_cpi_id => C_ITEM_DIAGRAM_ID,
+          p_item_value => p_environment.node_id);
+      when p_environment.target_mode != C_MODE_CRG then
+        adc.set_item(
+          p_cpi_id => C_PAGE_PREFIX || p_environment.target_mode || '_ID',
+          p_item_value => p_environment.node_id);
+      else
+        null;
+    end case;
 
+    adc.set_item(
+      p_cpi_id => C_ITEM_SELECTED_NODE,
+      p_item_value => p_environment.selected_node); 
+      
+    pit.leave_optional;
+  end set_id_values;
+
+
+  /**
+    Procedure: read_environment
+      Method to retrieve the actual state of the ADC designer.
+      
+      This procedure analyses the data attribute of the APEX Action invoked by the user.
+      Based on this information, respective values are copied into <l_environment>.
+      
+      A second use case is that this method is called based on a selection of a row
+      in the hierarchy tree or rule report. In this case, the data attribute only contains
+      the ID of the selected row, which is composed of the mode and the id of the
+      respective tupel. A selected Rule will therefore pass in something like CRU_123.
+      
+      Based on this information, the required attributes are filled:
+      
+      - action and target mode,
+      - id of the active entry
+      - static ID of the form to show
+      - CRG_ID of the rule group containing the selected entry.
+      
+      If the CRG_ID has changed, this method also emits JavaScript code to refresh
+      the rule report region.
+   */
+  function read_environment
+    return environment_rec
+  as
+    l_crg_id adc_rule_groups.crg_id%type;
+    l_environment environment_rec;
+  begin
+    pit.enter_optional('read_environment');
+    
+    l_environment.firing_item := adc_api.get_firing_item;
+    case when l_environment.firing_item = C_ITEM_CRG_APP_ID then
+      -- Application selection changed, return to initial state
+      l_environment.crg_id := get_first_crg_for_app;
+      adc.set_item(
+        p_cpi_id => C_ITEM_CRG_ID,
+        p_item_value => l_crg_id);
+      adc.set_item(
+        p_cpi_id => C_ITEM_SELECTED_NODE,
+        p_item_value => case when l_crg_id is not null then 'CRG_' || l_crg_id end);
+      adc.refresh_item(
+        p_cpi_id => C_REGION_RULES,
+        p_set_item => adc_util.C_FALSE);
+      adc.refresh_item(
+        p_cpi_id => C_REGION_HIERARCHY,
+        p_set_item => adc_util.C_FALSE);
+      adc.refresh_item(
+        p_cpi_id => C_REGION_FINDINGS,
+        p_set_item => adc_util.C_FALSE);
+    when substr(adc_api.get_event_data, 1, 1) = '{' then
+      -- Event data is JSON. Indicates that an APEX Action has called the method. Extract node type and -id
+      l_environment.target_mode := adc_api.get_event_data('targetMode');
+      l_environment.action_mode := coalesce(adc_api.get_event_data('actionMode'), adc_api.get_event_data('targetMode'));
+      l_environment.node_id := to_number(adc_api.get_event_data('id'));
+      l_environment.form_id := C_REGION_PREFIX || l_environment.target_mode || '_FORM';
+      l_environment.action := adc_api.get_event_data('command');
+      l_environment.crg_id := adc_api.get_number(C_ITEM_CRG_ID);
+    else
+      -- Method was called due to a changed selection in hierarchy or rule report. ID is passed in directly
+      l_environment.selected_node := adc_api.get_event_data;
+      l_environment.target_mode := substr(l_environment.selected_node, 1, 3);
+      l_environment.node_id := to_number(substr(l_environment.selected_node, 5), 'fm99999990');
+      l_environment.form_id := C_REGION_PREFIX || l_environment.target_mode || '_FORM';
+      l_environment.action := C_ACTION_SHOW;
+      -- Harmonize with page state
+      set_id_values(l_environment);
+    end case;
+
+    pit.log_state(msg_params(
+      msg_param('selected_node', l_environment.selected_node),
+      msg_param('target_mode', l_environment.target_mode),
+      msg_param('action_mode', l_environment.action_mode),
+      msg_param('node_id', l_environment.node_id),
+      msg_param('form_id', l_environment.form_id),
+      msg_param('crg_id', l_environment.crg_id),
+      msg_param('cru_id', l_environment.cru_id),
+      msg_param('action', l_environment.action),
+      msg_param('firing_item', l_environment.firing_item)));
+
+    pit.leave_optional;
+    return l_environment;
+  end read_environment;
 
 
   /** 
@@ -590,7 +807,8 @@ as
       Validation methods are implemented in package <ADC_ADMIN> and throw errors. If an error is thrown,
       this will prevent further execution of the page.
    */
-  procedure validate_page
+  procedure validate_page(
+    p_environment environment_rec)
   as
     l_apex_row adc_apex_actions_v%rowtype;
     l_rule_row adc_rules%rowtype;
@@ -598,22 +816,23 @@ as
     $IF adc_util.C_WITH_FLOWS $THEN
     l_flow_row fls_diagrams_v%rowtype;
     $END
+    l_caai_list char_table;
   begin
     pit.enter_mandatory;
 
-    case g_environment.action_mode
+    case p_environment.action_mode
       when C_MODE_CRU then
-        copy_rule(l_rule_row);
+        copy_rule(l_rule_row, p_environment);
         pit.start_message_collection;
         adc_admin.validate_rule(l_rule_row);
         pit.stop_message_collection;
       when C_MODE_CRA then
-        copy_rule_action(l_action_row);
+        copy_rule_action(l_action_row, p_environment);
         pit.start_message_collection;
         adc_admin.validate_rule_action(l_action_row);
         pit.stop_message_collection;
       when C_MODE_CAA then
-        copy_apex_action(l_apex_row);
+        copy_apex_action(l_apex_row, l_caai_list);
         pit.start_message_collection;
         adc_admin.validate_apex_action(l_apex_row);
         pit.stop_message_collection;
@@ -654,7 +873,8 @@ as
       the respective XAPI methods implemented in package <ADC_ADMIN>. It also decides
       upon the method to call based on the command passed in.
    */
-  procedure process_page
+  procedure process_page(
+    p_environment environment_rec)
   as
     l_crg_id adc_rule_groups.crg_id%type := utl_apex.get_number('P13_CRG_ID');
     l_apex_row adc_apex_actions_v%rowtype;
@@ -664,16 +884,17 @@ as
     $END
     l_action_row adc_rule_actions%rowtype;
     l_selected_id adc_util.ora_name_type;
+    l_caai_list char_table;
   begin
     pit.enter_mandatory;
     
-    case g_environment.action_mode
+    case p_environment.action_mode
       when C_MODE_CRU then
-        copy_rule(l_rule_row);
+        copy_rule(l_rule_row, p_environment);
       when C_MODE_CRA then
-        copy_rule_action(l_action_row);
+        copy_rule_action(l_action_row, p_environment);
       when C_MODE_CAA then
-        copy_apex_action(l_apex_row);
+        copy_apex_action(l_apex_row, l_caai_list);
       $IF adc_util.C_WITH_FLOWS $THEN
       when C_MODE_FLS then
         copy_flow(l_flow_row);
@@ -682,10 +903,10 @@ as
         null;
     end case;
 
-    case g_environment.action 
+    case p_environment.action 
       when C_ACTION_UPDATE then
-        pit.info(msg.ADCA_UI_ACTION_REQUESTED, msg_args(C_ACTION_UPDATE, g_environment.target_mode));
-        case g_environment.target_mode
+        pit.info(msg.ADCA_UI_ACTION_REQUESTED, msg_args(C_ACTION_UPDATE, p_environment.target_mode));
+        case p_environment.target_mode
           when C_MODE_CRU then
             adc_admin.merge_rule(l_rule_row);
             adc.set_item(
@@ -699,7 +920,7 @@ as
               p_item_value => l_action_row.cra_id);
             l_selected_id := C_MODE_CRA || '_' || l_action_row.cra_id;
           when C_MODE_CAA then
-            adc_admin.merge_apex_action(l_apex_row, g_caai_list);
+            adc_admin.merge_apex_action(l_apex_row, l_caai_list);
             adc.set_item(
               p_cpi_id => C_ITEM_CAA_ID,
               p_item_value => l_apex_row.caa_id);
@@ -725,8 +946,8 @@ as
           p_item_value => l_selected_id);
         commit;
       when C_ACTION_DELETE then
-        pit.info(msg.ADCA_UI_ACTION_REQUESTED, msg_args(C_ACTION_DELETE, g_environment.action_mode));
-        case g_environment.action_mode
+        pit.info(msg.ADCA_UI_ACTION_REQUESTED, msg_args(C_ACTION_DELETE, p_environment.action_mode));
+        case p_environment.action_mode
           when C_MODE_CRU then
             adc_admin.delete_rule(l_rule_row);
           when C_MODE_CRA then
@@ -750,33 +971,20 @@ as
         adc.register_error(
           p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
           p_message_name => msg.ADCA_UI_UNKNOWN_ACTION,
-          p_msg_args => msg_args(g_environment.action));
+          p_msg_args => msg_args(p_environment.action));
     end case;
 
     -- in any case, propagate rule change to reflect changes
     begin
       adc_admin.propagate_rule_change(l_crg_id);
     exception
-      when msg.PIT_BULK_ERROR_ERR or msg.PIT_BULK_FATAL_ERR then
-        adc.handle_bulk_errors(char_table(
-          -- CRU
-          'ADC_INVALID_SQL', 'CRU_CONDITION',
-          'CRU_CONDITION_MISSING', 'CRU_CONDITION',
-          'CRU_CRG_ID_MISSING', 'CRU_CRG_ID',
-          'CRU_NAME_MISSING', 'CRU_NAME',
-          -- CRA
-          'CRA_CRU_ID_MISSING', 'CRA_CRU_ID',
-          'CRA_CRG_ID_MISSING', 'CRA_CRG_ID',
-          'CRA_CPI_ID_MISSING', 'CRA_CPI_ID',
-          'CRA_CAT_ID_MISSING', 'CRA_CAT_ID'
-          -- CAA TODO: CAA Mapping
-          ));
       when others then
         -- ignore any errors here as these can occur if the page has changed
         -- and has made a rule group invalid. Display the errors instead.
         null;
     end;
 
+    -- Refresh reports
     adc.refresh_item(
       p_cpi_id => C_REGION_HIERARCHY,
       p_set_item => adc_util.C_FALSE);
@@ -791,215 +999,6 @@ as
 
     pit.leave_mandatory;
   end process_page;
-  
-  
-  /**
-    Procedure: set_id_values
-      Maintains the session state of CRG_ID and others based on the environment.
-      
-      IDs can change as a consequence of two use cases only:
-      
-      - A row in the hierarchy or the rule report is selected
-      - A new tupel is generated.
-      
-      This method deals with the first use case. In this use case, the ID of the
-      selected node is passed in in the form <mode>_<id>, fi CRA_1234 for a Rule Action.
-      This method performs these tasks with this information:
-      
-      - It sets the ID of page item CRA_ID to the value 1234
-      - It retrieves the related CRG_ID and compares it to the actually set CRG_ID.
-        Should they differ, the new CRG_ID is set and a refresh of the Rule Report
-        is requested.
-      - It retrieves the related CRU_ID and compares it to the actually set CRU_ID.
-        Should they differ, the new CRU_ID is set and selected at the respective report,
-        fi on the R13_RULES report if the firing item is R13_HIERARCHY and vice versa
-        
-      If a new tupel is created, the ID is set there after succesful creation.
-   */
-  procedure set_id_values
-  as
-    l_crg_id adc_rule_groups.crg_id%type;
-    l_target_region adc_util.ora_name_type;
-  begin
-    pit.enter_optional('set_id_values');
-    
-    if g_environment.firing_item = C_REGION_RULES then
-      l_target_region := C_REGION_HIERARCHY;
-    else
-      l_target_region := C_REGION_RULES;
-    end if;
-    
-    -- Retrieve CRG_ID
-    case g_environment.target_mode
-      when C_MODE_CAA then
-        select caa_crg_id
-          into g_environment.crg_id
-          from adc_apex_actions
-         where caa_id = g_environment.node_id;
-      when C_MODE_CRU then
-        select cru_crg_id, cru_id
-          into g_environment.crg_id, g_environment.cru_id
-          from adc_rules
-         where cru_id = g_environment.node_id;
-        -- Persist CRU in CRA to prepare creation of new CRA
-        if coalesce(adc_api.get_number(C_ITEM_CRA_CRU_ID), 0) != g_environment.cru_id then
-          adc.select_region_entry(l_target_region, 'CRU_' || g_environment.cru_id, adc_util.C_TRUE);
-        end if;
-        adc.set_item(
-          p_cpi_id => C_ITEM_CRA_CRU_ID,
-          p_item_value => g_environment.cru_id);
-      when C_MODE_CRA then
-        select cra_crg_id, cra_cru_id
-          into g_environment.crg_id, g_environment.cru_id
-          from adc_rule_actions
-         where cra_id = g_environment.node_id;
-        if coalesce(adc_api.get_number(C_ITEM_CRU_ID), 0) != g_environment.cru_id then
-          adc.select_region_entry(l_target_region, 'CRU_' || g_environment.cru_id, adc_util.C_TRUE);
-          adc.set_item(
-            p_cpi_id => C_ITEM_CRU_ID,
-            p_item_value => g_environment.cru_id);
-        end if;
-      else
-        g_environment.crg_id := g_environment.node_id;
-    end case;
-    
-    -- Compare CRG_ID with session state. If changed, refresh rule report
-    l_crg_id := coalesce(adc_api.get_number(C_ITEM_CRG_ID), 0);
-    if l_crg_id != g_environment.crg_id then
-      if g_environment.target_mode not in (C_MODE_FLG, C_MODE_FLS) then
-        -- Make sure that the rule group is based on actual application data
-        adc_admin.propagate_rule_change(l_crg_id);
-        -- control page
-        adc.set_item(
-          p_cpi_id => C_ITEM_CRG_ID,
-          p_item_value => g_environment.crg_id);
-        adc.set_item(
-          p_cpi_id => C_ITEM_CRU_CRG_ID,
-          p_item_value => g_environment.crg_id);
-        adc.set_item(
-          p_cpi_id => C_ITEM_CRA_CRG_ID,
-          p_item_value => g_environment.crg_id);
-        adc.set_item(
-          p_cpi_id => C_ITEM_CAA_CRG_ID,
-          p_item_value => g_environment.crg_id);
-        adc.refresh_item(
-          p_cpi_id => C_REGION_RULES,
-          p_set_item => adc_util.C_FALSE);
-        adc.refresh_item(
-          p_cpi_id => C_REGION_FINDINGS,
-          p_set_item => adc_util.C_FALSE);
-      else
-        -- Workflow modes
-        adc.set_item(
-          p_cpi_id => C_ITEM_DIAGRAM_ID,
-          p_item_value => g_environment.node_id);
-        adc.refresh_item(
-          p_cpi_id => C_REGION_FINDINGS,
-          p_set_item => adc_util.C_FALSE);
-      end if;
-    end if;
-    
-    -- Set ID of the selected mode if not CRG and set SELECTD_NODE to enable the tree to remember its state
-    case 
-      when g_environment.target_mode = C_MODE_FLS then
-        adc.set_item(
-          p_cpi_id => C_ITEM_DIAGRAM_ID,
-          p_item_value => g_environment.node_id);
-      when g_environment.target_mode != C_MODE_CRG then
-        adc.set_item(
-          p_cpi_id => C_PAGE_PREFIX || g_environment.target_mode || '_ID',
-          p_item_value => g_environment.node_id);
-      else
-        null;
-    end case;
-
-    adc.set_item(
-      p_cpi_id => C_ITEM_SELECTED_NODE,
-      p_item_value => g_environment.selected_node); 
-      
-    pit.leave_optional;
-  end set_id_values;
-
-
-  /**
-    Procedure: read_environment
-      Method to retrieve the actual state of the ADC designer.
-      
-      This procedure analyses the data attribute of the APEX Action invoked by the user.
-      Based on this information, respective values are copied into <g_environment>.
-      
-      A second use case is that this method is called based on a selection of a row
-      in the hierarchy tree or rule report. In this case, the data attribute only contains
-      the ID of the selected row, which is composed of the mode and the id of the
-      respective tupel. A selected Rule will therefore pass in something like CRU_123.
-      
-      Based on this information, the required attributes are filled:
-      
-      - action and target mode,
-      - id of the active entry
-      - static ID of the form to show
-      - CRG_ID of the rule group containing the selected entry.
-      
-      If the CRG_ID has changed, this method also emits JavaScript code to refresh
-      the rule report region.
-   */
-  procedure read_environment
-  as
-    l_crg_id adc_rule_groups.crg_id%type;
-  begin
-    pit.enter_optional('read_environment');
-    
-    g_environment.firing_item := adc_api.get_firing_item;
-    case when g_environment.firing_item = C_ITEM_CRG_APP_ID then
-      -- Application selection changed, return to initial state
-      l_crg_id := get_first_crg_for_app;
-      adc.set_item(
-        p_cpi_id => C_ITEM_CRG_ID,
-        p_item_value => l_crg_id);
-      adc.set_item(
-        p_cpi_id => C_ITEM_SELECTED_NODE,
-        p_item_value => case when l_crg_id is not null then 'CRG_' || l_crg_id end);
-      adc.refresh_item(
-        p_cpi_id => C_REGION_RULES,
-        p_set_item => adc_util.C_FALSE);
-      adc.refresh_item(
-        p_cpi_id => C_REGION_HIERARCHY,
-        p_set_item => adc_util.C_FALSE);
-      adc.refresh_item(
-        p_cpi_id => C_REGION_FINDINGS,
-        p_set_item => adc_util.C_FALSE);
-    when substr(adc_api.get_event_data, 1, 1) = '{' then
-      -- Event data is JSON. Indicates that an APEX Action has called the method. Extract node type and -id
-      g_environment.target_mode := adc_api.get_event_data('targetMode');
-      g_environment.action_mode := coalesce(adc_api.get_event_data('actionMode'), adc_api.get_event_data('targetMode'));
-      g_environment.node_id := to_number(adc_api.get_event_data('id'));
-      g_environment.form_id := C_REGION_PREFIX || g_environment.target_mode || '_FORM';
-      g_environment.action := adc_api.get_event_data('command');
-      g_environment.crg_id := adc_api.get_number(C_ITEM_CRG_ID);
-    else
-      -- Method was called due to a changed selection in hierarchy or rule report. ID is passed in directly
-      g_environment.selected_node := adc_api.get_event_data;
-      g_environment.target_mode := substr(g_environment.selected_node, 1, 3);
-      g_environment.node_id := to_number(substr(g_environment.selected_node, 5), 'fm99999990');
-      g_environment.form_id := C_REGION_PREFIX || g_environment.target_mode || '_FORM';
-      g_environment.action := C_ACTION_SHOW;
-      -- Harmonize with page state
-      set_id_values;
-    end case;
-
-    pit.log_state(msg_params(
-      msg_param('selected_node', g_environment.selected_node),
-      msg_param('target_mode', g_environment.target_mode),
-      msg_param('action_mode', g_environment.action_mode),
-      msg_param('node_id', g_environment.node_id),
-      msg_param('form_id', g_environment.form_id),
-      msg_param('crg_id', g_environment.crg_id),
-      msg_param('cru_id', g_environment.cru_id),
-      msg_param('action', g_environment.action),
-      msg_param('firing_item', g_environment.firing_item)));
-
-    pit.leave_optional;
-  end read_environment;
 
 
   /**
@@ -1167,7 +1166,8 @@ as
       - APEX Action already exists. Initialize form based on stored values
       - APEX Action is created. Initialize form with default values
    */
-  procedure show_form_caa
+  procedure show_form_caa(
+    p_environment environment_rec)
   as
     l_statement adc_util.max_char := q'^
 select null #PRE#caa_id, '#CRG_ID#' #PRE#caa_crg_id, 'ACTION' #PRE#caa_caat_id, null #PRE#caa_name,
@@ -1181,10 +1181,10 @@ select null #PRE#caa_id, '#CRG_ID#' #PRE#caa_crg_id, 'ACTION' #PRE#caa_caat_id, 
   begin
     pit.enter_mandatory('show_form_caa');
 
-    if g_environment.action = C_ACTION_CREATE then
+    if p_environment.action = C_ACTION_CREATE then
       -- Was called to create a new CAA, initialize default values
       l_statement := replace(
-                       replace(l_statement, '#CRG_ID#', g_environment.crg_id), 
+                       replace(l_statement, '#CRG_ID#', p_environment.crg_id), 
                        '#PRE#', utl_apex.get_page_prefix);
       adc.set_items_from_statement(
         p_cpi_id => adc_util.c_no_firing_item, 
@@ -1244,7 +1244,8 @@ select null #PRE#caa_id, '#CRG_ID#' #PRE#caa_crg_id, 'ACTION' #PRE#caa_caat_id, 
       Based on this decision, the form is populated with the existing data or with a set
       of default data required for this method.
    */
-  procedure show_form_cra
+  procedure show_form_cra(
+    p_environment environment_rec)
   as
     l_cra_id adc_rule_actions.cra_id%type;
     l_cru_id adc_rules.cru_id%type;
@@ -1264,19 +1265,19 @@ select null #PRE#CRA_ID, '#CRG_ID#' #PRE#CRA_CRG_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
     -- Calculate form data for two possible use cases:
     -- - New CRA, get default values
     -- - Existing CRA, initialize form based on CRA_ID
-    case when g_environment.action = C_ACTION_CREATE then
+    case when p_environment.action = C_ACTION_CREATE then
       -- Was called to create a new CRA, initialize default values
       l_cru_id := adc_api.get_number(C_ITEM_CRU_ID);
       utl_text.bulk_replace(l_statement, char_table(
         'PRE', utl_apex.get_page_prefix,
-        'CRG_ID', g_environment.crg_id,
+        'CRG_ID', p_environment.crg_id,
         'CRU_ID', l_cru_id,
         'NO_FIRING_ITEM', adc_util.c_no_firing_item,
         'SORT_SEQ', get_cra_sort_seq(l_cru_id)));
       adc.set_items_from_statement(
         p_cpi_id => adc_util.c_no_firing_item, 
         p_statement => l_statement);
-    when g_environment.action = C_ACTION_SHOW then
+    when p_environment.action = C_ACTION_SHOW then
       -- Was called from the hierarchy tree
       adc.initialize_form_region(C_REGION_CRA_FORM);
     else
@@ -1339,7 +1340,8 @@ select null #PRE#CRA_ID, '#CRG_ID#' #PRE#CRA_CRG_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
       - Rule already exists. Initialize form based on stored values
       - Rule is created. Initialize form with default values
    */
-  procedure show_form_cru
+  procedure show_form_cru(
+    p_environment environment_rec)
   as
     l_statement adc_util.max_char := q'^
 select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_SEQ,
@@ -1350,12 +1352,12 @@ select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
   begin
     pit.enter_mandatory('show_form_cru');
 
-    case when g_environment.action = C_ACTION_CREATE then
+    case when p_environment.action = C_ACTION_CREATE then
       -- Was called to create a new CRA, initialize default values
       utl_text.bulk_replace(l_statement, char_table(
         'PRE', utl_apex.get_page_prefix,
-        'CRG_ID', g_environment.crg_id,
-        'SORT_SEQ', get_cru_sort_seq(g_environment.crg_id)));
+        'CRG_ID', p_environment.crg_id,
+        'SORT_SEQ', get_cru_sort_seq(p_environment.crg_id)));
       adc.set_items_from_statement(
         p_cpi_id => adc_util.c_no_firing_item, 
         p_statement => l_statement);
@@ -1390,7 +1392,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
     pit.enter_mandatory('show_form_fls');
 
     $IF adc_util.C_WITH_FLOWS $THEN
-    case when g_environment.action = C_ACTION_CREATE then
+    case when l_environment.action = C_ACTION_CREATE then
       -- Was called to create a new FLS, initialize default values
       l_statement := replace(l_statement, '#PRE#', utl_apex.get_page_prefix);
       adc.set_items_from_statement(
@@ -1405,7 +1407,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
     adc.set_region_content(
       p_region_id => C_REGION_HELP,
       p_html_code => pit.get_trans_item_description(C_PTI_PMG, 'FLS_HELP'));
-    if g_environment.node_id is not null then
+    if l_environment.node_id is not null then
       adc.refresh_item(
         p_cpi_id => C_REGION_FLOW_MODELER,
         p_set_item => adc_util.C_FALSE);
@@ -1522,18 +1524,19 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
         from adca_bl_designer_actions
        where amda_actual_mode = p_amda_actual_mode
          and amda_actual_id = p_amda_actual_id;
+    l_environment environment_rec;
   begin
     pit.enter_mandatory;
 
-    read_environment;
+    l_environment := read_environment;
 
     -- Execute DML if required
-    case g_environment.action 
+    case l_environment.action 
       when C_ACTION_UPDATE then
-        validate_page;
-        process_page;
+        validate_page(l_environment);
+        process_page(l_environment);
       when C_ACTION_DELETE then
-        process_page;
+        process_page(l_environment);
       when C_ACTION_CANCEL then
         adc.add_javascript('apex.message.clearErrors();');
       else
@@ -1543,20 +1546,20 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
 
     -- Retrieve page status from decision table
     for act in page_state_cur(
-                 p_amda_actual_mode => g_environment.target_mode, 
-                 p_amda_actual_id => g_environment.action) 
+                 p_amda_actual_mode => l_environment.target_mode, 
+                 p_amda_actual_id => l_environment.action) 
     loop
-      maintain_actions(act);
+      maintain_actions(act, l_environment);
 
       case act.amda_actual_mode
       when C_MODE_CRG then
         show_form_crg;
       when C_MODE_CAA then
-        show_form_caa;
+        show_form_caa(l_environment);
       when C_MODE_CRU then
-        show_form_cru;
+        show_form_cru(l_environment);
       when C_MODE_CRA then
-        show_form_cra;
+        show_form_cra(l_environment);
       when C_MODE_FLS then
         show_form_fls;
       else
@@ -1577,15 +1580,17 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
   
   
   /** 
-    Function: hanlde_cat_changed
+    Function: handle_cat_changed
       See <ADCA_UI_DESIGNER.handle_cat_changed>
    */
   procedure handle_cat_changed
   as
+    l_environment environment_rec;
   begin
     pit.enter_mandatory;
     
-    show_form_cra;
+    l_environment := read_environment;
+    show_form_cra(l_environment);
     
     pit.leave_mandatory;
   end handle_cat_changed;
@@ -1620,10 +1625,12 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
   procedure validate_rule_condition
   as
     l_rule_row adc_rules%rowtype;
+    l_environment environment_rec;
   begin
     pit.enter_mandatory;
     
-    copy_rule(l_rule_row);
+    l_environment := read_environment;
+    copy_rule(l_rule_row, l_environment);
 
     pit.start_message_collection;
     adc_admin.validate_rule_condition(l_rule_row);
