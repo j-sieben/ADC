@@ -1,10 +1,12 @@
 create table adc_apex_actions(
   caa_id number default on null adc_seq.nextval constraint c_caa_id_nn not null, 
-	caa_crg_id number, 
-	caa_caat_id varchar2(11 char), 
-	caa_name varchar2(50 char), 
-	caa_pti_id varchar2(128 byte), 
-	caa_pmg_name varchar2(128 byte), 
+	caa_crg_id number constraint c_caa_crg_id_nn not null, 
+	caa_caat_id varchar2(11 char) constraint c_caa_caat_id_nn not null, 
+	caa_name varchar2(50 char) constraint c_caa_name not null, 
+	caa_pti_id &ORA_NAME_TYPE. constraint c_caa_pti_id_nn not null, 
+	caa_pmg_name &ORA_NAME_TYPE. default on null 'ADC' constraint c_caa_pmg_name_nn not null,
+  caa_confirm_message_name &ORA_NAME_TYPE.,
+  caa_confirm_type &ORA_NAME_TYPE.,
 	caa_icon varchar2(50 char), 
 	caa_icon_type varchar2(50 char) default on null 'fa', 
 	caa_shortcut varchar2(50 char), 
@@ -29,7 +31,8 @@ create table adc_apex_actions(
   constraint r_caa_pti_id foreign key (caa_pti_id, caa_pmg_name)
 	  references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
   constraint c_caa_initially_disabled check (caa_initially_disabled in (&C_TRUE., &C_FALSE.)),
-  constraint c_caa_initially_hidden check (caa_initially_hidden in (&C_TRUE., &C_FALSE.))
+  constraint c_caa_initially_hidden check (caa_initially_hidden in (&C_TRUE., &C_FALSE.)),
+  constraint c_caa_pmg_name check (caa_pmg_name in ('ADC'))
 );
 
 create unique index idx_caa_crg_name on adc_apex_actions (caa_crg_id, caa_name);
@@ -39,9 +42,14 @@ create index idx_fk_caa_pti_id on adc_apex_actions (caa_pti_id, caa_pmg_name);
 
 comment on table adc_apex_actions  is 'Table to store apex actions to be maintained by ADC';
 
+comment on column adc_apex_actions.caa_id is 'Technical key, PK';
 comment on column adc_apex_actions.caa_crg_id is 'Part of Unique, Reference to ADC_RULE_GROUP';
 comment on column adc_apex_actions.caa_caat_id is 'Type of the action. Reference to adc_apex_actions_TYPE';
 comment on column adc_apex_actions.caa_name is 'Part of Unique, a unique name for the action within that ADC_RULE_GROPU. By convention the style of names uses a dash to separate words as in clear-log. Name must not contain spaces, >, :, quote, or double quote, or non-printing characters.';
+comment on column adc_apex_actions.caa_pti_id is 'Display name of the action. Reference to PIT_TRANSLATABLE_ITEM';
+comment on column adc_apex_actions.caa_pmg_name is 'Message group, Fixed to value ADC';
+comment on column adc_apex_actions.caa_confirm_message_name is 'Optional PIT message. If not null, this message is used to confirm whether this action should be executed';
+comment on column adc_apex_actions.caa_confirm_type is 'Message type of the confirmation message';
 comment on column adc_apex_actions.caa_icon is 'The icon for action may be used in buttons and menus';
 comment on column adc_apex_actions.caa_icon_type is 'The icon type. Defaults to fa (FontApex). Updates to the iconType may not be supported by all control types that can be associated with actions.';
 comment on column adc_apex_actions.caa_shortcut is 'The keyboard shortcut to invoke action (not allowed for radio group actions).';

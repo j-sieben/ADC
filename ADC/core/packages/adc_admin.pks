@@ -1090,6 +1090,7 @@ as
       p_caa_crg_id - Reference to a rule group
       p_caa_name - APEX action name as referenced by apex.actions as data-<name> attribute.
       p_caa_caat_id - Type of Action (ACTION|TOGGLE|RADIO_GROUP),
+      p_caa_confirm_message_name - optional name of a PIT message used to confirm whether the action is executed
       p_caa_label - Display name,
       p_caa_context_label - Extended name, is used in select list or on the UI
       p_caa_icon - Icon of the action
@@ -1117,6 +1118,7 @@ as
     p_caa_crg_id in adc_apex_actions_v.caa_crg_id%type,
     p_caa_caat_id in adc_apex_actions_v.caa_caat_id%type,
     p_caa_name in adc_apex_actions_v.caa_name%type,
+    p_caa_confirm_message_name in adc_apex_actions_v.caa_confirm_message_name%type,
     p_caa_label in adc_apex_actions_v.caa_label%type,
     p_caa_context_label in adc_apex_actions_v.caa_context_label%type default null,
     p_caa_icon in adc_apex_actions_v.caa_icon%type default null,

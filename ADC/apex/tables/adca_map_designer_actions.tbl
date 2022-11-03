@@ -34,7 +34,7 @@ create table adca_map_designer_actions(
 
 comment on table adca_map_designer_actions is 'Decision table for the page state of the ADC designer in response to a combination of Mode and APEX action raised by the user. See <Views.ADC_BL_DESIGNER_ACTION_V>';
 comment on column adca_map_designer_actions.amda_aldm_id is 'Reference to ADCA_LU_DESIGNER_MODES, part of PK';
-comment on column adca_map_designer_actions.amda_alda_id is 'Reference to ADCA_LU_DESIGNER_ACTIONSS, part of PK';
+comment on column adca_map_designer_actions.amda_alda_id is 'Reference to ADCA_LU_DESIGNER_ACTIONS, part of PK';
 comment on column adca_map_designer_actions.amda_comment is 'Optional comment for the mapping';
 comment on column adca_map_designer_actions.amda_id_value is 'Target mode for create operations';
 comment on column adca_map_designer_actions.amda_remember_page_state is 'Flag to indicate whether switching to this mode requires the actual page state to be saved';

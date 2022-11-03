@@ -263,6 +263,18 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     }
   }; // executeCommand
 
+
+  /**
+    Function: confirmCommand
+      Method to confirm that a command has to be executed.
+
+    Parameters:
+      
+   */
+  actions.confirmCommand = function(pMessage, pData){
+    adc.renderer.confirmRequest(pMessage, function(){actions.executeCommand(pData)});
+  }
+
   
   /**
     Function: focus
@@ -333,7 +345,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
 
   /**
-    Function: inform
+    Function: notify
       Method to show a notification. Delegates implementation to <adc.renderer>.
       A notification is a message that is shown as a success message to the user.
 
@@ -344,22 +356,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
    */
   actions.notify = function (pMessage, pTitle, pStyle) {
     adc.renderer.showDialog(pMessage, pTitle, pStyle, false);
-  }; // inform
-
-
-  /**
-    Function: inform
-      Method to show a dialog. Delegates implementation to <adc.renderer>.
-      A dialog must be accepted by the user.
-
-    Parameter:
-      pMessage - Message that is shown to the user. Replaces any existing messages.
-      pTitle - Optional title of the dialog
-      pStyle - One of the predefined styles information|warning|sucess|error
-   */
-  actions.inform = function (pMessage, pTitle, pStyle) {
-    adc.renderer.showDialog(pMessage, pTitle, pStyle, false);
-  }; // inform
+  }; // notify
 
 
   /**
@@ -378,8 +375,15 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
 
   /**
-    Function: showMessage
+    Function: showSuccess
+      Method to shows a page success message
+
+    Parameter:
+      pMessage - Message that is shown to the user.
    */
+  actions.showSuccess = function (pMessage, pTitle, pStyle) {
+    adc.renderer.showSuccess(pMessage);
+  }; // showSuccess
 
   
   /** 
@@ -628,7 +632,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       As both events are raised (almost) concurrently and handled asynchronously, there is no possibility for ADC 
       to prevent the <click> event from happening.
 
-      To cater for this, all events are queued within ADC and therefore serialized. Using this technique,
+      To cater for this, some events (like click or enter) are queued within ADC and therefore serialized. Using this technique,
       the <click> event can be surpressed by clearing the queue.
    */
   actions.setErrors = function (pErrorList) {

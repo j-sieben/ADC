@@ -1,9 +1,21 @@
 
 create or replace view adca_bl_designer_actions as
 with session_state as(
-       select utl_apex.get_page_prefix p_page_prefix,
+       select /*+ no_merge */
+              utl_apex.get_application_id p_app_id,
+              utl_apex.get_page_id p_page_id,
+              utl_apex.get_page_prefix p_page_prefix,
               replace(utl_apex.get_page_prefix, 'P', 'R') p_region_prefix
          from dual),
+     confirm_message as(
+       select apex_escape.json(pit.get_message_text(replace(caa_confirm_message_name, 'msg.'))) amda_delete_confirm_message
+         from adc_apex_actions
+         join adc_rule_groups
+           on caa_crg_id = crg_id
+         join session_state
+           on crg_app_id = p_app_id
+          and crg_page_id = p_page_id
+        where caa_name = 'delete-action'),
      pti as (
        select pti_id, pti_name
          from pit_translatable_item_v
@@ -15,12 +27,13 @@ select amda_aldm_id amda_actual_mode, amda_alda_id amda_actual_id, amda_comment,
        amda_create_button_visible, c.pti_name amda_create_button_label, amda_create_target_mode,
        amda_update_button_visible, u.pti_name amda_update_button_label, amda_aldm_id amda_update_target_mode,
        case when amda_id_value is not null then utl_apex.get_number(p_page_prefix || amda_id_value) end amda_update_value,
-       amda_delete_button_visible, d.pti_name amda_delete_button_label, amda_delete_mode, amda_delete_target_mode, 
+       amda_delete_button_visible, d.pti_name amda_delete_button_label, amda_delete_mode, amda_delete_target_mode, amda_delete_confirm_message,
        case when amda_delete_target_mode is not null then utl_apex.get_number(p_page_prefix || amda_delete_target_mode || '_ID') end amda_delete_value,
        amda_cancel_button_active, amda_cancel_target_mode, 
        case when amda_cancel_target_mode is not null then utl_apex.get_number(p_page_prefix || amda_cancel_target_mode || '_ID') end amda_cancel_value
   from adca_map_designer_actions
  cross join session_state
+ cross join confirm_message
   left join pti c
     on case amda_create_button_visible when adc_util.C_TRUE then amda_create_target_mode else 'NO' end || '_CREATE_BUTTON' = c.pti_id
   left join pti u
@@ -56,6 +69,7 @@ comment on column adca_bl_designer_actions.amda_delete_button_label is 'Label fo
 comment on column adca_bl_designer_actions.amda_delete_mode is 'Actual mode when the delete button was pressed.';
 comment on column adca_bl_designer_actions.amda_delete_target_mode is 'Mode to enter if the delete button is pressed.';
 comment on column adca_bl_designer_actions.amda_delete_value is 'ID of the asset to delete.';
+comment on column adca_bl_designer_actions.amda_delete_confirm_message is 'Translated message for the confirm dialog of the delete action';
 comment on column adca_bl_designer_actions.amda_cancel_button_active is 'Flag to indicate whether the cancel button is visible.';
 comment on column adca_bl_designer_actions.amda_cancel_target_mode is 'Mode to enter if the cancel button is pressed.';
 comment on column adca_bl_designer_actions.amda_cancel_value is 'ID of the asset to return to after the dialog was canceled.';

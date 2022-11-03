@@ -174,7 +174,7 @@ as
    */
   procedure copy_apex_action(
     p_row in out nocopy adc_apex_actions_v%rowtype,
-    p_caai_list out char_table)
+    p_caai_list out nocopy char_table)
   as
   begin
     pit.enter_detailed('copy_apex_action');
@@ -183,6 +183,7 @@ as
     p_row.caa_crg_id := utl_apex.get_number('caa_crg_id');
     p_row.caa_caat_id := utl_apex.get_string('caa_caat_id');
     p_row.caa_name := utl_apex.get_string('caa_name');
+    p_row.caa_confirm_message_name := utl_apex.get_string('caa_confirm_message_name');
     p_row.caa_label := utl_apex.get_string('caa_label');
     p_row.caa_context_label := utl_apex.get_string('caa_context_label');
     p_row.caa_icon := utl_apex.get_string('caa_icon');
@@ -374,17 +375,23 @@ as
      */
     C_ACTION_TEMPLATE adc_util.max_char := 
       'de.condes.plugin.adc.actions.executeCommand({"command":"#COMMAND#","targetMode":"#TARGET_MODE#","actionMode":"#ACTION_MODE#","id":"#NODE_ID#","additionalPageItems":#PAGE_ITEM_LIST#,"monitorChanges":#MONITOR_CHANGES#});';
+    C_CONFIRM_TEMPLATE adc_util.max_char := 
+      'de.condes.plugin.adc.actions.confirmCommand("#CONFIRM_MESSAGE#", {"command":"#COMMAND#","targetMode":"#TARGET_MODE#","actionMode":"#ACTION_MODE#","id":"#NODE_ID#","additionalPageItems":#PAGE_ITEM_LIST#,"monitorChanges":#MONITOR_CHANGES#});';
     l_action adc_util.max_char;
     l_target_mode adc_util.ora_name_type;
     l_action_mode adc_util.ora_name_type;
     l_node_id adc_util.ora_name_type;
-    l_page_items adc_util.max_char;
+    l_page_items adc_util.max_char := '[]';
     l_monitor_changes adc_util.ora_name_type;
+    l_template adc_util.max_char;
   begin
     pit.enter_detailed('assemble_action',
       p_params => msg_params(
                     msg_param('p_action', p_action)));
 
+    -- Initialize
+    l_template := C_ACTION_TEMPLATE;
+    
     -- Calculate values for replacement
     -- Decide whether a list of page items for a given form are required
     if p_action in (C_ACTION_CREATE, C_ACTION_UPDATE) then
@@ -400,6 +407,7 @@ as
         l_target_mode := p_row.amda_update_target_mode;
         l_node_id := p_row.amda_update_value;
       when C_ACTION_DELETE then
+        l_template := C_CONFIRM_TEMPLATE;
         l_target_mode := p_row.amda_delete_target_mode;
         l_action_mode := p_row.amda_delete_mode;
         l_node_id := p_row.amda_delete_value;
@@ -419,13 +427,14 @@ as
     end if;
 
     -- assemble
-    l_action := utl_text.bulk_replace(C_ACTION_TEMPLATE, char_table(
+    l_action := utl_text.bulk_replace(l_template, char_table(
                   '#COMMAND#', p_action,
                   '#PAGE_ITEM_LIST#', l_page_items,
                   '#TARGET_MODE#', l_target_mode,
                   '#ACTION_MODE#', l_action_mode,
                   '#NODE_ID#', l_node_id,
-                  '#MONITOR_CHANGES#', l_monitor_changes));
+                  '#MONITOR_CHANGES#', l_monitor_changes,
+                  '#CONFIRM_MESSAGE#', p_row.amda_delete_confirm_message));
 
     pit.leave_optional;
     return l_action;
@@ -968,7 +977,7 @@ as
         end case;
         
         -- Transaction control, because the action is called via AJAX
-        adc.show_notification(msg.ADCA_UI_CHANGES_SAVED);
+        adc.show_success(msg.ADCA_UI_CHANGES_SAVED);
         adc.set_item(
           p_cpi_id => C_ITEM_SELECTED_NODE,
           p_item_value => l_selected_id);
@@ -993,7 +1002,7 @@ as
         end case;
         
         -- Transaction control, because the action is called via AJAX
-        adc.show_notification(msg.ADCA_UI_DATA_DELETED);
+        adc.show_success(msg.ADCA_UI_DATA_DELETED);
         commit;
       else
         adc.register_error(
@@ -1731,4 +1740,3 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
 begin
   initialize;
 end adca_ui_designer;
-/

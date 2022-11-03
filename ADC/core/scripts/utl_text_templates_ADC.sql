@@ -417,6 +417,7 @@ q'[    p_caa_id => adc_admin.map_id(#CAA_ID#),\CR\]' ||
 q'[    p_caa_crg_id => adc_admin.map_id(#CRG_ID#),\CR\]' || 
 q'[    p_caa_caat_id => '#CAA_CAAT_ID#',\CR\]' || 
 q'[    p_caa_name => '#CAA_NAME#',\CR\]' || 
+q'[    p_caa_confirm_message_name => '#CAA_CONFIRM_MESSAGE_NAME#',\CR\]' || 
 q'[    p_caa_label => '#CAA_LABEL#',\CR\]' || 
 q'[    p_caa_context_label => '#CAA_CONTEXT_LABEL#',\CR\]' || 
 q'[    p_caa_icon => '#CAA_ICON#',\CR\]' || 
@@ -959,6 +960,15 @@ q'[]',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
     p_uttm_text => q'[function(){de.condes.plugin.adc.actions.executeCommand('#CAA_NAME#');}]',
+    p_uttm_log_text => q'[]',
+    p_uttm_log_severity => 70
+  );
+
+  utl_text_admin.merge_template(
+    p_uttm_name => 'CONFIRM_APEX_ACTION',
+    p_uttm_type => 'ADC',
+    p_uttm_mode => 'FRAME',
+    p_uttm_text => q'[function(){de.condes.plugin.adc.actions.confirmCommand('#CONFIRM_MESSAGE#', '#CAA_NAME#');}]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );

@@ -495,13 +495,26 @@ as object (
 
   /** 
     Procedure: show_notification
-      Shows a success or failure notification
+      Shows a success or failure dialog
    
     Parameters:
       p_message_name - Name of the message. Must be an existing PIT message name
       p_msg_args - Optional message arguments
    */
   static procedure show_notification(
+    p_message_name in varchar2,
+    p_msg_args in msg_args default null),
+
+
+  /** 
+    Procedure: show_success
+      Shows a success message
+   
+    Parameters:
+      p_message_name - Name of the message. Must be an existing PIT message name
+      p_msg_args - Optional message arguments
+   */
+  static procedure show_success(
     p_message_name in varchar2,
     p_msg_args in msg_args default null),
     

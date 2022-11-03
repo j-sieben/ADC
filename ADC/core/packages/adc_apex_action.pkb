@@ -33,6 +33,7 @@ as
   );
   g_action action_rec;
   g_default_apex_action adc_util.max_char;
+  g_confirm_apex_action adc_util.max_char;
 
   subtype template_t is utl_apex.max_sql_char;
 
@@ -113,11 +114,12 @@ as
   procedure initialize
   as
   begin
-    select max(decode(uttm_name, 'DEFAULT_APEX_ACTION', uttm_text)) default_apex_action
-      into g_default_apex_action
+    select max(decode(uttm_name, 'DEFAULT_APEX_ACTION', uttm_text)) default_apex_action,
+           max(decode(uttm_name, 'CONFIRM_APEX_ACTION', uttm_text)) confirm_apex_action
+      into g_default_apex_action, g_confirm_apex_action
       from utl_text_templates
      where uttm_type = adc_util.C_PARAM_GROUP
-       and uttm_name in('DEFAULT_APEX_ACTION')
+       and uttm_name in('DEFAULT_APEX_ACTION', 'CONFIRM_APEX_ACTION')
        and uttm_mode in ('FRAME');
   end initialize;
 
@@ -242,19 +244,23 @@ as
                     ) bind_action_items,
                     utl_text.generate_text(cursor(
                       select uttm_text template, adc_util.C_CR || '    ' cr,
-                             caa_crg_id, caa_caat_id, caa_name, 
+                             caa_crg_id, caa_caat_id, caa_name, caa_icon, caa_icon_type, caa_shortcut, caa_href,
                              apex_escape.json(caa_label) caa_label,
                              apex_escape.json(caa_label) caa_label_key, 
                              apex_escape.json(caa_context_label) caa_context_label, 
-                             caa_icon, caa_icon_type,
                              apex_escape.json(coalesce(caa_title, caa_label)) caa_title,
                              apex_escape.json(coalesce(caa_title, caa_label)) caa_title_key,
-                             caa_shortcut,
                              case caa_initially_disabled when adc_util.c_true then 'true' else 'false' end caa_initially_disabled,
                              case caa_initially_hidden when adc_util.c_true then 'true' else 'false' end caa_initially_hidden,
-                             caa_href,
+                             case when caa_confirm_message_name is not null 
+                                  then apex_escape.json(pit.get_message_text(replace(caa_confirm_message_name, 'msg.'))) 
+                             end confirm_message,
                              -- Default is to inform ADC about invoking an APEX action on the page
-                             coalesce(caa_action, g_default_apex_action) caa_action
+                             case 
+                               when caa_action is not null then caa_action
+                               when caa_confirm_message_name is not null then g_confirm_apex_action
+                               else g_default_apex_action 
+                             end caa_action
                         from adc_apex_actions_v saa
                         join adc_rule_groups cgr
                           on saa.caa_crg_id = cgr.crg_id

@@ -85,6 +85,7 @@ begin
     p_caa_crg_id => adc_admin.map_id(109),
     p_caa_caat_id => 'ACTION',
     p_caa_name => 'export-rule-group',
+    p_caa_confirm_message_name => '',
     p_caa_label => 'Dynamische Seite exportieren',
     p_caa_context_label => 'Dynamische Seite exportieren',
     p_caa_icon => 'fa-download',

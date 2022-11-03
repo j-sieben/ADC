@@ -862,7 +862,7 @@ as
                     -- apex_actions
                     utl_text.generate_text(cursor(
                       select p.template, caa_id, caa_crg_id, caa_caat_id, caa_name, caa_label, caa_context_label,
-                             caa_icon, caa_icon_type, caa_title, caa_shortcut,
+                             caa_icon, caa_icon_type, caa_title, caa_shortcut, caa_confirm_message_name,
                              adc_util.to_bool(caa_initially_disabled) caa_initially_disabled,
                              adc_util.to_bool(caa_initially_hidden) caa_initially_hidden,
                              caa_href, caa_action, caa_on_label, caa_off_label, caa_get, caa_set, caa_choices,
@@ -3141,6 +3141,7 @@ as
     p_caa_crg_id in adc_apex_actions_v.caa_crg_id%type,
     p_caa_caat_id in adc_apex_actions_v.caa_caat_id%type,
     p_caa_name in adc_apex_actions_v.caa_name%type,
+    p_caa_confirm_message_name in adc_apex_actions_v.caa_confirm_message_name%type,
     p_caa_label in adc_apex_actions_v.caa_label%type,
     p_caa_context_label in adc_apex_actions_v.caa_context_label%type default null,
     p_caa_icon in adc_apex_actions_v.caa_icon%type default null,
@@ -3173,6 +3174,7 @@ as
                     msg_param('p_caa_crg_id', p_caa_crg_id),
                     msg_param('p_caa_caat_id', p_caa_caat_id),
                     msg_param('p_caa_name', p_caa_name),
+                    msg_param('p_caa_confirm_message_name', p_caa_confirm_message_name),
                     msg_param('p_caa_label', p_caa_label),
                     msg_param('p_caa_context_label', p_caa_context_label),
                     msg_param('p_caa_icon', p_caa_icon),
@@ -3197,6 +3199,7 @@ as
     l_row.caa_crg_id := p_caa_crg_id;
     l_row.caa_caat_id := p_caa_caat_id;
     l_row.caa_name := p_caa_name;
+    l_row.caa_confirm_message_name := p_caa_confirm_message_name;
     l_row.caa_label := p_caa_label;
     l_row.caa_context_label := p_caa_context_label;
     l_row.caa_icon := p_caa_icon;
@@ -3256,6 +3259,7 @@ as
                   l_pti_id caa_pti_id,
                   C_ADC caa_pmg_name,
                   p_row.caa_caat_id caa_caat_id,
+                  p_row.caa_confirm_message_name caa_confirm_message_name,
                   p_row.caa_icon caa_icon,
                   p_row.caa_icon_type caa_icon_type,
                   p_row.caa_title caa_title,
@@ -3280,6 +3284,7 @@ as
             t.caa_caat_id = s.caa_caat_id,
             t.caa_pti_id = s.caa_pti_id,
             t.caa_pmg_name = s.caa_pmg_name,
+            t.caa_confirm_message_name = s.caa_confirm_message_name,
             t.caa_icon = s.caa_icon,
             t.caa_icon_type = s.caa_icon_type,
             t.caa_shortcut = s.caa_shortcut,
@@ -3297,15 +3302,15 @@ as
             t.caa_label_end_classes = s.caa_label_end_classes,
             t.caa_item_wrap_class = s.caa_item_wrap_class
      when not matched then insert(
-            t.caa_id, t.caa_crg_id, t.caa_name, t.caa_caat_id, t.caa_pti_id, t.caa_pmg_name, t.caa_icon, t.caa_icon_type,
-            t.caa_shortcut, t.caa_initially_disabled, t.caa_initially_hidden, t.caa_href, t.caa_action,
-            t.caa_get, t.caa_set, t.caa_on_label, t.caa_off_label, t.caa_choices, t.caa_label_classes, t.caa_label_start_classes,
-            t.caa_label_end_classes, t.caa_item_wrap_class)
+            t.caa_id, t.caa_crg_id, t.caa_name, t.caa_caat_id, t.caa_pti_id, t.caa_pmg_name, t.caa_confirm_message_name, 
+            t.caa_icon, t.caa_icon_type, t.caa_shortcut, t.caa_initially_disabled, t.caa_initially_hidden, 
+            t.caa_href, t.caa_action, t.caa_get, t.caa_set, t.caa_on_label, t.caa_off_label, t.caa_choices, t.caa_label_classes, 
+            t.caa_label_start_classes, t.caa_label_end_classes, t.caa_item_wrap_class)
           values(
-            s.caa_id, s.caa_crg_id, s.caa_name, s.caa_caat_id, s.caa_pti_id, s.caa_pmg_name, s.caa_icon, s.caa_icon_type,
-            s.caa_shortcut, s.caa_initially_disabled, s.caa_initially_hidden, s.caa_href, s.caa_action,
-            s.caa_get, s.caa_set, s.caa_on_label, s.caa_off_label, s.caa_choices, s.caa_label_classes, s.caa_label_start_classes,
-            s.caa_label_end_classes, s.caa_item_wrap_class);
+            s.caa_id, s.caa_crg_id, s.caa_name, s.caa_caat_id, s.caa_pti_id, s.caa_pmg_name, s.caa_confirm_message_name,
+            s.caa_icon, s.caa_icon_type, s.caa_shortcut, s.caa_initially_disabled, s.caa_initially_hidden, 
+            s.caa_href, s.caa_action, s.caa_get, s.caa_set, s.caa_on_label, s.caa_off_label, s.caa_choices, s.caa_label_classes,
+            s.caa_label_start_classes, s.caa_label_end_classes, s.caa_item_wrap_class);
     
     -- Register connected items by deleting and re-assigning them
     delete from adc_apex_action_items

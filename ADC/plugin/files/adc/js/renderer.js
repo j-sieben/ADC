@@ -407,7 +407,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       pConfirm - Flag to indicate whether this dialog is a confirmation dialog
    */
   renderer.showDialog = function(pMessage, pTitle, pStyle, pConfirm){
-    let options = {
+    const options = {
       "modern":true,
       "style":pStyle,
       "title":pTitle,
@@ -415,6 +415,18 @@ de.condes.plugin.adc.apex_42_20_2 = {};
     }
     msg.showDialog(pMessage, options);
   }; // showDialog
+
+  
+  /**
+    Function: showSuccess
+      Shows a success message on the page
+
+    Parameter:
+      pMessage - Message to display
+   */
+  renderer.showSuccess = function(pMessage, pTitle, pStyle, pConfirm){
+    msg.showPageSuccess(pMessage);
+  }; // showSuccess
 
 
   /**

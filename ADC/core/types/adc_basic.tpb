@@ -624,6 +624,24 @@ as
       
     pit.leave_optional;
   end show_notification;
+  
+  
+  static procedure show_success(
+    p_message_name in varchar2,
+    p_msg_args in msg_args default null)
+  as
+  begin
+    pit.enter_optional(
+      p_params => msg_params(
+                    msg_param('p_message_name', p_message_name)));
+    
+    adc_api.execute_action(
+      p_cat_id => 'SHOW_SUCCESS',
+      p_cpi_id => adc_util.C_NO_FIRING_ITEM,
+      p_param_1 => pit.get_message_text(p_message_name, p_msg_args));
+      
+    pit.leave_optional;
+  end show_success;
 
 
   static procedure submit_page(
