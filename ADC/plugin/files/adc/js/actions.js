@@ -207,6 +207,24 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     apex.navigation.dialog.cancel(true);
   }; // cancelModalDialog
 
+
+  /**
+    Function: confirmCommand
+      Method to confirm that a command has to be executed.
+
+      Wrapper around actions.executeCommand that extends this functionality with a
+      confirmation dialog.
+
+    Parameters:
+      pMessage - Message text for the confirmation dialog
+      pData - Instance of type <commandData>, Name of the command to execute or a JSON
+               instance containing the command name and additional information.
+      
+   */
+  actions.confirmCommand = function(pMessage, pData){
+    adc.renderer.confirmRequest(pMessage, function(){actions.executeCommand(pData)});
+  }; // confirmCommand
+
   
   /**
     Function: confirmRequest
@@ -229,7 +247,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       an ADC maintained APEX action was invoked.
       
     Parameters:
-      p_data - Instance of type <commandData>, Name of the command to execute or a JSON
+      pData - Instance of type <commandData>, Name of the command to execute or a JSON
                instance containing the command name and additional information.
    */
   actions.executeCommand = function(pData){
@@ -262,18 +280,6 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       adc.controller.execute();
     }
   }; // executeCommand
-
-
-  /**
-    Function: confirmCommand
-      Method to confirm that a command has to be executed.
-
-    Parameters:
-      
-   */
-  actions.confirmCommand = function(pMessage, pData){
-    adc.renderer.confirmRequest(pMessage, function(){actions.executeCommand(pData)});
-  }
 
   
   /**

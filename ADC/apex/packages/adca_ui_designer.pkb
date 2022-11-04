@@ -1567,50 +1567,55 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
 
     l_environment := read_environment;
 
-    -- Execute DML if required
-    case l_environment.action 
-      when C_ACTION_UPDATE then
-        validate_page(l_environment);
-        process_page(l_environment);
-      when C_ACTION_DELETE then
-        process_page(l_environment);
-      when C_ACTION_CANCEL then
-        adc.add_javascript('apex.message.clearErrors();');
-      else
-        -- ignore
-        null;
-    end case;
-
-    -- Retrieve page status from decision table
-    for act in page_state_cur(
-                 p_amda_actual_mode => l_environment.target_mode, 
-                 p_amda_actual_id => l_environment.action) 
-    loop
-      maintain_actions(act, l_environment);
-
-      case act.amda_actual_mode
-      when C_MODE_CRG then
-        show_form_crg;
-      when C_MODE_CAA then
-        show_form_caa(l_environment);
-      when C_MODE_CRU then
-        show_form_cru(l_environment);
-      when C_MODE_CRA then
-        show_form_cra(l_environment);
-      when C_MODE_FLS then
-        show_form_fls;
-      else
-        adc.show_hide_item('.adc-no-attributes', '.adc-hide');
-        adc.set_region_content(C_REGION_HELP, null);
+    if l_environment.crg_id is null then
+      adc.show_hide_item('.adc-no-attributes', '.adc-hide');
+      adc.set_region_content(C_REGION_HELP, null);
+    else
+      -- Execute DML if required
+      case l_environment.action 
+        when C_ACTION_UPDATE then
+          validate_page(l_environment);
+          process_page(l_environment);
+        when C_ACTION_DELETE then
+          process_page(l_environment);
+        when C_ACTION_CANCEL then
+          adc.add_javascript('apex.message.clearErrors();');
+        else
+          -- ignore
+          null;
       end case;
-
-      if act.amda_remember_page_state = adc_util.C_TRUE then
-        adc.remember_page_status(
-          p_page_items => get_form_items(act.amda_form_id),
-          p_message => pit.get_message_text(msg.ADCA_UI_UNSAVED_DATA),
-          p_title => pit.get_trans_item_name(C_PTI_PMG, 'ADC_WARNING'));
-      end if;
-    end loop;
+  
+      -- Retrieve page status from decision table
+      for act in page_state_cur(
+                   p_amda_actual_mode => l_environment.target_mode, 
+                   p_amda_actual_id => l_environment.action) 
+      loop
+        maintain_actions(act, l_environment);
+  
+        case act.amda_actual_mode
+        when C_MODE_CRG then
+          show_form_crg;
+        when C_MODE_CAA then
+          show_form_caa(l_environment);
+        when C_MODE_CRU then
+          show_form_cru(l_environment);
+        when C_MODE_CRA then
+          show_form_cra(l_environment);
+        when C_MODE_FLS then
+          show_form_fls;
+        else
+          adc.show_hide_item('.adc-no-attributes', '.adc-hide');
+          adc.set_region_content(C_REGION_HELP, null);
+        end case;
+  
+        if act.amda_remember_page_state = adc_util.C_TRUE then
+          adc.remember_page_status(
+            p_page_items => get_form_items(act.amda_form_id),
+            p_message => pit.get_message_text(msg.ADCA_UI_UNSAVED_DATA),
+            p_title => pit.get_trans_item_name(C_PTI_PMG, 'ADC_WARNING'));
+        end if;
+      end loop;
+    end if;
 
     pit.leave_mandatory;
   end handle_activity;
