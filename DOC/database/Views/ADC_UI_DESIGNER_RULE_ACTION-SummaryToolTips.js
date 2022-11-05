@@ -1,1 +1,0 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_UI_DESIGNER_RULE_ACTION",{264:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Actual parameter values for a rule action, divided for the visualization types SELEWCT_LIST, TEXT_AREA, TEXT and SWITCH</div></div>"});

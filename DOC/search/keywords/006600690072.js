@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("fir",["Function"],[["firing_item_has_class",,[[,,,,0,"File:core/types/adc_basic.tps:firing_item_has_class"]]]]);

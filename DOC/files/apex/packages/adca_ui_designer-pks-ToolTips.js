@@ -1,0 +1,1 @@
+﻿NDContentPage.OnToolTipsLoaded({17:"<div class=\"NDToolTip TClass LSQL\"><div class=\"TTSummary\">Package to maintain a splitter oriented APEX page.</div></div>",294:"<div class=\"NDToolTip TClass LSQL\"><div class=\"TTSummary\">Main package to administer ADC rules and related metadata.</div></div>"});

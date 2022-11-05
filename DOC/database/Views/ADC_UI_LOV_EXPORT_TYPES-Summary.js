@@ -1,1 +1,0 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_UI_LOV_EXPORT_TYPES","ADC_UI_LOV_EXPORT_TYPES");NDSummary.OnSummaryLoaded("Database:Views.ADC_UI_LOV_EXPORT_TYPES",[["SQL","SQL"]],[["Views","DatabaseView"]],[[288,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_UI_LOV_EXPORT_TYPES"]]);

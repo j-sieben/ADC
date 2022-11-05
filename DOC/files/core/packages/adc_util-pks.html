@@ -22,9 +22,9 @@
  <div class="CBody"><table class="CDefinitionList"><tr><td class="CDLEntry"><a name="ADC_UTIL.ora_name_type"></a><a name="Topic533"></a>ora_name_type</td><td class="CDLDefinition"><p>Varchar2 with the same length as an Oracle name (varying between 30 byte in Oracle until version 11 and 128 byte starting with version 12)</p></td></tr><tr><td class="CDLEntry"><a name="ADC_UTIL.sql_char"></a><a name="Topic534"></a>sql_char</td><td class="CDLDefinition"><p>Max length of a sql varchar2.</p></td></tr><tr><td class="CDLEntry"><a name="ADC_UTIL.max_char"></a><a name="Topic535"></a>max_char</td><td class="CDLDefinition"><p>Max length of a PL/SQL varchar2</p></td></tr><tr><td class="CDLEntry"><a name="ADC_UTIL.flag_type"></a><a name="Topic536"></a>flag_type</td><td class="CDLDefinition"><p>Persistable representation of a boolean flag. May be defined upon installation of ADC.</p></td></tr></table></div>
 </div>
 
-<a name="ADC_UTIL.environment_rec"></a><a name="Topic537"></a><div class="CTopic TType LSQL">
+<a name="ADC_UTIL.environment_rec"></a><a name="Topic215"></a><div class="CTopic TType LSQL">
  <div class="CTitle">environment_rec</div>
- <div class="CBody"><p>Record that defines environmental information about the actually executed rule Is used in adc_validation for checks against the meta data of ADC</p><div class="CHeading">Properties</div><table class="CDefinitionList"><tr><td class="CDLEntry">cgr_id</td><td class="CDLDefinition"><p>ID of the rule group actually in use</p></td></tr><tr><td class="CDLEntry">app_id</td><td class="CDLDefinition"><p>APEX application ID</p></td></tr><tr><td class="CDLEntry">page_id</td><td class="CDLDefinition"><p>APEX application page ID</p></td></tr></table></div>
+ <div class="CBody"><p>Record that defines environmental information about the actually executed rule Is used in adc_validation for checks against the meta data of ADC</p><div class="CHeading">Properties</div><table class="CDefinitionList"><tr><td class="CDLEntry">crg_id</td><td class="CDLDefinition"><p>ID of the rule group actually in use</p></td></tr><tr><td class="CDLEntry">app_id</td><td class="CDLDefinition"><p>APEX application ID</p></td></tr><tr><td class="CDLEntry">page_id</td><td class="CDLDefinition"><p>APEX application page ID</p></td></tr></table></div>
 </div>
 
 <a name="ADC_UTIL.Public_constants"></a><a name="Topic538"></a><div class="CTopic TGroup LSQL">
@@ -124,10 +124,16 @@
  <div class="CBody"><p>Method to retrieve the actual test mode state</p><div class="CHeading">Returns</div><ul><li><p>TRUE, if package is in test mode</p></li><li><p>FALSE otherwise</p></li></ul></div>
 </div>
 
-<a name="ADC_UTIL.set_test_mode"></a><a name="Topic957"></a><div class="CTopic TFunction LSQL last">
+<a name="ADC_UTIL.set_test_mode"></a><a name="Topic957"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">set_test_mode</div>
  <div id="NDPrototype957" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_test_mode(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_flag&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Method to set the actual test mode state</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">p_flag<div class="CDLParameterType"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></div></td><td class="CDLDefinition"><p>Flag to indicate whether test mode is set to TRUE or FALSE</p></td></tr></table></div>
+</div>
+
+<a name="ADC_UTIL.get_environment"></a><a name="Topic216"></a><div class="CTopic TFunction LSQL last">
+ <div class="CTitle">get_environment</div>
+ <div id="NDPrototype216" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> get_environment</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.environment_rec" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,215);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >environment_rec</a></div></div>
+ <div class="CBody"><p>Method to populate an instance of <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.environment_rec" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,215);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >environment_rec</a> with actual information.</p><div class="CHeading">Returns</div><p>Instance of <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.environment_rec" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,215);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >environment_rec</a></p></div>
 </div>
 
 </body></html>

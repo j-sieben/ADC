@@ -1,1 +1,0 @@
-﻿NDContentPage.OnToolTipsLoaded({216:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Decision table for the page state of the ADC designer in response to a combination of Mode and APEX action raised by the user. See Views.ADC_BL_DESIGNER_ACTION_V</div></div>"});

@@ -12,15 +12,15 @@
  <div class="CTitle">Constants</div>
 </div>
 
-<a name="forEach"></a><a name="Topic907"></a><div class="CTopic TFunction LJavaScript">
+<a name="forEach"></a><a name="Topic755"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">forEach</div>
- <div id="NDPrototype907" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> forEach(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pSelector,</td></tr><tr><td class="PName first last">pAction</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype755" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">const</span> forEach = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pSelector,</td></tr><tr><td class="PName first last">pAction</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Helper to identify page items to apply &lt;pAction&gt; to</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pSelector</td><td class="CDLDefinition"><p>jQuery selector to identify page items</p></td></tr><tr><td class="CDLEntry">pAction</td><td class="CDLDefinition"><p>Action to execute on the found page items</p></td></tr></table></div>
 </div>
 
-<a name="getRegionType"></a><a name="Topic908"></a><div class="CTopic TFunction LJavaScript">
+<a name="getRegionType"></a><a name="Topic756"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">getRegionType</div>
- <div id="NDPrototype908" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> getRegionType(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pRegionId</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype756" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">const</span> getRegionType = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pRegionId</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Method to determine the type a region has</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pRegionId</td><td class="CDLDefinition"><p>Id to identify the region.</p></td></tr></table><div class="CHeading">Returns</div><p>One of the constants &lt;C_REGION_IG&gt;,&nbsp; &lt;C_REGION_IR&gt;, &lt;C_REGION_CR&gt;, &lt;C_REGION_TREE&gt;, &lt;C_REGION_TAB&gt;</p></div>
 </div>
 
@@ -30,16 +30,16 @@
  <div class="CBody"><p>Sets vertical alignment of IR and IG to top. Delegates aligning to &lt;adc.renderer&gt;.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pSelector</td><td class="CDLDefinition"><p>jQuery selector of the regions to adjust vertical alignment</p></td></tr></table></div>
 </div>
 
-<a name="bindConfirmation"></a><a name="Topic910"></a><div class="CTopic TFunction LJavaScript">
+<a name="bindConfirmation"></a><a name="Topic757"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">bindConfirmation</div>
- <div id="NDPrototype910" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">actions.bindConfirmation = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pItemId,</td></tr><tr><td class="PName first last">pMessage,</td></tr><tr><td class="PName first last">pDialogTitle</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>Bind a confirmation dialog to a button to show a confirmation dialog before an event is raised</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pItemId</td><td class="CDLDefinition"><p>ID of the button to bind the event to</p></td></tr><tr><td class="CDLEntry">pMessage</td><td class="CDLDefinition"><p>Confirmation message</p></td></tr><tr><td class="CDLEntry">pDialogTitle</td><td class="CDLDefinition"><p>Title of the confirmation dialog box * @memberof de.condes.plugin.adc * @public</p></td></tr></table></div>
+ <div id="NDPrototype757" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">actions.bindConfirmation = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pButtonId,</td></tr><tr><td class="PName first last">pMessage,</td></tr><tr><td class="PName first last">pDialogTitle,</td></tr><tr><td class="PName first last">pApexAction</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Bind a confirmation dialog to a button to show a confirmation dialog before an event is raised</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pButtonId</td><td class="CDLDefinition"><p>ID of the button to bind the event to</p></td></tr><tr><td class="CDLEntry">pMessage</td><td class="CDLDefinition"><p>Confirmation message</p></td></tr><tr><td class="CDLEntry">pDialogTitle</td><td class="CDLDefinition"><p>Title of the confirmation dialog box * @memberof de.condes.plugin.adc * @public</p></td></tr></table></div>
 </div>
 
-<a name="bindUnsavedWarning"></a><a name="Topic911"></a><div class="CTopic TFunction LJavaScript">
+<a name="bindUnsavedWarning"></a><a name="Topic758"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">bindUnsavedWarning</div>
- <div id="NDPrototype911" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">actions.bindUnsavedWarning = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pItemId,</td></tr><tr><td class="PName first last">pMessage,</td></tr><tr><td class="PName first last">pDialogTitle</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>Bind a confirmation dialog to a button to show a confirmation dialog before an event is raised</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pItemId</td><td class="CDLDefinition"><p>ID of the button to bind the event to</p></td></tr><tr><td class="CDLEntry">pMessage</td><td class="CDLDefinition"><p>Confirmation message</p></td></tr><tr><td class="CDLEntry">pDialogTitle</td><td class="CDLDefinition"><p>Title of the confirmation dialog box</p></td></tr></table></div>
+ <div id="NDPrototype758" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">actions.bindUnsavedWarning = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pButtonId,</td></tr><tr><td class="PName first last">pMessage,</td></tr><tr><td class="PName first last">pDialogTitle</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Bind a confirmation dialog to a button to show a confirmation dialog before an event is raised</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pButtonId</td><td class="CDLDefinition"><p>ID of the button to bind the event to</p></td></tr><tr><td class="CDLEntry">pMessage</td><td class="CDLDefinition"><p>Confirmation message</p></td></tr><tr><td class="CDLEntry">pDialogTitle</td><td class="CDLDefinition"><p>Title of the confirmation dialog box</p></td></tr></table></div>
 </div>
 
 <a name="cancelModalDialog"></a><a name="Topic912"></a><div class="CTopic TFunction LJavaScript">
@@ -48,10 +48,10 @@
  <div class="CBody"><p>Method to trigger the aftercanceldialog event when exiting a modal dialog.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pTriggeringItemId</td><td class="CDLDefinition"><p>Optional triggering element is set when multiple modal windows are used overlappingly</p></td></tr></table></div>
 </div>
 
-<a name="confirmAndExecuteCommand"></a><a name="Topic913"></a><div class="CTopic TFunction LJavaScript">
- <div class="CTitle">confirmAndExecuteCommand</div>
- <div id="NDPrototype913" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">actions.confirmAndExecuteCommand = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pMessage,</td></tr><tr><td class="PName first last">pData,</td></tr><tr><td class="PName first last">pItem</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>Method to bind the execution of a page command to a positive result of a confirmation dialog.</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pMessage</td><td class="CDLDefinition"><p>Message to show in the confirmation dialog</p></td></tr><tr><td class="CDLEntry">pData</td><td class="CDLDefinition"><p>Name of the command to execute or a JSON instance containing the command name and additional information.</p></td></tr><tr><td class="CDLEntry">pItem</td><td class="CDLDefinition"><p>Item that gets focus if the confirmation is not given.</p></td></tr></table></div>
+<a name="confirmCommand"></a><a name="Topic759"></a><div class="CTopic TFunction LJavaScript">
+ <div class="CTitle">confirmCommand</div>
+ <div id="NDPrototype759" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">actions.confirmCommand = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pMessage,</td></tr><tr><td class="PName first last">pData</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Method to confirm that a command has to be executed.</p><p>Wrapper around actions.executeCommand that extends this functionality with a confirmation dialog.</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pMessage</td><td class="CDLDefinition"><p>Message text for the confirmation dialog</p></td></tr><tr><td class="CDLEntry">pData</td><td class="CDLDefinition"><p>Instance of type &lt;commandData&gt;, Name of the command to execute or a JSON instance containing the command name and additional information.</p></td></tr></table></div>
 </div>
 
 <a name="confirmRequest"></a><a name="Topic914"></a><div class="CTopic TFunction LJavaScript">
@@ -60,10 +60,10 @@
  <div class="CBody"><p>Method show a confirmation dialog before passing an action to ADC.</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pEvent</td><td class="CDLDefinition"><p>Event object that was raised.</p></td></tr><tr><td class="CDLEntry">pCallback</td><td class="CDLDefinition"><p>Callback method to execute in case of confirmation</p></td></tr></table></div>
 </div>
 
-<a name="executeCommand"></a><a name="Topic915"></a><div class="CTopic TFunction LJavaScript">
+<a name="executeCommand"></a><a name="Topic760"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">executeCommand</div>
- <div id="NDPrototype915" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">actions.executeCommand = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pData</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>Wrapper around &lt;controller.execute&gt; that raises a command event along with the necessary data.</p><p>This method is used as the standard action for a command object to make sure that ADC is informed that an ADC maintained APEX action was invoked.</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">p_data</td><td class="CDLDefinition"><p>Instance of type &lt;commandData&gt;, Name of the command to execute or a JSON instance containing the command name and additional information.</p></td></tr></table></div>
+ <div id="NDPrototype760" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">actions.executeCommand = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pData</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Wrapper around &lt;controller.execute&gt; that raises a command event along with the necessary data.</p><p>This method is used as the standard action for a command object to make sure that ADC is informed that an ADC maintained APEX action was invoked.</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pData</td><td class="CDLDefinition"><p>Instance of type &lt;commandData&gt;, Name of the command to execute or a JSON instance containing the command name and additional information.</p></td></tr></table></div>
 </div>
 
 <a name="focus"></a><a name="Topic916"></a><div class="CTopic TFunction LJavaScript">
@@ -84,10 +84,28 @@
  <div class="CBody"><p>Hides filter panels from IR and IG. Delegates hiding the filter panel to &lt;adc.renderer&gt;.</p><div class="CHeading">Parameters</div><p>pSelector jQuery selector of the regions that contain a filter panel to hide.</p></div>
 </div>
 
-<a name="notify"></a><a name="Topic919"></a><div class="CTopic TFunction LJavaScript">
+<a name="notify"></a><a name="Topic761"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">notify</div>
- <div id="NDPrototype919" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">actions.notify = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pMessage</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>Method to show a notification to the user. Delegates implementation to &lt;adc.renderer&gt;.&nbsp; A notification is a message that is shown as a success message to the user.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pMessage</td><td class="CDLDefinition"><p>Message that is shown to the user. Replaces any existing messages.</p></td></tr></table></div>
+ <div id="NDPrototype761" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">actions.notify = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pMessage,</td></tr><tr><td class="PName first last">pTitle,</td></tr><tr><td class="PName first last">pStyle</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Method to show a notification. Delegates implementation to &lt;adc.renderer&gt;.&nbsp; A notification is a message that is shown as a success message to the user.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pMessage</td><td class="CDLDefinition"><p>Message that is shown to the user. Replaces any existing messages.</p></td></tr><tr><td class="CDLEntry">pTitle</td><td class="CDLDefinition"><p>Optional title of the dialog</p></td></tr><tr><td class="CDLEntry">pStyle</td><td class="CDLDefinition"><p>One of the predefined styles information|warning|sucess|error</p></td></tr></table></div>
+</div>
+
+<a name="clearErrors"></a><a name="Topic762"></a><div class="CTopic TFunction LJavaScript">
+ <div class="CTitle">clearErrors</div>
+ <div id="NDPrototype762" class="NDPrototype"><div class="PSection PPlainSection">actions.clearErrors = <span class="SHKeyword">function</span> ()</div></div>
+ <div class="CBody"><p>Method to remove all errors shown on the page. Is used in case of cancel activities to remove to a clean state on the page without showing any errors over and over again.</p></div>
+</div>
+
+<a name="confirm"></a><a name="Topic763"></a><div class="CTopic TFunction LJavaScript">
+ <div class="CTitle">confirm</div>
+ <div id="NDPrototype763" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">actions.confirm = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pMessage,</td></tr><tr><td class="PName first last">pTitle,</td></tr><tr><td class="PName first last">pStyle</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Method to show a confirmation dialog. Delegates implementation to &lt;adc.renderer&gt;.&nbsp; A confirmation may be accepted or rejected by the user.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pMessage</td><td class="CDLDefinition"><p>Message that is shown to the user. Replaces any existing messages.</p></td></tr><tr><td class="CDLEntry">pTitle</td><td class="CDLDefinition"><p>Optional title of the dialog</p></td></tr><tr><td class="CDLEntry">pStyle</td><td class="CDLDefinition"><p>One of the predefined styles information|warning|sucess|error</p></td></tr></table></div>
+</div>
+
+<a name="showSuccess"></a><a name="Topic764"></a><div class="CTopic TFunction LJavaScript">
+ <div class="CTitle">showSuccess</div>
+ <div id="NDPrototype764" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">actions.showSuccess = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pMessage</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Method to shows a page success message</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pMessage</td><td class="CDLDefinition"><p>Message that is shown to the user.</p></td></tr></table></div>
 </div>
 
 <a name="registerPageItemsOnce"></a><a name="Topic920"></a><div class="CTopic TFunction LJavaScript">
@@ -114,10 +132,10 @@
  <div class="CBody"><p>Refreshes an item (region, page item etc.) and sets the item value afterwards.</p><p>The following flow of actions are taken:</p><ul><li><p>Persist the actual value of the page item</p></li><li><p>Bind one time apexafterrefresh handler to set the page item value to the persisted value after refresh</p></li><li><p>Trigger apexrefresh event</p></li><li><p>enable the page item</p></li></ul><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pItemId</td><td class="CDLDefinition"><p>ID of the page item to refresh and set the value</p></td></tr><tr><td class="CDLEntry">pValue</td><td class="CDLDefinition"><p>Optional value. If not set, method looks for actual item value in cache or on page.</p></td></tr></table></div>
 </div>
 
-<a name="selectEntry"></a><a name="Topic924"></a><div class="CTopic TFunction LJavaScript">
+<a name="selectEntry"></a><a name="Topic765"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">selectEntry</div>
- <div id="NDPrototype924" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">actions.selectEntry = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pRegionId,</td></tr><tr><td class="PName first last">pEntryId,</td></tr><tr><td class="PName first last">pNoNotify</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>Method to select an entry in an IR, IG or TREE. So far, only Tree and Interactive Grid are implemented.</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pRegionId</td><td class="CDLDefinition"><p>ID of the region to select an entry in</p></td></tr><tr><td class="CDLEntry">pEntryId</td><td class="CDLDefinition"><p>ID of the entry to select</p></td></tr><tr><td class="CDLEntry">pNoNotify</td><td class="CDLDefinition"><p>If true the treeView#event:selectionChange event will be suppressed.</p></td></tr></table></div>
+ <div id="NDPrototype765" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">actions.selectEntry = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pRegionId,</td></tr><tr><td class="PName first last">pEntryId,</td></tr><tr><td class="PName first last">pNoinform</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Method to select an entry in an IR, IG or TREE. So far, only Tree and Interactive Grid are implemented.</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pRegionId</td><td class="CDLDefinition"><p>ID of the region to select an entry in</p></td></tr><tr><td class="CDLEntry">pEntryId</td><td class="CDLDefinition"><p>ID of the entry to select</p></td></tr><tr><td class="CDLEntry">pNoinform</td><td class="CDLDefinition"><p>If true the treeView#event:selectionChange event will be suppressed.</p></td></tr></table></div>
 </div>
 
 <a name="setApexActionAccessKey"></a><a name="Topic925"></a><div class="CTopic TFunction LJavaScript">

@@ -132,10 +132,10 @@ as
        and crg_page_id = p_page_id;
        
     l_url := apex_page.get_url(
-               p_application => 'ADC',
+               p_application => 'ADCA',
                p_page => 'DESIGNER',
                p_items => 'P13_CRG_ID,P13_CRG_APP_ID,P13_SELECTED_NODE',
-               p_values => l_crg_id || ',' || utl_apex.get_application_id(adc_util.C_FALSE) || ', CRG_' || l_crg_id);
+               p_values => l_crg_id || ',' || utl_apex.get_application_id(adc_util.C_FALSE) || ',CRG_' || l_crg_id);
     return replace(C_URL_TEMPLATE, '#URL#', l_url);
   exception
     when NO_DATA_FOUND then

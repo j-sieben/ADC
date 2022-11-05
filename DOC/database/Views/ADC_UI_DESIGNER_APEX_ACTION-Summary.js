@@ -1,1 +1,0 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_UI_DESIGNER_APEX_ACTION","ADC_UI_DESIGNER_APEX_ACTION");NDSummary.OnSummaryLoaded("Database:Views.ADC_UI_DESIGNER_APEX_ACTION",[["SQL","SQL"]],[["Views","DatabaseView"]],[[259,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_UI_DESIGNER_APEX_ACTION"]]);

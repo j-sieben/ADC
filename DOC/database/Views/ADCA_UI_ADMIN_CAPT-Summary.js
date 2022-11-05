@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADCA_UI_ADMIN_CAPT","ADCA_UI_ADMIN_CAPT");NDSummary.OnSummaryLoaded("Database:Views.ADCA_UI_ADMIN_CAPT",[["SQL","SQL"]],[["Views","DatabaseView"]],[[286,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADCA_UI_ADMIN_CAPT"]]);

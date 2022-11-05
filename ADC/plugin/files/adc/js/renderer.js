@@ -84,12 +84,23 @@ de.condes.plugin.adc.apex_42_20_2 = {};
 
   
   /**
+    Function: clearErrors
+      Removes all messages in the notification region
+   */
+  renderer.clearErrors = function(){
+    gErrors = [];
+    gWarnings = [];
+    msg.clearErrors();
+  }; //clearErrors
+
+  
+  /**
     Function: clearNotification
       Removes all messages in the notification region
    */
   renderer.clearNotification = function(){
     msg.hidePageSuccess();
-  };
+  }; // clearNotification
 
   /**
     Function: confirmRequest

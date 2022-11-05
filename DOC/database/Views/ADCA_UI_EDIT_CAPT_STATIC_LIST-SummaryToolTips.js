@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADCA_UI_EDIT_CAPT_STATIC_LIST",{838:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">View for APEX page EDIT_CPT, Static values for a list</div></div>"});

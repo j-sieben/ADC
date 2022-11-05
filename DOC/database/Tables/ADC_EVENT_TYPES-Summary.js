@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:Tables.ADC_EVENT_TYPES","ADC_EVENT_TYPES");NDSummary.OnSummaryLoaded("Database:Tables.ADC_EVENT_TYPES",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[278,0,0,"<span class=\"Qualifier\">Tables.</span>&#8203;ADC_EVENT_TYPES"]]);

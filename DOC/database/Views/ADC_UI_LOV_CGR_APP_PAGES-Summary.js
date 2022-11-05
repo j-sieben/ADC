@@ -1,1 +1,0 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_UI_LOV_CGR_APP_PAGES","ADC_UI_LOV_CGR_APP_PAGES");NDSummary.OnSummaryLoaded("Database:Views.ADC_UI_LOV_CGR_APP_PAGES",[["SQL","SQL"]],[["Views","DatabaseView"]],[[285,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_UI_LOV_CGR_APP_PAGES"]]);

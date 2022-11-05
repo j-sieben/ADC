@@ -1,1 +1,0 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Tables.ADC_LU_DESIGNER_ACTIONS","ADC_LU_DESIGNER_ACTIONS");NDSummary.OnSummaryLoaded("Database:Tables.ADC_LU_DESIGNER_ACTIONS",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[224,0,0,"<span class=\"Qualifier\">Tables.</span>&#8203;ADC_LU_DESIGNER_ACTIONS"]]);

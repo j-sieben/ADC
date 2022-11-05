@@ -1,1 +1,0 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Tables.ADC_LU_DESIGNER_MODES",{223:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Lookup for modes the ADC designer can be at</div></div>"});

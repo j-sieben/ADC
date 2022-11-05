@@ -23,6 +23,12 @@
  <div class="CBody"><p>Method adjusts report cells vertically to top</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pReportId</td><td class="CDLDefinition"><p>Static ID of the report to adjust</p></td></tr></table></div>
 </div>
 
+<a name="clearErrors"></a><a name="Topic738"></a><div class="CTopic TFunction LJavaScript">
+ <div class="CTitle">clearErrors</div>
+ <div id="NDPrototype738" class="NDPrototype"><div class="PSection PPlainSection">renderer.clearErrors = <span class="SHKeyword">function</span>()</div></div>
+ <div class="CBody"><p>Removes all messages in the notification region</p></div>
+</div>
+
 <a name="clearNotification"></a><a name="Topic862"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">clearNotification</div>
  <div id="NDPrototype862" class="NDPrototype"><div class="PSection PPlainSection">renderer.clearNotification = <span class="SHKeyword">function</span>()</div></div>
@@ -59,9 +65,9 @@
  <div class="CBody"><p>Removes filter area from interactive report or interactive grid.</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pRegionId</td><td class="CDLDefinition"><p>Static id of the interactive report or grid</p></td></tr><tr><td class="CDLEntry">pRegionType</td><td class="CDLDefinition"><p>Type of the report</p></td></tr></table></div>
 </div>
 
-<a name="maintainErrors"></a><a name="Topic868"></a><div class="CTopic TFunction LJavaScript">
- <div class="CTitle">maintainErrors</div>
- <div id="NDPrototype868" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">renderer.maintainErrors = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pErrorList</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+<a name="maintainErrorsAndWarnings"></a><a name="Topic739"></a><div class="CTopic TFunction LJavaScript">
+ <div class="CTitle">maintainErrorsAndWarnings</div>
+ <div id="NDPrototype739" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">renderer.maintainErrorsAndWarnings = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pErrorList</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Maintains the error list on the page.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pErrorList</td><td class="CDLDefinition"><p>List of errors, instance of &lt;errorList&gt;</p></td></tr></table></div>
 </div>
 
@@ -83,10 +89,16 @@
  <div class="CBody"><p>Sets the title of a modal dialog window.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pItemLabel</td><td class="CDLDefinition"><p>New item label</p></td></tr></table></div>
 </div>
 
-<a name="setNotification"></a><a name="Topic872"></a><div class="CTopic TFunction LJavaScript">
- <div class="CTitle">setNotification</div>
- <div id="NDPrototype872" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">renderer.setNotification = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pMessage</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>Shows a message on the page</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pMessage</td><td class="CDLDefinition"><p>Message text to show</p></td></tr></table></div>
+<a name="showDialog"></a><a name="Topic740"></a><div class="CTopic TFunction LJavaScript">
+ <div class="CTitle">showDialog</div>
+ <div id="NDPrototype740" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">renderer.showDialog = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pMessage,</td></tr><tr><td class="PName first last">pTitle,</td></tr><tr><td class="PName first last">pStyle,</td></tr><tr><td class="PName first last">pConfirm</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Shows a message on the page</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pMessage</td><td class="CDLDefinition"><p>Message of the dialog</p></td></tr><tr><td class="CDLEntry">pTitle</td><td class="CDLDefinition"><p>Optional title of the dialog</p></td></tr><tr><td class="CDLEntry">pStyle</td><td class="CDLDefinition"><p>One of the predefined styles information|warning|sucess|error</p></td></tr><tr><td class="CDLEntry">pConfirm</td><td class="CDLDefinition"><p>Flag to indicate whether this dialog is a confirmation dialog</p></td></tr></table></div>
+</div>
+
+<a name="showSuccess"></a><a name="Topic741"></a><div class="CTopic TFunction LJavaScript">
+ <div class="CTitle">showSuccess</div>
+ <div id="NDPrototype741" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">renderer.showSuccess = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pMessage,</td></tr><tr><td class="PName first last">pTitle,</td></tr><tr><td class="PName first last">pStyle,</td></tr><tr><td class="PName first last">pConfirm</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Shows a success message on the page</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pMessage</td><td class="CDLDefinition"><p>Message to display</p></td></tr></table></div>
 </div>
 
 <a name="setRegionHeader"></a><a name="Topic873"></a><div class="CTopic TFunction LJavaScript">

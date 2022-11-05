@@ -1,1 +1,0 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_UI_LOV_ACTION_ITEM_FOCUS",{});

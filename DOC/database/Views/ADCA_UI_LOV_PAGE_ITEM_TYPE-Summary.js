@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADCA_UI_LOV_PAGE_ITEM_TYPE","ADCA_UI_LOV_PAGE_ITEM_TYPE");NDSummary.OnSummaryLoaded("Database:Views.ADCA_UI_LOV_PAGE_ITEM_TYPE",[["SQL","SQL"]],[["Views","DatabaseView"]],[[872,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADCA_UI_LOV_PAGE_ITEM_TYPE"]]);

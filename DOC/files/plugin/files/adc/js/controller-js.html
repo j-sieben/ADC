@@ -16,27 +16,21 @@
  <div class="CTitle">Internal Callback methods</div>
 </div>
 
-<a name="changeCallback"></a><a name="Topic878"></a><div class="CTopic TFunction LJavaScript">
+<a name="changeCallback"></a><a name="Topic742"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">changeCallback</div>
- <div id="NDPrototype878" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> changeCallback(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pEvent,</td></tr><tr><td class="PName first last">pEventData,</td></tr><tr><td class="PName first last">pWait</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype742" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">const</span> changeCallback = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pEvent,</td></tr><tr><td class="PName first last">pEventData,</td></tr><tr><td class="PName first last">pWait</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Callback method for a change event</p><p>Any event is pushed to a queue to process them one by one, depending on the outcome of the predecessor.&nbsp; As an example, if a page item is focussed and the user clicks on a button, two events occur:</p><ul><li><p>change event on the page item</p></li><li><p>click event on the button</p></li></ul><p>If the change event triggers a computation that returns an error (such as a page item validation), in many cases the click event of the button must not be processed anymore. But because these events appear so quickly, ADC is unable to respond before the click event is handled. Therefore, these events a queued. If ADC returns with an error, the queue is cleared and the next events will not be processed.</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pEvent</td><td class="CDLDefinition"><p>Event that occured</p></td></tr><tr><td class="CDLEntry">props.eventData</td><td class="CDLDefinition"><p>Additional event data that is passed with the event. May be accessed by ADC.GET_EVENT_DATA within the database</p></td></tr><tr><td class="CDLEntry">pWait</td><td class="CDLDefinition"><p>Flag to indicate whether a wait spinner should be shown during processing</p></td></tr></table></div>
 </div>
 
-<a name="confirmCallback"></a><a name="Topic879"></a><div class="CTopic TFunction LJavaScript">
- <div class="CTitle">confirmCallback</div>
- <div id="NDPrototype879" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> confirmCallback(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pEvent,</td></tr><tr><td class="PName first last">pWait</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>Wraps the call to the database in a confirmation dialog to enable the user to surpress this event.</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pEvent</td><td class="CDLDefinition"><p>Event that occured</p></td></tr><tr><td class="CDLEntry">pWait</td><td class="CDLDefinition"><p>Flag to indicate whether a wait spinner should be shown during processing</p></td></tr></table></div>
-</div>
-
-<a name="enterCallback"></a><a name="Topic880"></a><div class="CTopic TFunction LJavaScript">
+<a name="enterCallback"></a><a name="Topic743"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">enterCallback</div>
- <div id="NDPrototype880" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> enterCallback(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pEvent,</td></tr><tr><td class="PName first last">pEventData,</td></tr><tr><td class="PName first last">pWait</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype743" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">const</span> enterCallback = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pEvent,</td></tr><tr><td class="PName first last">pEventData,</td></tr><tr><td class="PName first last">pWait</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Wraps the call to the database in a confirmation dialog to enable the user to surpress this event.</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pEvent</td><td class="CDLDefinition"><p>Event that occured</p></td></tr><tr><td class="CDLEntry">pEventData</td><td class="CDLDefinition"><p>&lt;props.eventData&gt; instance that goes along with the event</p></td></tr></table></div>
 </div>
 
-<a name="unsavedCallback"></a><a name="Topic881"></a><div class="CTopic TFunction LJavaScript">
+<a name="unsavedCallback"></a><a name="Topic744"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">unsavedCallback</div>
- <div id="NDPrototype881" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> unsavedCallback(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pEvent,</td></tr><tr><td class="PName first last">pWait</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype744" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">const</span> unsavedCallback = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pEvent,</td></tr><tr><td class="PName first last">pWait</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Wraps the call to the database in a confirmation dialog that is shown if the page contains unsaved changes.</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pEvent</td><td class="CDLDefinition"><p>Event that occured</p></td></tr><tr><td class="CDLEntry">pWait</td><td class="CDLDefinition"><p>Flag to indicate whether a wait spinner should be shown during processing</p></td></tr></table></div>
 </div>
 
@@ -44,58 +38,64 @@
  <div class="CTitle">Interal Helper methods</div>
 </div>
 
-<a name="bindEvent"></a><a name="Topic883"></a><div class="CTopic TFunction LJavaScript">
+<a name="bindEvent"></a><a name="Topic745"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">bindEvent</div>
- <div id="NDPrototype883" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> bindEvent(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pItemId,</td></tr><tr><td class="PName first last">pEvent,</td></tr><tr><td class="PName first last">pAction</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>Binds an event to a page item</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pItemId</td><td class="CDLDefinition"><p>ID of the element to bind</p></td></tr><tr><td class="CDLEntry">pEvent</td><td class="CDLDefinition"><p>Nmae of the event to bind.</p></td></tr><tr><td class="CDLEntry">pAction</td><td class="CDLDefinition"><p>Optional callback method. Overrides default behaviour of calling <a href="../../../../../index.html#File:plugin/files/adc/js/controller.js:changeCallback" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,878);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >changeCallback</a></p></td></tr></table></div>
+ <div id="NDPrototype745" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">const</span> bindEvent = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pItemId,</td></tr><tr><td class="PName first last">pEvent,</td></tr><tr><td class="PName first last">pAction</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Binds an event to a page item</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pItemId</td><td class="CDLDefinition"><p>ID of the element to bind</p></td></tr><tr><td class="CDLEntry">pEvent</td><td class="CDLDefinition"><p>Nmae of the event to bind.</p></td></tr><tr><td class="CDLEntry">pAction</td><td class="CDLDefinition"><p>Optional callback method. Overrides default behaviour of calling <a href="../../../../../index.html#File:plugin/files/adc/js/controller.js:changeCallback" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,742);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >changeCallback</a></p></td></tr></table></div>
 </div>
 
-<a name="bindEvents"></a><a name="Topic884"></a><div class="CTopic TFunction LJavaScript">
+<a name="bindEvents"></a><a name="Topic746"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">bindEvents</div>
- <div id="NDPrototype884" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> bindEvents()</div></div>
+ <div id="NDPrototype746" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">const</span> bindEvents = <span class="SHKeyword">function</span> ()</div></div>
  <div class="CBody"><p>Binds all events that are requested by the plugin via &lt;props.bindItems&gt;.</p><p>Upon initialization, all relevant page items are collected along with the required events.&nbsp; This method then binds all items with the respective event.</p></div>
 </div>
 
-<a name="bindObserverItems"></a><a name="Topic885"></a><div class="CTopic TFunction LJavaScript">
+<a name="bindObserverItems"></a><a name="Topic747"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">bindObserverItems</div>
- <div id="NDPrototype885" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> bindObserverItems(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pSelector</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype747" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">const</span> bindObserverItems = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pSelector</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Method identifies all elements whose values must be sent to the database with any request.&nbsp; Two possible ways exist to add an item to this observer list:</p><ul><li><p>Initialization code of the plugin that automatically detects items that have a value and are referenced by page rules</p></li><li><p>Explicit observation as requested by a ADC rule action</p></li></ul><p>The second option calls this method.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pSelector</td><td class="CDLDefinition"><p>jQuery selector to identify the item(s) that must be observed explicitly</p></td></tr></table></div>
 </div>
 
-<a name="addPageItem"></a><a name="Topic886"></a><div class="CTopic TFunction LJavaScript">
+<a name="addPageItem"></a><a name="Topic748"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">addPageItem</div>
- <div id="NDPrototype886" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> addPageItem(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pItemId</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype748" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">const</span> addPageItem = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pItemId</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Method adds a page item to a list of page items to be sent to the server with every call.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pItemId</td><td class="CDLDefinition"><p>ID of the page item that ahould be added</p></td></tr></table></div>
 </div>
 
-<a name="executeCode"></a><a name="Topic887"></a><div class="CTopic TFunction LJavaScript">
+<a name="executeCode"></a><a name="Topic749"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">executeCode</div>
- <div id="NDPrototype887" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> executeCode(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pCode</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype749" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">const</span> executeCode = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pCode</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Method to execute all JavaScript code passed in with the response of ADC.</p><p>The code is added to the document using &lt;$.append&gt; which immediately executes any JavaScript.&nbsp; After appending, the response can be deleted because it does not make any sense to store it on the page any further.&nbsp; After deleting, the execute method raises the next event on the queue (if any).</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pCode</td><td class="CDLDefinition"><p>JavaScript code to execute</p></td></tr></table></div>
 </div>
 
-<a name="getTriggeringElement"></a><a name="Topic888"></a><div class="CTopic TFunction LJavaScript">
+<a name="getTriggeringElement"></a><a name="Topic750"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">getTriggeringElement</div>
- <div id="NDPrototype888" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> getTriggeringElement(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pEvent</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype750" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">const</span> getTriggeringElement =<span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pEvent</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Method to describe the event and calling item after an event has occured.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">e</td><td class="CDLDefinition"><p>Event to get the triggering element for</p></td></tr></table></div>
 </div>
 
-<a name="hexToChar"></a><a name="Topic889"></a><div class="CTopic TFunction LJavaScript">
+<a name="hexToChar"></a><a name="Topic751"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">hexToChar</div>
- <div id="NDPrototype889" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> hexToChar(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pRawString</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype751" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">const</span> hexToChar = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pRawString</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Method to cast a hex-string representation created with UTL_RAW.CAST_TO_RAW back to String.</p><p>ADC submits its response as a hex string to circumvent escaping issues between JSON, JavaScript and JavaScript containing JSON.&nbsp; As a consequence, the hex string must be converted back to a normal string in order to append it to the page.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pRawString</td><td class="CDLDefinition"><p>Hex-encoded string to convert back to a normal string.</p></td></tr></table><div class="CHeading">Returns</div><p>Converted String</p></div>
 </div>
 
-<a name="maintainAndCheckEventLock"></a><a name="Topic890"></a><div class="CTopic TFunction LJavaScript">
+<a name="maintainAndCheckEventLock"></a><a name="Topic752"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">maintainAndCheckEventLock</div>
- <div id="NDPrototype890" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> maintainAndCheckEventLock()</div></div>
+ <div id="NDPrototype752" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">const</span> maintainAndCheckEventLock = <span class="SHKeyword">function</span> ()</div></div>
  <div class="CBody"><p>Method to reject the same event for a certain amount of time to prevent double execution of ADC requests.</p><p>Events, such as ENTER key or click may be raised quicker than ADC is able to consume then, leading to a double request and a double execution of rules. This may lead to a modal dialog to be shown twice or a double insert into a table, raising unique errors etc.</p><p>To cater for this, an event is put on a props.quarantineList for a certain amount of time. This method administers this quarantine list and checks whether it is ok to raise an event.</p></div>
 </div>
 
-<a name="bindConfirmationHandler"></a><a name="Topic891"></a><div class="CTopic TFunction LJavaScript">
+<a name="addButtonHandler"></a><a name="Topic753"></a><div class="CTopic TFunction LJavaScript">
+ <div class="CTitle">addButtonHandler</div>
+ <div id="NDPrototype753" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">const</span> addButtonHandler = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pTarget,</td></tr><tr><td class="PName first last">pMessage,</td></tr><tr><td class="PName first last">pDialogTitle,</td></tr><tr><td class="PName first last">pCallback</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Binds a confirmation or unsavedConfirmation callback to a button</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pTarget</td><td class="CDLDefinition"><p>jQuery item representing the page item to bind to</p></td></tr><tr><td class="CDLEntry">pMessage</td><td class="CDLDefinition"><p>Message to show within the confirmation</p></td></tr><tr><td class="CDLEntry">pDialogTitle</td><td class="CDLDefinition"><p>Title of the dialog</p></td></tr></table></div>
+</div>
+
+<a name="bindConfirmationHandler"></a><a name="Topic754"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">bindConfirmationHandler</div>
- <div id="NDPrototype891" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">ctl.bindConfirmationHandler = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pTarget,</td></tr><tr><td class="PName first last">pMessage,</td></tr><tr><td class="PName first last">pDialogTitle</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>Shows a confirmation dialog prior to raising the ADC event notification.</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pTarget</td><td class="CDLDefinition"><p>jQuery item representing the page item to bind to</p></td></tr><tr><td class="CDLEntry">pMessage</td><td class="CDLDefinition"><p>Message to show within the confirmation</p></td></tr><tr><td class="CDLEntry">pDialogTitle</td><td class="CDLDefinition"><p>Title of the dialog</p></td></tr></table></div>
+ <div id="NDPrototype754" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">ctl.bindConfirmationHandler = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pTarget,</td></tr><tr><td class="PName first last">pMessage,</td></tr><tr><td class="PName first last">pDialogTitle,</td></tr><tr><td class="PName first last">pApexAction</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Shows a confirmation dialog prior to raising the ADC event notification.</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pTarget</td><td class="CDLDefinition"><p>jQuery item representing the page item to bind to</p></td></tr><tr><td class="CDLEntry">pMessage</td><td class="CDLDefinition"><p>Message to show within the confirmation</p></td></tr><tr><td class="CDLEntry">pDialogTitle</td><td class="CDLDefinition"><p>Title of the dialog</p></td></tr><tr><td class="CDLEntry">pApexAction</td><td class="CDLDefinition"><p>Optional Apex action command name</p></td></tr></table></div>
 </div>
 
 <a name="bindUnsavedConfirmationHandler"></a><a name="Topic892"></a><div class="CTopic TFunction LJavaScript">

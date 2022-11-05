@@ -50,21 +50,6 @@ as
     p_capt_id in adc_action_param_types.capt_id%type,
     p_crg_id in adc_rule_groups.crg_id%type)
     return varchar2;
-  
-  
-  /**
-    Function: get_cru_id
-      Method to retrieve a cru based on the select entry in the hierarchy.
-      
-      If a user selects an action underneath a rule, the central rule overview does
-      not focus the correct rule. To overcome this, this method returns the nearest
-      CRU_ID for a given CRA_ID selected.
-    
-    Returns:
-      ID of the selected CRU
-   */
-  function get_cru_id
-    return varchar2;
      
     
   /** 

@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADCA_UI_EDIT_CAPT_STATIC_LIST","ADCA_UI_EDIT_CAPT_STATIC_LIST");NDSummary.OnSummaryLoaded("Database:Views.ADCA_UI_EDIT_CAPT_STATIC_LIST",[["SQL","SQL"]],[["Views","DatabaseView"]],[[838,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADCA_UI_EDIT_CAPT_STATIC_LIST"]]);

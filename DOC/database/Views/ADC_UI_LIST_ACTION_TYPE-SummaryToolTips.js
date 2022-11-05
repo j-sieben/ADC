@@ -1,1 +1,0 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_UI_LIST_ACTION_TYPE",{273:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">List of all rule action types which have an item focus that exists on the page referenced by the rule group. This means, that an action related to a region is only displayed if at least one region is present on the page.</div></div>"});

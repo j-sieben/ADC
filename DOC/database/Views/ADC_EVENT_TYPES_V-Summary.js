@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_EVENT_TYPES_V","ADC_EVENT_TYPES_V");NDSummary.OnSummaryLoaded("Database:Views.ADC_EVENT_TYPES_V",[["SQL","SQL"]],[["Views","DatabaseView"]],[[421,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_EVENT_TYPES_V"]]);

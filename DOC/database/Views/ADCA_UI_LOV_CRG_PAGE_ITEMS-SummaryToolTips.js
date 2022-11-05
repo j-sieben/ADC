@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADCA_UI_LOV_CRG_PAGE_ITEMS",{854:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Collection of all page items that are usable for the selected ADC action type</div></div>"});

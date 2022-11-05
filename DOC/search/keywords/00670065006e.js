@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("gen",["Function"],[["generate_parameter_code",,[["ADC_INTERNAL Body",,,,0,"File:core/packages/adc_internal.pkb:ADC_INTERNAL_Body.generate_parameter_code","SQLClass:ADC_INTERNAL_Body:generate_parameter_code"]]]]);

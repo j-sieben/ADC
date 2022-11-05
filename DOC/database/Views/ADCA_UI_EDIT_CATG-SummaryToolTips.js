@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADCA_UI_EDIT_CATG",{291:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">View for APEX page EDIT_CATG</div></div>"});

@@ -218,7 +218,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     Parameters:
       pMessage - Message text for the confirmation dialog
       pData - Instance of type <commandData>, Name of the command to execute or a JSON
-               instance containing the command name and additional information.
+              instance containing the command name and additional information.
       
    */
   actions.confirmCommand = function(pMessage, pData){
@@ -248,7 +248,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       
     Parameters:
       pData - Instance of type <commandData>, Name of the command to execute or a JSON
-               instance containing the command name and additional information.
+              instance containing the command name and additional information.
    */
   actions.executeCommand = function(pData){
     var data;
@@ -366,6 +366,17 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
 
   /**
+    Function: clearErrors
+      Method to remove all errors shown on the page. Is used in case of cancel activities
+      to remove to a clean state on the page without showing any errors over and over again.
+
+   */
+  actions.clearErrors = function () {
+    adc.renderer.clearErrors();
+  }; // confirm
+
+
+  /**
     Function: confirm
       Method to show a confirmation dialog. Delegates implementation to <adc.renderer>.
       A confirmation may be accepted or rejected by the user.
@@ -387,7 +398,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     Parameter:
       pMessage - Message that is shown to the user.
    */
-  actions.showSuccess = function (pMessage, pTitle, pStyle) {
+  actions.showSuccess = function (pMessage) {
     adc.renderer.showSuccess(pMessage);
   }; // showSuccess
 

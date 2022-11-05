@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Tables.ADC_ACTION_PARAM_TYPES",{231:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store ADC Action Parameter types. Is not maintained by the UI, as entries require package methods for validation</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Tables.ADC_ACTION_PARAM_TYPES",{340:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store ADC Action Parameter types. Is not maintained by the UI, as entries require package methods for validation</div></div>"});

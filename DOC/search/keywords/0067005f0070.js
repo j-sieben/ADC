@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("g_p",["Variable"],[["g_page_values",,[["ADC_UI Body",,,,0,"File:apex/packages/adc_ui.pkb:ADC_UI_Body.g_page_values","SQLClass:ADC_UI_Body:g_page_values"],["ADC_UI_DESIGNER Body",,,,0,"File:apex/packages/adc_ui_designer.pkb:ADC_UI_DESIGNER_Body.g_page_values","SQLClass:ADC_UI_DESIGNER_Body:g_page_values"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("g_p",["Variable"],[["g_page_values",,[["ADCA_UI Body",,,,0,"File:apex/packages/adca_ui.pkb:ADCA_UI_Body.g_page_values","SQLClass:ADCA_UI_Body:g_page_values"]]]]);

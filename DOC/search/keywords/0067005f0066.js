@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("g_f",["Variable"],[["g_form_item_list",,[["ADCA_UI_DESIGNER Body",,,,0,"File:apex/packages/adca_ui_designer.pkb:ADCA_UI_DESIGNER_Body.g_form_item_list","SQLClass:ADCA_UI_DESIGNER_Body:g_form_item_list"]]]]);
