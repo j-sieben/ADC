@@ -1158,15 +1158,16 @@ as
   as    
     C_PARAM_SELECTOR varchar2(100 byte) := '.adc-cra-hide';
 
-    -- Cursor collects the parameters, parameter settings and Rule Action
-    -- values (if the Rule Action is not newly created)
+    -- Cursor collects the parameters, parameter settings
+    -- their actual values (if the Rule Action is not newly created)
+    -- or their default values
     cursor action_type_cur(
              p_cra_id in adc_rule_actions.cra_id%type,
              p_cat_id in adc_action_types.cat_id%type) is
       select cap_page_item, cap_sort_seq, cap_mandatory, cap_value,
              capt_id, capt_name, capt_capvt_id
         from adca_bl_cat_parameter_items
-       where cra_id = p_cra_id
+       where coalesce(cra_id, 0) = coalesce(p_cra_id, 0)
          and cat_id = p_cat_id
        order by cap_sort_seq;
 
@@ -1372,7 +1373,7 @@ select null #PRE#CRA_ID, '#CRG_ID#' #PRE#CRA_CRG_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
     -- Filter CAT list
     adc.refresh_item(
       p_cpi_id => C_PAGE_PREFIX || 'CRA_CAT_ID',
-      p_item_value => dbms_assert.enquote_literal(l_cat_id));
+      p_item_value => l_cat_id);
 
     -- Adjust form for CAT if present
     if l_cat_id is not null then
@@ -1390,7 +1391,7 @@ select null #PRE#CRA_ID, '#CRG_ID#' #PRE#CRA_CRG_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
 
       adc.refresh_item(
         p_cpi_id => C_PAGE_PREFIX || 'CRA_CPI_ID',
-        p_item_value => dbms_assert.enquote_literal(l_caif_default));
+        p_item_value => l_caif_default);
     end if;
 
     set_cra_param_settings(
@@ -1695,16 +1696,13 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
    */
   procedure toggle_crg_active
   as
-    l_crg_id adc_rule_groups.crg_id%type;
+    l_environment environment_rec;
   begin
     pit.enter_mandatory;
+    
+    l_environment := read_environment;
 
-    l_crg_id := adc_api.get_number('crg_id');
-
-    update adc_rule_groups
-       set crg_active = case crg_active when adc_util.c_true then adc_util.c_false else adc_util.c_true end
-     where crg_id = l_crg_id;
-
+    adc_admin.toggle_rule_group(l_environment.crg_id);
     commit;
 
     pit.leave_mandatory;
@@ -1761,7 +1759,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
     
     select cap_capt_id
       into l_capt_id
-      from adc_action_parameters
+      from adc_action_parameters_v
      where cap_cat_id = l_cat_id
        and cap_sort_seq = l_param_index;
        

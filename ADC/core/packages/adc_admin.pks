@@ -131,6 +131,16 @@ as
    */
   procedure validate_rule_group(
     p_row in adc_rule_groups%rowtype);
+    
+  /**
+    Procedure: toggle_rule_group
+      Method to set the activity status of the rule group to its opposite state
+      
+    Parameter:
+      p_crg_id - ID of the rule group to toggle
+   */
+  procedure toggle_rule_group(
+    p_crg_id in adc_rule_groups.crg_id%type);
 
 
   /**

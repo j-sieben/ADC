@@ -752,6 +752,25 @@ as
     
     pit.leave_mandatory;
   end validate_rule_group;
+  
+  
+  /**
+    Procedure: toggle_rule_group
+      See <ADC_ADMIN.toggle_rule_group>
+   */ 
+  procedure toggle_rule_group(
+    p_crg_id in adc_rule_groups.crg_id%type)
+  as
+  begin
+    pit.enter_mandatory(
+      p_params => msg_params(msg_param('p_crg_id', p_crg_id)));
+      
+    update adc_rule_groups
+       set crg_active = case crg_active when adc_util.c_true then adc_util.c_false else adc_util.c_true end
+     where crg_id = p_crg_id;
+
+    pit.leave_mandatory;
+  end toggle_rule_group;
 
 
   /**
