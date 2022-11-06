@@ -13,6 +13,7 @@ prompt &h3.Create tables
 prompt &h3.Create views
 @&tool_dir.create_view adca_bl_cat_help
 @&tool_dir.create_view adca_bl_designer_actions
+@&tool_dir.create_view adca_bl_cat_parameter_items
 @&tool_dir.create_view adca_ui_lov_action_item_focus
 @&tool_dir.create_view adca_ui_lov_action_param_type
 @&tool_dir.create_view adca_ui_lov_action_param_visual_type

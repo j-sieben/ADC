@@ -593,7 +593,7 @@ as
 
 
   /**
-    Procedure: maintain_actions
+    Procedure: maintain_dml_actions
       Method to calculate the visible status and action parameter of the APEX Actions.
       
       Based on the type and mode of the APEX Action called, this methods calculates
@@ -605,7 +605,7 @@ as
     Parameter:
       p_environment - Information about the status the designer is in
    */
-  procedure maintain_actions(
+  procedure maintain_dml_actions(
     p_row in adca_bl_designer_actions%rowtype)
   as
     l_cancel_pti pit_translatable_item_v.pti_name%type;
@@ -613,7 +613,7 @@ as
     l_javascript adc_util.max_char;
     l_crg_app_id adc_rule_groups.crg_app_id%type;
   begin
-    pit.enter_optional('maintain_actions',
+    pit.enter_optional('maintain_dml_actions',
       p_params => msg_params(msg_param('Action', p_row.amda_comment)));
 
     -- Initialize
@@ -651,7 +651,7 @@ as
     adc_apex_action.set_title(p_row.amda_delete_button_label);
     adc.add_javascript(adc_apex_action.get_action_script);
 
-    -- SAVE button
+    -- UPDATE button
     l_disabled := p_row.amda_update_button_visible = adc_util.C_FALSE;
     adc_apex_action.action_init(C_ACTION_UPDATE);
     adc_apex_action.set_disabled(l_disabled);
@@ -662,7 +662,7 @@ as
     adc.add_javascript(adc_apex_action.get_action_script);
 
     pit.leave_optional;
-  end maintain_actions;
+  end maintain_dml_actions;
   
   
   /**
@@ -709,7 +709,10 @@ as
           from adc_rule_actions
          where cra_id = p_environment.node_id;
         if coalesce(adc_api.get_number(C_ITEM_CRU_ID), 0) != p_environment.cru_id then
-          adc.select_region_entry(l_target_region, 'CRU_' || p_environment.cru_id, adc_util.C_TRUE);
+          adc.select_region_entry(
+            p_region_id => l_target_region, 
+            p_entry_id => 'CRU_' || p_environment.cru_id, 
+            p_notify => adc_util.C_TRUE);
           adc.set_item(
             p_cpi_id => C_ITEM_CRU_ID,
             p_item_value => p_environment.cru_id);
@@ -1160,48 +1163,12 @@ as
     cursor action_type_cur(
              p_cra_id in adc_rule_actions.cra_id%type,
              p_cat_id in adc_action_types.cat_id%type) is
-      with params as(
-             select adc_util.c_true c_active,
-                    p_cra_id p_cra_id,
-                    p_cat_id p_cat_id
-               from dual)
-      select /*+ no_merge (p) */
-             sat.cat_id, cat_caif_id, 
-             capt_id, capt_capvt_id,
-             cap_sort_seq, cap_mandatory, 
-             coalesce(
-               case cap_sort_seq
-                 when 1 then cra_param_1
-                 when 2 then cra_param_2
-                 when 3 then cra_param_3
-               end, cap_default) cap_value,
-             coalesce(cap_display_name, capt_name) capt_name,
-             C_PAGE_PREFIX || 'CRA_PARAM_' || 
-             case capt_capvt_id
-               when 'SELECT_LIST' then 'LOV_'
-               when 'STATIC_LIST' then 'LOV_'
-               when 'CONTROL_LIST' then 'CB_'
-               when 'TEXT_AREA' then 'AREA_'
-               when 'SWITCH' then 'SWITCH_'
-             end || cap_sort_seq cap_page_item
-        from adc_action_types_v sat
-        join params
-          on cat_id = p_cat_id
-         and cat_active = c_active
-        left join adc_action_parameters_v
-          on sat.cat_id = cap_cat_id
-         and c_active = cap_active
-        left join adc_action_param_types_v
-          on cap_capt_id = capt_id
-         and c_active = capt_active
-        left join (
-             select *
-               from adca_ui_designer_rule_action
-               join params
-                 on cra_id = p_cra_id)
-          on cat_id = cra_cat_id
-       where cap_sort_seq is not null
-       order by cat_id, cap_sort_seq;
+      select cap_page_item, cap_sort_seq, cap_mandatory, cap_value,
+             capt_id, capt_name, capt_capvt_id
+        from adca_bl_cat_parameter_items
+       where cra_id = p_cra_id
+         and cat_id = p_cat_id
+       order by cap_sort_seq;
 
     l_mandatory_message adc_util.max_char;
   begin
@@ -1224,7 +1191,9 @@ as
       adc.set_visual_state(
         p_cpi_id => C_REGION_PREFIX || 'PARAMETER_' || param.cap_sort_seq,
         p_visual_state => adc.C_SHOW_ENABLE);   
-      adc.set_item_label(param.cap_page_item, param.capt_name);    
+      adc.set_item_label(
+        p_cpi_id => param.cap_page_item, 
+        p_item_label => param.capt_name);    
 
       -- First set items mandatory to avoid endless loops if a select list refreshes
       if param.cap_mandatory = adc_util.C_TRUE then
@@ -1232,14 +1201,15 @@ as
            p_cpi_id => param.cap_page_item,
            p_msg_text => replace(l_mandatory_message, '#LABEL#', param.capt_name));
       else
-        adc.set_optional(p_cpi_id => param.cap_page_item);
+        adc.set_optional(
+          p_cpi_id => param.cap_page_item);
         adc.set_visual_state(
           p_cpi_id => param.cap_page_item,
           p_visual_state => adc.C_SHOW_ENABLE);   
       end if;
 
      -- set values, if required after refresh
-     if param.capt_capvt_id in ('SELECT_LIST', 'STATIC_LIST', 'CONTROL_LIST') then
+     if instr(param.capt_capvt_id, 'LIST') > 0 then
        adc.set_item(
          p_cpi_id => C_PAGE_PREFIX || 'CRA_LOV_PARAM_' || param.cap_sort_seq,
          p_item_value => param.capt_id);
@@ -1588,7 +1558,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
                         p_amda_actual_mode => p_environment.target_mode, 
                         p_amda_actual_id => p_environment.action) 
     loop
-      maintain_actions(page_state);
+      maintain_dml_actions(page_state);
 
       case page_state.amda_actual_mode
       when C_MODE_CRG then
