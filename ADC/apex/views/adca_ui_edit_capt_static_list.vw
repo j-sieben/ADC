@@ -1,4 +1,4 @@
-create or replace view adca_ui_edit_capt_static_list as
+create or replace force view adca_ui_edit_capt_static_list as
 with params as (
        select pit.get_default_language c_default_language,
               utl_apex.get_string('CAPT_ID') c_capt_id

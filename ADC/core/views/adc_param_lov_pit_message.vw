@@ -1,4 +1,4 @@
-create or replace view adc_param_lov_pit_message
+create or replace force view adc_param_lov_pit_message
 as 
 select pms_name d, 'msg.' || pms_name r, null crg_id
   from pit_message

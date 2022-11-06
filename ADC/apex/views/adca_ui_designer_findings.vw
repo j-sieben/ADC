@@ -1,4 +1,4 @@
-create or replace view adca_ui_designer_findings as
+create or replace force view adca_ui_designer_findings as
 with params as (
        select /*+ no_merge */
               q'^javascript:de.condes.plugin.adc.actions.selectEntry('R13_HIERARCHY', '#NODE_ID#', true);^' link_template,

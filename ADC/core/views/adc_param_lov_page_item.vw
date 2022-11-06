@@ -1,4 +1,4 @@
-create or replace view adc_param_lov_page_item
+create or replace force view adc_param_lov_page_item
 as 
 select case cpi_id when 'ALL' then ' Document' else cpi_id end d, cpi_id r, cpi_crg_id crg_id
   from adc_page_items

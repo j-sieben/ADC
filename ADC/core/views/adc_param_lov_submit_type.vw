@@ -1,4 +1,4 @@
-create or replace view adc_param_lov_submit_type as
+create or replace force view adc_param_lov_submit_type as
 select pti_name d, substr(pti_id, 15) r, null crg_id
   from pit_translatable_item_v
  where pti_pmg_name = 'ADC'

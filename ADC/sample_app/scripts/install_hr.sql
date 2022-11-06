@@ -144,7 +144,7 @@ create sequence hr_employees_seq
 
 prompt &s1.Creating HR_EMP_DETAILS view
 
-create or replace view hr_emp_details as
+create or replace force view hr_emp_details as
 select emp_id, job_id, emp_mgr_id, dep_id, loc_id, cou_id,
        emp_first_name, emp_last_name, emp_salary, emp_commission_pct, dep_name,
        job_title, substr(job_id, 4) job_group, loc_city, loc_state_province, cou_name, reg_name

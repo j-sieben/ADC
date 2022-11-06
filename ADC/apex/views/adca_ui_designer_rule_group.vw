@@ -1,4 +1,4 @@
-create or replace view adca_ui_designer_rule_group as
+create or replace force view adca_ui_designer_rule_group as
 with params as (
        select utl_apex.get_number('CRG_ID') g_crg_id,
               adc_util.C_TRUE c_true,

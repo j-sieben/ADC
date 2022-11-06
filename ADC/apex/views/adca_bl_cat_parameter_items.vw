@@ -1,4 +1,4 @@
-create or replace view adca_bl_cat_parameter_items as
+create or replace force view adca_bl_cat_parameter_items as
 with params as(
        select /*+ no_merge */ 
               adc_util.c_true c_active,

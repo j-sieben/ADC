@@ -1563,7 +1563,7 @@ end;
 set define on
 set sqlblanklines off
 
-create or replace view ADC_PARAM_LOV_EVENT as select cet_name d, cet_id r, null crg_id
+create or replace force view ADC_PARAM_LOV_EVENT as select cet_name d, cet_id r, null crg_id
   from adc_event_types_v
  where cet_is_custom_event = (select adc_util.c_true from dual)
  order by cet_id;
@@ -1571,7 +1571,7 @@ create or replace view ADC_PARAM_LOV_EVENT as select cet_name d, cet_id r, null 
 comment on table ADC_PARAM_LOV_EVENT is 'Parameterview to display all custom events';
 
 
-create or replace view ADC_PARAM_LOV_PIT_MESSAGE as select pms_name d, 'msg.' || pms_name r, null crg_id
+create or replace force view ADC_PARAM_LOV_PIT_MESSAGE as select pms_name d, 'msg.' || pms_name r, null crg_id
   from pit_message
   join pit_message_language_v
     on pms_pml_name = pml_name
@@ -1580,18 +1580,18 @@ create or replace view ADC_PARAM_LOV_PIT_MESSAGE as select pms_name d, 'msg.' ||
 comment on table ADC_PARAM_LOV_PIT_MESSAGE is 'List of PIT messages';
 
 
-create or replace view ADC_PARAM_LOV_APEX_ACTION as select caa_name d, caa_id r, caa_crg_id crg_id
+create or replace force view ADC_PARAM_LOV_APEX_ACTION as select caa_name d, caa_id r, caa_crg_id crg_id
   from adc_apex_actions_v;
 
 
-create or replace view ADC_PARAM_LOV_PAGE_ITEM as select case cpi_id when 'ALL' then ' Document' else cpi_id end d, cpi_id r, cpi_crg_id crg_id
+create or replace force view ADC_PARAM_LOV_PAGE_ITEM as select case cpi_id when 'ALL' then ' Document' else cpi_id end d, cpi_id r, cpi_crg_id crg_id
   from adc_page_items
  where cpi_cpit_id in ('DATE_ITEM', 'ITEM', 'NUMBER_ITEM');
 
 comment on table ADC_PARAM_LOV_PAGE_ITEM is 'List of page items, limited to input fields, grouped by crg_ID';
 
 
-create or replace view ADC_PARAM_LOV_ITEM_STATUS as 
+create or replace force view ADC_PARAM_LOV_ITEM_STATUS as 
   select pti_name d, substr(pti_id, 15) r, null crg_id
     from pit_translatable_item_v
    where pti_pmg_name = 'ADC'
@@ -1600,7 +1600,7 @@ create or replace view ADC_PARAM_LOV_ITEM_STATUS as
 comment on table ADC_PARAM_LOV_ITEM_STATUS is 'List of translatable items of for that parameter type';
 
 
-create or replace view ADC_PARAM_LOV_SEQUENCE as select sequence_name d, sequence_name r, null crg_id
+create or replace force view ADC_PARAM_LOV_SEQUENCE as select sequence_name d, sequence_name r, null crg_id
   from user_sequences
        -- exclude column identity sequences
  where sequence_name not like 'ISEQ$$%';
@@ -1608,7 +1608,7 @@ create or replace view ADC_PARAM_LOV_SEQUENCE as select sequence_name d, sequenc
 comment on table ADC_PARAM_LOV_SEQUENCE is 'List of sequences owned by the user';
 
 
-create or replace view ADC_PARAM_LOV_SUBMIT_TYPE as 
+create or replace force view ADC_PARAM_LOV_SUBMIT_TYPE as 
   select pti_name d, substr(pti_id, 15) r, null crg_id
     from pit_translatable_item_v
    where pti_pmg_name = 'ADC'

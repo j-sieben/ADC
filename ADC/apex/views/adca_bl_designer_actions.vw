@@ -1,5 +1,5 @@
 
-create or replace view adca_bl_designer_actions as
+create or replace force view adca_bl_designer_actions as
 with session_state as(
        select /*+ no_merge */
               utl_apex.get_application_id p_app_id,

@@ -1,4 +1,4 @@
-create or replace view sadc_ui_menu_catitems as
+create or replace force view sadc_ui_menu_catitems as
 select null status, 
        cat_name label_value,
        replace(q'^javascript:de.condes.plugin.adc.executeCommand({'command':'get-cat-item','data':'#CAT_ID#'});^', '#CAT_ID#', cat_id) target_value, 

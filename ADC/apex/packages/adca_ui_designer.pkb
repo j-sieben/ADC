@@ -1819,3 +1819,4 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
 begin
   initialize;
 end adca_ui_designer;
+/
