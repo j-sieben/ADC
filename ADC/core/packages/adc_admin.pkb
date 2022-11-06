@@ -1728,6 +1728,7 @@ as
     p_capvt_name in adc_action_param_visual_types_v.capvt_name%type,
     p_capvt_display_name in adc_action_param_visual_types_v.capvt_display_name%type default null,
     p_capvt_description in adc_action_param_visual_types_v.capvt_description%type default null,
+    p_capvt_param_item_extension in adc_action_param_visual_types_v.capvt_param_item_extension%type default null,
     p_capvt_sort_seq in adc_action_param_visual_types_v.capvt_sort_seq%type default 10,
     p_capvt_active in adc_action_param_visual_types_v.capvt_active%type default ADC_UTIL.C_TRUE)
   as
@@ -1739,6 +1740,7 @@ as
                     msg_param('p_capvt_name', p_capvt_name),
                     msg_param('p_capvt_display_name', p_capvt_display_name),
                     msg_param('p_capvt_description', p_capvt_description),
+                    msg_param('p_capvt_param_item_extension', p_capvt_param_item_extension),
                     msg_param('p_capvt_sort_seq', p_capvt_sort_seq),
                     msg_param('p_capvt_active', p_capvt_active)));
                     
@@ -1746,6 +1748,7 @@ as
     l_row.capvt_name := p_capvt_name;
     l_row.capvt_display_name := p_capvt_display_name;
     l_row.capvt_description := utl_text.unwrap_string(p_capvt_description);
+    l_row.capvt_param_item_extension := p_capvt_param_item_extension;
     l_row.capvt_sort_seq := p_capvt_sort_seq;
     l_row.capvt_active := adc_util.get_boolean(p_capvt_active);
     
@@ -1784,15 +1787,17 @@ as
     using (select p_row.capvt_id capvt_id,
                   l_pti_id capvt_pti_id,
                   C_ADC capvt_pmg_name,
+                  p_row.capvt_param_item_extension capvt_param_item_extension,
                   p_row.capvt_sort_seq capvt_sort_seq,
                   p_row.capvt_active capvt_active
              from dual) s
        on (t.capvt_id = s.capvt_id)
      when matched then update set
+          t.capvt_param_item_extension = s.capvt_param_item_extension,
           t.capvt_sort_seq = s.capvt_sort_seq,
           t.capvt_active = s.capvt_active
-     when not matched then insert(capvt_id, capvt_pti_id, capvt_pmg_name, capvt_sort_seq, capvt_active)
-          values(s.capvt_id, s.capvt_pti_id, s.capvt_pmg_name, s.capvt_sort_seq, s.capvt_active);
+     when not matched then insert(capvt_id, capvt_pti_id, capvt_pmg_name, capvt_param_item_extension, capvt_sort_seq, capvt_active)
+          values(s.capvt_id, s.capvt_pti_id, s.capvt_pmg_name, s.capvt_param_item_extension, s.capvt_sort_seq, s.capvt_active);
     
     pit.leave_mandatory;
   end merge_action_param_visual_type;
@@ -2380,7 +2385,7 @@ as
             select p.uttm_text template,
                    cpt.capvt_id, cpt.capvt_name, adc_util.to_bool(cpt.capvt_active) capvt_active,
                    utl_text.wrap_string(cpt.capvt_description, C_WRAP_START, C_WRAP_END) capvt_description,
-                   capvt_display_name, capvt_sort_seq
+                   capvt_param_item_extension, capvt_display_name, capvt_sort_seq
               from adc_action_param_visual_types_v cpt
            ), adc_util.C_CR)
       into l_action_param_visual_types

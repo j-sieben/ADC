@@ -523,6 +523,7 @@ as
       p_capvt_name - Name of the action visual type
       p_capvt_display_name - Display name of the action visual type
       p_capvt_description - Optional description
+      p_capvt_param_item_extension - Extension for the parameter item on the page
       p_capt_sort_seq - Optional sort criteria
       p_capvt_active - Flag to indicate whether this action parameter type is used. Defaults to ADC_UTIL.C_TRUE
    */
@@ -531,6 +532,7 @@ as
     p_capvt_name in adc_action_param_visual_types_v.capvt_name%type,
     p_capvt_display_name in adc_action_param_visual_types_v.capvt_display_name%type default null,
     p_capvt_description in adc_action_param_visual_types_v.capvt_description%type default null,
+    p_capvt_param_item_extension in adc_action_param_visual_types_v.capvt_param_item_extension%type default null,
     p_capvt_sort_seq in adc_action_param_visual_types_v.capvt_sort_seq%type default 10,
     p_capvt_active in adc_action_param_visual_types_v.capvt_active%type default ADC_UTIL.C_TRUE);
 

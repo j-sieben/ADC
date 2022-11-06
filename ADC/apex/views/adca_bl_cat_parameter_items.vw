@@ -13,14 +13,7 @@ select cat_id, cra_id, cat_caif_id,
            when 3 then cra_param_3
          end, cap_default) cap_value,
        coalesce(cap_display_name, capt_name) capt_name,
-       p_page_prefix || 'CRA_PARAM_' || 
-       case capt_capvt_id
-         when 'SELECT_LIST' then 'LOV_'
-         when 'STATIC_LIST' then 'LOV_'
-         when 'CONTROL_LIST' then 'CB_'
-         when 'TEXT_AREA' then 'AREA_'
-         when 'SWITCH' then 'SWITCH_'
-       end || cap_sort_seq cap_page_item
+       p_page_prefix || 'CRA_PARAM_' || capvt_param_item_extension || cap_sort_seq cap_page_item
   from adc_action_types_v
   join params
     on cat_active = c_active
@@ -30,6 +23,8 @@ select cat_id, cra_id, cat_caif_id,
   left join adc_action_param_types_v
     on cap_capt_id = capt_id
    and c_active = capt_active
+  left join adc_action_param_visual_types_v
+    on capt_capvt_id = capvt_id
   left join (
        select *
          from adca_ui_designer_rule_action)

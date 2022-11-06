@@ -2,6 +2,7 @@ create table adc_action_param_visual_types(
   capvt_id varchar2(50 char),
   capvt_pti_id varchar2(50 char) constraint c_capvt_pti_id_nn not null,
   capvt_pmg_name varchar2(3 byte) default on null 'ADC' constraint c_capvt_pmg_name_nn not null,
+  capvt_param_item_extension varchar2(10 byte),
   capvt_sort_seq number default on null 10 constraint c_capvt_sort_seq_nn not null,
   capvt_active &FLAG_TYPE. default on null &C_TRUE. constraint c_capvt_active_nn not null,
   constraint p_capvt_id primary key(capvt_id),
@@ -18,5 +19,6 @@ comment on table adc_action_param_visual_types is 'Table to store how a paramete
 comment on column adc_action_param_visual_types.capvt_id is 'PK, technical key';
 comment on column adc_action_param_visual_types.capvt_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
 comment on column adc_action_param_visual_types.capvt_pmg_name is 'Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC';
+comment on column adc_action_param_visual_types.capvt_param_item_extension is 'Extension for the parameter item on the page. Distinguishes the different types.';
 comment on column adc_action_param_visual_types.capvt_sort_seq is 'Sort criteria';
 comment on column adc_action_param_visual_types.capvt_active is 'Flag to indicate whether visual type is in use';

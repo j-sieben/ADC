@@ -37,6 +37,7 @@ as
   C_MODE_CAA constant adc_util.ora_name_type := 'CAA';
   C_MODE_FLG constant adc_util.ora_name_type := 'FLG';
   C_MODE_FLS constant adc_util.ora_name_type := 'FLS';
+  C_COMMAND constant adc_util.ora_name_type := 'COMMAND';
   C_ACTION_SHOW constant adc_util.ora_name_type := 'show';
   C_ACTION_CANCEL constant adc_util.ora_name_type := 'cancel-action';
   C_ACTION_CREATE constant adc_util.ora_name_type := 'create-action';
@@ -119,7 +120,10 @@ as
       crg_id - ID of the rule group the selecte node belongs to
       cru_id - ID of the rule the selecte node belongs to
       action - Name of the APEX action that triggered the event
-      firing_item - ID of the item that fired the event
+      firing_item - ID of the item that fired the event,
+      app_changed - Flag to indicate whether a different application was selected
+      crg_changed - Flag to indicate whether a different dynamic page was selected
+      cru_changed - Flag to indicate whether a different use case was selected
    */ 
   type environment_rec is record(
     selected_node adc_util.ora_name_type,
@@ -131,7 +135,9 @@ as
     cru_id adc_rules.cru_id%type,
     action adc_util.ora_name_type,
     firing_item adc_util.ora_name_type,
-    application_changed boolean := false);
+    app_changed boolean := false,
+    crg_changed boolean := false,
+    cru_changed boolean := false);
     
     
   /**
@@ -260,18 +266,12 @@ as
     begin
       with data as (
            select cap_cat_id, cap_sort_seq, 
-                  'CRA_PARAM_' ||
-                  case capt_capvt_id
-                    when 'TEXT' then null
-                    when 'SELECT_LIST' then 'LOV_'
-                    when 'STATIC_LIST' then 'LOV_'
-                    when 'CONTROL_LIST' then 'CB_'
-                    when 'TEXT_AREA' then 'AREA_'
-                    when 'SWITCH' then 'SWITCH_'
-                  end || cap_sort_seq item_name
+                  'CRA_PARAM_' || capvt_param_item_extension || cap_sort_seq item_name
              from adc_action_parameters
              join adc_action_param_types
-               on cap_capt_id = capt_id)
+               on cap_capt_id = capt_id
+             join adc_action_param_visual_types
+               on capt_capvt_id = capvt_id)
       select max(decode(cap_sort_seq, 1, item_name)) item_name_1,
              max(decode(cap_sort_seq, 2, item_name)) item_name_2,
              max(decode(cap_sort_seq, 3, item_name)) item_name_3
@@ -666,63 +666,72 @@ as
   
   
   /**
-    Procedure: set_crg_id
-      Method to retrieve the selected CRG_ID from the page state and add it to the environment
+    Procedure: set_crg_and_cru_id
+      Method to retrieve the selected CRG_ID and CRU_ID from the page state and add it to the environment
       
     Parameter:
       p_environment - Information about the status the designer is in
    */
-  procedure set_crg_id(
+  procedure set_crg_and_cru_id(
     p_environment in out nocopy environment_rec)
   as
-    l_target_region adc_util.ora_name_type;
+    l_crg_id adc_rule_groups.crg_id%type;
+    l_cru_id adc_rules.cru_id%type;
   begin
-    pit.enter_optional('set_crg_id');
+    pit.enter_optional('set_crg_and_cru_id');
     
-    if p_environment.firing_item = C_REGION_RULES then
-      l_target_region := C_REGION_HIERARCHY;
-    else
-      l_target_region := C_REGION_RULES;
-    end if;
+    p_environment.crg_id := p_environment.node_id;
     
-    case p_environment.target_mode
-      when C_MODE_CAA then
-        select caa_crg_id
-          into p_environment.crg_id
-          from adc_apex_actions
-         where caa_id = p_environment.node_id;
-      when C_MODE_CRU then
-        select cru_crg_id, cru_id
-          into p_environment.crg_id, p_environment.cru_id
-          from adc_rules
-         where cru_id = p_environment.node_id;
-        -- Persist CRU in CRA to prepare creation of new CRA
-        if coalesce(adc_api.get_number(C_ITEM_CRA_CRU_ID), 0) != p_environment.cru_id then
-          adc.select_region_entry(l_target_region, 'CRU_' || p_environment.cru_id, adc_util.C_TRUE);
-        end if;
-        adc.set_item(
-          p_cpi_id => C_ITEM_CRA_CRU_ID,
-          p_item_value => p_environment.cru_id);
-      when C_MODE_CRA then
-        select cra_crg_id, cra_cru_id
-          into p_environment.crg_id, p_environment.cru_id
-          from adc_rule_actions
-         where cra_id = p_environment.node_id;
-        if coalesce(adc_api.get_number(C_ITEM_CRU_ID), 0) != p_environment.cru_id then
-          adc.select_region_entry(
-            p_region_id => l_target_region, 
-            p_entry_id => 'CRU_' || p_environment.cru_id, 
-            p_notify => adc_util.C_TRUE);
+    if p_environment.crg_id is not null then
+      case p_environment.target_mode
+        when C_MODE_CAA then
+          -- APEX actions are not bound to a CRU
+          select caa_crg_id
+            into p_environment.crg_id
+            from adc_apex_actions
+           where caa_id = p_environment.node_id;
+        when C_MODE_CRU then
+          select cru_crg_id, cru_id
+            into p_environment.crg_id, p_environment.cru_id
+            from adc_rules
+           where cru_id = p_environment.node_id;
+          -- Persist CRU in CRA to prepare creation of new CRA
+          adc.set_item(
+            p_cpi_id => C_ITEM_CRA_CRU_ID,
+            p_item_value => p_environment.cru_id);
+        when C_MODE_CRA then
+          select cra_crg_id, cra_cru_id
+            into p_environment.crg_id, p_environment.cru_id
+            from adc_rule_actions
+           where cra_id = p_environment.node_id;
           adc.set_item(
             p_cpi_id => C_ITEM_CRU_ID,
             p_item_value => p_environment.cru_id);
-        end if;
-      else
-        p_environment.crg_id := p_environment.node_id;
-    end case;
+        else
+          null;
+      end case;
+      
+      -- Detect changes
+      l_crg_id := coalesce(adc_api.get_number('CRG_ID'), 0);
+      l_cru_id := coalesce(adc_api.get_number('CRU_ID'), 0);
+      p_environment.crg_changed := l_crg_id != coalesce(p_environment.crg_id, 0);
+      p_environment.cru_changed := l_cru_id != coalesce(p_environment.cru_id, 0);
+      
+      if p_environment.crg_changed then
+        -- Make sure that the rule group is based on actual application data
+        adc_admin.propagate_rule_change(p_environment.crg_id);
+      end if;
+    else
+      adc.set_item(
+        p_cpi_id => C_ITEM_CRG_ID,
+        p_item_value => null);
+      adc.set_item(
+        p_cpi_id => C_ITEM_SELECTED_NODE,
+        p_item_value => null);
+    end if;
     
     pit.leave_optional;
-  end set_crg_id;
+  end set_crg_and_cru_id;
   
   
   /**
@@ -754,18 +763,21 @@ as
   procedure set_id_values(
     p_environment in out nocopy environment_rec)
   as
-    l_crg_id adc_rule_groups.crg_id%type;
   begin
     pit.enter_optional('set_id_values');
     
-    set_crg_id(p_environment);
+    set_crg_and_cru_id(p_environment);
     
     -- Compare CRG_ID with session state. If changed, refresh rule report
-    l_crg_id := coalesce(adc_api.get_number(C_ITEM_CRG_ID), 0);
-    if l_crg_id != coalesce(p_environment.crg_id, 0) then
-      if p_environment.target_mode not in (C_MODE_FLG, C_MODE_FLS) then
-        -- Make sure that the rule group is based on actual application data
-        adc_admin.propagate_rule_change(l_crg_id);
+    if p_environment.crg_changed then
+      if p_environment.target_mode in (C_MODE_FLG, C_MODE_FLS) then
+        -- Workflow modes
+        adc.set_item(
+          p_cpi_id => C_ITEM_DIAGRAM_ID,
+          p_item_value => p_environment.node_id);
+        adc.refresh_item(
+          p_cpi_id => C_REGION_FINDINGS);
+      else
         -- control page
         adc.set_item(
           p_cpi_id => C_ITEM_CRG_ID,
@@ -779,17 +791,6 @@ as
         adc.set_item(
           p_cpi_id => C_ITEM_CAA_CRG_ID,
           p_item_value => p_environment.crg_id);
-        adc.refresh_item(
-          p_cpi_id => C_REGION_RULES);
-        adc.refresh_item(
-          p_cpi_id => C_REGION_FINDINGS);
-      else
-        -- Workflow modes
-        adc.set_item(
-          p_cpi_id => C_ITEM_DIAGRAM_ID,
-          p_item_value => p_environment.node_id);
-        adc.refresh_item(
-          p_cpi_id => C_REGION_FINDINGS);
       end if;
     end if;
     
@@ -809,7 +810,7 @@ as
 
     adc.set_item(
       p_cpi_id => C_ITEM_SELECTED_NODE,
-      p_item_value => p_environment.selected_node); 
+      p_item_value => p_environment.selected_node);
       
     pit.leave_optional;
   end set_id_values;
@@ -845,42 +846,36 @@ as
     pit.enter_optional('read_environment');
     
     l_environment.firing_item := adc_api.get_firing_item;
-    case when l_environment.firing_item = C_ITEM_CRG_APP_ID then
-      -- Application selection changed, return to initial state
-      l_environment.application_changed := true;
-      l_environment.crg_id := get_first_crg_for_app;
-      l_environment.selected_node := case when l_environment.crg_id is not null then C_MODE_CRG || '_' || l_environment.crg_id end;
-      l_environment.target_mode := coalesce(substr(l_environment.selected_node, 1, 3), C_MODE_CRG);
-      l_environment.node_id := l_environment.crg_id;
-      l_environment.form_id := C_REGION_PREFIX || l_environment.target_mode || '_FORM';
-      l_environment.action := C_ACTION_SHOW;
-      -- Harmonize with page state
-      set_id_values(l_environment);
-      adc.refresh_item(
-        p_cpi_id => C_REGION_HIERARCHY,
-        p_item_value => l_environment.selected_node);
-      adc.refresh_item(
-        p_cpi_id => C_REGION_RULES);
-      adc.refresh_item(
-        p_cpi_id => C_REGION_FINDINGS);
-    when substr(adc_api.get_event_data, 1, 1) = '{' then
-      -- Event data is JSON. Indicates that an APEX Action has called the method. Extract node type and -id
-      l_environment.crg_id := adc_api.get_number(C_ITEM_CRG_ID);
-      l_environment.target_mode := adc_api.get_event_data('targetMode');
-      l_environment.action_mode := coalesce(adc_api.get_event_data('actionMode'), adc_api.get_event_data('targetMode'));
-      l_environment.node_id := to_number(adc_api.get_event_data('id'));
-      l_environment.selected_node := l_environment.target_mode || '_' || l_environment.node_id;
-      l_environment.form_id := C_REGION_PREFIX || l_environment.target_mode || '_FORM';
-      l_environment.action := adc_api.get_event_data('command');
-    else
-      -- Method was called due to a changed selection in hierarchy or rule report. ID is passed in directly
-      l_environment.selected_node := adc_api.get_event_data;
-      l_environment.target_mode := substr(l_environment.selected_node, 1, 3);
-      l_environment.node_id := to_number(substr(l_environment.selected_node, 5), 'fm99999990');
-      l_environment.form_id := C_REGION_PREFIX || l_environment.target_mode || '_FORM';
-      l_environment.action := C_ACTION_SHOW;
-      -- Harmonize with page state
-      set_id_values(l_environment);
+    case l_environment.firing_item 
+      when C_ITEM_CRG_APP_ID then
+        -- Application selection changed, return to initial state
+        l_environment.crg_id := get_first_crg_for_app;
+        l_environment.selected_node := case when l_environment.crg_id is not null then C_MODE_CRG || '_' || l_environment.crg_id end;
+        l_environment.target_mode := C_MODE_CRG;
+        l_environment.node_id := l_environment.crg_id;
+        l_environment.form_id := C_REGION_PREFIX || C_MODE_CRG || '_FORM';
+        l_environment.action := C_ACTION_SHOW;
+        l_environment.app_changed := true;
+        -- Harmonize with page state
+        set_id_values(l_environment);
+      when C_COMMAND then
+        -- APEX Action has called the method. Event data is JSON, so extract attributes
+        l_environment.crg_id := adc_api.get_number(C_ITEM_CRG_ID);
+        l_environment.target_mode := adc_api.get_event_data('targetMode');
+        l_environment.action_mode := coalesce(adc_api.get_event_data('actionMode'), adc_api.get_event_data('targetMode'));
+        l_environment.node_id := to_number(adc_api.get_event_data('id'));
+        l_environment.selected_node := l_environment.target_mode || '_' || l_environment.node_id;
+        l_environment.form_id := C_REGION_PREFIX || l_environment.target_mode || '_FORM';
+        l_environment.action := adc_api.get_event_data('command');
+      else
+        -- Method was called due to a changed selection in hierarchy or rule report. ID is passed in directly
+        l_environment.selected_node := adc_api.get_event_data;
+        l_environment.target_mode := substr(l_environment.selected_node, 1, 3);
+        l_environment.node_id := to_number(substr(l_environment.selected_node, 5), 'fm99999990');
+        l_environment.form_id := C_REGION_PREFIX || l_environment.target_mode || '_FORM';
+        l_environment.action := C_ACTION_SHOW;
+        -- Harmonize with page state
+        set_id_values(l_environment);
     end case;
 
     pit.log_state(msg_params(
@@ -1211,12 +1206,13 @@ as
 
      -- set values, if required after refresh
      if instr(param.capt_capvt_id, 'LIST') > 0 then
+       -- any list type (LOV or CB) is based on a lov query, so set the name for that query
        adc.set_item(
          p_cpi_id => C_PAGE_PREFIX || 'CRA_LOV_PARAM_' || param.cap_sort_seq,
          p_item_value => param.capt_id);
        adc.refresh_item(
          p_cpi_id => param.cap_page_item, 
-         p_item_value => dbms_assert.enquote_literal(param.cap_value));
+         p_item_value => param.cap_value);
      else
        adc.set_item(
          p_cpi_id => param.cap_page_item,
@@ -1276,7 +1272,7 @@ select null #PRE#caa_id, '#CRG_ID#' #PRE#caa_crg_id, 'ACTION' #PRE#caa_caat_id, 
     adc.show_hide_item('.adc-caa-' || lower(adc_api.get_string(C_PAGE_PREFIX || 'CAA_CAAT_ID')), '.adc-caa-hide');
     adc.refresh_item(
       p_cpi_id => C_PAGE_PREFIX || 'CAA_CAAI_LIST', 
-      p_item_value => dbms_assert.enquote_literal(utl_apex.get_string('CAA_CAAI_LIST')));
+      p_item_value => utl_apex.get_string('CAA_CAAI_LIST'));
     adc.set_region_content(
       p_region_id => C_REGION_HELP,
       p_html_code => pit.get_trans_item_description(C_PTI_PMG, 'CAA_HELP'));
@@ -1548,11 +1544,38 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
         from adca_bl_designer_actions
        where amda_actual_mode = p_amda_actual_mode
          and amda_actual_id = p_amda_actual_id;
+
+    l_target_region adc_util.ora_name_type;
   begin
     pit.enter_optional('maintain_visual_state');
       
-    -- if the application has changed, update the export action
-    maintain_export_action(p_environment);
+    -- React on changes of the hierarchy
+    case 
+      when p_environment.app_changed then
+        maintain_export_action(p_environment);
+        adc.refresh_item(
+          p_cpi_id => C_REGION_HIERARCHY,
+          p_item_value => p_environment.selected_node);
+        adc.refresh_item(
+          p_cpi_id => C_REGION_RULES,
+          p_item_value => p_environment.selected_node);
+      when p_environment.crg_changed then
+        adc.refresh_item(
+          p_cpi_id => C_REGION_RULES, 
+          p_item_value => p_environment.selected_node);
+      when p_environment.cru_changed then      
+        if p_environment.firing_item = C_REGION_RULES then
+          l_target_region := C_REGION_HIERARCHY;
+        else
+          l_target_region := C_REGION_RULES;
+        end if;
+        adc.select_region_entry(
+          p_region_id => l_target_region, 
+          p_entry_id => p_environment.selected_node, 
+          p_notify => adc_util.C_FALSE);
+      else
+        null;
+    end case;
     
     -- Retrieve page state from decision table
     for page_state in page_state_cur(
@@ -1664,6 +1687,8 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
       disable_actions;
       adc.show_hide_item('.adc-no-attributes', '.adc-hide');
       adc.set_region_content(C_REGION_HELP, null);
+      adc.refresh_item(C_REGION_HIERARCHY);
+      adc.refresh_item(C_REGION_RULES);
     else
       handle_dml(l_environment);
       maintain_visual_state(l_environment);

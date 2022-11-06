@@ -700,6 +700,7 @@ q'[    p_capvt_id => '#CAPVT_ID#',\CR\]' ||
 q'[    p_capvt_name => '#CAPVT_NAME#',\CR\]' || 
 q'[    p_capvt_display_name => '#CAPVT_DISPLAY_NAME#',\CR\]' || 
 q'[    p_capvt_description => #CAPVT_DESCRIPTION#,\CR\]' || 
+q'[    p_capvt_param_item_extension => '#CAPVT_PARAM_ITEM_EXTENSION#',\CR\]' || 
 q'[    p_capvt_active => #CAPVT_ACTIVE#);\CR\]' || 
 q'[]',
     p_uttm_log_text => q'[]',

@@ -1,7 +1,7 @@
 create or replace view adca_ui_designer_findings as
 with params as (
        select /*+ no_merge */
-              q'^javascript:de.condes.plugin.adc-actions.selectEntry('R13_HIERARCHY', '#NODE_ID#', true);^' link_template,
+              q'^javascript:de.condes.plugin.adc.actions.selectEntry('R13_HIERARCHY', '#NODE_ID#', true);^' link_template,
               'fa fa-exclamation-triangle-o u-warning-text margion-right-sm' warn_icon,
               'fa fa-times-square-o u-danger-text margion-right-sm' danger_icon,
               utl_apex.get_number('CRG_ID') p_crg_id,

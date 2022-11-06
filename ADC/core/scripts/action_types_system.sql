@@ -8,6 +8,7 @@ begin
     p_capvt_name => 'Kontrollkästchen',
     p_capvt_display_name => '',
     p_capvt_description => q'{Wird für die Auswahl mehrerer Optionen verwendet.}',
+    p_capvt_param_item_extension => 'CB_',
     p_capvt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_visual_type(
@@ -15,6 +16,7 @@ begin
     p_capvt_name => 'Dynamische Auswahlliste',
     p_capvt_display_name => '',
     p_capvt_description => q'{Wird für die Auswahl einer berechneten Menge Optionen verwendet.}',
+    p_capvt_param_item_extension => 'LOV_',
     p_capvt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_visual_type(
@@ -22,6 +24,7 @@ begin
     p_capvt_name => 'Statische Auswahlliste',
     p_capvt_display_name => '',
     p_capvt_description => q'{Wird für die Auswahl einer vorgegebenen Menge Optionen verwendet.}',
+    p_capvt_param_item_extension => 'LOV_',
     p_capvt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_visual_type(
@@ -29,6 +32,7 @@ begin
     p_capvt_name => 'Schalter',
     p_capvt_display_name => '',
     p_capvt_description => q'{Wird für die Ja/Nein oder An/Aus-Entscheidungen verwendet.}',
+    p_capvt_param_item_extension => 'SWITCH_',
     p_capvt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_visual_type(
@@ -36,6 +40,7 @@ begin
     p_capvt_name => 'Textfeld',
     p_capvt_display_name => '',
     p_capvt_description => q'{Wird für kürzere Freitexte verwendet.}',
+    p_capvt_param_item_extension => '',
     p_capvt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_visual_type(
@@ -43,6 +48,7 @@ begin
     p_capvt_name => 'Textbereich',
     p_capvt_display_name => '',
     p_capvt_description => q'{Wird für umfangreiche Textmengen verwendet.}',
+    p_capvt_param_item_extension => 'AREA_',
     p_capvt_active => adc_util.C_TRUE);
 
 
