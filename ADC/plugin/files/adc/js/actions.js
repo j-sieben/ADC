@@ -52,6 +52,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   // Event constants
   const C_CLICK_EVENT = 'click';
   const C_SELECTION_CHANGE_EVENT = 'adcselectionchange';
+  const C_APEX_AFTER_REFRESH = 'apexafterrefresh';
   const C_MODAL_DIALOG_CANCEL_EVENT = 'apexaftercanceldialog';
 
   // Modal dialog constants
@@ -458,45 +459,26 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
     Parameter:
       pItemId - ID of the page item to refresh
+      pValue - Optional item value. If set, the item value will be set after refresh.
+               If pItemId represents a region, pValue will select the respective row of the report.
    */
-  actions.refresh = function (pItemId) {
+  actions.refresh = function (pItemId, pValue) {
     if($(`div#${pItemId}.js-apex-region`).length > 0){
+      if (pValue){        
+        $(`#${pItemId}`)
+        .one(C_APEX_AFTER_REFRESH, function(e){
+          actions.selectEntry(pItemId, pValue, true);
+        });
+      }
       apex.region(pItemId).refresh();
     }
     else{
+      adc.controller.pauseChangeEventDuringRefresh(pItemId, pValue);
       apex.item(pItemId).show();
       apex.item(pItemId).enable();
       apex.item(pItemId).refresh();
-      adc.controller.pauseChangeEventDuringRefresh(pItemId);
     };
   }; // refresh
-
-
-  /**
-    Function: refreshAndSetValue
-      Refreshes an item (region, page item etc.) and sets the item value afterwards.
-      
-      The following flow of actions are taken:
-      
-      - Persist the actual value of the page item
-      - Bind one time apexafterrefresh handler to set the page item value to the persisted value after refresh
-      - Trigger apexrefresh event
-      - enable the page item
-
-    Parameters:
-      pItemId - ID of the page item to refresh and set the value
-      pValue - Optional value. If not set, method looks for actual item value in cache or on page.
-   */
-  actions.refreshAndSetValue = function (pItemId, pValue) {
-    var itemValue = pValue || apex.item(pItemId).getValue() || adc.controller.findItemValue(pItemId);
-    var $item = $(`#${pItemId}`);
-    var node = $item.get(0);
-
-    adc.controller.pauseChangeEventDuringRefresh(pItemId, itemValue);
-    apex.item(pItemId).show();
-    apex.item(pItemId).enable();
-    apex.item(pItemId).refresh();
-  }; // refreshAndSetValue
 
 
   /** 

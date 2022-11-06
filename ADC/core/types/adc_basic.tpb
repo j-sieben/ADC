@@ -256,28 +256,27 @@ as
   end remember_page_status;
   
   
+  static procedure remove_all_errors
+  as
+  begin
+    adc_api.execute_action('REMOVE_ALL_ERRORS');
+  end remove_all_errors;
+  
+  
   static procedure refresh_item(
     p_cpi_id in varchar2,
-    p_item_value in varchar2 default null,
-    p_set_item in varchar2 default &C_TRUE.)
+    p_item_value in varchar2 default null)
   as
   begin
     pit.enter_optional(
       p_params => msg_params(
                     msg_param('p_cpi_id', p_cpi_id),
-                    msg_param('p_item_value', p_item_value),
-                    msg_param('p_set_item', p_set_item)));
+                    msg_param('p_item_value', p_item_value)));
     
-    if p_set_item = adc_util.C_TRUE or p_item_value is not null then
-      adc_api.execute_action(
-        p_cat_id => 'REFRESH_AND_SET_VALUE',
-        p_cpi_id => p_cpi_id,
-        p_param_1 => p_item_value);
-    else
-      adc_api.execute_action(
-        p_cat_id => 'REFRESH_ITEM',
-        p_cpi_id => p_cpi_id);
-    end if;
+    adc_api.execute_action(
+      p_cat_id => 'REFRESH_ITEM',
+      p_cpi_id => p_cpi_id,
+      p_param_1 => p_item_value);
     
     pit.leave_optional;
   end refresh_item;

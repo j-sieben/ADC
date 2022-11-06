@@ -240,6 +240,13 @@ as object (
     p_page_items in varchar2,
     p_message in varchar2,
     p_title in varchar2 default null),
+    
+    
+  /**
+    Procedure: remove_all_errors
+      Method to remove all errors from the actual page.
+   */
+  static procedure remove_all_errors,
 
 
   /** 
@@ -256,13 +263,10 @@ as object (
                      - constant in quotation marks or 
                      - JavaScript expression, which is calculated at runtime or 
                      - NULL In this case the value of the session state is used (this can be calculated in advance)
-      p_set_item - Optional flag to indicate whether the value of the item must be set after refresh  (adc_util.C_TRUE) or not (adc_util.C_FALSE). 
-                   Defaults to adc_util.C_TRUE
    */
   static procedure refresh_item(
     p_cpi_id in varchar2,
-    p_item_value in varchar2 default null,
-    p_set_item in varchar2 default &C_TRUE.),
+    p_item_value in varchar2 default null),
 
 
   /** 

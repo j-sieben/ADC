@@ -1,7 +1,7 @@
 create or replace editionable view adca_ui_designer_rules
 as
 with session_state as (
-       select utl_apex.get_number('CRG_ID') g_crg_id
+       select /*+ no_merge */ adc_api.get_number('CRG_ID') g_crg_id
          from dual),
      translations as(
               select max(decode(pti_id, 'ADC_AUTO_INITIALIZE', to_char(pti_description))) auto_initialize,
@@ -11,7 +11,7 @@ with session_state as (
                where pti_pmg_name = 'ADCA'
                  and pti_id like 'ADC_%'),
      params as (
-      select /*+ no_merge (s) */ crg_id, crg_app_id, crg_page_id,
+      select crg_id, crg_app_id, crg_page_id,
              '- ' crg_page_prefix,
              ',' delimiter,
              '<span class="adc-error" title="Element existiert nicht.">' span_error,
