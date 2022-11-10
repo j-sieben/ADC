@@ -35,7 +35,7 @@ select amda_aldm_id amda_actual_mode, amda_alda_id amda_actual_id, amda_comment,
  cross join session_state
  cross join confirm_message
   left join pti c
-    on coalesce(amda_create_target_mode, 'NO') || '_CREATE_BUTTON' = c.pti_id
+    on coalesce(amda_create_target_mode, amda_aldm_id) || '_CREATE_BUTTON' = c.pti_id
   left join pti u
     on amda_aldm_id  || '_SAVE_BUTTON' = u.pti_id
   left join pti d
