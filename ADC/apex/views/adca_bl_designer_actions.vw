@@ -35,11 +35,11 @@ select amda_aldm_id amda_actual_mode, amda_alda_id amda_actual_id, amda_comment,
  cross join session_state
  cross join confirm_message
   left join pti c
-    on case amda_create_button_visible when adc_util.C_TRUE then amda_create_target_mode else 'NO' end || '_CREATE_BUTTON' = c.pti_id
+    on coalesce(amda_create_target_mode, 'NO') || '_CREATE_BUTTON' = c.pti_id
   left join pti u
-    on case amda_update_button_visible when adc_util.C_TRUE then amda_aldm_id else 'NO' end || '_SAVE_BUTTON' = u.pti_id
+    on amda_aldm_id  || '_SAVE_BUTTON' = u.pti_id
   left join pti d
-    on case amda_delete_button_visible when adc_util.C_TRUE then amda_aldm_id else 'NO' end || '_DELETE_BUTTON' = d.pti_id;
+    on amda_aldm_id || '_DELETE_BUTTON' = d.pti_id;
     
     
 comment on table adca_bl_designer_actions is '    This view enriches the data from the decision table <Tables.ADCA_MAP_DESIGNER_ACTIONS> with translated label data and
