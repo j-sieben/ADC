@@ -535,7 +535,7 @@ end;~';
       p_params => msg_params(msg_param('p_plsql_code', p_plsql_code)));
 
     l_stmt := rtrim(p_plsql_code, ';');
-    validate_is_simple_sql_name(l_stmt, null);
+    --validate_is_simple_sql_name(l_stmt, null);
     parse_method(l_stmt);
     l_stmt := replace(C_STMT, '#EXPRESSION#', l_stmt);
     execute immediate l_stmt using out l_result;

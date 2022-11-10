@@ -81,9 +81,12 @@ as
   C_ITEM_DIAGRAM_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'DIAGRAM_ID';
   C_ITEM_CRA_CRU_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRA_CRU_ID';
   C_ITEM_CRA_CAT_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRA_CAT_ID';
+  C_ITEM_CRA_CPI_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRA_CPI_ID';
   C_ITEM_CRU_CRG_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRU_CRG_ID';
   C_ITEM_CRA_CRG_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRA_CRG_ID';
   C_ITEM_CAA_CRG_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CAA_CRG_ID';
+  C_ITEM_CAA_CAAT_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CAA_CAAT_ID';
+  C_ITEM_CAA_CAAI_LIST constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CAA_CAAI_LIST';
   C_ITEM_SELECTED_NODE constant adc_util.ora_name_type := C_PAGE_PREFIX || 'SELECTED_NODE';
   
   C_REGION_RULES constant adc_util.ora_name_type := C_REGION_PREFIX || 'RULES';
@@ -842,6 +845,7 @@ as
     return environment_rec
   as
     l_environment environment_rec;
+    l_cra_id adc_rule_actions.cra_id%type;
   begin
     pit.enter_optional('read_environment');
     
@@ -858,6 +862,10 @@ as
         l_environment.app_changed := true;
         -- Harmonize with page state
         set_id_values(l_environment);
+      when C_ITEM_CRA_CAT_ID then
+        l_cra_id := adc_api.get_number(C_ITEM_CRA_ID);
+        l_environment.crg_id := adc_api.get_number(C_ITEM_CRG_ID);
+        l_environment.action := case when l_cra_id is not null then C_ACTION_SHOW end;
       when C_COMMAND then
         -- APEX Action has called the method. Event data is JSON, so extract attributes
         l_environment.crg_id := adc_api.get_number(C_ITEM_CRG_ID);
@@ -1269,10 +1277,10 @@ select null #PRE#caa_id, '#CRG_ID#' #PRE#caa_crg_id, 'ACTION' #PRE#caa_caat_id, 
     -- Show action atribute region
     adc.show_hide_item('.adc-apex-action', '.adc-hide');
     -- control items to show
-    adc.show_hide_item('.adc-caa-' || lower(adc_api.get_string(C_PAGE_PREFIX || 'CAA_CAAT_ID')), '.adc-caa-hide');
+    adc.show_hide_item('.adc-caa-' || lower(adc_api.get_string(C_ITEM_CAA_CAAT_ID)), '.adc-caa-hide');
     adc.refresh_item(
-      p_cpi_id => C_PAGE_PREFIX || 'CAA_CAAI_LIST', 
-      p_item_value => utl_apex.get_string('CAA_CAAI_LIST'));
+      p_cpi_id => C_ITEM_CAA_CAAI_LIST, 
+      p_item_value => utl_apex.get_string(C_ITEM_CAA_CAAI_LIST));
     adc.set_region_content(
       p_region_id => C_REGION_HELP,
       p_html_code => pit.get_trans_item_description(C_PTI_PMG, 'CAA_HELP'));
@@ -1350,7 +1358,7 @@ select null #PRE#CRA_ID, '#CRG_ID#' #PRE#CRA_CRG_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
         'SORT_SEQ', get_cra_sort_seq(l_cru_id)));
       adc.set_items_from_statement(
         p_cpi_id => adc_util.c_no_firing_item, 
-        p_statement => l_statement);
+        p_statement => l_statement);    
     when p_environment.action = C_ACTION_SHOW then
       -- Was called from the hierarchy tree
       adc.initialize_form_region(C_REGION_CRA_FORM);
@@ -1361,14 +1369,14 @@ select null #PRE#CRA_ID, '#CRG_ID#' #PRE#CRA_CRG_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
 
     -- Control visibility
     adc.show_hide_item('.adc-rule-action', '.adc-hide');
-
+      
     -- Read ID values to adjust display settings
     l_cra_id := adc_api.get_number(C_ITEM_CRA_ID);
     l_cat_id := adc_api.get_string(C_ITEM_CRA_CAT_ID); 
-    
+
     -- Filter CAT list
     adc.refresh_item(
-      p_cpi_id => C_PAGE_PREFIX || 'CRA_CAT_ID',
+      p_cpi_id => C_ITEM_CRA_CAT_ID,
       p_item_value => l_cat_id);
 
     -- Adjust form for CAT if present
@@ -1386,7 +1394,7 @@ select null #PRE#CRA_ID, '#CRG_ID#' #PRE#CRA_CRG_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
        where cat_id = l_cat_id;
 
       adc.refresh_item(
-        p_cpi_id => C_PAGE_PREFIX || 'CRA_CPI_ID',
+        p_cpi_id => C_ITEM_CRA_CPI_ID,
         p_item_value => l_caif_default);
     end if;
 
