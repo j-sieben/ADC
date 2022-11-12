@@ -170,6 +170,15 @@ begin
   );
   
   pit_admin.merge_translatable_item(
+    p_pti_id => 'CRG_DELETE_BUTTON',
+    p_pti_pml_name => 'GERMAN',
+    p_pti_pmg_name => 'ADCA',
+    p_pti_name => q'^Dynamische Seite löschen^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^^'
+  );
+  
+  pit_admin.merge_translatable_item(
     p_pti_id => 'CRA_SAVE_BUTTON',
     p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => 'ADCA',

@@ -5,16 +5,23 @@ with session_state as(
               utl_apex.get_application_id p_app_id,
               utl_apex.get_page_id p_page_id,
               utl_apex.get_page_prefix p_page_prefix,
-              replace(utl_apex.get_page_prefix, 'P', 'R') p_region_prefix
+              replace(utl_apex.get_page_prefix, 'P', 'R') p_region_prefix,
+              utl_apex.get_number('CRG_ID') p_target_crg_id
          from dual),
      confirm_message as(
-       select apex_escape.json(pit.get_message_text(replace(caa_confirm_message_name, 'msg.'))) amda_delete_confirm_message
+       select apex_escape.json(pit.get_message_text(replace(caa_confirm_message_name, 'msg.'))) amda_delete_confirm_message, 
+              case when cra_crg_id is null then adc_util.c_true end has_actions
          from adc_apex_actions
          join adc_rule_groups
            on caa_crg_id = crg_id
          join session_state
            on crg_app_id = p_app_id
           and crg_page_id = p_page_id
+         left join (
+              select cra_crg_id
+                from adc_rule_actions
+               group by cra_crg_id)
+           on cra_crg_id = p_target_crg_id
         where caa_name = 'delete-action'),
      pti as (
        select pti_id, pti_name
@@ -27,7 +34,8 @@ select amda_aldm_id amda_actual_mode, amda_alda_id amda_actual_id, amda_comment,
        amda_create_button_visible, c.pti_name amda_create_button_label, amda_create_target_mode,
        amda_update_button_visible, u.pti_name amda_update_button_label, amda_aldm_id amda_update_target_mode,
        case when amda_id_value is not null then utl_apex.get_number(p_page_prefix || amda_id_value) end amda_update_value,
-       amda_delete_button_visible, d.pti_name amda_delete_button_label, amda_delete_mode, amda_delete_target_mode, amda_delete_confirm_message,
+       case when amda_aldm_id = 'CRG' then coalesce(has_actions, amda_delete_button_visible) end amda_delete_button_visible, 
+       d.pti_name amda_delete_button_label, amda_delete_mode, amda_delete_target_mode, amda_delete_confirm_message,
        case when amda_delete_target_mode is not null then utl_apex.get_number(p_page_prefix || amda_delete_target_mode || '_ID') end amda_delete_value,
        amda_cancel_button_active, amda_cancel_target_mode, 
        case when amda_cancel_target_mode is not null then utl_apex.get_number(p_page_prefix || amda_cancel_target_mode || '_ID') end amda_cancel_value
