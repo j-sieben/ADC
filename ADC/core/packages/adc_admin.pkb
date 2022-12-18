@@ -862,7 +862,7 @@ as
     l_stmt clob;
   begin      
     -- Create export script based on UTL_TEXT export templates
-    utl_text.set_secondary_anchor_char('&');
+    utl_text.set_secondary_anchor_char('§');
         
     with params as (
            select uttm_mode, uttm_text template,
@@ -2370,7 +2370,8 @@ as
   begin
     pit.enter_mandatory(p_params => msg_params(msg_param('p_cat_is_editable', p_cat_is_editable)));
     -- prevent unwanted escapings on nested anchors
-    utl_text.set_secondary_anchor_char('§');
+    utl_text.set_main_anchor_char('#');
+    utl_text.set_secondary_anchor_char(null);
     
     case p_cat_is_editable
     when adc_util.C_TRUE then

@@ -422,15 +422,8 @@ select 204, 'Hermann', 'Baer', 'HBAER', '515.123.8888', to_date('07.06.2002', 'd
 select 205, 'Shelley', 'Higgins', 'SHIGGINS', '515.123.8080', to_date('07.06.2002', 'dd.mm.yyyy'), 'AC_MGR', 12008, null, 101, 110 from dual union all
 select 206, 'William', 'Gietz', 'WGIETZ', '515.123.8181', to_date('07.06.2002', 'dd.mm.yyyy'), 'AC_ACCOUNT', 8300, null, 205, 110 from dual;
 
-merge into hr_employees t
-using (select e.emp_id, case count(distinct m.emp_id) when 0 then 'N' else 'Y' end emp_is_manager
-         from hr_employees e
-         left join hr_employees m
-           on e.emp_mgr_id = m.emp_id
-        group by e.emp_id) s
-   on (t.emp_id = s.emp_id)
- when matched then update set
-      t.emp_is_manager = s.emp_is_manager;
+update hr_employees t
+   set emp_is_manager = case when substr(emp_job_id, 4) in ('PRES', 'VP', 'MGR', 'MAN') then 'Y' else 'N' end;
 
 commit;
 

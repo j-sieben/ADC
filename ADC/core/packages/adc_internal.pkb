@@ -399,7 +399,7 @@ as
   exception
     when others then
       adc_util.close_cursor(l_action_cur);
-      pit.handle_exception(msg.SQL_ERROR, msg_args(p_rule_stmt));
+      pit.handle_exception(msg.PIT_SQL_ERROR, msg_args(p_rule_stmt));
   end evaluate_and_execute_rule_action;
   
   
@@ -819,8 +819,8 @@ as
                     
     pit.assert_not_null(p_firing_item);
     pit.assert_not_null(p_event);
-    l_rule_group_row.crg_app_id := apex_application.g_flow_id;
-    l_rule_group_row.crg_page_id := apex_application.g_flow_step_id;
+    l_rule_group_row.crg_app_id := utl_apex.get_application_id;
+    l_rule_group_row.crg_page_id := utl_apex.get_page_id;
     
     -- Read rule group
     select crg_id

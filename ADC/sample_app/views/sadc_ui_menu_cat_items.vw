@@ -1,7 +1,7 @@
 create or replace force view sadc_ui_menu_catitems as
 select null status, 
        cat_name label_value,
-       replace(q'^javascript:de.condes.plugin.adc.executeCommand({'command':'get-cat-item','data':'#CAT_ID#'});^', '#CAT_ID#', cat_id) target_value, 
+       replace(q'^javascript:de.condes.plugin.adc.actions.executeCommand({'command':'get-cat-item','data':'#CAT_ID#'});^', '#CAT_ID#', cat_id) target_value, 
        'YES' is_current, 
        'fa fa-arrow-right' image_value, 
        null image_attr_value, 

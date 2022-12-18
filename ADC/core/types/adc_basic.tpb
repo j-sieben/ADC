@@ -104,7 +104,7 @@ as
     when others then
       adc_api.register_error(
         p_cpi_id => p_cpi_id, 
-        p_message_name => msg.SQL_ERROR);
+        p_message_name => msg.PIT_SQL_ERROR);
       pit.leave_optional;
   end exclusive_or;
 

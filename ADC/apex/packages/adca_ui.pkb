@@ -327,7 +327,7 @@ as
       p_file_name => l_zip_file_name);
   exception
     when others then
-      pit.handle_exception(msg.SQL_ERROR, msg_args(substr(sqlerrm, 12)));
+      pit.handle_exception(msg.PIT_SQL_ERROR);
       raise;
   end process_export_crg;
   

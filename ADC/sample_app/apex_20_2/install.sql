@@ -8,9 +8,7 @@ prompt &s1.Install application
 
 set verify off
 prompt &s1.Install ADC rules
-@&app_script_dir.merge_rule_group_sadc_useadc.sql
 @&app_script_dir.merge_rule_group_sadc_adact.sql
-@&app_script_dir.merge_rule_group_sadc_adadc.sql
 @&app_script_dir.merge_rule_group_sadc_adanf.sql
 @&app_script_dir.merge_rule_group_sadc_adrep.sql
 @&app_script_dir.merge_rule_group_sadc_adsta.sql
@@ -21,8 +19,5 @@ prompt &s1.Install ADC rules
 @&app_script_dir.merge_rule_group_sadc_doc.sql
 @&app_script_dir.merge_rule_group_sadc_edemp.sql
 @&app_script_dir.merge_rule_group_sadc_extended_initialization.sql
-@&app_script_dir.merge_rule_group_sadc_home.sql
-@&app_script_dir.merge_rule_group_sadc_menu_cat.sql
-@&app_script_dir.merge_rule_group_sadc_pseudo.sql
-@&app_script_dir.merge_rule_group_sadc_tutorial.sql
+@&app_script_dir.merge_rule_group_sadc_menu_cat.sq
 @&app_script_dir.merge_rule_group_sadc_unittest.sql

@@ -447,7 +447,7 @@ as
           -- Date related errors. oo many to map them explicitly
           pit.error(msg.ADC_INVALID_DATE, msg_args(substr(sqlerrm, 12)));
         else
-          pit.error(msg.SQL_ERROR, msg_args(substr(sqlerrm, 12)));
+          pit.error(msg.PIT_SQL_ERROR);
         end case;
       end if;
   end set_value;

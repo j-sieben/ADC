@@ -4,20 +4,22 @@ begin
     
   pit_admin.merge_message_group(
     p_pmg_name => 'SADC',
-    p_pmg_description => q'^Meldungen für die ADC Administrationsanwendung^');
+    p_pmg_description => q'^Translatable Items for the ADC Sample Application^',
+    p_pmg_error_prefix => '',
+    p_pmg_error_postfix => 'ERR');
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADACT_PAGE',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
-    p_pti_description => q'^<ul><li>Der Bericht erhält ein verstecktes Feld <span style="font-family:'Courier New', Courier, monospace;">P8_EMPLOYEE_ID</span>, das die aktuell ausgewählte ID des Berichts enthalten soll.</li><li>Der Bericht erhält eine statische ID (<span style="font-family:'Courier New', Courier, monospace;">R8_EMPLOYEE</span>), damit ADC weiß, dass Aktionen auf diese Region geplant sind und er einen eindeutigen Bezeichner für die Region erhält.</li><li>Die Schaltfläche erhält eine statische ID (<span style="font-family:'Courier New', Courier, monospace;">B8_EDIT_EMP</span>), damit ADC weiß, dass eine Aktion auf diese Schaltfläche geplant ist. Der Bezeichner dieser Schaltfläche is beliebig, er wird durch das Seitenkommando überschrieben. Als Aktion wird “Defined by Dynamic Action" gewählt.</li></ul>^'
+    p_pti_description => q'^<ul><li>Der Bericht erhält eine statische ID (<span style="font-family:'Courier New', Courier, monospace;">R8_EMPLOYEE</span>), damit ADC &nbsp;einen eindeutigen Bezeichner für die Region erhält. Dadurch können Aktionen auf diese Region eingerichtet werden.</li><li>Die Schaltfläche erhält eine statische ID (<span style="font-family:'Courier New', Courier, monospace;">B8_EDIT_EMP</span>), damit ADC weiß, dass eine Aktion auf diese Schaltfläche geplant ist. Der Bezeichner dieser Schaltfläche is beliebig, er wird durch das Seitenkommando überschrieben. Als Aktion wird “Defined by Dynamic Action" gewählt.</li></ul>^'
   );
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADACT_S1',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -26,16 +28,16 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADACT_S2',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
-    p_pti_description => q'^<h3>Bemerkungen</h3><p>Beim Rendern der Seite wird der aktuell ausgewählte Wert des Interactive Grids an ADC gemeldet.</p><p>Wird eine Änderung des Berichts an ADC gemeldet, wird ein PL/SQL-Code angestoßen, der das Seitenkommando <span style="font-family:'Courier New', Courier, monospace;">edit-employee</span> editiert. Dadurch können die Beschriftung sowie das Verhalten der Schaltfläche zum Bearbeiten des Mitarbeiters kontrolliert werden.&nbsp;</p><p>Im Beispiel wird ein modales Fenster zum Editieren des Mitarbeiters geöffnet, falls dies erlaubt ist, und die Schaltfläche deaktiviert und mit “nicht bearbeitbar” beschriftet, falls dies nicht erlaubt ist.</p><p>Die Methode zur Kontrolle des Seitenkommandos verwendet das Hilfspackage <span style="font-family:'Courier New', Courier, monospace;">ADC_APEX_ACTION</span>. Dabei wird die Aktion ausgewählt und anschließend das Verhalten kontrolliert:</p><p><span style="font-family:'Courier New', Courier, monospace;">adc_apex_action.<strong>action_init('edit-employee')</strong>;</span><br><span style="font-family:'Courier New', Courier, monospace;">if l_is_manager = 1 then</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; adc_apex_action.<strong>set_label</strong>('Nicht bearbeitbar');</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; adc_apex_action.<strong>set_disabled</strong>(true);</span><br><span style="font-family:'Courier New', Courier, monospace;">else</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; adc_apex_action.set_label(l_label);</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; adc_apex_action.set_disabled(false);</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; adc_apex_action.<strong>set_href</strong>(</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; &nbsp; utl_apex.get_page_url(</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; &nbsp; &nbsp; p_page =&gt; 'edemp',</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; &nbsp; &nbsp; p_param_items =&gt; 'P9_EMPLOYEE_ID',</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; &nbsp; &nbsp; p_value_list =&gt; l_employee_id,</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; &nbsp; &nbsp; p_triggering_element =&gt; 'B8_EDIT_EMP',</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; &nbsp; &nbsp; p_clear_cache =&gt; 9));</span><br><span style="font-family:'Courier New', Courier, monospace;">end if;</span><br><span style="font-family:'Courier New', Courier, monospace;">adc.add_javascript(<strong>adc_apex_action.get_action_script</strong>);</span></p><p>&nbsp;Nach Abschluss der Änderungen wird ein Skript an ADC übergeben, der die Kontrolle auf der Seite ausübt.</p>^'
+    p_pti_description => q'^<h3>Bemerkungen</h3><p>Beim Rendern der Seite wird der aktuell ausgewählte Wert des Interactive Grids an ADC gemeldet.</p><p>Wird eine Änderung des Berichts an ADC gemeldet, wird ein PL/SQL-Code angestoßen, der das Seitenkommando <span style="font-family:'Courier New', Courier, monospace;">edit-employee</span> editiert. Dadurch können die Beschriftung sowie das Verhalten der Schaltfläche zum Bearbeiten des Mitarbeiters kontrolliert werden.&nbsp;</p><p>Im Beispiel wird ein modales Fenster zum Editieren des Mitarbeiters geöffnet, falls dies erlaubt ist, und die Schaltfläche deaktiviert und mit “nicht bearbeitbar” beschriftet, falls dies nicht erlaubt ist.</p><p>Die Methode zur Kontrolle des Seitenkommandos verwendet das Hilfspackage <span style="font-family:'Courier New', Courier, monospace;">ADC_APEX_ACTION</span>. Dabei wird die Aktion ausgewählt und anschließend das Verhalten kontrolliert:</p><p><span style="font-family:'Courier New', Courier, monospace;">adc_apex_action.<strong>action_init('edit-employee')</strong>;</span><br><span style="font-family:'Courier New', Courier, monospace;">if l_is_manager = adc_util.C_TRUE then</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; adc_apex_action.<strong>set_label</strong>('Nicht bearbeitbar');</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; adc_apex_action.<strong>set_disabled</strong>(true);</span><br><span style="font-family:'Courier New', Courier, monospace;">else</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; adc_apex_action.set_label(l_label);</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; adc_apex_action.set_disabled(false);</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; adc_apex_action.<strong>set_href</strong>(</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; &nbsp; utl_apex.get_page_url(</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; &nbsp; &nbsp; p_page =&gt; 'edemp',</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; &nbsp; &nbsp; p_param_items =&gt; 'P9_EMPLOYEE_ID',</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; &nbsp; &nbsp; p_value_list =&gt; l_employee_id,</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; &nbsp; &nbsp; p_triggering_element =&gt; 'B8_EDIT_EMP',</span><br><span style="font-family:'Courier New', Courier, monospace;">&nbsp; &nbsp; &nbsp; p_clear_cache =&gt; 9));</span><br><span style="font-family:'Courier New', Courier, monospace;">end if;</span><br><span style="font-family:'Courier New', Courier, monospace;">adc.add_javascript(<strong>adc_apex_action.get_action_script</strong>);</span></p><p>&nbsp;Nach Abschluss der Änderungen wird ein Skript an ADC übergeben, der die Kontrolle auf der Seite ausübt.</p>^'
   );
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADADC_PAGE',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -44,7 +46,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADANF_PAGE',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -53,7 +55,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADC_APP',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -62,7 +64,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADC_NO_RULES',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -71,7 +73,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADREP_PAGE1',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -80,25 +82,25 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADREP_PAGE2',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
-    p_pti_description => q'^<p>Beim interaktiven Report muss einer Spalte der HTML-Ausdruck</p><p><span style="font-family:'Courier New', Courier, monospace;">&lt;span data-id="#&lt;Primärschlüsselspalte"&gt;#&lt;belieibige Spalte&gt;#&lt;/span&gt;</span></p><p>mitgegeben werden, damit der Zugriff auf die Primärschlüsselinformation gelingt. Im Beispiel ist das in Spalte <span style="font-family:'Courier New', Courier, monospace;">EMP_FIRST_NAME</span> geschehen.</p>^'
+    p_pti_description => q'^<p>Beim interaktiven Report muss einer Spalte der HTML-Ausdruck</p><p><span style="font-family:'Courier New', Courier, monospace;">&lt;span data-id="#Primärschlüsselspalte#"&gt;#beliebige Spalte#&lt;/span&gt;</span></p><p>mitgegeben werden, damit der Zugriff auf die Primärschlüsselinformation gelingt. Im Beispiel ist das in Spalte <span style="font-family:'Courier New', Courier, monospace;">EMP_FIRST_NAME</span> geschehen.</p>^'
   );
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADREP_PAGE3',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
-    p_pti_description => q'^<p>Auch beim klassischen Report muss einer Spalte der HTML-Ausdruck</p><p><span style="font-family:'Courier New', Courier, monospace;">&lt;span data-id="#&lt;Primärschlüsselspalte"&gt;#&lt;belieibige Spalte&gt;#&lt;/span&gt;</span></p><p>mitgegeben werden, damit der Zugriff auf die Primärschlüsselinformation gelingt. Im Beispiel ist das in Spalte <span style="font-family:'Courier New', Courier, monospace;">EMP_FIRST_NAME</span> geschehen.</p>^'
+    p_pti_description => q'^<p>Auch beim klassischen Report muss einer Spalte der HTML-Ausdruck</p><p><span style="font-family:'Courier New', Courier, monospace;">&lt;span data-id="#Primärschlüsselspalte#"&gt;#beliebige Spalte#&lt;/span&gt;</span></p><p>mitgegeben werden, damit der Zugriff auf die Primärschlüsselinformation gelingt. Im Beispiel ist das in Spalte <span style="font-family:'Courier New', Courier, monospace;">EMP_FIRST_NAME</span> geschehen.</p>^'
   );
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADREP_S1',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -107,16 +109,16 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADREP_S2',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
-    p_pti_description => q'^<p>Keine</p>^'
+    p_pti_description => q'^<p>Beachten Sie, dass zusätzlich zu den Initialisierungsregeln für die verschiedenen Modi auch eine allgemeine Initialisierungsregel angegeben werden kann, die die Dinge organisiert, die in jedem Fall geschehen müssen. Diese allgemeine Initialisierungsregel wird als erster Anwendungsfall organisiert.</p>^'
   );
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADSTA_PAGE',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -125,7 +127,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADSTA_S1',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -134,7 +136,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADSTA_S2',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -143,7 +145,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADVAL_PAGE',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -152,7 +154,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ANF_S1',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -161,7 +163,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ANF_S2',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -169,8 +171,26 @@ begin
   );
 
   pit_admin.merge_translatable_item(
+    p_pti_id => 'UI_DOC',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^SADC^',
+    p_pti_name => q'^^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^^'
+  );
+
+  pit_admin.merge_translatable_item(
+    p_pti_id => 'UI_INIT_PAGE',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^SADC^',
+    p_pti_name => q'^^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^<ul><li>Auf der Seite wird ein verstecktes Element <span style="font-family:'Courier New', Courier, monospace;">P16_PAGE_MODE</span> eingerichtet</li><li>Zwei Schaltflächen wurden hinzugefügt, um die Seite im »Normalmodus« und im Modus »COMMISSION« aufzurufen</li></ul>^'
+  );
+
+  pit_admin.merge_translatable_item(
     p_pti_id => 'UI_INIT_S1',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -178,8 +198,17 @@ begin
   );
 
   pit_admin.merge_translatable_item(
+    p_pti_id => 'UI_INIT_S2',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^SADC^',
+    p_pti_name => q'^^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^<p>Keine</p>^'
+  );
+
+  pit_admin.merge_translatable_item(
     p_pti_id => 'UI_OVERVIEW',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -187,8 +216,17 @@ begin
   );
 
   pit_admin.merge_translatable_item(
+    p_pti_id => 'UI_PSEUDO_S1',
+    p_pti_pml_name => q'^GERMAN^',
+    p_pti_pmg_name => q'^SADC^',
+    p_pti_name => q'^^',
+    p_pti_display_name => q'^^',
+    p_pti_description => q'^<h3>Pseudospalten</h3><p>Pseudospalten werden in ADC verwendet, um in der technischen Bedingung eines Anwendungsfalls auf weitere Informationen zugreifen zu können. Sie werden zusätzlich zu den Spalten verwendet, die den Seitenelementen auf der Anwendungsseite entsprechen.</p><ul><li><strong>C_TRUE</strong>, <strong>C_FALSE</strong> und <strong>C_CLICKED</strong><br>Diese Pseduospalten stellen Wahrheitswerte dar. ADC kann mit unterschiedlichen Datentypen als Wahrheitswert installiert worden sein. Diese Pseudospalten haben den entsprechenden Datentyp. C_CLICKED enthält den Wert C_TRUE und kann alternativ verwendet werden, falls geprüft werden soll, ob eine Schaltfläche geklickt wurde.</li><li><strong>INITIALIZING</strong><br>Diese Pseudospalte enthält den Wert C_TRUE, falls die Seite initialisiert wird. Sie wird genutzt, um Initialisierungsregeln zu hinterlegen. Sie kann in der technischen Bedingung durch weitere Bedingungen spezialisiert werden, um unterschiedliche Initialisierungsvorschriften zu hinterlegen.</li><li><strong>FIRING_ITEM</strong><br>Hier ist das auslösende Element hinterlegt. Während der Initialisierung ist dort DOCUMENT enthalten, ansonsten der Name des Seitenelements, der Schaltfläche oder der Region, die das Ereignis ausgelöst hat.<br>Diese Pseudospalte kann verwendet werden, um auf Änderungen eines Seitenelements, unabhängig von dessen Wert, reagieren zu können.</li><li><strong>COMMAND</strong><br>Wird ein Seitenkommando ausgelöst, enthält diese Pseudospalte den Namen der Aktion, die ausgelöst wurde.</li></ul>^'
+  );
+
+  pit_admin.merge_translatable_item(
     p_pti_id => 'UI_TEXT_MISSING',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^<p>Text "#1#" ist nicht vorhanden.</p>^',
     p_pti_display_name => q'^^',
@@ -197,7 +235,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_TUTORIAL',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -206,7 +244,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_USE_ADC',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -215,7 +253,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_VAL_S1',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -224,7 +262,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_VAL_S2',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -233,7 +271,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_VAL2_S1',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',
@@ -242,7 +280,7 @@ begin
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_VAL2_S2',
-    p_pti_pml_name => 'GERMAN',
+    p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^SADC^',
     p_pti_name => q'^^',
     p_pti_display_name => q'^^',

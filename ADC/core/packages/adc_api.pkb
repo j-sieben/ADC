@@ -113,9 +113,9 @@ as
 
     pit.leave_mandatory;
   exception
-    when msg.ASSERT_TRUE_ERR then
+    when msg.PIT_ASSERT_TRUE_ERR then
       pit.handle_exception;
-      adc_internal.register_error(adc_util.C_NO_FIRING_ITEM, msg.ASSERT_TRUE);
+      adc_internal.register_error(adc_util.C_NO_FIRING_ITEM, msg.PIT_ASSERT_TRUE);
       -- surpress recursion
       adc_internal.stop_rule;
     when others then

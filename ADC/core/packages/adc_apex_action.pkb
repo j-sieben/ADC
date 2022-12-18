@@ -280,7 +280,7 @@ as
                     msg_param('APEX_ACTIONS', l_actions_js)));
     return l_actions_js;
   exception
-    when msg.ASSERT_TRUE_ERR then
+    when msg.PIT_ASSERT_TRUE_ERR then
       -- not during initialization or no apex actions, ignore.
       pit.leave_optional;
       return null;

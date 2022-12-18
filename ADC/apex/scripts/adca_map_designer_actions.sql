@@ -10,7 +10,7 @@ using (select 'CRU' amda_aldm_id, 'show' amda_alda_id, 'Rule selected from hiera
         select 'CRU', 'delete-action', 'Rule Action deleted', 'CRU_ID', adc_util.C_TRUE, adc_util.C_TRUE, 'CRA', adc_util.C_TRUE, adc_util.C_TRUE, 'CRU', 'CRG', adc_util.C_TRUE, 'CRG' from dual union all
         select 'CRU', 'cancel-action', 'Rule Action edit cancelled', 'CRU_ID', adc_util.C_TRUE, adc_util.C_TRUE, 'CRA', adc_util.C_TRUE, adc_util.C_TRUE, 'CRU', 'CRG', adc_util.C_TRUE, 'CRG' from dual
         union all
-        select 'CRG', 'show', 'Rule group selected from hierarchy', 'CRG_ID', adc_util.C_FALSE, adc_util.C_TRUE, 'CRU', adc_util.C_FALSE, adc_util.C_FALSE, null, null, adc_util.C_FALSE, null from dual union all
+        select 'CRG', 'show', 'Rule group selected from hierarchy', 'CRG_ID', adc_util.C_FALSE, adc_util.C_TRUE, 'CRU', adc_util.C_FALSE, adc_util.C_FALSE, null, 'CRG', adc_util.C_FALSE, null from dual union all
         select 'CRG', 'delete-action', 'Rule deleted', 'CRG_ID', adc_util.C_FALSE, adc_util.C_TRUE, 'CRU', adc_util.C_FALSE, adc_util.C_FALSE, null, null, adc_util.C_FALSE, null from dual union all
         select 'CRG', 'cancel-action', 'Rule edit cancelled', 'CRG_ID', adc_util.C_FALSE, adc_util.C_TRUE, 'CRU', adc_util.C_FALSE, adc_util.C_FALSE, null, null, adc_util.C_FALSE, null from dual
         union all

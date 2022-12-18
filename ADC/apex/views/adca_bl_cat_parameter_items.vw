@@ -35,11 +35,6 @@ select cat_id, cra_id, cat_caif_id,
        coalesce(cap_display_name, capt_name) capt_name,
        p_page_prefix || 'CRA_PARAM_' || capvt_param_item_extension || cap_sort_seq cap_page_item
   from data d
-  join adca_ui_designer_rule_action
+  join adc_rule_actions
     on cat_id = cra_cat_id
  where cap_sort_seq is not null;
- 
-select *
-  from adca_bl_cat_parameter_items
- where cat_id = 'SET_ITEM';
-   

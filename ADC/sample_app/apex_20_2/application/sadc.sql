@@ -13611,7 +13611,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_column=>3
 ,p_plug_display_point=>'BODY'
 ,p_query_type=>'TABLE'
-,p_query_table=>'SADCA_UI_ADSTA'
+,p_query_table=>'SADC_UI_ADSTA'
 ,p_include_rowid_column=>false
 ,p_is_editable=>false
 ,p_plug_source_type=>'NATIVE_FORM'
@@ -13993,7 +13993,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_column=>3
 ,p_plug_display_point=>'BODY'
 ,p_query_type=>'TABLE'
-,p_query_table=>'SADCA_UI_ADACT'
+,p_query_table=>'SADC_UI_ADACT'
 ,p_include_rowid_column=>false
 ,p_plug_source_type=>'NATIVE_IG'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -14376,7 +14376,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'BODY'
 ,p_query_type=>'TABLE'
-,p_query_table=>'SADCA_UI_EDEMP'
+,p_query_table=>'SADC_UI_EDEMP'
 ,p_include_rowid_column=>false
 ,p_is_editable=>true
 ,p_edit_operations=>'i:u:d'
@@ -14745,7 +14745,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_column=>3
 ,p_plug_display_point=>'BODY'
 ,p_query_type=>'TABLE'
-,p_query_table=>'SADCA_UI_ADREP'
+,p_query_table=>'SADC_UI_ADREP'
 ,p_include_rowid_column=>false
 ,p_plug_source_type=>'NATIVE_IR'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -14914,7 +14914,7 @@ wwv_flow_api.create_report_region(
 ,p_display_point=>'BODY'
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'TABLE'
-,p_query_table=>'SADCA_UI_ADREP'
+,p_query_table=>'SADC_UI_ADREP'
 ,p_include_rowid_column=>false
 ,p_ajax_enabled=>'Y'
 ,p_query_row_template=>wwv_flow_api.id(544611037499510178)
@@ -15033,7 +15033,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_column=>3
 ,p_plug_display_point=>'BODY'
 ,p_query_type=>'TABLE'
-,p_query_table=>'SADCA_UI_ADREP'
+,p_query_table=>'SADC_UI_ADREP'
 ,p_include_rowid_column=>false
 ,p_plug_source_type=>'NATIVE_IG'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -15718,7 +15718,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_column=>3
 ,p_plug_display_point=>'BODY'
 ,p_query_type=>'TABLE'
-,p_query_table=>'SADCA_UI_EDEMP'
+,p_query_table=>'SADC_UI_EDEMP'
 ,p_include_rowid_column=>false
 ,p_is_editable=>true
 ,p_edit_operations=>'i:u:d'
@@ -16148,7 +16148,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_column=>3
 ,p_plug_display_point=>'BODY'
 ,p_query_type=>'TABLE'
-,p_query_table=>'SADCA_UI_ADACT'
+,p_query_table=>'SADC_UI_ADACT'
 ,p_include_rowid_column=>false
 ,p_plug_source_type=>'NATIVE_IG'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -17057,7 +17057,6 @@ wwv_flow_api.create_page_item(
 ,p_item_sequence=>300
 ,p_item_plug_id=>wwv_flow_api.id(44156231253808688844)
 ,p_prompt=>'deaktive "Ja-Nein"-Liste'
-,p_format_mask=>'0'
 ,p_display_as=>'NATIVE_YES_NO'
 ,p_tag_css_classes=>'ek-deaktiv'
 ,p_begin_on_new_line=>'N'
@@ -17123,7 +17122,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'BODY'
 ,p_query_type=>'TABLE'
-,p_query_table=>'SADCA_UI_EDEMP'
+,p_query_table=>'SADC_UI_EDEMP'
 ,p_include_rowid_column=>false
 ,p_is_editable=>true
 ,p_edit_operations=>'i:u:d'
@@ -17452,7 +17451,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'BODY'
 ,p_query_type=>'TABLE'
-,p_query_table=>'SADCA_UI_ADPTI'
+,p_query_table=>'SADC_UI_ADPTI'
 ,p_include_rowid_column=>false
 ,p_plug_source_type=>'NATIVE_IR'
 ,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
@@ -17627,7 +17626,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_display_sequence=>10
 ,p_plug_display_point=>'BODY'
 ,p_query_type=>'TABLE'
-,p_query_table=>'SADCA_UI_ADPTI'
+,p_query_table=>'SADC_UI_ADPTI'
 ,p_include_rowid_column=>false
 ,p_is_editable=>true
 ,p_edit_operations=>'i:u:d'
@@ -18689,6 +18688,7 @@ unistr('    p_cru_name => ''einen Mitarbeiter ausw\00E4hlt'','),
 '    p_caa_caat_id => ''ACTION'',',
 '    p_caa_name => ''edit-employee'',',
 '    p_caa_label => ''Mitarbeiter bearbeiten'',',
+'    p_caa_confirm_message_name => '''',',
 '    p_caa_context_label => '''',',
 '    p_caa_icon => '''',',
 '    p_caa_icon_type => '''',',

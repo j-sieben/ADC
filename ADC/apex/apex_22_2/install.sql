@@ -15,4 +15,3 @@ prompt &s1.Add rule groups
 @&script_dir.merge_rule_group_adca_designer
 @&script_dir.merge_rule_group_adca_edit_capt
 @&script_dir.merge_rule_group_adca_export_cat
-@&script_dir.merge_rule_group_adca_export_crg

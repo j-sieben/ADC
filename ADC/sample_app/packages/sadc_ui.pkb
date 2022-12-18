@@ -118,7 +118,7 @@ as
   as
     l_url adc_util.sql_char;
     l_crg_id adc_rule_groups.crg_id%type;
-    C_URL_TEMPLATE constant adc_util.sql_char := q'^javascript:apex.navigation.openInNewWindow('#URL#', 'ADC');^';
+    C_URL_TEMPLATE constant adc_util.sql_char := q'^javascript:apex.navigation.openInNewWindow('#URL#', 'ADCA');^';
   begin
     with params as (
            select /*+ no_merge */utl_apex.get_application_id(adc_util.C_FALSE) p_app_id,
