@@ -1,5 +1,5 @@
 create table adc_action_item_focus(
-  caif_id varchar2(50 char),
+  caif_id varchar2(50 char) constraint c_caif_id_nn not null,
   caif_pti_id varchar2(50 char) constraint c_caif_pti_id_nn not null,
   caif_pmg_name varchar2(3 byte) default on null 'ADC' constraint c_caif_pmg_name_nn not null,
   caif_actual_page_only &FLAG_TYPE. default on null &C_TRUE. constraint c_caif_actual_page_only_nn not null,
