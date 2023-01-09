@@ -1,8 +1,8 @@
 create table adc_apex_action_items(
-  caai_caa_id number, 
-	caai_cpi_crg_id number, 
-	caai_cpi_id varchar2(50 char), 
-	caai_active &FLAG_TYPE. default &C_TRUE. constraint c_caai_active_nn not null, 
+  caai_caa_id number constraint c_caai_caa_id_nn not null, 
+  caai_cpi_crg_id number constraint c_caai_cpi_crg_id_nn not null, 
+  caai_cpi_id varchar2(50 char) constraint c_caai_cpi_id_nn not null, 
+  caai_active &FLAG_TYPE. default &C_TRUE. constraint c_caai_active_nn not null, 
   constraint p_caai_caa_crg_cpi primary key (caai_caa_id, caai_cpi_crg_id, caai_cpi_id),
   constraint r_caai_caa_id foreign key (caai_caa_id)
 	  references adc_apex_actions (caa_id) on delete cascade,
