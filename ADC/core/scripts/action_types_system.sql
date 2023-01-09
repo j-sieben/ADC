@@ -1,8 +1,31 @@
 set define off
 set sqlblanklines on
 
-begin
+begin 
+
+  -- APEX_ACTION TYPES
+  adc_admin.merge_apex_action_type(
+    p_caat_id => 'ACTION',
+    p_caat_name => 'Befehl/Verweis',
+    p_caat_description => q'{JavaScript oder PL/SQL-Befehl, alternativ Verweis}',
+    p_caat_active  => adc_util.C_TRUE);
+
+  adc_admin.merge_apex_action_type(
+    p_caat_id => 'RADIO_GROUP',
+    p_caat_name => 'Optionsgruppe',
+    p_caat_description => q'{Auswahlliste, Optionsfelder}',
+    p_caat_active  => adc_util.C_FALSE);
+
+  adc_admin.merge_apex_action_type(
+    p_caat_id => 'TOGGLE',
+    p_caat_name => 'Schalter',
+    p_caat_description => q'{Wahlschalter (JA|NEIN)}',
+    p_caat_active  => adc_util.C_FALSE);
+
+  commit;
+  
   -- ACTION_PARAM_VISUAL_TYPES
+    
   adc_admin.merge_action_param_visual_type(
     p_capvt_id => 'CONTROL_LIST',
     p_capvt_name => 'Kontrollkästchen',
@@ -270,6 +293,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
 
+  commit;
 
   -- PAGE_ITEM_TYPE_GROUPS
   adc_admin.merge_page_item_type_group(
@@ -1534,29 +1558,7 @@ q'{     and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_display_name => 'Null ist erlaubt',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
-
-
-  -- APEX_ACTION TYPES
-  adc_admin.merge_apex_action_type(
-    p_caat_id => 'ACTION',
-    p_caat_name => 'Befehl/Verweis',
-    p_caat_description => q'{JavaScript oder PL/SQL-Befehl, alternativ Verweis}',
-    p_caat_active  => adc_util.C_TRUE);
-
-  adc_admin.merge_apex_action_type(
-    p_caat_id => 'RADIO_GROUP',
-    p_caat_name => 'Optionsgruppe',
-    p_caat_description => q'{Auswahlliste, Optionsfelder}',
-    p_caat_active  => adc_util.C_FALSE);
-
-  adc_admin.merge_apex_action_type(
-    p_caat_id => 'TOGGLE',
-    p_caat_name => 'Schalter',
-    p_caat_description => q'{Wahlschalter (JA|NEIN)}',
-    p_caat_active  => adc_util.C_FALSE);
-
-  commit;
+    
 end;
 /
 
@@ -1572,10 +1574,7 @@ comment on table ADC_PARAM_LOV_EVENT is 'Parameterview to display all custom eve
 
 
 create or replace force view ADC_PARAM_LOV_PIT_MESSAGE as select pms_name d, 'msg.' || pms_name r, null crg_id
-  from pit_message
-  join pit_message_language_v
-    on pms_pml_name = pml_name
- where pml_default_order = 10;
+  from pit_message_v;
 
 comment on table ADC_PARAM_LOV_PIT_MESSAGE is 'List of PIT messages';
 

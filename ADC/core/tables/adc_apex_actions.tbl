@@ -4,7 +4,7 @@ create table adc_apex_actions(
 	caa_caat_id varchar2(11 char) constraint c_caa_caat_id_nn not null, 
 	caa_name varchar2(50 char) constraint c_caa_name not null, 
 	caa_pti_id &ORA_NAME_TYPE. constraint c_caa_pti_id_nn not null, 
-	caa_pmg_name &ORA_NAME_TYPE. default on null 'ADC' constraint c_caa_pmg_name_nn not null,
+	caa_pmg_name varchar2(3 byte) default on null 'ADC' constraint c_caa_pmg_name_nn not null,
   caa_confirm_message_name &ORA_NAME_TYPE.,
   caa_confirm_type &ORA_NAME_TYPE.,
 	caa_icon varchar2(50 char), 

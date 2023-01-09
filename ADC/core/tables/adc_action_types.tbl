@@ -36,6 +36,6 @@ comment on column adc_action_types.cat_pti_id is 'Reference to PIT_TRANSLATABLE_
 comment on column adc_action_types.cat_pmg_name is 'Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC';
 comment on column adc_action_types.cat_pl_sql is 'PL/SQL pattern to implement the functionality in PL/SQL';
 comment on column adc_action_types.cat_js is 'JavaScript pattern to implement the functionality in JS';
-comment on column adc_action_types.cat_is_editable is 'Flag to indicate whether developer is allowed to change this action type (others are required by ADC';
+comment on column adc_action_types.cat_is_editable is 'Flag to indicate whether developer is allowed to change this action type (others are required by ADC)';
 comment on column adc_action_types.cat_raise_recursive is 'Flag to indicate whether action is executed if recursive level is greater than 1';
 comment on column adc_action_types.cat_active is 'Flag to indicate whether data is actually in use';

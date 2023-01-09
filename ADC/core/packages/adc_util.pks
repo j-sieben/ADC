@@ -178,6 +178,21 @@ as
     return varchar2;
 
 
+  /**
+    Function: to_javascript_boolean
+      Method to retrieve a JavaScript boolean value from a adc_util.FLAG_TYPE.
+      
+    Parameter: 
+      p_flag - Flag to convert
+      
+    Returns:
+      String containing true or false
+   */
+  function to_javascript_boolean(
+    p_flag in adc_util.flag_type)
+    return varchar2;
+    
+
   /** 
     Function: clean_adc_name
       Helper to sanitize any ADC name to comply with internal naming rules

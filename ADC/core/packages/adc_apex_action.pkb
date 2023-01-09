@@ -117,10 +117,11 @@ as
     select max(decode(uttm_name, 'DEFAULT_APEX_ACTION', uttm_text)) default_apex_action,
            max(decode(uttm_name, 'CONFIRM_APEX_ACTION', uttm_text)) confirm_apex_action
       into g_default_apex_action, g_confirm_apex_action
-      from utl_text_templates
-     where uttm_type = adc_util.C_PARAM_GROUP
-       and uttm_name in('DEFAULT_APEX_ACTION', 'CONFIRM_APEX_ACTION')
-       and uttm_mode in ('FRAME');
+      from table(
+             utl_text_admin.get_templates(
+               p_type => adc_util.C_PARAM_GROUP,
+               p_mode => 'FRAME'))
+     where uttm_name in('DEFAULT_APEX_ACTION', 'CONFIRM_APEX_ACTION');
   end initialize;
 
 
@@ -155,9 +156,10 @@ as
     pit.leave_optional;
   exception
     when no_data_found then
-      adc.register_error(
+      adc_api.register_error(
         p_cpi_id => null,
-        p_error_msg => 'APEX action ' || p_action_name || ' does not exist');
+        p_error_msg => 'APEX action ' || p_action_name || ' does not exist',
+        p_internal_error => null);
   end action_init;
 
 
@@ -219,9 +221,10 @@ as
     -- Generate initalization JavaScript for APEX actions based on UTL_TEXT templates of name APEX_ACTION
     with templates as (
            select uttm_name, uttm_mode, uttm_text, p_crg_id crg_id
-             from utl_text_templates
-            where uttm_type = adc_util.C_PARAM_GROUP
-              and uttm_name = 'APEX_ACTION')
+             from table(
+                    utl_text_admin.get_templates(
+                      p_type => adc_util.C_PARAM_GROUP,
+                      p_name => 'APEX_ACTION')))
     select utl_text.generate_text(cursor(
              select uttm_text template,
                     adc_util.C_CR cr,

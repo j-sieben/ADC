@@ -2,7 +2,7 @@ create table adc_event_types(
   cet_id varchar2(50 char), 
   cet_pti_id varchar2(50 char) constraint nn_cet_pti_id not null,
   cet_pmg_name varchar2(3 byte) default on null 'ADC' constraint c_cet_pmg_name_nn not null,
-	cet_cpitg_id varchar2(50 char) default on null 'EVENT' constraint c_cet_cpitg_id_nn not null, 
+	cet_cpitg_id varchar2(5 byte) default on null 'EVENT' constraint c_cet_cpitg_id_nn not null, 
 	cet_column_name varchar2(100 char),
   cet_is_custom_event &FLAG_TYPE. default on null &C_FALSE. constraint c_cet_is_custom_event_nn not null,
   constraint p_cet_id primary key (cet_id),
@@ -18,7 +18,7 @@ create table adc_event_types(
 comment on table adc_event_types  is 'Table to store page item types which are supported by ADC.';
 comment on column adc_event_types.cet_id is 'PK, alphanumerical key';
 comment on column adc_event_types.cet_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
-comment on column adc_event_types.cet_pmg_name is 'Part of the FK, reference to PIT_TRANSLATABLE_ITEM, criteria to group messages and translatables items per group';
-comment on column adc_event_types.cet_cpitg_id is 'Reference to ADC_PAGE_ITEM_TYPE_GROUPS';
+comment on column adc_event_types.cet_pmg_name is 'Part of the FK, reference to PIT_TRANSLATABLE_ITEM, criteria to group messages and translatables items per group, Fixed to ADC';
+comment on column adc_event_types.cet_cpitg_id is 'Reference to ADC_PAGE_ITEM_TYPE_GROUPS, Fixed to EVENT';
 comment on column adc_event_types.cet_column_name is 'Name of the event column in the decision table.';
 comment on column adc_event_types.cet_is_custom_event is 'Flag to indicate whether this event has to be observed explicitly by a rule action.';

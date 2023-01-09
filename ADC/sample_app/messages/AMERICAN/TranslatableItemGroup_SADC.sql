@@ -1,6 +1,12 @@
 set define off
 
 begin
+    
+  pit_admin.merge_message_group(
+    p_pmg_name => 'SADC',
+    p_pmg_description => q'^Translatable Items for the ADC Sample Application^',
+    p_pmg_error_prefix => '',
+    p_pmg_error_postfix => 'ERR');
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'UI_ADACT_PAGE',

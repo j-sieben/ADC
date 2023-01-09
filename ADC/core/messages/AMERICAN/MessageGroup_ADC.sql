@@ -214,15 +214,6 @@ begin
     p_error_number => -20000);
 
   pit_admin.merge_message(
-    p_pms_name => 'ADC_INVALID_FORMAT',
-    p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Invalid date. Expected format: "#1#".^',
-    p_pms_description => q'^^',
-    p_pms_pse_id => 30,
-    p_pms_pml_name => 'AMERICAN',
-    p_error_number => -1861);
-
-  pit_admin.merge_message(
     p_pms_name => 'ADC_INVALID_JQUERY',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^The selector "#1#" is not used on the page.^',

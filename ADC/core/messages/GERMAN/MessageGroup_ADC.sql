@@ -2,7 +2,9 @@ begin
 
   pit_admin.merge_message_group(
     p_pmg_name => 'ADC',
-    p_pmg_description => q'^Meldungen für das ADC Plugin^');
+    p_pmg_description => q'^Meldungen für das ADC Plugin^',
+    p_pmg_error_prefix => '',
+    p_pmg_error_postfix => 'ERR');
 
 
   pit_admin.merge_message(

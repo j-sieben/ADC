@@ -1,10 +1,12 @@
+set define off
+
 begin
     
   pit_admin.merge_message_group(
     p_pmg_name => 'ADC',
     p_pmg_description => q'^ADC Plugin messages^',
     p_pmg_error_prefix => '',
-    p_pmg_error_postfix => '_ERR');
+    p_pmg_error_postfix => 'ERR');
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAAT_ACTION',
@@ -1638,3 +1640,5 @@ begin
   commit;
 end;
 /
+
+set define on

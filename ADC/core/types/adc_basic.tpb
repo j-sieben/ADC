@@ -95,7 +95,7 @@ as
 
     l_result := exclusive_or(p_value_list);
     if (l_result = adc_util.C_FALSE 
-       or (l_result is null and p_error_on_null = adc_util.C_TRUE)) then
+       or (l_result is null and p_error_on_null = &C_TRUE.)) then
       adc_api.register_error(p_cpi_id, p_message, msg_args(''));
     end if;
     

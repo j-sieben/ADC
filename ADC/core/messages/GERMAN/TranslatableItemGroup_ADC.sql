@@ -4,7 +4,9 @@ begin
     
   pit_admin.merge_message_group(
     p_pmg_name => 'ADC',
-    p_pmg_description => q'^Meldungen für das ADC Plugin^');
+    p_pmg_description => q'^Meldungen für das ADC Plugin^',
+    p_pmg_error_prefix => '',
+    p_pmg_error_postfix => 'ERR');
 
   pit_admin.merge_translatable_item(
     p_pti_id => 'CAA_126',
@@ -19,9 +21,9 @@ begin
     p_pti_id => 'CAA_51',
     p_pti_pml_name => 'GERMAN',
     p_pti_pmg_name => q'^ADC^',
-    p_pti_name => q'^Abbrechen^',
-    p_pti_display_name => q'^Aktion abbrechen^',
-    p_pti_description => q'^Abbrechen^'
+    p_pti_name => q'^Löschen^',
+    p_pti_display_name => q'^Aktion löschen^',
+    p_pti_description => q'^Löschen^'
   );
 
   pit_admin.merge_translatable_item(

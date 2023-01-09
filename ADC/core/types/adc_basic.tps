@@ -106,7 +106,7 @@ as object (
       p_value_list - colon-separated list of page item IDs to check
       
     Returns:
-    - adc_util.C_TRUE if rule is satisfied
+    - &C_TRUE. if rule is satisfied
     - adc_util.C_FALSE if rule is not satisfied
     - NULL if all page item values are null
    */
@@ -154,7 +154,7 @@ as object (
     
   /**
     Function: firing_item_has_class
-      Method returns adc_util.C_TRUE, if the firing item has class <p_class>.
+      Method returns &C_TRUE., if the firing item has class <p_class>.
       
       Is used to bind an observer to more than one item based on a CSS class attached to a 
       group of page items. This method allows to detect whether the actual firing item is part
@@ -210,7 +210,7 @@ as object (
       p_value_list - List of page item IDs to check
       
     Returns:
-      - <adc_util.C_TRUE> if rule is satisfied
+      - <&C_TRUE.> if rule is satisfied
       - <adc_util.C_FALSE> if rule is not satisfied
       - NULL if all page item values are null
    */
@@ -353,7 +353,7 @@ as object (
       p_cpi_id - Optional element ID to be set, defaults to 'DOCUMENT' if <p_jquery_selector> is set
       p_item_value - Value of the element in quotation marks or function that returns value. Overloaded versions for String, Number or Date
       p_jquery_selector - Optional jQuery expression to edit multiple elements. (Defaults to NULL, if <p_cpi_id> is set)
-      p_allow_recursion - Optional flag indicating whether a Change Event should be triggered. (Defaults to adc_util.C_TRUE, event is triggered)
+      p_allow_recursion - Optional flag indicating whether a Change Event should be triggered. (Defaults to &C_TRUE., event is triggered)
    */
   static procedure set_item(
     p_cpi_id in varchar2 default 'DOCUMENT',

@@ -21,7 +21,7 @@ as
       C_REGEX_ITEM - Regular expression to identify firing items in trechnical conditions
       C_REGEX_CSS - Regular expression to identify CSS class references
    */
-  C_ADC constant utl_text_templates.uttm_type%type := 'ADC';
+  C_ADC constant adc_util.ora_name_type := 'ADC';
   C_FRAME constant adc_util.ora_name_type := 'FRAME';
   C_DEFAULT constant adc_util.ora_name_type := 'DEFAULT';
   C_CAPT_VIEW_NAME_PREFIX constant adc_util.ora_name_type := 'ADC_PARAM_LOV_';  
@@ -62,7 +62,7 @@ as
   procedure create_decision_table(
     p_crg_id in adc_rule_groups.crg_id%type)
   as
-    C_UTTM_NAME constant utl_text_templates.uttm_name%type := 'RULE_VIEW';
+    C_UTTM_NAME constant adc_util.ora_name_type := 'RULE_VIEW';
     l_stmt clob;
   begin
     pit.enter_optional('create_decision_table', 
@@ -75,9 +75,10 @@ as
                   uttm_name, uttm_mode, p_crg_id g_crg_id,
                   adc_util.C_TRUE c_true,
                   adc_util.C_CR cr
-             from utl_text_templates
-            where uttm_type = C_ADC
-              and uttm_name = C_UTTM_NAME)
+             from table(
+                    utl_text_admin.get_templates(
+                      p_type => C_ADC,
+                      p_name => C_UTTM_NAME)))
     select utl_text.generate_text(cursor(
              select template, log_template, g_crg_id crg_id,
                     -- Events
@@ -166,9 +167,8 @@ as
              join adc_rule_groups cgr
                on app.application_id = cgr.crg_app_id
               and app.page_id = cgr.crg_page_id
-            cross join utl_text_templates uttm
+            cross join table(utl_text_admin.get_templates(C_ADC)) uttm
             where app.process_type_code = 'DML_FETCH_ROW'
-              and uttm_type = C_ADC
               and uttm_name like 'INITIALIZE%'
               and cgr.crg_id = p_crg_id)
     select utl_text.generate_text(cursor(
@@ -468,10 +468,11 @@ as
       
       select replace(uttm_text, '#CRG_INSTALL_ID#', p_install_id)
         into l_prefix
-        from utl_text_templates
-       where uttm_type = C_ADC
-         and uttm_name = 'EXPORT_RULE_GROUP'
-         and uttm_mode = 'DEFAULT_APP_PREFIX';
+        from table(
+               utl_text_admin.get_templates(
+                 p_type => C_ADC,
+                 p_name => 'EXPORT_RULE_GROUP',
+                 p_mode => 'DEFAULT_APP_PREFIX'));
          
         dbms_lob.append(l_script, l_prefix);
         dbms_lob.append(l_script, p_rule_group);
@@ -781,7 +782,7 @@ as
     p_crg_id in adc_rule_groups.crg_id%type)
     return varchar2
   as
-    C_UTTM_NAME constant utl_text_templates.uttm_name%type := 'VALIDATE_RULE_GROUP_EXPORT';
+    C_UTTM_NAME constant adc_util.ora_name_type := 'VALIDATE_RULE_GROUP_EXPORT';
     l_error_list clob;
   begin
     pit.enter_mandatory(
@@ -794,10 +795,12 @@ as
            select uttm_mode, uttm_text template,
                   crg_id, crg_app_id
              from adc_rule_groups
-            cross join utl_text_templates
+            cross join 
+                    table(
+                      utl_text_admin.get_templates(
+                        p_type => C_ADC,
+                        p_name => C_UTTM_NAME))
             where crg_id = p_crg_id
-              and uttm_type = C_ADC
-              and uttm_name = C_UTTM_NAME
               and exists(
                   select null
                     from adc_page_items
@@ -856,8 +859,8 @@ as
     p_install_id in number default null)
     return clob
   as
-    C_UTTM_NAME constant utl_text_templates.uttm_name%type := 'EXPORT_RULE_GROUP';
-    l_template utl_text_templates.uttm_mode%type;
+    C_UTTM_NAME constant adc_util.ora_name_type := 'EXPORT_RULE_GROUP';
+    l_template adc_util.ora_name_type;
     l_stmt_frame clob;
     l_stmt clob;
   begin      
@@ -871,11 +874,12 @@ as
                   adc_util.to_bool(crg_active) crg_active,
                   adc_util.to_bool(crg_with_recursion) crg_with_recursion,
                   p_install_id crg_install_id
-             from utl_text_templates
+             from table(
+                    utl_text_admin.get_templates(
+                      p_type => C_ADC,
+                      p_name => C_UTTM_NAME))
             cross join adc_rule_groups
-            where uttm_type = C_ADC
-              and uttm_name = C_UTTM_NAME
-              and crg_id = p_crg_id)
+            where crg_id = p_crg_id)
     select utl_text.generate_text(cursor(
              select template, crg_id, crg_app_id, crg_page_id, crg_active, crg_with_recursion,
                     -- apex_actions
@@ -940,10 +944,11 @@ as
                   and crg_page_id = page_id
                 where crg_id = p_crg_id)) frame
         into l_stmt_frame
-        from utl_text_templates
-       where uttm_type = C_ADC
-         and uttm_name = C_UTTM_NAME
-         and uttm_mode = 'DEFAULT_APP_FRAME';
+        from table(
+               utl_text_admin.get_templates(
+                 p_type => C_ADC,
+                 p_name => C_UTTM_NAME,
+                 p_mode => 'DEFAULT_APP_FRAME'));
       l_stmt := utl_text.clob_replace(l_stmt_frame, '#CRG_SCRIPT#', l_stmt);
     end if;
     return l_stmt;
@@ -1265,7 +1270,7 @@ as
   procedure validate_rule_condition(
     p_row in adc_rules%rowtype)
   as
-    C_UTTM_NAME constant utl_text_templates.uttm_name%type := 'RULE_VALIDATION';
+    C_UTTM_NAME constant adc_util.ora_name_type := 'RULE_VALIDATION';
     l_data_cols utl_apex.max_char;
     l_stmt utl_apex.max_char;
     l_ctx pls_integer;
@@ -1283,9 +1288,8 @@ as
                   p_row.cru_condition condition,
                   adc_util.c_true c_true,
                   adc_util.C_CR cr
-             from utl_text_templates
-            where uttm_type = C_ADC
-              and uttm_name in (C_UTTM_NAME, 'RULE_VIEW'))
+             from table(utl_text_admin.get_templates(C_ADC))
+            where uttm_name in (C_UTTM_NAME, 'RULE_VIEW'))
     select utl_text.generate_text(cursor(
              select p.template, p.condition,
                     -- Events
@@ -2350,7 +2354,7 @@ as
     p_cat_is_editable in adc_action_types.cat_is_editable%type default adc_util.C_TRUE)
     return blob
   as
-    C_UTTM_NAME constant utl_text_templates.uttm_name%type := 'EXPORT_ACTION_TYPE';
+    C_UTTM_NAME constant adc_util.ora_name_type := 'EXPORT_ACTION_TYPE';
     C_WRAP_START constant adc_util.tiny_char := 'q''{';
     C_WRAP_END constant adc_util.tiny_char := '}''';
     l_action_param_visual_types clob;
@@ -2390,10 +2394,11 @@ as
               from adc_action_param_visual_types_v cpt
            ), adc_util.C_CR)
       into l_action_param_visual_types
-      from utl_text_templates p
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = 'PARAM_VISUAL_TYPE';
+      from table(
+             utl_text_admin.get_templates(
+               p_type => C_ADC,
+               p_name => C_UTTM_NAME,
+               p_mode => 'PARAM_VISUAL_TYPE')) p;
 
     select utl_text.generate_text(cursor(
             select p.uttm_text template,
@@ -2406,10 +2411,11 @@ as
               from adc_action_param_types_v cpt
            ), adc_util.C_CR)
       into l_action_param_types
-      from utl_text_templates p
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = 'PARAM_TYPE';
+      from table(
+             utl_text_admin.get_templates(
+               p_type => C_ADC,
+               p_name => C_UTTM_NAME,
+               p_mode => 'PARAM_TYPE')) p;
        
     select utl_text.generate_text(cursor(
             select p.uttm_text template,
@@ -2419,10 +2425,11 @@ as
               from adc_page_item_type_groups
           ))
       into l_page_item_type_groups
-      from utl_text_templates p
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = 'PAGE_ITEM_TYPE_GROUP';
+      from table(
+             utl_text_admin.get_templates(
+               p_type => C_ADC,
+               p_name => C_UTTM_NAME,
+               p_mode => 'PAGE_ITEM_TYPE_GROUP')) p;
        
     select utl_text.generate_text(cursor(
             select p.uttm_text template,
@@ -2431,10 +2438,11 @@ as
               from adc_event_types_v
           ))
       into l_event_types
-      from utl_text_templates p
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = 'EVENT_TYPE';
+      from table(
+             utl_text_admin.get_templates(
+               p_type => C_ADC,
+               p_name => C_UTTM_NAME,
+               p_mode => 'EVENT_TYPE')) p;
 
     select utl_text.generate_text(cursor(
             select p.uttm_text template,
@@ -2447,10 +2455,11 @@ as
               from adc_page_item_types_v
           ))
       into l_page_item_types
-      from utl_text_templates p
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = 'PAGE_ITEM_TYPE';
+      from table(
+             utl_text_admin.get_templates(
+               p_type => C_ADC,
+               p_name => C_UTTM_NAME,
+               p_mode => 'PAGE_ITEM_TYPE')) p;
 
     select utl_text.generate_text(cursor(
             select p.uttm_text template,
@@ -2460,10 +2469,11 @@ as
               from adc_action_item_focus_v
            ), adc_util.C_CR)
       into l_action_item_focus
-      from utl_text_templates p
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = 'ITEM_FOCUS';
+      from table(
+             utl_text_admin.get_templates(
+               p_type => C_ADC,
+               p_name => C_UTTM_NAME,
+               p_mode => 'ITEM_FOCUS')) p;
 
     select utl_text.generate_text(cursor(
             select p.uttm_text template,
@@ -2472,10 +2482,11 @@ as
               from adc_action_type_groups_v stg
            ), adc_util.C_CR)
       into l_action_type_groups
-      from utl_text_templates p
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = 'ACTION_TYPE_GROUP';
+      from table(
+             utl_text_admin.get_templates(
+               p_type => C_ADC,
+               p_name => C_UTTM_NAME,
+               p_mode => 'ACTION_TYPE_GROUP')) p;
 
     select utl_text.generate_text(cursor(
             select p.uttm_text template,
@@ -2484,19 +2495,21 @@ as
               from adc_apex_action_types_v 
            ), adc_util.C_CR)
       into l_apex_action_types
-      from utl_text_templates p
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = 'APEX_ACTION_TYPE';
+      from table(
+             utl_text_admin.get_templates(
+               p_type => C_ADC,
+               p_name => C_UTTM_NAME,
+               p_mode => 'APEX_ACTION_TYPE')) p;
 
     -- Collect action types. Different API for performance and size reasons
     dbms_lob.createtemporary(l_action_types, false, dbms_lob.call);
     open l_cur for         
        with params as (
               select uttm_mode, uttm_text template, null cat_is_editable
-                from utl_text_templates
-               where uttm_type = C_ADC
-                 and uttm_name = C_UTTM_NAME)
+                from table(
+                       utl_text_admin.get_templates(
+                         p_type => C_ADC,
+                         p_name => C_UTTM_NAME)))
        select p.template,
               cat.cat_id, cat.cat_catg_id, cat.cat_caif_id, cat.cat_name,
               utl_text.wrap_string(cat.cat_display_name, C_WRAP_START, C_WRAP_END) cat_display_name,
@@ -2544,10 +2557,11 @@ as
                from dual
            ), adc_util.C_CR) resultat
       into l_stmt
-      from utl_text_templates
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = C_FRAME;
+      from table(
+             utl_text_admin.get_templates(
+               p_type => C_ADC,
+               p_name => C_UTTM_NAME,
+               p_mode => C_FRAME));
        
     -- Finally, add all create view statements for LOV-based parameter types
     for cpt in (select *

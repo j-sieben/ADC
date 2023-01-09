@@ -104,6 +104,31 @@ as
   begin
     return case p_bool when C_TRUE then 'adc_util.C_TRUE' else 'adc_util.C_FALSE' end;
   end to_bool;
+  
+  
+  /**
+    Function: to_javascript_boolean
+      See <ADC_UTIL.to_javascript_boolean>
+   */
+  function to_javascript_boolean(
+    p_flag in adc_util.flag_type)
+    return varchar2
+  as
+    l_result adc_util.tiny_char;
+  begin
+    pit.enter_detailed('to_javascript_boolean',
+      p_params => msg_params(msg_param('p_flag', p_flag)));
+
+    if p_flag = adc_util.C_TRUE then
+      l_result := 'true';
+    else
+      l_result := 'false';
+    end if;
+    
+    pit.leave_detailed(
+      p_params => msg_params(msg_param('Result', l_result)));
+    return l_result;
+  end to_javascript_boolean;
 
   
   /**

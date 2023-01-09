@@ -656,15 +656,15 @@ end;~';
     p_msg_args in msg_args)
     return varchar2
   as
-    l_pms_name pit_message.pms_name%type;
+    l_pms_name pit_message_v.pms_name%type;
     l_message adc_util.max_char;
   begin
     pit.enter_detailed('get_pit_message');
 
     select pms_name
       into l_pms_name
-      from pit_message
-     where pms_id = replace(upper(p_message_name), 'MSG.');
+      from pit_message_v
+     where pms_name = replace(upper(p_message_name), 'MSG.');
     l_message := pit.get_message_text(l_pms_name);
 
     pit.leave_optional;

@@ -2,7 +2,9 @@ begin
 
   pit_admin.merge_message_group(
     p_pmg_name => 'ADCA',
-    p_pmg_description => q'^Messages for the ADC plugin administration application^');
+    p_pmg_description => q'^Messages for the ADC plugin administration application^',
+    p_pmg_error_prefix => '',
+    p_pmg_error_postfix => 'ERR');
 
   pit_admin.merge_message(
     p_pms_name => 'ADCA_UI_UNSAVED_DATA',

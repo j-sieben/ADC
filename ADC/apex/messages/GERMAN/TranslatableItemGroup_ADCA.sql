@@ -4,7 +4,9 @@ begin
     
   pit_admin.merge_message_group(
     p_pmg_name => 'ADCA',
-    p_pmg_description => q'^Meldungen für die ADC Administrationsanwendung^');
+    p_pmg_description => q'^Meldungen für die ADC Administrationsanwendung^',
+    p_pmg_error_prefix => '',
+    p_pmg_error_postfix => 'ERR');
     
     
   pit_admin.merge_translatable_item(

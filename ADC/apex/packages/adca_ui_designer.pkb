@@ -14,7 +14,7 @@ as
     Group: Private package constants
    */
   C_PTI_PMG constant adc_util.ora_name_type := 'ADCA';
-  
+
   /**
     Constants: Item and Region constants
       C_ITEM_CRG_APP_ID - Item that contains the Application ID
@@ -36,8 +36,8 @@ as
   C_BUTTON_PREFIX constant adc_util.ora_name_type := replace(C_PAGE_PREFIX, 'P', 'B');
   C_EXPORT_PAGE constant adc_util.ora_name_type := 'EXPORT_CRG';
   C_EXPORT_PAGE_PREFIX adc_util.ora_name_type; -- not constant as this is calculated upon initialization
-  
-  C_ITEM_CRG_APP_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRG_APP_ID';  
+
+  C_ITEM_CRG_APP_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRG_APP_ID';
   C_ITEM_CRG_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRG_ID';
   C_ITEM_CRU_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRU_ID';
   C_ITEM_CRA_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRA_ID';
@@ -52,12 +52,13 @@ as
   C_ITEM_CAA_CAAT_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CAA_CAAT_ID';
   C_ITEM_CAA_CAAI_LIST constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CAA_CAAI_LIST';
   C_ITEM_SELECTED_NODE constant adc_util.ora_name_type := C_PAGE_PREFIX || 'SELECTED_NODE';
-  
+  C_ITEM_CRU_CONDITION constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRU_CONDITION';
+
   C_REGION_RULES constant adc_util.ora_name_type := C_REGION_PREFIX || 'RULES';
   C_REGION_HIERARCHY constant adc_util.ora_name_type := C_REGION_PREFIX || 'HIERARCHY';
   C_REGION_FINDINGS constant adc_util.ora_name_type := C_REGION_PREFIX || 'FINDINGS';
   C_REGION_HELP constant adc_util.ora_name_type := C_REGION_PREFIX || 'HELP';
-  
+
   C_REGION_CRG_FORM constant adc_util.ora_name_type := C_REGION_PREFIX || 'CRG_FORM';
   C_REGION_CRU_FORM constant adc_util.ora_name_type := C_REGION_PREFIX || 'CRU_FORM';
   C_REGION_CRA_FORM constant adc_util.ora_name_type := C_REGION_PREFIX || 'CRA_FORM';
@@ -67,8 +68,8 @@ as
   C_CENTRAL_TAB_REGION constant adc_util.ora_name_type := C_REGION_PREFIX || 'CENTRAL';
   C_TAB_RULES constant adc_util.ora_name_type := 'SR_' || C_REGION_PREFIX || 'RULES';
   C_TAB_WORKFLOWS constant adc_util.ora_name_type := 'SR_' || C_REGION_PREFIX || '_WORKFLOWS';
-  
-  
+
+
   /**
     Constants: Mode and Action constants
       C_MODE_CRG - Hierarchical level Rule Group
@@ -98,10 +99,10 @@ as
   C_ACTION_DELETE constant adc_util.ora_name_type := 'delete-action';
   C_ACTION_UPDATE constant adc_util.ora_name_type := 'update-action';
   C_EXPORT_CRG constant adc_util.ora_name_type := 'export-rule-group';
-  
+
   C_DESIGNER_ACTIONS constant char_table := char_table(C_ACTION_CANCEL, C_ACTION_CREATE, C_ACTION_DELETE, C_ACTION_UPDATE, C_EXPORT_CRG);
-  
-  
+
+
   /**
     Group: Type definitions
    */
@@ -127,7 +128,7 @@ as
       app_changed - Flag to indicate whether a different application was selected
       crg_changed - Flag to indicate whether a different dynamic page was selected
       cru_changed - Flag to indicate whether a different use case was selected
-   */ 
+   */
   type environment_rec is record(
     selected_node adc_util.ora_name_type,
     target_mode adc_util.ora_name_type,
@@ -141,17 +142,17 @@ as
     app_changed boolean := false,
     crg_changed boolean := false,
     cru_changed boolean := false);
-    
-    
+
+
   /**
     Type: form_item_list_tab
       List of page items required by a given mode.
-      
+
       The list of page items required for a given form is collected upon package initialization based on the
       APEX meta data and the form region's static ID.
-      
-      These item lists are required for the ADC designer to 
-      
+
+      These item lists are required for the ADC designer to
+
       - control which items to pass back to the database if a DML process is requested
       - control which items to monitor for changes. If on of these items changes and a respective APEX Action
         is invoked, a warn message is displayed to prevent this data from being overwritten.
@@ -173,17 +174,17 @@ as
   /**
     Group: Copy Session State methods
    */
-  /** 
+  /**
     Procedure: copy_...
       Helper to copy APEX session state values into type safe record structures
 
       Is called to copy the actual session state values entered into a type safe record structure.
       Type casting is auto detected if APEX has knowledge of the type, fi by using a form region or
-      editable interactive grid. If this is not present, it tries to detect the type basyed on a 
+      editable interactive grid. If this is not present, it tries to detect the type basyed on a
       format mask assigned to the item.
-      
+
     Attention::
-      Please note that the use of a form region or an editable interactive grid requires the 
+      Please note that the use of a form region or an editable interactive grid requires the
       mandatory identification with a static ID so that the method can uniquely identify the region.
    */
   procedure copy_apex_action(
@@ -192,7 +193,7 @@ as
   as
   begin
     pit.enter_detailed('copy_apex_action');
-    
+
     p_row.caa_id := utl_apex.get_number('caa_id');
     p_row.caa_crg_id := utl_apex.get_number('caa_crg_id');
     p_row.caa_caat_id := utl_apex.get_string('caa_caat_id');
@@ -222,8 +223,8 @@ as
 
     pit.leave_detailed;
   end copy_apex_action;
-  
-  
+
+
   procedure copy_rule(
     p_row in out nocopy adc_rules%rowtype,
     p_crg_id adc_rule_groups.crg_id%type)
@@ -268,7 +269,7 @@ as
     -- Get the required parameter field
     begin
       with data as (
-           select cap_cat_id, cap_sort_seq, 
+           select cap_cat_id, cap_sort_seq,
                   'CRA_PARAM_' || capvt_param_item_extension || cap_sort_seq item_name
              from adc_action_parameters
              join adc_action_param_types
@@ -289,12 +290,12 @@ as
 
     p_row.cra_param_1 := case when l_param_name_1 is not null then utl_apex.get_string(l_param_name_1) end;
     p_row.cra_param_2 := case when l_param_name_2 is not null then utl_apex.get_string(l_param_name_2) end;
-    p_row.cra_param_3 := case when l_param_name_3 is not null then utl_apex.get_string(l_param_name_3) end;    
+    p_row.cra_param_3 := case when l_param_name_3 is not null then utl_apex.get_string(l_param_name_3) end;
 
     pit.leave_detailed;
   end copy_rule_action;
-  
-  
+
+
   $IF adc_util.C_WITH_FLOWS $THEN
   procedure copy_flow(
     p_row in out nocopy fls_diagrams_v%rowtype)
@@ -311,7 +312,7 @@ as
     pit.leave_detailed;
   end copy_flow;
   $END
-  
+
 
   /**
     Group: Private Methods
@@ -319,10 +320,10 @@ as
   /**
     Function: get_form_items
       Method to retrieve a list of items for a given form
-      
+
     Parameter:
       p_form_id - ID of the form for which to get the item list for.
-  
+
     Returns:
       List of items for the requested form, empty array string if the form does not exist
    */
@@ -334,23 +335,23 @@ as
   begin
     pit.enter_detailed('get_form_items',
       p_params => msg_params(msg_param('p_form_id', p_form_id)));
-      
-    if g_form_item_list.exists(p_form_id) then 
+
+    if g_form_item_list.exists(p_form_id) then
       l_item_list := g_form_item_list(p_form_id);
     else
         l_item_list := '[]';
     end if;
-    
+
     pit.leave_detailed;
     return l_item_list;
   end get_form_items;
-  
-  
+
+
   /**
     Function: assemble_action
       Method to calculate the action attribute of an APEX Action based on the action name, the node type and its ID.
 
-      APEX Actions <C_ACTION_CREATE>, <C_ACTION_UPDATE> processing user input 
+      APEX Actions <C_ACTION_CREATE>, <C_ACTION_UPDATE> processing user input
       forms require a list of page items to work with.
       This list is evaluated on package initialization at method <initialize>
       and integrated into the action's event data attribute as required.
@@ -367,10 +368,10 @@ as
     /**
       Constant: assemble_action.C_ACTION_TEMPLATE
         Method private code template for the action attribute.
-        
+
         The template holds relevant information that is accessible by the package
         upon action execution via the <ADC_API.get_event_data> method. It's structure is as follows:
-        
+
         --- JavaScript
         de.condes.plugin.adc.actions.executeCommand({
           "command":"Name of the APEX action",
@@ -381,7 +382,7 @@ as
           "monitorChanges":Flag to indicate whether it is required to check for changes prior to invoking the action});
         ---
      */
-    C_DATA_TEMPLATE constant adc_util.max_char := 
+    C_DATA_TEMPLATE constant adc_util.max_char :=
       '{"command":"#COMMAND#","targetMode":"#TARGET_MODE#","actionMode":"#ACTION_MODE#","id":"#NODE_ID#","additionalPageItems":#PAGE_ITEM_LIST#,"monitorChanges":#MONITOR_CHANGES#}';
     C_ACTION_TEMPLATE constant adc_util.max_char := 'de.condes.plugin.adc.actions.executeCommand(#DATA#);';
     C_CONFIRM_TEMPLATE constant adc_util.max_char := 'de.condes.plugin.adc.actions.confirmCommand("#CONFIRM_MESSAGE#", #DATA#);';
@@ -390,7 +391,6 @@ as
     l_action_mode adc_util.ora_name_type;
     l_node_id adc_util.ora_name_type;
     l_page_items adc_util.max_char := '[]';
-    l_monitor_changes adc_util.ora_name_type;
     l_template adc_util.max_char;
   begin
     pit.enter_detailed('assemble_action',
@@ -399,7 +399,7 @@ as
 
     -- Initialize
     l_template := C_ACTION_TEMPLATE;
-    
+
     -- Calculate values for replacement
     -- Decide whether a list of page items for a given form are required
     if p_action in (C_ACTION_CREATE, C_ACTION_UPDATE) then
@@ -427,30 +427,23 @@ as
         l_node_id := p_row.amda_id_value;
     end case;
 
-    -- decide whether monitoring changes on the page is required
-    if p_action in (C_ACTION_CANCEL, C_ACTION_CREATE) then
-      l_monitor_changes := 'true';
-    else
-      l_monitor_changes := 'false';
-    end if;
-
     -- assemble
     l_action := utl_text.bulk_replace(l_template, char_table(
-                  '#DATA#', C_DATA_TEMPLATE,
-                  '#COMMAND#', p_action,
-                  '#PAGE_ITEM_LIST#', l_page_items,
-                  '#TARGET_MODE#', l_target_mode,
-                  '#ACTION_MODE#', l_action_mode,
-                  '#NODE_ID#', l_node_id,
-                  '#MONITOR_CHANGES#', l_monitor_changes,
-                  '#CONFIRM_MESSAGE#', p_row.amda_delete_confirm_message));
+                  'DATA', C_DATA_TEMPLATE,
+                  'COMMAND', p_action,
+                  'PAGE_ITEM_LIST', l_page_items,
+                  'TARGET_MODE', l_target_mode,
+                  'ACTION_MODE', l_action_mode,
+                  'NODE_ID', l_node_id,
+                  'MONITOR_CHANGES', adc_util.to_javascript_boolean(p_row.amda_remember_page_state),
+                  'CONFIRM_MESSAGE', p_row.amda_delete_confirm_message));
 
     pit.leave_optional;
     return l_action;
   end assemble_action;
 
 
-  /** 
+  /**
     Function: get_cra_sort_seq
       Calculates the next Rule Action sort sequence for a given Rule ID.
    */
@@ -475,7 +468,7 @@ as
   end get_cra_sort_seq;
 
 
-  /** 
+  /**
     Function: get_cru_sort_seq
       Calculates the next Rule sort sequence for a given Rule Group ID.
    */
@@ -503,7 +496,7 @@ as
   /**
     Function: get_first_crg_for_app
       Method retrieves the CRG_ID for the first page that is maintained by ADC
-      
+
     Returns: CRG_ID of the first ADC maintained page, ordered by page number.
              If no page exists or no application selected, NULL is returned.
    */
@@ -514,16 +507,16 @@ as
     l_crg_id adc_rule_groups.crg_id%type;
   begin
     pit.enter_optional('get_first_crg_for_app');
-    
+
     l_crg_app_id := adc_api.get_number(C_ITEM_CRG_APP_ID);
-    
+
     select crg_id
       into l_crg_id
       from adc_rule_groups
      where crg_app_id = l_crg_app_id
      order by crg_page_id
      fetch first 1 row only;
-     
+
     pit.leave_optional(p_params => msg_params(msg_param('CRG', l_crg_id)));
     return l_crg_id;
   exception
@@ -531,21 +524,21 @@ as
       pit.leave_optional;
       return null;
   end get_first_crg_for_app;
-  
-  
+
+
   /**
     Function: get_parameter_type
       Retrieves the type for a given parameter
-      
+
     Parameters:
       p_cat_id - Action type
       p_param_index - Index of the parameter within the action type
-      
+
     Returns:
       Type of the parameter.
    */
   function get_parameter_type(
-    p_cap_cat_id IN adc_action_parameters_v.cap_cat_id%type, 
+    p_cap_cat_id IN adc_action_parameters_v.cap_cat_id%type,
     p_cap_sort_seq IN adc_action_parameters_v.cap_sort_seq%type)
     return adc_action_param_types_v.capt_id%type
   as
@@ -555,23 +548,23 @@ as
       p_params => msg_params(
                     msg_param('p_cap_cat_id', p_cap_cat_id),
                     msg_param('p_cap_sort_seq', p_cap_sort_seq)));
-      
+
     select cap_capt_id
       into l_capt_id
       from adc_action_parameters_v
      where cap_cat_id = p_cap_cat_id
        and cap_sort_seq = p_cap_sort_seq;
-       
+
     pit.leave_detailed(
       p_params => msg_params(msg_param('capt_id', l_capt_id)));
     return l_capt_id;
   end get_parameter_type;
-  
-  
+
+
   /**
     Procedure: set_crg_and_cru_id
       Method to retrieve the selected CRG_ID and CRU_ID from the page state and add it to the environment
-      
+
     Parameter:
       p_environment - Information about the status the designer is in
    */
@@ -582,9 +575,9 @@ as
     l_cru_id adc_rules.cru_id%type;
   begin
     pit.enter_optional('set_crg_and_cru_id');
-    
+
     p_environment.crg_id := p_environment.node_id;
-    
+
     if p_environment.crg_id is not null then
       case p_environment.target_mode
         when C_MODE_CAA then
@@ -613,13 +606,13 @@ as
         else
           null;
       end case;
-      
+
       -- Detect changes
       l_crg_id := coalesce(adc_api.get_number(C_ITEM_CRG_ID), 0);
       l_cru_id := coalesce(adc_api.get_number(C_ITEM_CRU_ID), 0);
       p_environment.crg_changed := l_crg_id != coalesce(p_environment.crg_id, 0);
       p_environment.cru_changed := l_cru_id != coalesce(p_environment.cru_id, 0);
-      
+
       if p_environment.crg_changed then
         -- Make sure that the rule group is based on actual application data
         adc_admin.propagate_rule_change(p_environment.crg_id);
@@ -632,24 +625,24 @@ as
         p_cpi_id => C_ITEM_SELECTED_NODE,
         p_item_value => null);
     end if;
-    
+
     pit.leave_optional;
   end set_crg_and_cru_id;
-  
-  
+
+
   /**
     Procedure: set_id_values
       Maintains the session state of CRG_ID and others based on the environment.
-      
+
       IDs can change as a consequence of two use cases only:
-      
+
       - A row in the hierarchy or the rule report is selected
       - A new tupel is generated.
-      
+
       This method deals with the first use case. In this use case, the ID of the
       selected node is passed in in the form <mode>_<id>, fi CRA_1234 for a Rule Action.
       This method performs these tasks with this information:
-      
+
       - It sets the ID of page item CRA_ID to the value 1234
       - It retrieves the related CRG_ID and compares it to the actually set CRG_ID.
         Should they differ, the new CRG_ID is set and a refresh of the Rule Report
@@ -657,9 +650,9 @@ as
       - It retrieves the related CRU_ID and compares it to the actually set CRU_ID.
         Should they differ, the new CRU_ID is set and selected at the respective report,
         fi on the RULES report if the firing item is HIERARCHY and vice versa
-        
+
       If a new tupel is created, the ID is set there after succesful creation.
-      
+
     Parameter:
       p_environment - Information about the status the designer is in
    */
@@ -668,9 +661,9 @@ as
   as
   begin
     pit.enter_optional('set_id_values');
-    
+
     set_crg_and_cru_id(p_environment);
-    
+
     -- Compare CRG_ID with session state. If changed, refresh rule report
     if p_environment.crg_changed then
       if p_environment.target_mode in (C_MODE_FLG, C_MODE_FLS) then
@@ -696,9 +689,9 @@ as
           p_item_value => p_environment.crg_id);
       end if;
     end if;
-    
+
     -- Set ID of the selected mode if not CRG and set SELECTD_NODE to enable the tree to remember its state
-    case 
+    case
       when p_environment.target_mode = C_MODE_FLS then
         adc.set_item(
           p_cpi_id => C_ITEM_DIAGRAM_ID,
@@ -714,7 +707,7 @@ as
     adc.set_item(
       p_cpi_id => C_ITEM_SELECTED_NODE,
       p_item_value => p_environment.selected_node);
-      
+
     pit.leave_optional;
   end set_id_values;
 
@@ -749,7 +742,7 @@ as
     when NO_DATA_FOUND then
       -- no help found, generate generic help text
       adc.set_region_content(
-        p_region_id => C_REGION_HELP, 
+        p_region_id => C_REGION_HELP,
         p_html_code => adc_util.get_trans_item_name('CRA_NO_HELP'));
 
       pit.leave_mandatory;
@@ -767,7 +760,7 @@ as
   procedure set_cra_param_settings(
     p_cra_id in adc_rule_actions.cra_id%type,
     p_cat_id in adc_action_types.cat_id%type)
-  as    
+  as
     C_PARAM_SELECTOR varchar2(100 byte) := '.adc-cra-hide';
 
     -- Cursor collects the parameters, parameter settings
@@ -775,7 +768,8 @@ as
     -- or their default values
     cursor action_type_cur(
              p_cra_id in adc_rule_actions.cra_id%type,
-             p_cat_id in adc_action_types.cat_id%type) is
+             p_cat_id in adc_action_types.cat_id%type) 
+    is
       select cap_page_item, cap_sort_seq, cap_mandatory, cap_value,
              capt_id, capt_name, capt_capvt_id
         from adca_bl_cat_parameter_items
@@ -803,10 +797,10 @@ as
       -- Show parameter region
       adc.set_visual_state(
         p_cpi_id => C_REGION_PREFIX || 'PARAMETER_' || param.cap_sort_seq,
-        p_visual_state => adc.C_SHOW_ENABLE);   
+        p_visual_state => adc.C_SHOW_ENABLE);
       adc.set_item_label(
-        p_cpi_id => param.cap_page_item, 
-        p_item_label => param.capt_name);    
+        p_cpi_id => param.cap_page_item,
+        p_item_label => param.capt_name);
 
       -- First set items mandatory to avoid endless loops if a select list refreshes
       if param.cap_mandatory = adc_util.C_TRUE then
@@ -818,7 +812,7 @@ as
           p_cpi_id => param.cap_page_item);
         adc.set_visual_state(
           p_cpi_id => param.cap_page_item,
-          p_visual_state => adc.C_SHOW_ENABLE);   
+          p_visual_state => adc.C_SHOW_ENABLE);
       end if;
 
      -- set values, if required after refresh
@@ -828,7 +822,7 @@ as
          p_cpi_id => C_PAGE_PREFIX || 'CRA_LOV_PARAM_' || param.cap_sort_seq,
          p_item_value => param.capt_id);
        adc.refresh_item(
-         p_cpi_id => param.cap_page_item, 
+         p_cpi_id => param.cap_page_item,
          p_item_value => param.cap_value);
      else
        adc.set_item(
@@ -846,22 +840,22 @@ as
   /**
     Procedure: read_environment
       Method to retrieve the actual state of the ADC designer.
-      
+
       This procedure analyses the data attribute of the APEX Action invoked by the user.
       Based on this information, respective values are copied into <l_environment>.
-      
+
       A second use case is that this method is called based on a selection of a row
       in the hierarchy tree or rule report. In this case, the data attribute only contains
       the ID of the selected row, which is composed of the mode and the id of the
       respective tupel. A selected Rule will therefore pass in something like CRU_123.
-      
+
       Based on this information, the required attributes are filled:
-      
+
       - action and target mode,
       - id of the active entry
       - static ID of the form to show
       - CRG_ID of the rule group containing the selected entry.
-      
+
       If the CRG_ID has changed, this method also emits JavaScript code to refresh
       the rule report region.
    */
@@ -872,9 +866,9 @@ as
     l_cra_id adc_rule_actions.cra_id%type;
   begin
     pit.enter_optional('read_environment');
-    
+
     l_environment.firing_item := adc_api.get_firing_item;
-    case l_environment.firing_item 
+    case l_environment.firing_item
       when C_ITEM_CRG_APP_ID then
         -- Application selection changed, return to initial state
         l_environment.crg_id := get_first_crg_for_app;
@@ -887,9 +881,13 @@ as
         -- Harmonize with page state
         set_id_values(l_environment);
       when C_ITEM_CRA_CAT_ID then
+        -- ADC Action type changed
         l_cra_id := adc_api.get_number(C_ITEM_CRA_ID);
         l_environment.crg_id := adc_api.get_number(C_ITEM_CRG_ID);
         l_environment.action := case when l_cra_id is not null then C_ACTION_SHOW end;
+      when C_ITEM_CRU_CONDITION then
+        -- Rule condition changedd
+        l_environment.crg_id := adc_api.get_number(C_ITEM_CRG_ID);
       when C_COMMAND then
         -- APEX Action has called the method. Event data is JSON, so extract attributes
         l_environment.crg_id := adc_api.get_number(C_ITEM_CRG_ID);
@@ -901,6 +899,7 @@ as
         l_environment.action := adc_api.get_event_data('command');
       else
         -- Method was called due to a changed selection in hierarchy or rule report. ID is passed in directly
+        pit.tweet(adc_api.get_event_data);
         l_environment.selected_node := adc_api.get_event_data;
         l_environment.target_mode := substr(l_environment.selected_node, 1, 3);
         l_environment.node_id := to_number(substr(l_environment.selected_node, 5), 'fm99999990');
@@ -924,12 +923,12 @@ as
     pit.leave_optional;
     return l_environment;
   end read_environment;
-  
-  
+
+
   /**
     Procedure: maintain_action
       Method to update aspects of an action and include the required Javascript to the response
-      
+
     Parameters:
       p_name - Name of the action
       p_label - Label of the action
@@ -950,7 +949,7 @@ as
                     msg_param('p_label', p_label),
                     msg_param('p_active', p_active),
                     msg_param('p_action', p_action)));
-                    
+
     l_disabled := p_active = adc_util.C_FALSE;
     adc_apex_action.action_init(p_name);
     if p_label is not null then
@@ -962,11 +961,11 @@ as
       adc_apex_action.set_action(p_action);
     end if;
     adc.add_javascript(adc_apex_action.get_action_script);
-    
+
     pit.leave_detailed;
   end maintain_action;
-  
-  
+
+
   /**
     Procedure: disable_actions
       Method to disable all page commands. Is called if no application is selected.
@@ -975,7 +974,7 @@ as
   as
   begin
     pit.enter_detailed('disable_action');
-    
+
     for i in 1 .. C_DESIGNER_ACTIONS.count loop
       adc_apex_action.action_init(C_DESIGNER_ACTIONS(i));
       if C_DESIGNER_ACTIONS(i) in (C_ACTION_CREATE, C_ACTION_DELETE) then
@@ -984,15 +983,15 @@ as
       adc_apex_action.set_disabled(true);
       adc.add_javascript(adc_apex_action.get_action_script);
     end loop;
-    
+
     pit.leave_detailed;
   end disable_actions;
-  
-  
+
+
   /**
     Procedure: maintain_export_action
       Method to set the export action afteer the application has changed.
-      
+
     Parameter:
       p_environment - Information about the status the designer is in
    */
@@ -1003,13 +1002,13 @@ as
     l_javascript adc_util.max_char;
   begin
     pit.enter_detailed('maintain_export_action');
-    
+
     if p_environment.app_changed then
       select crg_app_id
         into l_crg_app_id
         from adc_rule_groups
        where crg_id = p_environment.crg_id;
-      
+
       if p_environment.target_mode in ('FLG', 'FLS') then
         -- TODO: Decide whether to add code to export workflows
         null;
@@ -1024,28 +1023,28 @@ as
           p_active => adc_util.C_TRUE,
           p_action => l_javascript);
       end if;
-      adc.add_javascript(adc_apex_action.get_action_script);
     end if;
-    
+
     pit.leave_detailed;
   exception
     when NO_DATA_FOUND then
-      adc_apex_action.action_init(C_EXPORT_CRG);
-      adc_apex_action.set_disabled(true);
-      adc.add_javascript(adc_apex_action.get_action_script);
+      maintain_action(
+          p_name => C_EXPORT_CRG,
+          p_active => adc_util.C_FALSE,
+          p_action => null);
   end maintain_export_action;
 
 
   /**
     Procedure: maintain_dml_actions
       Method to calculate the visible status and action parameter of the APEX Actions.
-      
+
       Based on the type and mode of the APEX Action called, this methods calculates
       the correct visible status, the label and the action properties of the APEX Actions.
-      
+
       The decision is based on the outcome of the decision table query in <handle_activity>.
       The attributes of the selected row control the outcome of this method.
-      
+
     Parameter:
       p_environment - Information about the status the designer is in
    */
@@ -1058,7 +1057,7 @@ as
   begin
     pit.enter_optional('maintain_dml_actions',
       p_params => msg_params(msg_param('Action', p_row.amda_comment)));
-    
+
     -- Adjust action based on outcome of the decision table
     -- CANCEL-Button
     maintain_action(
@@ -1092,15 +1091,15 @@ as
   end maintain_dml_actions;
 
 
-  /** 
+  /**
     Procedure: show_form_caa
       Method to show and populate a ADC Apex Action form of the designer and populate it with the values selected.
-      
+
       Two modes:
-      
+
       - APEX Action already exists. Initialize form based on stored values
       - APEX Action is created. Initialize form with default values
-      
+
     Parameter:
       p_environment - Information about the status the designer is in
    */
@@ -1112,7 +1111,7 @@ select null #PRE#caa_id, '#CRG_ID#' #PRE#caa_crg_id, 'ACTION' #PRE#caa_caat_id, 
        null #PRE#caa_label, null #PRE#caa_context_label, null #PRE#caa_icon, 'fa' #PRE#caa_icon_type,
        null #PRE#caa_shortcut, adc_util.C_FALSE #PRE#caa_initially_disabled, adc_util.C_FALSE #PRE#caa_initially_hidden,
        null #PRE#caa_href, null #PRE#caa_action, null #PRE#caa_on_label, null #PRE#caa_off_label,
-       null #PRE#caa_get, null #PRE#caa_set, null #PRE#caa_choices, 
+       null #PRE#caa_get, null #PRE#caa_set, null #PRE#caa_choices,
        null #PRE#caa_label_classes, null #PRE#caa_label_start_classes,
        null #PRE#caa_label_end_classes, null #PRE#caa_item_wrap_class, null #PRE#caa_caai_list
   from dual^';
@@ -1122,34 +1121,34 @@ select null #PRE#caa_id, '#CRG_ID#' #PRE#caa_crg_id, 'ACTION' #PRE#caa_caat_id, 
     if p_environment.action = C_ACTION_CREATE then
       -- Was called to create a new CAA, initialize default values
       l_statement := replace(
-                       replace(l_statement, '#CRG_ID#', p_environment.crg_id), 
+                       replace(l_statement, '#CRG_ID#', p_environment.crg_id),
                        '#PRE#', C_PAGE_PREFIX);
       adc.set_items_from_statement(
-        p_cpi_id => adc_util.c_no_firing_item, 
+        p_cpi_id => adc_util.c_no_firing_item,
         p_statement => l_statement);
     else
       -- Was called from the hierarchy tree
       adc.initialize_form_region(C_REGION_CAA_FORM);
     end if;
 
-    -- Show action atribute region
+    -- Show action attribute region
     adc.show_hide_item('.adc-apex-action', '.adc-hide');
     -- control items to show
     adc.show_hide_item('.adc-caa-' || lower(adc_api.get_string(C_ITEM_CAA_CAAT_ID)), '.adc-caa-hide');
     adc.refresh_item(
-      p_cpi_id => C_ITEM_CAA_CAAI_LIST, 
+      p_cpi_id => C_ITEM_CAA_CAAI_LIST,
       p_item_value => utl_apex.get_string(C_ITEM_CAA_CAAI_LIST));
     adc.set_region_content(
       p_region_id => C_REGION_HELP,
       p_html_code => pit.get_trans_item_description(C_PTI_PMG, 'CAA_HELP'));
 
     adc.select_tab(C_CENTRAL_TAB_REGION, C_TAB_RULES);
-    
+
     pit.leave_mandatory;
   end show_form_caa;
 
 
-  /** 
+  /**
     Procedure: show_form_crg
       Method to show and populate an ADC Rule Group form of the designer and populate it with the values selected.
    */
@@ -1166,21 +1165,21 @@ select null #PRE#caa_id, '#CRG_ID#' #PRE#caa_crg_id, 'ACTION' #PRE#caa_caat_id, 
 
     pit.leave_mandatory;
   end show_form_crg;
-  
-  
-  /** 
+
+
+  /**
     Procedure: show_form_cra
       Method to show and populate a ADC Rule Action form of the designer and populate it with the values selected.
-      
+
       The method distinguishes between different scenarios:
-      
+
       - Show an already existing Rule Action
       - Create a new Rule Action
       - Update an already visible Rule Action after changing its action type
-      
+
       Based on this decision, the form is populated with the existing data or with a set
       of default data required for this method.
-      
+
     Parameter:
       p_environment - Information about the status the designer is in
    */
@@ -1201,7 +1200,7 @@ select null #PRE#CRA_ID, '#CRG_ID#' #PRE#CRA_CRG_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
     ^';
   begin
     pit.enter_mandatory('show_form_cra');
-    
+
     -- Calculate form data for two possible use cases:
     -- - New CRA, get default values
     -- - Existing CRA, initialize form based on CRA_ID
@@ -1215,8 +1214,8 @@ select null #PRE#CRA_ID, '#CRG_ID#' #PRE#CRA_CRG_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
         'NO_FIRING_ITEM', adc_util.c_no_firing_item,
         'SORT_SEQ', get_cra_sort_seq(l_cru_id)));
       adc.set_items_from_statement(
-        p_cpi_id => adc_util.c_no_firing_item, 
-        p_statement => l_statement);    
+        p_cpi_id => adc_util.c_no_firing_item,
+        p_statement => l_statement);
     when p_environment.action = C_ACTION_SHOW then
       -- Was called from the hierarchy tree
       adc.initialize_form_region(C_REGION_CRA_FORM);
@@ -1227,10 +1226,10 @@ select null #PRE#CRA_ID, '#CRG_ID#' #PRE#CRA_CRG_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
 
     -- Control visibility
     adc.show_hide_item('.adc-rule-action', '.adc-hide');
-      
+
     -- Read ID values to adjust display settings
     l_cra_id := adc_api.get_number(C_ITEM_CRA_ID);
-    l_cat_id := adc_api.get_string(C_ITEM_CRA_CAT_ID); 
+    l_cat_id := adc_api.get_string(C_ITEM_CRA_CAT_ID);
 
     -- Filter CAT list
     adc.refresh_item(
@@ -1267,17 +1266,17 @@ select null #PRE#CRA_ID, '#CRG_ID#' #PRE#CRA_CRG_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
 
     pit.leave_mandatory;
   end show_form_cra;
-  
-  
-  /** 
+
+
+  /**
     Procedure: show_form_cru
       Method to show and populate a ADC Rule form of the designer and populate it with the values selected.
-      
+
       Two modes:
-      
+
       - Rule already exists. Initialize form based on stored values
       - Rule is created. Initialize form with default values
-      
+
     Parameter:
       p_environment - Information about the status the designer is in
    */
@@ -1300,7 +1299,7 @@ select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
         'CRG_ID', p_environment.crg_id,
         'SORT_SEQ', get_cru_sort_seq(p_environment.crg_id)));
       adc.set_items_from_statement(
-        p_cpi_id => adc_util.c_no_firing_item, 
+        p_cpi_id => adc_util.c_no_firing_item,
         p_statement => l_statement);
     else
       -- Was called from the rule report
@@ -1316,12 +1315,12 @@ select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
 
     pit.leave_mandatory;
   end show_form_cru;
-  
-  
-  /** 
+
+
+  /**
     Procedure: show_form_fls
       Method to show and populate a workflow form of the designer and populate it with the values selected.
-      
+
       This form is rendered only if FLOWS is installed and flag <ADC_UTIL.C_WITH_FLOWS> is set to TRUE.
    */
   procedure show_form_fls
@@ -1337,7 +1336,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
       -- Was called to create a new FLS, initialize default values
       l_statement := replace(l_statement, '#PRE#', C_PAGE_PREFIX);
       adc.set_items_from_statement(
-        p_cpi_id => adc_util.c_no_firing_item, 
+        p_cpi_id => adc_util.c_no_firing_item,
         p_statement => l_statement);
     else
       -- Was called from the rule report
@@ -1360,18 +1359,18 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
   end show_form_fls;
 
 
-  /** 
+  /**
     Function: validate_page
       Method to validate the user input against the business rules for the different designer areas.
-      
+
       Based on the mode of the APEX Action (see <C_MODE_CREATE> etc.) a decision is taken whether
-      
+
       - a validation method is required
       - which validation method to call.
-      
+
       Validation methods are implemented in package <ADC_ADMIN> and throw errors. If an error is thrown,
       this will prevent further execution of the page.
-      
+
     Parameter:
       p_environment - Information about the status the designer is in
    */
@@ -1434,10 +1433,10 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
   end validate_page;
 
 
-  /** 
+  /**
     Function: process_page
       Method to process the user input and persist the data at the database.
-      
+
       Based on the mode of the APEX Action (such as CRG, CRU etc.) the method calls
       the respective XAPI methods implemented in package <ADC_ADMIN>. It also decides
       upon the method to call based on the command passed in.
@@ -1457,7 +1456,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
     l_caai_list char_table;
   begin
     pit.enter_mandatory;
-    
+
     case p_environment.action_mode
       when C_MODE_CRG then
         l_rule_group_row.crg_id := p_environment.crg_id;
@@ -1475,8 +1474,9 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
         null;
     end case;
 
-    case p_environment.action 
-      when C_ACTION_UPDATE then
+    case p_environment.action
+      when C_ACTION_UPDATE then 
+        -- Handles creation as well, as a newly created entry is saved using the UPDATE button
         pit.info(msg.ADCA_UI_ACTION_REQUESTED, msg_args(C_ACTION_UPDATE, p_environment.target_mode));
         case p_environment.target_mode
           when C_MODE_CRU then
@@ -1509,7 +1509,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
           else
             null;
         end case;
-        
+
         -- Transaction control, because the action is called via AJAX
         adc.show_success(msg.ADCA_UI_CHANGES_SAVED);
         adc.set_item(
@@ -1536,7 +1536,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
           else
             null;
         end case;
-        
+
         -- Transaction control, because the action is called via AJAX
         adc.set_item(
           p_cpi_id => C_ITEM_SELECTED_NODE,
@@ -1545,7 +1545,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
         commit;
       else
         adc.register_error(
-          p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
+          p_cpi_id => adc_util.C_NO_FIRING_ITEM,
           p_message_name => msg.ADCA_UI_UNKNOWN_ACTION,
           p_msg_args => msg_args(p_environment.action));
     end case;
@@ -1572,12 +1572,12 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
 
     pit.leave_mandatory;
   end process_page;
-  
-  
+
+
   /**
     Procedure: handle_dml
       based on the requested action, this method controls any DML actions
-      
+
     Parameter:
       p_environment - Information about the status the designer is in
    */
@@ -1586,10 +1586,11 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
   as
   begin
     pit.enter_optional('handle_dml');
-    
+
     -- Execute DML if required
-    case p_environment.action 
+    case p_environment.action
       when C_ACTION_UPDATE then
+        -- Handles creation as well, as a newly created entry is saved using the UPDATE button
         validate_page(p_environment);
         process_page(p_environment);
       when C_ACTION_DELETE then
@@ -1600,16 +1601,16 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
         -- ignore
         null;
     end case;
-    
+
     pit.leave_optional;
   end handle_dml;
-  
-  
+
+
   /**
     Procedure: maintain_visual_state
       Method to adjust actions and shows the required forms based on the decision table
       <ADC_BL_DESIGNER_ACTIONS>.
-      
+
     Parameter:
       p_environment - Information about the status the designer is in
    */
@@ -1618,7 +1619,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
   as
     cursor page_state_cur(
       p_amda_actual_mode adca_map_designer_actions.amda_aldm_id%type,
-      p_amda_actual_id adca_map_designer_actions.amda_alda_id%type) 
+      p_amda_actual_id adca_map_designer_actions.amda_alda_id%type)
     is
       select *
         from adca_bl_designer_actions
@@ -1628,9 +1629,9 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
     l_target_region adc_util.ora_name_type;
   begin
     pit.enter_optional('maintain_visual_state');
-      
+
     -- React on changes of the hierarchy
-    case 
+    case
       when p_environment.app_changed then
         maintain_export_action(p_environment);
         adc.refresh_item(
@@ -1641,26 +1642,26 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
           p_item_value => p_environment.selected_node);
       when p_environment.crg_changed then
         adc.refresh_item(
-          p_cpi_id => C_REGION_RULES, 
+          p_cpi_id => C_REGION_RULES,
           p_item_value => p_environment.selected_node);
-      when p_environment.cru_changed then      
+      when p_environment.cru_changed then
         if p_environment.firing_item = C_REGION_RULES then
           l_target_region := C_REGION_HIERARCHY;
         else
           l_target_region := C_REGION_RULES;
         end if;
         adc.select_region_entry(
-          p_region_id => l_target_region, 
-          p_entry_id => p_environment.selected_node, 
+          p_region_id => l_target_region,
+          p_entry_id => p_environment.selected_node,
           p_notify => adc_util.C_FALSE);
       else
         null;
     end case;
-    
+
     -- Retrieve page state from decision table
     for page_state in page_state_cur(
-                        p_amda_actual_mode => p_environment.target_mode, 
-                        p_amda_actual_id => p_environment.action) 
+                        p_amda_actual_mode => p_environment.target_mode,
+                        p_amda_actual_id => p_environment.action)
     loop
       maintain_dml_actions(page_state);
 
@@ -1673,8 +1674,10 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
         show_form_cru(p_environment);
       when C_MODE_CRA then
         show_form_cra(p_environment);
+      $IF adc_util.C_WITH_FLOWS $THEN 
       when C_MODE_FLS then
         show_form_fls;
+      $END
       when C_MODE_CAG then
         adc.set_region_content(
           p_region_id => C_REGION_HELP,
@@ -1691,11 +1694,11 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
           p_title => pit.get_trans_item_name(C_PTI_PMG, 'ADC_WARNING'));
       end if;
     end loop;
-    
+
     pit.leave_optional;
   end maintain_visual_state;
-  
-  
+
+
   /**
     Procedure: initialize
       Method to initialize the ADC_UI package
@@ -1712,7 +1715,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
                     utl_apex.get_application_id p_app_id,
                     utl_apex.get_page_id p_page_id
                from dual)
-      select r.static_id form_id, '[' ||  listagg('"' || i.item_name || '"', ',') within group (order by item_name) || ']' item_list 
+      select r.static_id form_id, '[' ||  listagg('"' || i.item_name || '"', ',') within group (order by item_name) || ']' item_list
         from apex_application_page_items i
         join apex_application_page_regions r
           on i.data_source_region_id = r.region_id
@@ -1727,7 +1730,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
       from apex_application_pages
      where application_id = (select utl_apex.get_application_id from dual)
        and page_alias = C_EXPORT_PAGE;
-       
+
     -- Persist list of page items per form region to define which page items to load when processing a form dynamically
     for frm in form_item_cur loop
       g_form_item_list(frm.form_id) := frm.item_list;
@@ -1738,10 +1741,10 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
   end initialize;
 
 
-  /* 
+  /*
     Group: Public Methods
    */
-  /** 
+  /**
     Function: get_lov_sql
       See <ADCA_UI_DESIGNER.get_lov_sql>
    */
@@ -1753,7 +1756,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
   begin
     return adc_api.get_lov_sql(p_capt_id, p_crg_id);
   end get_lov_sql;
-  
+
 
   /**
     Procedure: handle_activity
@@ -1781,9 +1784,9 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
 
     pit.leave_mandatory;
   end handle_activity;
-  
-  
-  /** 
+
+
+  /**
     Function: handle_cat_changed
       See <ADCA_UI_DESIGNER.handle_cat_changed>
    */
@@ -1792,15 +1795,15 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
     l_environment environment_rec;
   begin
     pit.enter_mandatory;
-    
+
     l_environment := read_environment;
     show_form_cra(l_environment);
-    
+
     pit.leave_mandatory;
   end handle_cat_changed;
 
 
-  /** 
+  /**
     Function: toggle_crg_active
       See <ADCA_UI_DESIGNER.toggle_crg_active>
    */
@@ -1809,7 +1812,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
     l_environment environment_rec;
   begin
     pit.enter_mandatory;
-    
+
     l_environment := read_environment;
 
     adc_admin.toggle_rule_group(l_environment.crg_id);
@@ -1819,7 +1822,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
   end toggle_crg_active;
 
 
-  /** 
+  /**
     Function: validate_rule_condition
       See <ADCA_UI_DESIGNER.validate_rule_condition>
    */
@@ -1829,7 +1832,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
     l_environment environment_rec;
   begin
     pit.enter_mandatory;
-    
+
     l_environment := read_environment;
     copy_rule(l_rule_row, l_environment.crg_id);
 
@@ -1846,8 +1849,8 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
         'CRU_CONDITION_MISSING', 'CRU_CONDITION'));
     pit.leave_mandatory;
   end validate_rule_condition;
-  
-  
+
+
   /**
     Procedure: check_parameter_value
       See <ADCA_UI_DESIGNER.check_parameter_value>
@@ -1861,22 +1864,22 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
     l_value adc_util.max_char;
   begin
     pit.enter_mandatory;
-    
+
     l_firing_item := adc_api.get_firing_item;
     l_value := adc_api.get_string(l_firing_item);
     l_cap_sort_seq := to_number(substr(l_firing_item, -1, 1));
     l_cat_id := adc_api.get_string('CRA_CAT_ID');
-       
+
     adc_parameter.validate_parameter(
       p_value => l_value,
       p_capt_id => get_parameter_type(l_cat_id, l_cap_sort_seq),
       p_cpi_id => l_firing_item);
-    
+
     pit.leave_mandatory;
   end check_parameter_value;
 
 
-  /** 
+  /**
     Function: support_flows
       See <ADCA_UI_DESIGNER.support_flows>
    */
@@ -1886,15 +1889,15 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
     l_result adc_util.flag_type;
   begin
     pit.enter_mandatory;
-    
+
     l_result := adc_util.bool_to_flag(adc_util.C_WITH_FLOWS);
-    
+
     pit.leave_mandatory(
       p_params => msg_params(
                     msg_param('Result', l_result)));
     return l_result;
   end support_flows;
-  
+
 begin
   initialize;
 end adca_ui_designer;

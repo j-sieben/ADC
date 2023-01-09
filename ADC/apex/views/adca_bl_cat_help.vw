@@ -2,9 +2,10 @@ create or replace editionable view adca_bl_cat_help
 as 
   with params as(
        select uttm_mode, uttm_text template
-         from utl_text_templates
-        where uttm_type = 'ADC'
-          and uttm_name = 'ACTION_TYPE_HELP')
+         from table(
+                utl_text_admin.get_templates(
+                  p_type => 'ADC',
+                  p_name => 'ACTION_TYPE_HELP')))
 select cat_id,
        utl_text.generate_text(cursor(
          select template,
