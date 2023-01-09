@@ -63,7 +63,7 @@ begin
     p_pms_pml_name => 'GERMAN');
 
   pit_admin.merge_message(
-    p_pms_name => 'ADCA_UI_CHK_DEPRECATED',
+    p_pms_name => 'ADCA_CHK_DEPRECATED',
     p_pms_pmg_name => 'ADCA',
     p_pms_text => q'^Die Aktion #1# ist deprecated und sollte durch ein anderes Verfahren ersetzt werden.^',
     p_pms_description => q'^Bitte folgen Sie den Anweisungen im Hilfetext des Aktionstyps.^',
