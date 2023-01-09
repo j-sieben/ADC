@@ -276,7 +276,7 @@ begin
     p_caa_crg_id => adc_admin.map_id(13),
     p_caa_caat_id => 'ACTION',
     p_caa_name => 'delete-action',
-    p_caa_confirm_message_name => 'msg.ADCA_UI_CONFIRM_DELETE',
+    p_caa_confirm_message_name => 'msg.ADCA_CONFIRM_DELETE',
     p_caa_label => 'Löschen',
     p_caa_context_label => 'Entfernt einen Datensatz',
     p_caa_icon => 'fa-trash-o',
