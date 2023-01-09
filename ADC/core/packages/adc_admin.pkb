@@ -2562,19 +2562,24 @@ as
                p_type => C_ADC,
                p_name => C_UTTM_NAME,
                p_mode => C_FRAME));
+    
+    apex_zip.add_file(
+      p_zipped_blob => l_zip_file,
+      p_file_name => l_zip_file_name,
+      p_content => utl_text.clob_to_blob(l_stmt));
        
     -- Finally, add all create view statements for LOV-based parameter types
     for cpt in (select *
                   from adc_action_param_types_v
                  where capt_capvt_id = C_STATIC_LIST
                     or capt_select_list_query is not null) loop
-      dbms_lob.append(l_stmt, adc_util.C_CR || adc_parameter.get_param_lov_query(cpt) || adc_util.C_CR);
-    end loop; 
+      l_stmt := adc_parameter.get_param_lov_query(cpt);
     
-    apex_zip.add_file(
-      p_zipped_blob => l_zip_file,
-      p_file_name => l_zip_file_name,
-      p_content => utl_text.clob_to_blob(l_stmt));
+      apex_zip.add_file(
+        p_zipped_blob => l_zip_file,
+        p_file_name => 'adc_param_lov_' || lower(cpt.capt_id) || '.lov',
+        p_content => utl_text.clob_to_blob(l_stmt));
+    end loop; 
 
     apex_zip.finish(l_zip_file);
 
