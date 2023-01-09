@@ -15,7 +15,7 @@ as
    */
   C_PTI_PMG constant adc_util.ora_name_type := 'ADCA';
 
-  /**
+/**
     Constants: Item and Region constants
       C_ITEM_CRG_APP_ID - Item that contains the Application ID
       C_ITEM_CRG_ID - Item that contains the Rule Group ID
@@ -1477,7 +1477,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
     case p_environment.action
       when C_ACTION_UPDATE then 
         -- Handles creation as well, as a newly created entry is saved using the UPDATE button
-        pit.info(msg.ADCA_UI_ACTION_REQUESTED, msg_args(C_ACTION_UPDATE, p_environment.target_mode));
+        pit.info(msg.ADCA_ACTION_REQUESTED, msg_args(C_ACTION_UPDATE, p_environment.target_mode));
         case p_environment.target_mode
           when C_MODE_CRU then
             adc_admin.merge_rule(l_rule_row);
@@ -1511,13 +1511,13 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
         end case;
 
         -- Transaction control, because the action is called via AJAX
-        adc.show_success(msg.ADCA_UI_CHANGES_SAVED);
+        adc.show_success(msg.ADCA_CHANGES_SAVED);
         adc.set_item(
           p_cpi_id => C_ITEM_SELECTED_NODE,
           p_item_value => l_selected_id);
         commit;
       when C_ACTION_DELETE then
-        pit.info(msg.ADCA_UI_ACTION_REQUESTED, msg_args(C_ACTION_DELETE, p_environment.action_mode));
+        pit.info(msg.ADCA_ACTION_REQUESTED, msg_args(C_ACTION_DELETE, p_environment.action_mode));
         case p_environment.action_mode
           when C_MODE_CRG then
             adc_admin.delete_rule_group(l_rule_group_row);
@@ -1541,12 +1541,12 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
         adc.set_item(
           p_cpi_id => C_ITEM_SELECTED_NODE,
           p_item_value => p_environment.selected_node);
-        adc.show_success(msg.ADCA_UI_DATA_DELETED);
+        adc.show_success(msg.ADCA_DATA_DELETED);
         commit;
       else
         adc.register_error(
           p_cpi_id => adc_util.C_NO_FIRING_ITEM,
-          p_message_name => msg.ADCA_UI_UNKNOWN_ACTION,
+          p_message_name => msg.ADCA_UNKNOWN_ACTION,
           p_msg_args => msg_args(p_environment.action));
     end case;
 
@@ -1690,7 +1690,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
       if page_state.amda_remember_page_state = adc_util.C_TRUE then
         adc.remember_page_status(
           p_page_items => get_form_items(page_state.amda_form_id),
-          p_message => pit.get_message_text(msg.ADCA_UI_UNSAVED_DATA),
+          p_message => pit.get_message_text(msg.ADCA_UNSAVED_DATA),
           p_title => pit.get_trans_item_name(C_PTI_PMG, 'ADC_WARNING'));
       end if;
     end loop;
