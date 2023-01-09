@@ -1,5 +1,5 @@
 create table adc_action_param_types(
-  capt_id varchar2(50 char),
+  capt_id varchar2(50 char) constraint c_capt_id_nn not null,
   capt_pti_id varchar2(50 char) constraint c_capt_pti_id_nn not null,
   capt_pmg_name varchar2(3 byte) default on null 'ADC' constraint c_capt_pmg_name_nn not null,
   capt_capvt_id varchar2(50 char) default on null 'TEXT'constraint c_capt_capvt_id_nn not null,
