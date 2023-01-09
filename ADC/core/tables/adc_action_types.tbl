@@ -1,6 +1,6 @@
 create table adc_action_types(
-  cat_id varchar2(50 char),
-  cat_catg_id varchar2(50 char),
+  cat_id varchar2(50 char) constraint c_cat_id_nn not null,
+  cat_catg_id varchar2(50 char) constraint c_cat_catg_id_nn not null,
   cat_caif_id varchar2(50 char),
 	cat_pti_id varchar2(50 char) constraint c_cat_pti_id_nn not null, 
   cat_pmg_name varchar2(3 byte) default on null 'ADC' constraint c_cat_pmg_name_nn not null,
