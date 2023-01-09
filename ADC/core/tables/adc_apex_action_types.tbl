@@ -1,5 +1,5 @@
 create table adc_apex_action_types(
-  caat_id varchar2(50 char),
+  caat_id varchar2(50 char) constraint c_caat_id_nn not null, 
   caat_pti_id varchar2(50 char) constraint c_caat_pti_id_nn not null,
   caat_pmg_name varchar2(3 byte) default on null 'ADC' constraint c_caat_pmg_name_nn not null,
 	caat_active &FLAG_TYPE. default on null &C_TRUE. constraint c_caat_active_nn not null,
