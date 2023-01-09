@@ -1,4 +1,4 @@
-create or replace editionable view adc_apex_actions_v as 
+create or replace force view adc_apex_actions_v as 
 select caa_id,
        caa_crg_id,
        caa_caat_id, 

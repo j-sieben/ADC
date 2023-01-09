@@ -1,4 +1,4 @@
-create or replace  view adc_event_types_v
+create or replace force view adc_event_types_v
 as 
 select cet_id, pti_name cet_name, cet_cpitg_id, cet_column_name, cet_is_custom_event
   from adc_event_types

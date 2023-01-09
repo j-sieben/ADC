@@ -1,4 +1,4 @@
-create or replace editionable view adc_bl_rules
+create or replace force view adc_bl_rules
 as 
 with params as(
        select adc_util.c_true c_true

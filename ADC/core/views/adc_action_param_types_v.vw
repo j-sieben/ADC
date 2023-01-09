@@ -1,4 +1,4 @@
-create or replace editionable view adc_action_param_types_v as 
+create or replace force view adc_action_param_types_v as 
 select capt_id, pti_name capt_name, pti_display_name capt_display_name, to_char(pti_description) capt_description, 
        capt_capvt_id, text_vc capt_select_list_query, comments capt_select_view_comment, capt_sort_seq, capt_active
   from adc_action_param_types

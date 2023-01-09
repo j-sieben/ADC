@@ -1,4 +1,4 @@
-create or replace editionable view adc_bl_page_items
+create or replace force view adc_bl_page_items
 as 
   with pti as(
        select pti_id, pti_name, replace(pti_id, 'CPIT_') item_type

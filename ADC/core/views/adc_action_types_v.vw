@@ -1,4 +1,4 @@
-create or replace editionable view adc_action_types_v as 
+create or replace force view adc_action_types_v as 
 select cat_id, cat_catg_id, cat_caif_id, 
        pti_name cat_name, pti_display_name cat_display_name, to_char(pti_description) cat_description, 
        cat_pl_sql, cat_js, cat_is_editable, cat_raise_recursive, cat_active

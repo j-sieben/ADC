@@ -1,4 +1,4 @@
-create or replace editionable view adc_rule_group_status
+create or replace force view adc_rule_group_status
 as 
 select to_number(replace(collection_name, 'ADC_CRG_STATUS_')) cgs_crg_id,
        seq_id cgs_id,

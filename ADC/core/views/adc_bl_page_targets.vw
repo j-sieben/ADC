@@ -1,4 +1,4 @@
-create or replace editionable view adc_bl_page_targets
+create or replace force view adc_bl_page_targets
 as
 select crg_id cpi_crg_id,
        item_name cpi_id,
