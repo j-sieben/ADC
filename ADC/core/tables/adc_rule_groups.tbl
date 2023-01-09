@@ -1,11 +1,11 @@
 create table adc_rule_groups(
   crg_id number default on null adc_seq.nextval constraint nn_crg_id not null, 
-	crg_app_id number constraint nn_crg_app_id not null, 
-	crg_page_id number constraint nn_crg_page_id not null, 
+  crg_app_id number constraint nn_crg_app_id not null, 
+  crg_page_id number constraint nn_crg_page_id not null, 
   crg_decision_table clob,
-	crg_initialization_code clob, 
-	crg_with_recursion &FLAG_TYPE. default on null &C_TRUE. constraint nn_crg_with_recursion not null, 
-	crg_active &FLAG_TYPE. default on null &C_TRUE. constraint nn_crg_active not null, 
+  crg_initialization_code clob, 
+  crg_with_recursion &FLAG_TYPE. default on null &C_TRUE. constraint nn_crg_with_recursion not null, 
+  crg_active &FLAG_TYPE. default on null &C_TRUE. constraint nn_crg_active not null, 
   constraint pk_adc_rule_groups primary key (crg_id),
   constraint chk_crg_active check (crg_active in (&C_TRUE., &C_FALSE.)),
   constraint chk_crg_with_recursion check (crg_with_recursion in (&C_TRUE., &C_FALSE.))
