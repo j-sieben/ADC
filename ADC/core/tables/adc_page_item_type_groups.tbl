@@ -1,7 +1,7 @@
 create table adc_page_item_type_groups(
-  cpitg_id varchar2(50 char), 
-	cpitg_has_value &FLAG_TYPE. default on null &C_TRUE. constraint c_cpitg_has_value_nn not null, 
-	cpitg_include_in_view &FLAG_TYPE. default on null &C_FALSE. constraint c_cpitg_include_in_view_nn not null, 
+  cpitg_id varchar2(50 char) constraint c_cpitg_id_nn not null, 
+  cpitg_has_value &FLAG_TYPE. default on null &C_TRUE. constraint c_cpitg_has_value_nn not null, 
+  cpitg_include_in_view &FLAG_TYPE. default on null &C_FALSE. constraint c_cpitg_include_in_view_nn not null, 
   constraint p_cpitg_id primary key (cpitg_id),
   constraint c_cpitg_has_value check (cpitg_has_value in (&C_TRUE., &C_FALSE.)),
   constraint c_cpitg_include_in_view check (cpitg_include_in_view in (&C_TRUE., &C_FALSE.))
