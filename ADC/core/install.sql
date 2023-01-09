@@ -62,7 +62,7 @@ prompt &h3.Create ADC messages from &msg_dir.
 @&msg_dir.MessageGroup_ADC.sql
 
 prompt &h3.Create generic ORACLE messages
-@&msg_dir.MessageGroup_ORACLE.sql
+@&msg_dir.MessageGroup_ORA.sql
 
 prompt &h3.Create ADC translatable items
 @&msg_dir.TranslatableItemGroup_ADC.sql
