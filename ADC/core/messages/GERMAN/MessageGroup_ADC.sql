@@ -271,7 +271,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_OUTPUT_CLIPPED',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^'Weitere JavaScript-Aktion unterdrückt, weil zu lang^',
+    p_pms_text => q'^Weitere JavaScript-Aktion unterdrückt, weil zu lang^',
     p_pms_description => q'^^',
     p_pms_pse_id => 40,
     p_pms_pml_name => 'GERMAN',
