@@ -1,5 +1,5 @@
 create table adc_action_param_visual_types(
-  capvt_id varchar2(50 char),
+  capvt_id varchar2(50 char) constraint c_capvt_id_nn not null,
   capvt_pti_id varchar2(50 char) constraint c_capvt_pti_id_nn not null,
   capvt_pmg_name varchar2(3 byte) default on null 'ADC' constraint c_capvt_pmg_name_nn not null,
   capvt_param_item_extension varchar2(10 byte),
