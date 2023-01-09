@@ -10,7 +10,7 @@ with params as (
          from dual),
      findings as(
        select cra_crg_id crg_id, 'CRA_' || cra_id node, 1 severity,
-              pit.get_message('ADCA_UI_CHK_REGISTER_OBSERVER', msg_args(cra_cpi_id)) message
+              pit.get_message('ADCA_CHK_REGISTER_OBSERVER', msg_args(cra_cpi_id)) message
          from adc_rule_actions
          join adc_rules
            on cra_crg_id = cru_crg_id
@@ -20,7 +20,7 @@ with params as (
         where cra_cat_id = 'REGISTER_OBSERVER'
        union all
        select cra_crg_id crg_id, 'CRA_' || cra_id node, 1 severity,
-              pit.get_message('ADCA_UI_CHK_DEPRECATED', msg_args(cra_cpi_id)) message
+              pit.get_message('ADCA_CHK_DEPRECATED', msg_args(cra_cpi_id)) message
          from adc_rule_actions
          join adc_action_types
            on cra_cat_id = cat_id
@@ -29,7 +29,7 @@ with params as (
         where cat_active = C_FALSE
        union all
        select cra_crg_id crg_id, 'CRA_' || cra_id node, 0 severity,
-              pit.get_message('ADCA_UI_CHK_MISSING', msg_args(cra_cpi_id)) message
+              pit.get_message('ADCA_CHK_MISSING', msg_args(cra_cpi_id)) message
          from adc_rule_actions
          left join adc_page_items
            on cra_crg_id = cpi_crg_id
@@ -38,7 +38,7 @@ with params as (
           and cra_cpi_id is not null
        union all
        select cru_crg_id crg_id, 'CRU_' || cru_id node, 0 severity,
-              pit.get_message('ADCA_UI_CHK_MISSING', msg_args(column_value)) message
+              pit.get_message('ADCA_CHK_MISSING', msg_args(column_value)) message
          from adc_rules cru
          join adc_rule_groups
            on cru_crg_id = crg_id
