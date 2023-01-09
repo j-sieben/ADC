@@ -1,11 +1,11 @@
 create table adc_page_item_types(
-  cpit_id varchar2(50 char), 
+  cpit_id varchar2(50 char) constraint c_cpit_id_nn not null, 
   cpit_pti_id varchar2(50 char) constraint c_cpit_pti_id_nn not null,
   cpit_pmg_name varchar2(3 byte) default on null 'ADC' constraint c_cpit_pmg_name_NN not null,
-	cpit_cpitg_id varchar2(50 char), 
-	cpit_cet_id varchar2(30 byte), 
-	cpit_col_template varchar2(100 char), 
-	cpit_init_template varchar2(100 char),
+  cpit_cpitg_id varchar2(50 char), 
+  cpit_cet_id varchar2(30 byte), 
+  cpit_col_template varchar2(100 char), 
+  cpit_init_template varchar2(100 char),
   constraint p_cpit_id primary key (cpit_id),
   constraint r_cpit_pti_id foreign key(cpit_pti_id, cpit_pmg_name)
     references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
