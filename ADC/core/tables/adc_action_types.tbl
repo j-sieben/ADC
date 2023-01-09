@@ -15,7 +15,7 @@ create table adc_action_types(
   constraint r_cat_caif_id foreign key(cat_caif_id)
     references adc_action_item_focus(caif_id),
   constraint r_cat_pti_id foreign key(cat_pti_id, cat_pmg_name)
-    references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
+    references &UTIL_OWNER..pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
   constraint c_cat_is_editable check (cat_is_editable in (&C_FALSE., &C_TRUE.)),
   constraint c_cat_raise_recursive check(cat_raise_recursive in (&C_FALSE., &C_TRUE.)),
   constraint c_cat_active check(cat_active in (&C_FALSE., &C_TRUE.)),

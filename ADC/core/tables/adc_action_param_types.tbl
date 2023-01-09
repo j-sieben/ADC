@@ -7,7 +7,7 @@ create table adc_action_param_types(
   capt_active &FLAG_TYPE. default on null &C_TRUE. constraint c_capt_active_nn not null,
   constraint p_capt_id primary key(capt_id),
   constraint r_capt_pti_id foreign key(capt_pti_id, capt_pmg_name)
-    references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
+    references &UTIL_OWNER..pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
   constraint r_capt_capvt_id foreign key(capt_capvt_id)
     references adc_action_param_visual_types(capvt_id),
   constraint c_capt_pmg_name check(capt_pmg_name = 'ADC'),

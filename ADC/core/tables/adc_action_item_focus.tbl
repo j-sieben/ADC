@@ -8,7 +8,7 @@ create table adc_action_item_focus(
   caif_active &FLAG_TYPE. default on null &C_TRUE. constraint c_caif_active_nn not null,
   constraint p_caif_id primary key(caif_id),
   constraint r_caif_pti_id foreign key(caif_pti_id, caif_pmg_name)
-    references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
+    references &UTIL_OWNER..pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
   constraint c_caif_actual_page_only check(caif_actual_page_only in (&C_TRUE., &C_FALSE.)),
   constraint c_caif_pmg_name check(caif_pmg_name = 'ADC'),
   constraint c_caif_active check(caif_active in (&C_TRUE., &C_FALSE.))

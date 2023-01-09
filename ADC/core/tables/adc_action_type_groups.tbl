@@ -5,7 +5,7 @@ create table adc_action_type_groups(
   catg_active &FLAG_TYPE. default on null &C_TRUE. constraint c_catg_active_nn not null,
   constraint p_catg_id primary key(catg_id),
   constraint r_catg_pti_id foreign key(catg_pti_id, catg_pmg_name)
-    references pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
+    references &UTIL_OWNER..pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
   constraint c_catg_active check(catg_active in (&C_FALSE., &C_TRUE.)),
   constraint c_catg_pmg_name check(catg_pmg_name = 'ADC')
 ) 
