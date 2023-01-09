@@ -1,9 +1,9 @@
 create table adc_event_types(
-  cet_id varchar2(50 char), 
+  cet_id varchar2(50 char) constraint c_cet_id_nn not null, 
   cet_pti_id varchar2(50 char) constraint nn_cet_pti_id not null,
   cet_pmg_name varchar2(3 byte) default on null 'ADC' constraint c_cet_pmg_name_nn not null,
-	cet_cpitg_id varchar2(5 byte) default on null 'EVENT' constraint c_cet_cpitg_id_nn not null, 
-	cet_column_name varchar2(100 char),
+  cet_cpitg_id varchar2(5 byte) default on null 'EVENT' constraint c_cet_cpitg_id_nn not null, 
+  cet_column_name varchar2(100 char),
   cet_is_custom_event &FLAG_TYPE. default on null &C_FALSE. constraint c_cet_is_custom_event_nn not null,
   constraint p_cet_id primary key (cet_id),
   constraint r_cet_pti_id foreign key(cet_pti_id, cet_pmg_name)
