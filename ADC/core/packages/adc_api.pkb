@@ -239,7 +239,8 @@ as
   
 
   procedure handle_bulk_errors(
-    p_mapping in char_table default null) 
+    p_mapping in char_table default null,
+    p_ignore_missing in boolean default false) 
   as
     type error_code_map_t is table of utl_apex.ora_name_type index by utl_apex.ora_name_type;
     l_error_code_map error_code_map_t;
@@ -268,10 +269,12 @@ as
         
           if l_error_code_map.exists(l_message.error_code) then
             utl_apex.get_page_element(l_error_code_map(l_message.error_code), l_item);
+          else
+            continue when p_ignore_missing;
           end if;
           
           if l_message.error_code not member of l_processed_messages then
-            -- Push on local message list to remove doulbe errors
+            -- Push on local message list to remove double errors
             l_processed_messages.extend;
             l_processed_messages(l_processed_messages.count) := l_message.error_code;
             
