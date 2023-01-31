@@ -1,1 +1,39 @@
-set define ~declare  l_foo number;  l_app_id number;begin  l_foo := adc_admin.map_id;  l_app_id := coalesce(apex_application_install.get_application_id, ~APP_ID.);  adc_admin.prepare_rule_group_import(    p_crg_app_id => l_app_id,    p_crg_page_id => 13);  adc_admin.merge_rule_group(    p_crg_id => adc_admin.map_id(1338),    p_crg_app_id => l_app_id,    p_crg_page_id => 13,    p_crg_with_recursion => adc_util.C_TRUE,    p_crg_active => adc_util.C_TRUE);    adc_admin.merge_rule(    p_cru_id => adc_admin.map_id(1340),    p_cru_crg_id => adc_admin.map_id(1338),    p_cru_name => 'die Seite öffnet',    p_cru_condition => q'|initializing = c_true|',    p_cru_sort_seq => 10,    p_cru_fire_on_page_load => adc_util.C_FALSE,    p_cru_active => adc_util.C_TRUE);      adc_admin.propagate_rule_change(adc_admin.map_id(1338));  commit;end;/set define on
+
+set define ^
+
+declare
+  l_foo number;
+  l_app_id number;
+begin
+  l_foo := adc_admin.map_id;
+  l_app_id := coalesce(apex_application_install.get_application_id, ^APP_ID.);
+
+  adc_admin.prepare_rule_group_import(
+    p_crg_app_id => l_app_id,
+    p_crg_page_id => 13);
+
+  adc_admin.merge_rule_group(
+    p_crg_id => adc_admin.map_id(197),
+    p_crg_app_id => l_app_id,
+    p_crg_page_id => 13,
+    p_crg_with_recursion => adc_util.C_TRUE,
+    p_crg_active => adc_util.C_TRUE);
+  
+  adc_admin.merge_rule(
+    p_cru_id => adc_admin.map_id(199),
+    p_cru_crg_id => adc_admin.map_id(197),
+    p_cru_name => 'die Seite öffnet',
+    p_cru_condition => q'|initializing = c_true|',
+    p_cru_sort_seq => 10,
+    p_cru_fire_on_page_load => adc_util.C_FALSE,
+    p_cru_active => adc_util.C_TRUE);
+  
+  
+
+  adc_admin.propagate_rule_change(adc_admin.map_id(197));
+
+  commit;
+end;
+/
+
+set define on

@@ -28,7 +28,7 @@ prompt APPLICATION 118 - ADC Beispielanwendung
 -- Application Export:
 --   Application:     118
 --   Name:            ADC Beispielanwendung
---   Date and Time:   17:18 Montag Januar 30, 2023
+--   Date and Time:   09:28 Dienstag Januar 31, 2023
 --   Exported By:     ADC_ADMIN
 --   Flashback:       0
 --   Export Type:     Application Export
@@ -122,7 +122,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'APP_NAME'
 ,p_substitution_value_01=>'ADC Beispielanwendung'
 ,p_last_updated_by=>'ADC_ADMIN'
-,p_last_upd_yyyymmddhh24miss=>'20221218094545'
+,p_last_upd_yyyymmddhh24miss=>'20230131092448'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>3
 ,p_ui_type_name => null
@@ -238,7 +238,7 @@ wwv_flow_api.create_list_item(
  p_id=>wwv_flow_api.id(686812304634842400)
 ,p_list_item_display_sequence=>110
 ,p_list_item_link_text=>'Zeile in Bericht erkennen'
-,p_list_item_link_target=>'f?p=&APP_ID.:ADREP:&SESSION.::&DEBUG.::::'
+,p_list_item_link_target=>'f?p=&APP_ID.:adrep:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-arrow-circle-right'
 ,p_parent_list_item_id=>wwv_flow_api.id(686555368873592711)
 ,p_list_text_01=>unistr('Ausge\00E4hlte Zeile eines Berichts erkennen und darauf reagieren')
@@ -260,7 +260,7 @@ wwv_flow_api.create_list_item(
  p_id=>wwv_flow_api.id(484933853717787292)
 ,p_list_item_display_sequence=>170
 ,p_list_item_link_text=>'Erweiterte Initialisierung'
-,p_list_item_link_target=>'f?p=&APP_ID.:16:&SESSION.::&DEBUG.::::'
+,p_list_item_link_target=>'f?p=&APP_ID.:einit:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-arrow-circle-right'
 ,p_parent_list_item_id=>wwv_flow_api.id(686555368873592711)
 ,p_list_text_01=>unistr('Zeigt die Verwendung von Initialisierungsregeln, die zus\00E4tzlich ausgef\00FChrt werden, falls eine Bedingung vorliegt.')
@@ -271,7 +271,7 @@ wwv_flow_api.create_list_item(
  p_id=>wwv_flow_api.id(487374701076993600)
 ,p_list_item_display_sequence=>180
 ,p_list_item_link_text=>unistr('Seitenkommandos ausf\00FChren')
-,p_list_item_link_target=>'f?p=&APP_ID.:17:&APP_SESSION.::&DEBUG.:::'
+,p_list_item_link_target=>'f?p=&APP_ID.:caaex:&SESSION.::&DEBUG.::::'
 ,p_parent_list_item_id=>wwv_flow_api.id(686555368873592711)
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
 ,p_list_item_current_for_pages=>'17'
@@ -315,7 +315,7 @@ wwv_flow_api.create_list_item(
  p_id=>wwv_flow_api.id(687522966026217060)
 ,p_list_item_display_sequence=>160
 ,p_list_item_link_text=>unistr('Aktionstypen f\00FCr Seitenelemente')
-,p_list_item_link_target=>'f?p=&APP_ID.:cat_page_item:&SESSION.::&DEBUG.::::'
+,p_list_item_link_target=>'f?p=&APP_ID.:catpi:&SESSION.::&DEBUG.::::'
 ,p_list_item_icon=>'fa-bolt'
 ,p_parent_list_item_id=>wwv_flow_api.id(687423543744745985)
 ,p_list_text_01=>unistr('Aktionstypen f\00FCr Seitenelemente')
@@ -15641,12 +15641,12 @@ wwv_flow_api.create_page(
  p_id=>15
 ,p_user_interface_id=>wwv_flow_api.id(669364671984164674)
 ,p_name=>unistr('Aktionstypen f\00FCr Seitenelemente')
-,p_alias=>'CAT_PAGE_ITEM'
+,p_alias=>'CATPI'
 ,p_step_title=>unistr('Aktionstypen f\00FCr Seitenelemente')
 ,p_autocomplete_on_off=>'OFF'
 ,p_page_template_options=>'#DEFAULT#'
 ,p_last_updated_by=>'ADC_ADMIN'
-,p_last_upd_yyyymmddhh24miss=>'20210912162726'
+,p_last_upd_yyyymmddhh24miss=>'20230131092448'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(685322928787279227)
@@ -15695,14 +15695,14 @@ wwv_flow_api.create_page(
  p_id=>16
 ,p_user_interface_id=>wwv_flow_api.id(669364671984164674)
 ,p_name=>'Erweiterte Initialisierung'
-,p_alias=>'EXTENDED_INITIALIZATION'
+,p_alias=>'EINIT'
 ,p_step_title=>'Erweiterte Initialisierung'
 ,p_autocomplete_on_off=>'OFF'
 ,p_javascript_code=>'var htmldb_delete_message=''"DELETE_CONFIRM_MSG"'';'
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'ADC_ADMIN'
-,p_last_upd_yyyymmddhh24miss=>'20221005111945'
+,p_last_upd_yyyymmddhh24miss=>'20230131092142'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(792471780235602995)
@@ -16095,13 +16095,13 @@ wwv_flow_api.create_page(
  p_id=>17
 ,p_user_interface_id=>wwv_flow_api.id(669364671984164674)
 ,p_name=>unistr('Seitenkommandos ausf\00FChren')
-,p_alias=>unistr('SEITENKOMMANDOS-AUSF\00DCHREN')
+,p_alias=>'CAAEX'
 ,p_step_title=>unistr('Seitenkommandos ausf\00FChren')
 ,p_warn_on_unsaved_changes=>'N'
 ,p_autocomplete_on_off=>'OFF'
 ,p_page_template_options=>'#DEFAULT#'
 ,p_last_updated_by=>'ADC_ADMIN'
-,p_last_upd_yyyymmddhh24miss=>'20221005123140'
+,p_last_upd_yyyymmddhh24miss=>'20230131092201'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(867935388032296924)
