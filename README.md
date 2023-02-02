@@ -76,6 +76,8 @@ Package `ADC_ADMIN` is used to maintain the ADC metadata. It offers methods to c
 
 These types form the PL/SQL API for your own projects. You exclusive want to use type `ADC` which inherits any functionality from `ADC_BASIC`. Reason for these types is that you may want to extend type `ADC` with your own action types without affecting the predelivered actions types. That way, it is save to install a new version of ADC with new or changed functionality. It will replace `ADC_BASIC` with a new version leaving your etended copy of `ADC`untouched.
 
+The approach of using types as a package replacement may sound a bit unusual but it adds a feature unavailable in PL/SQL: Inheritance. By inheriting type ADC from ADC_BASIC, it is possible to separate two layers of functionality into one final database object. Had I chosen a package and you'd add an extensiion to it, you would be unable to simply replace this package with a newer version as you would loose all your extensions. Merging those packages would be a real mess. Using the type approach, this all disappears. Never touch ADC_BASIC, but add you extensions into ADC and you're prepared for all new releases.
+
 ### Tables and Views
 
 ADC requires tables to store the metadata at. These tables are named using the prefix `ADC`. Also, it installs a sequence and some views. You don't have to work with these objects directly, so it is best to leave them unchanged. The data model supports several languages. It does so by referencing table `PIT_TRANSLATABLE_ITEM`. Therefore, it is not very easy to manually add data to the tables. Use the `ADC_ADMIN` methods instead if you want to manually enter data.
