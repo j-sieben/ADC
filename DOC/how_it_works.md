@@ -1,4 +1,4 @@
-# APEX Fynamic Controller (ADC)
+# APEX Dynamic Controller (ADC)
 ADC is a toolkit aimed at APEX designers wanting to simplify the construction of complex forms.
 
 ## The problem with complex forms
@@ -10,8 +10,7 @@ Plus, it's by no means easy to decide which DA causes what behaviour on the page
 
 This all leads to the best practice to try and avoid overly complex forms in APEX and, should this not be possible, avoid DA in favour of a specialized JavaScript file implementing the necessary logic in JavaScript.
 
-## The approach of State Chart Toolkit
-
+## The approach of ADC
 Here, ADC steps in with a new approach. Rather than trying to control many DA on a page, all of them are replaced by a single DA, controlling a greater number of items in one go. Despite the DA approach of implementing logic outside the server in JavaScript, ADC implements the logic within the database, moving case trees to a SQL expression.
 
 The basic principle is already known as a [Decision Table](https://en.wikipedia.org/wiki/Decision_table) pattern. But ADC is not an implementation of that pattern in PL/SQL or SQL but lends some basic ideas of this pattern to allow for a meta data driven approach to controling complex state on an APEX page.
