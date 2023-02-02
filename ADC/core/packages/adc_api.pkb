@@ -240,7 +240,7 @@ as
 
   procedure handle_bulk_errors(
     p_mapping in char_table default null,
-    p_ignore_missing in boolean default false) 
+    p_ignore_missing in adc_util.flag_type default adc_util.C_FALSE) 
   as
     type error_code_map_t is table of utl_apex.ora_name_type index by utl_apex.ora_name_type;
     l_error_code_map error_code_map_t;
@@ -270,7 +270,7 @@ as
           if l_error_code_map.exists(l_message.error_code) then
             utl_apex.get_page_element(l_error_code_map(l_message.error_code), l_item);
           else
-            continue when p_ignore_missing;
+            continue when p_ignore_missing = adc_util.C_TRUE;
           end if;
           
           if l_message.error_code not member of l_processed_messages then
@@ -357,9 +357,10 @@ as
                   utl_apex.get_application_id g_app_id,
                   utl_apex.get_page_id g_page_id,
                   p_static_id g_static_id
-             from utl_text_templates
-            where uttm_type = 'ADC'
-              and uttm_name = 'INITIALIZE_FORM')
+             from table(
+                    utl_text_admin.get_templates(
+                      p_type => 'ADC',
+                      p_name => 'INITIALIZE_FORM')))
     select utl_text.generate_text(cursor(
            select t.template, table_name,
                   utl_text.generate_text(cursor(

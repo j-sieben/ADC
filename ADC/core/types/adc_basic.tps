@@ -147,9 +147,16 @@ as object (
                  
      Parameter: 
        p_mapping - CHAR_TABLE instance with error code - page item names couples, according to DECODE function
+       p_ignore_missing - Flag to indicate whether missing error codes have to be ignored (C_TRUE) or be
+                          displayed as page errors without item reference (C_FALSE). Defaults to C_FALSE, showing
+                          missing error codes as document errors.
+                          If set to C_TRUE, this comes in handy if you want to selectively perform checks for a given
+                          page item only. Advisable only if validation of the page does not last long to avoid unnecessary
+                          resource consumption.
    */
   static procedure handle_bulk_errors(
-    p_mapping in char_table default null),
+    p_mapping in char_table default null,
+    p_ignore_missing in varchar2 default &C_FALSE.),
     
     
   /**

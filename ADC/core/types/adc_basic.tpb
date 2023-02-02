@@ -151,12 +151,13 @@ as
   
 
   static procedure handle_bulk_errors(
-    p_mapping in char_table default null)
+    p_mapping in char_table default null,
+    p_ignore_missing in varchar2 default &C_FALSE.)
   as
   begin
     pit.enter_optional;
     
-    adc_api.handle_bulk_errors(p_mapping);
+    adc_api.handle_bulk_errors(p_mapping, p_ignore_missing);
     
     pit.leave_optional;
   end handle_bulk_errors;
