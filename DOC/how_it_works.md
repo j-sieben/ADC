@@ -1,5 +1,5 @@
-# ADC
-State Chart Toolkit is a toolkit aimed at APEX designers wanting to simplify the construction of complex forms.
+# APEX Fynamic Controller (ADC)
+ADC is a toolkit aimed at APEX designers wanting to simplify the construction of complex forms.
 
 ## The problem with complex forms
 A complex form in APEX requires many JavaScript based interactions to be coded by an APEX developer. This is normally achieved by creating Dynamic Actions (DA) on the page. This declarative approach is best suited for minor to medium complex pages but it becomes a nightmare to maintain once many items are on the page or once a more sophisticated control over the page elements is required.
