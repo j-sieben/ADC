@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("des",["Function"],[["describe_columns",,[["UTL_TEXT_ADMIN",,,,0,"File:sample_app/scripts/environment.sql:UTL_TEXT_ADMIN.describe_columns","SQLClass:UTL_TEXT_ADMIN:describe_columns"]]]]);

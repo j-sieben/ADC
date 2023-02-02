@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("utl",["Class"],[["UTL_TEXT_ADMIN",,[[,,,,0,"File:sample_app/scripts/environment.sql:UTL_TEXT_ADMIN","SQLClass:UTL_TEXT_ADMIN"]]]]);

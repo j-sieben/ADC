@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("blo",["Function"],[["blob_to_clob",,[["UTL_TEXT_ADMIN",,,,0,"File:sample_app/scripts/environment.sql:UTL_TEXT_ADMIN.blob_to_clob","SQLClass:UTL_TEXT_ADMIN:blob_to_clob"]]]]);

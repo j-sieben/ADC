@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("dis",["Function"],[["disableElement",,[[,,,,0,"File:plugin/files/adc/js/renderer.js:disableElement"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("dis",["Function"],[["disable_actions",,[["ADCA_UI_DESIGNER Body",,,,0,"File:apex/packages/adca_ui_designer.pkb:ADCA_UI_DESIGNER_Body.disable_actions","SQLClass:ADCA_UI_DESIGNER_Body:disable_actions"]]],["disableElement",,[[,,,,0,"File:plugin/files/adc/js/renderer.js:disableElement"]]]]);

@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("rem",["Function"],[["remember_page_status",,[[,,,,0,"File:core/types/adc_basic.tps:remember_page_status"]]],["rememberPageItemStatus",,[[,,,,0,"File:plugin/files/adc/js/actions.js:rememberPageItemStatus"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("rem",["Function"],[["remember_page_status",,[[,,,,0,"File:core/types/adc_basic.tps:remember_page_status"]]],["rememberPageItemStatus",,[[,,,,0,"File:plugin/files/adc/js/actions.js:rememberPageItemStatus"]]],["remove_all_errors",,[[,,,,0,"File:core/types/adc_basic.tps:remove_all_errors"]]]]);

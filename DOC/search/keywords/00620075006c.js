@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("bul",["Function"],[["bulk_replace",,[["UTL_TEXT_ADMIN",,,,0,"File:sample_app/scripts/environment.sql:UTL_TEXT_ADMIN.bulk_replace","SQLClass:UTL_TEXT_ADMIN:bulk_replace"]]]]);

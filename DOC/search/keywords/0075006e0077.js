@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("unw",["Function"],[["unwrap_string",,[["UTL_TEXT_ADMIN",,,,0,"File:sample_app/scripts/environment.sql:UTL_TEXT_ADMIN.unwrap_string","SQLClass:UTL_TEXT_ADMIN:unwrap_string"]]]]);

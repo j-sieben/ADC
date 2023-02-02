@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("wra",["Function"],[["wrap_string",,[["UTL_TEXT_ADMIN",,,,0,"File:sample_app/scripts/environment.sql:UTL_TEXT_ADMIN.wrap_string","SQLClass:UTL_TEXT_ADMIN:wrap_string"]]]]);
