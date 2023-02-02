@@ -16,11 +16,11 @@ To overcome this, a different approach has to be chosen. Following the Model-Vie
 
 ## How it works
 
-A dynamic controller has to react on user actions which boils down to reacting on JavaScript events. The APEX Dynamic Controller (ADC) solves this problem by instructing a static JavaScript component to register observers during page initialization to respond to relevant events. When such an event occurs, it responds by informing the ADC about the request. The request contains the current session state in terms of the values entered by the user, but also the firing item, the event and other metadata. As it is clearly defined what the observer has to do when it detects an event (inform ADC about it), there is no need for application specific JavaScript functionality anymore. The JavaScript componente of ADC therefore is implemented once and simply used on the page.
+A dynamic controller has to react on user actions which boils down to reacting on JavaScript events. The APEX Dynamic Controller (ADC) solves this problem by instructing a static JavaScript component to register observers during page initialization to respond to relevant events. When such an event occurs, it responds by informing the ADC about the request. The request contains the current page item values of all "relevant" page items, but also the firing item, the event and other metadata. This is referred to as the "Page State" of the page. As it is clearly defined what the observer has to do when it detects an event (inform ADC about it), there is no need for application specific JavaScript functionality anymore. The JavaScript componente of ADC therefore is implemented once and simply used on the page.
 
-The event along with its metadata is passed to a generic rule machine that decides on the next steps to take. An APEX page may define as many rules, called "Use Case" in ADC, as necessary. Each use case refers to one or many actions to perform when the use case is chosen by the rule machine. Those actions are based on action types and can be declaratively parameterized, allowing for a rich set of dynamic functionality the controler can perform. A developer may even define her own action types, extending ADC effectively.
+The event along with its metadata is passed to a generic rule machine that decides on the next steps to take. An APEX page may define as many rules, called "Use Case" in ADC, as necessary. Each use case refers to one or many actions to perform when the use case is dtected by the rule machine. Those actions are based on action types and can be declaratively parameterized, allowing for a rich set of dynamic functionality the controler can perform. A developer may even define her own action types, extending ADC effectively.
 
-A main difference between ADC and Dynamic Actions is that an action is able to execute PL/SQL code within the database as well as collect JavaScript code to be performed on the application page in response to the dynamically raised event. Plus, if a code within the database changes the session state, ADC recursively calls the rule machine to evaluate the new session state against the defined use cases. Should another use case have to be executed, it will immediatley do so until no further session state change occurs. This way, a single round trip between the client and the database can perform multiple use cases.
+A main difference between ADC and Dynamic Actions is that an action is able to execute PL/SQL code within the database as well as collect JavaScript code to be performed on the application page in response to the dynamically raised event and even to decide upon whether a use case is present or not. Plus, if a code within the database changes the session state, ADC recursively calls the rule machine to evaluate the new session state against the defined use cases. Should another use case have to be executed, it will immediatley do so until no further session state change occurs. This way, a single round trip between the client and the database can perform multiple use cases.
 
 Implementing the controller in PL/SQL has a number of further advantages:
 -  it allows to utilize existing validation code
@@ -42,17 +42,43 @@ ADC consits of different components which can be seperately installed.
 
 The first component is the Dynamic Action Plugin that integrates ADC into the APEX cosmos. It consists of a package named `PLUGIN_ADC`, a plugin import file and some JavaScript files.
 
-Whereas the package and the import file are standard APEX plugin components, it is necessary to understand the JavaScript files required for ADC. There are two JavaScript files, `sct.js` and `sctAPEX.js`. The first file implements the JavaScript counterpart of ADC on the page. This component is referenced by the plugin initialization code which tells the component to establish the required observers on the page. This component also reacts on events, collects the required event metadata and passes this as an AJAX request to the database package. In response to this request, the plugin renders the response and passes it back to the JavaScript component which in turn executes the JavaScript code contained in the response. This response may contain errors to be shown on the page as well as JavaScript instructions to chang the page state.
+Whereas the package and the import file are standard APEX plugin components, it is necessary to understand the JavaScript files required for ADC. There are three JavaScript files, `adc/js/controller.js`, `adc/js/actions.js` and `adc/js/renderer.js`. 
 
-To change the page state, such as hiding a page item or disabling a button, code is required that might be specific to the APEX theme used or the APEX version in use. As an example, imagine an action that tells an Interactive Grid or an Interactive Report to hide the filter region. Based on the type of region and probably the theme and version, different JavaScript code may be required. To cater for this, `sct.js` only implements wrapper methods for the required activities on the page. The implementation is delegated to a namespace object that is implemented in `sctAPEX.js`. Which implementation is used is defined by a component setting for the ADC plugin. Here, you type in the namespace of the component that finally implements the required functionality. If you use the standard Universal Theme you may use this file and choose between namespace `de.condes.plugin.adc.apex_42_5_0` for theme 42, APEX version 5.0 or `de.condes.plugin.adc.apex_42_5_1` for theme 42, apex version 5.1 and later.
+#### Controller.js
+This file implements the core logic of adc. It forms the counterpart that the database functionality responds to. Upon initialization, this file registers all necessary event handlers as requested by the database. If any of these observers fires, this component collects all necessary data and sends it to the database. In response the database will deliver a `script` element containing all necessary JavaScript code to perform the required dynamic activity. The controller incorporates this response into the html code, effectively executing the code.
 
-If you have changed or extended theme 42, the best option would be to make a copy of `sctAPEX.js` and define you own namespace object for this copy. You can then overwrite or extend the existing functionality. This approach is advisable also if you plan to extend ADC with your own action types. If the newly created action types require JavaScript functionality, you can easily add them here and reference them from the action type definition.
+#### Actions.js
+This file implements the client side functionality of the ADC action types delivered with ADC. The implementation is split into two parts: The generic part that is performed within this file and the theme-aware part which is implemented in `adc/js/renderer.js`. As it is possible to register a different render component with ADC, it is possible to implement a different render functionality for different themes or theme versions.
+
+#### Renderer.js
+This file contains the theme specific funcionality to implement the dynamic behavior for a given theme in a given version. This separation allows to split the core functionality of an action type from its theme specific functionality, making it easy to adopt ADC to a changed APEX theme or a new theme version.
+
+If you have changed or extended theme 42, the best option would be to make a copy of `adc/js/renderer.js` and define you own namespace object for this copy. You can then overwrite or extend the existing functionality. This approach is advisable also if you plan to extend ADC with your own action types. If the newly created action types require JavaScript functionality, you can easily add them here and reference them from the action type definition.
+
+Which namespace to use for rendering purposes can be parameterized as a component setting of the ADC plugin. Here, you enter your newly created namespace.
 
 ### Core database objects
 
-Several packages are installed to implement the core functionality. Main package is called `ADC` and implements the API you use when working with the ADC functionality from within PL/SQL (as opposed to the declarative option explained later). Package `ADC_API` internally implements the method called by the plugin package and the `ADC` package. You normally don't have to work with this package. Package `ADC_INTERNAL` implements the core functionality and should be left unchanged. Package `ADC_ADMIN` is used to maintain the ADC metadata. It offers methods to create new metadata entries or to export existing metadata. This is normally used by the ADC application (see below) but may be used directly by batch scripts as well.
+Several packages are installed to implement ADC. 
 
-ADC requires table to store the metadata at. These tables are named using the prefix `ADC`. Also, it installs a sequence and some views. You don't have to work with these objects directly, so it is best to leave them unchanged. The data model supports several languages. It does so by referencing table `PIT_TRANSLATABLE_ITEM`. Therefore, it is not very easy to manually add data to the tables. Use the `ADC_ADMIN` methods instead if you want to manually enter data.
+#### `ADC_INTERNAL`
+
+Package `ADC_INTERNAL` implements the core functionality. There is no requirement for any other package to directly work with this package. Therefore, access is limited to ADC packages only.
+
+#### `ADC_API`
+Package `ADC_API` implements an API to access ADC programmatically. You normally don't have to work with this package. For convenience, there is a type called `ADC` that is used to work with ADC from your own code. Please see there for more information.
+
+#### `ADC_ADMIN`
+
+Package `ADC_ADMIN` is used to maintain the ADC metadata. It offers methods to create new metadata entries or to export existing metadata. This is normally used by the ADC application (see below) but may be used directly by batch scripts as well.
+
+#### Types `ADC_BASIC` and `ADC`
+
+These types form the PL/SQL API for your own projects. You exclusive want to use type `ADC` which inherits any functionality from `ADC_BASIC`. Reason for these types is that you may want to extend type `ADC` with your own action types without affecting the predelivered actions types. That way, it is save to install a new version of ADC with new or changed functionality. It will replace `ADC_BASIC` with a new version leaving your etended copy of `ADC`untouched.
+
+### Tables and Views
+
+ADC requires tables to store the metadata at. These tables are named using the prefix `ADC`. Also, it installs a sequence and some views. You don't have to work with these objects directly, so it is best to leave them unchanged. The data model supports several languages. It does so by referencing table `PIT_TRANSLATABLE_ITEM`. Therefore, it is not very easy to manually add data to the tables. Use the `ADC_ADMIN` methods instead if you want to manually enter data.
 
 ### ADC application
 
