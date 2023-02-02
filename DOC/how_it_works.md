@@ -90,22 +90,22 @@ The rules are evaluated using plain SQL. To allow for this, all rules get conver
 
 ```
   with session_state as(
-       select adc_admin.get_firing_item firing_item,
+       select /*+ no_merge */
+              adc_admin.get_firing_item firing_item,
               adc_api.get_number('P1_PARENT') P1_PARENT
          from dual)
-select /*+ NO_MERGE(s) */ 
-       r.cru_id, r.cru_name, r.cru_firing_items,
-       r.cra_cpi_id, r.cra_cat_id, r.cra_attribute
-  from adc_bl_rules r
-  join session_state s
-    on instr(r.cru_firing_items, s.firing_item) > 0
- where (r.cru_id = 98 and (has_children(p1_parent) = adc_util.C_TRUE))
-    or (r.cru_id = 99 and (has_children(p1_parent) = adc_util.C_FALSE))
- order by r.cru_sort_seq
+select cru_id, cru_name, cru_firing_items,
+       cra_cpi_id, cra_cat_id, cra_attribute
+  from adc_bl_rules
+  join session_state
+    on instr(cru_firing_items, firing_item) > 0
+ where (cru_id = 98 and (has_children(p1_parent) = adc_util.C_TRUE))
+    or (cru_id = 99 and (has_children(p1_parent) = adc_util.C_FALSE))
+ order by cru_sort_seq
  fetch first 1 row only
 ```
 
-All rule conditions entered were converted to the `where` clause of this view. Based on the item values, one or more conditions may apply. Now the first matching condition (based on a `SORT_SEQ` column for each rule) is retrieved along with all defined actions connected to this rule. Should PL/SQL actions be defined for the matching rule, they are executed and the result is persisted at the page state. This puts the page state into a central communication position, allowing for simple API access and maintaining security and session awareness.
+All rule conditions entered were converted to the `where` clause of this view. Based on the item values, one or more conditions may apply. Now the first matching condition (based on a `CRU_SORT_SEQ` column for each rule) is retrieved along with all defined actions connected to this rule. Should PL/SQL actions be defined for the matching rule, they are executed and the result is persisted at the page state. This puts the page state into a central communication position, allowing for simple API access and maintaining security and session awareness.
 
 ### Processing the response
 
@@ -117,7 +117,7 @@ This request is answered as follows:
   de.condes.plugin.adc.actions.setItemValues({"item":[{"id":"P1_CHILD","value":""}]})
   de.condes.plugin.adc.actions.setErrors({"count":0,"errors":[]})
   
-  // Recursion 1, Run 1: Rule 20 (Parent has no children), Auslösendes Element: "P1_CHILD", Dauer: 1hsec
+  // Recursion 1, Run 1: Rule 20 (Parent has no children), Firing Item: "P1_CHILD", Duration: 1hsec
   apex.item('P1_CHILD').hide();
   apex.item('P1_PLACEHOLDER').show();
 </script>
