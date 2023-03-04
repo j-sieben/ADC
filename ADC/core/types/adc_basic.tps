@@ -96,7 +96,7 @@ as object (
     p_cpi_id in varchar2,
     p_value_list in varchar2,
     p_message in varchar2 default 'ASSERTION_FAILED',
-    p_error_on_null in varchar2 default &C_TRUE.),
+    p_error_on_null in varchar2 default 1),
 
 
   /** Function: exclusive_or
@@ -106,12 +106,104 @@ as object (
       p_value_list - colon-separated list of page item IDs to check
       
     Returns:
-    - &C_TRUE. if rule is satisfied
+    - adc_util.C_TRUE if rule is satisfied
     - adc_util.C_FALSE if rule is not satisfied
     - NULL if all page item values are null
    */
   static function exclusive_or(
     p_value_list in varchar2)
+    return varchar2,
+    
+    
+  /**
+    Function: firing_item_has_class
+      Method returns adc_util.C_TRUE, if the firing item has class <p_class>.
+      
+      Is used to bind an observer to more than one item based on a CSS class attached to a 
+      group of page items. This method allows to detect whether the actual firing item is part
+      of that group. This method is used within technical conditions.
+   */
+  static function firing_item_has_class(
+    p_class in varchar2)
+    return varchar2,
+    
+  
+  /**
+    Function: get_date
+      Retrieves the actual item value from the page state
+      
+    Parameters:
+      p_cpi_id - Page item ID that is selected to show the error message
+      
+    Returns:
+      Actual value from the page state
+   */
+  static function get_date(
+    p_cpi_id in varchar2)
+    return varchar2,
+
+
+  /** 
+    Function: get_event
+      Method to retrieve the name of the event that has caused ADC to execute.
+
+      ADC events differ from normal web browser or APEX events in that they can replace browser events with their own
+      events, fi by replacing the keypress-event for keycode 13 with an "enter" event.
+
+    Returns:
+      Name of the event
+   */
+  static function get_event
+    return varchar2,
+
+
+  /** 
+    Function: get_event_data
+      Is called to retrieve additional event data information such as returned data from a modal dialog
+
+      Event data can be a simple string or a JSON instance, depending on the client side code.
+
+    Parameter:
+      p_key - Optional name of a key. If the event data is JSON, P_KEY can be used to extract specific information
+              IF P_KEY is NULL, the complete answer is returned
+
+    Returns:
+      Event data
+   */
+  static function get_event_data(
+     p_key in varchar2 default null)
+     return varchar2,
+
+
+  /**
+    Function: get_firing_item
+      Method to get the page item id of the item that has fired ADC processing.
+
+      Is used to get access to the ID of the page item that has fired the event.
+      This information is used within the decision table to decide upon the rule
+      to execute. If firing_item is adc_util.C_NO_FIRING_ITEM, it is assumed that
+      the page is initializing. It is also used to populate event pseudo columns
+      such as dialog_closed etc.
+
+    Returns:
+      ID of the firing item
+   */
+  static function get_firing_item
+    return varchar2,
+    
+  
+  /**
+    Function: get_number
+      Retrieves the actual item value from the page state
+      
+    Parameters:
+      p_cpi_id - Page item ID that is selected to show the error message
+      
+    Returns:
+      Actual value from the page state
+   */
+  static function get_number(
+    p_cpi_id in varchar2)
     return varchar2,
     
   
@@ -131,6 +223,21 @@ as object (
     p_region_id in varchar2,
     p_page_item in varchar2 default null,
     p_ordinal_nr in binary_integer default null),
+    
+  
+  /**
+    Function: get_string
+      Retrieves the actual item value from the page state
+      
+    Parameters:
+      p_cpi_id - Page item ID that is selected to show the error message
+      
+    Returns:
+      Actual value from the page state
+   */
+  static function get_string(
+    p_cpi_id in varchar2)
+    return varchar2,
 
   
   /** 
@@ -147,29 +254,14 @@ as object (
                  
      Parameter: 
        p_mapping - CHAR_TABLE instance with error code - page item names couples, according to DECODE function
-       p_ignore_missing - Flag to indicate whether missing error codes have to be ignored (C_TRUE) or be
-                          displayed as page errors without item reference (C_FALSE). Defaults to C_FALSE, showing
-                          missing error codes as document errors.
-                          If set to C_TRUE, this comes in handy if you want to selectively perform checks for a given
-                          page item only. Advisable only if validation of the page does not last long to avoid unnecessary
-                          resource consumption.
+       p_ignore_unmapped - Flag to indicate whether missing error code mappings are shown as page errors (C_FALSE)
+                           or ignored (C_TRUE). Defaults to C_FALSE. This feature is useful if you want to
+                           execute only specific validations to dynamically validate a single page item by mapping
+                           only error codes relevant for this item and setting this flag to C_TRUE.
    */
   static procedure handle_bulk_errors(
     p_mapping in char_table default null,
-    p_ignore_missing in varchar2 default &C_FALSE.),
-    
-    
-  /**
-    Function: firing_item_has_class
-      Method returns &C_TRUE., if the firing item has class <p_class>.
-      
-      Is used to bind an observer to more than one item based on a CSS class attached to a 
-      group of page items. This method allows to detect whether the actual firing item is part
-      of that group. This method is used within technical conditions.
-   */
-  static function firing_item_has_class(
-    p_class in varchar2)
-    return varchar2,
+    p_ignore_unmapped in varchar2 default 0),
     
     
   /** 
@@ -217,7 +309,7 @@ as object (
       p_value_list - List of page item IDs to check
       
     Returns:
-      - <&C_TRUE.> if rule is satisfied
+      - <adc_util.C_TRUE> if rule is satisfied
       - <adc_util.C_FALSE> if rule is not satisfied
       - NULL if all page item values are null
    */
@@ -321,7 +413,7 @@ as object (
   static procedure select_region_entry(
     p_region_id in varchar2,
     p_entry_id in varchar2,
-    p_notify in varchar2 default &C_TRUE.),
+    p_notify in varchar2 default 1),
 
 
   /** 
@@ -360,27 +452,27 @@ as object (
       p_cpi_id - Optional element ID to be set, defaults to 'DOCUMENT' if <p_jquery_selector> is set
       p_item_value - Value of the element in quotation marks or function that returns value. Overloaded versions for String, Number or Date
       p_jquery_selector - Optional jQuery expression to edit multiple elements. (Defaults to NULL, if <p_cpi_id> is set)
-      p_allow_recursion - Optional flag indicating whether a Change Event should be triggered. (Defaults to &C_TRUE., event is triggered)
+      p_allow_recursion - Optional flag indicating whether a Change Event should be triggered. (Defaults to adc_util.C_TRUE, event is triggered)
    */
   static procedure set_item(
     p_cpi_id in varchar2 default 'DOCUMENT',
     p_item_value in varchar2 default null,
     p_jquery_selector in varchar2 default null,
-    p_allow_recursion in varchar2 default &C_TRUE.),
+    p_allow_recursion in varchar2 default 1),
     
   
   static procedure set_number_item(
     p_cpi_id in varchar2 default 'DOCUMENT',
     p_item_value in number,
     p_jquery_selector in varchar2 default null,
-    p_allow_recursion in varchar2 default &C_TRUE.),
+    p_allow_recursion in varchar2 default 1),
     
     
   static procedure set_date_item(
     p_cpi_id in varchar2 default 'DOCUMENT',
     p_item_value in date,
     p_jquery_selector in varchar2 default null,
-    p_allow_recursion in varchar2 default &C_TRUE.),
+    p_allow_recursion in varchar2 default 1),
  
 
   /** 
@@ -564,4 +656,3 @@ as object (
    */
   static procedure validate_page
 ) not instantiable not final;
-/

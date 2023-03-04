@@ -82,7 +82,7 @@ as
     p_cpi_id in varchar2,
     p_value_list in varchar2,
     p_message in varchar2 default 'ASSERTION_FAILED',
-    p_error_on_null in varchar2 default &C_TRUE.)
+    p_error_on_null in varchar2 default 1)
   as
     l_result adc_util.flag_type;
   begin
@@ -95,7 +95,7 @@ as
 
     l_result := exclusive_or(p_value_list);
     if (l_result = adc_util.C_FALSE 
-       or (l_result is null and p_error_on_null = &C_TRUE.)) then
+       or (l_result is null and p_error_on_null = adc_util.C_TRUE)) then
       adc_api.register_error(p_cpi_id, p_message, msg_args(''));
     end if;
     
@@ -128,6 +128,49 @@ as
   end exclusive_or;
   
   
+  static function get_date(
+    p_cpi_id in varchar2)
+    return varchar2
+  as
+  begin
+    return adc_api.get_date(p_cpi_id);
+  end get_date;
+  
+  
+  static function get_event
+    return varchar2
+  as
+  begin
+    return adc_api.get_event;
+  end get_event;
+  
+  
+  static function get_event_data(
+     p_key in varchar2 default null)
+     return varchar2
+  as
+  begin
+    return adc_api.get_event_data(p_key);
+  end get_event_data;
+  
+  
+  static function get_firing_item
+    return varchar2
+  as
+  begin
+    return adc_api.get_firing_item;
+  end get_firing_item;
+  
+  
+  static function get_number(
+    p_cpi_id in varchar2)
+    return varchar2
+  as
+  begin
+    return adc_api.get_number(p_cpi_id);
+  end get_number;
+  
+  
   static procedure get_report_selection(
     p_region_id in varchar2,
     p_page_item in varchar2 default null,
@@ -149,15 +192,26 @@ as
     pit.leave_optional;
   end get_report_selection;
   
+  
+  static function get_string(
+    p_cpi_id in varchar2)
+    return varchar2
+  as
+  begin
+    return adc_api.get_string(p_cpi_id);
+  end get_string;
+  
 
   static procedure handle_bulk_errors(
     p_mapping in char_table default null,
-    p_ignore_missing in varchar2 default &C_FALSE.)
+    p_ignore_unmapped in varchar2 default 0)
   as
   begin
     pit.enter_optional;
     
-    adc_api.handle_bulk_errors(p_mapping, p_ignore_missing);
+    adc_api.handle_bulk_errors(
+      p_mapping => p_mapping, 
+      p_ignore_missing => p_ignore_unmapped = 1);
     
     pit.leave_optional;
   end handle_bulk_errors;
@@ -328,7 +382,7 @@ as
   static procedure select_region_entry(
     p_region_id in varchar2,
     p_entry_id in varchar2,
-    p_notify in varchar2 default &C_TRUE.)
+    p_notify in varchar2 default 1)
   as
   begin
     pit.enter_optional(
@@ -386,7 +440,7 @@ as
     p_cpi_id in varchar2 default 'DOCUMENT',
     p_item_value in varchar2 default null,
     p_jquery_selector in varchar2 default null,
-    p_allow_recursion in varchar2 default &C_TRUE.)
+    p_allow_recursion in varchar2 default 1)
   as
   begin
     pit.enter_optional(
@@ -410,7 +464,7 @@ as
     p_cpi_id in varchar2 default 'DOCUMENT',
     p_item_value in number,
     p_jquery_selector in varchar2 default null,
-    p_allow_recursion in varchar2 default &C_TRUE.)
+    p_allow_recursion in varchar2 default 1)
   as
   begin
     pit.enter_optional(
@@ -434,7 +488,7 @@ as
     p_cpi_id in varchar2 default 'DOCUMENT',
     p_item_value in date,
     p_jquery_selector in varchar2 default null,
-    p_allow_recursion in varchar2 default &C_TRUE.)
+    p_allow_recursion in varchar2 default 1)
   as
   begin
     pit.enter_optional(
@@ -680,4 +734,3 @@ as
   end validate_page;  
   
 end;
-/
