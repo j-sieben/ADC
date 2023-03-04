@@ -60,7 +60,7 @@ as
     Constants:
       C_PARAM_GROUP - Name of the parameter group
    */
-  C_PARAM_GROUP constant parameter_v.par_pgr_id%type := 'ADC';
+  C_PARAM_GROUP constant adc_util.ora_name_type := 'ADC';
   C_COMMAND constant adc_util.ora_name_type := 'COMMAND';
   
   /**

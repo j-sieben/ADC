@@ -1,5 +1,6 @@
 begin
-
+  pit_admin.delete_message_group('ORACLE', true);
+  pit_admin.create_message_package;
   pit_admin.merge_message_group(
     p_pmg_name => 'ORA',
     p_pmg_description => q'^Meldungen für Oracle-Fehler^');
@@ -33,7 +34,7 @@ begin
 
   pit_admin.merge_message(
     p_pms_name => 'ORA_INVALID_DATE_FORMAT',
-    p_pms_pmg_name => 'ORACLE',
+    p_pms_pmg_name => 'ORA',
     p_pms_text => q'^Ungültiges Datumsformat: #1#^',
     p_pms_description => q'^^',
     p_pms_pse_id => 30,

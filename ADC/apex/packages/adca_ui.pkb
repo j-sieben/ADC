@@ -275,7 +275,7 @@ as
     else
       adc.register_error(
         p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
-        p_message_name => msg.ADCA_UI_UNKNOWN_ACTION,
+        p_message_name => msg.ADCA_UNKNOWN_ACTION,
         p_msg_args => msg_args(l_export_type));
     end case;
     
@@ -401,7 +401,7 @@ as
     else
       adc.register_error(
         p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
-        p_message_name => msg.ADCA_UI_UNKNOWN_ACTION,
+        p_message_name => msg.ADCA_UNKNOWN_ACTION,
         p_msg_args => msg_args(utl_apex.get_request));
     end case;
     
@@ -454,7 +454,7 @@ as
     else
       adc.register_error(
         p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
-        p_message_name => msg.ADCA_UI_UNKNOWN_ACTION,
+        p_message_name => msg.ADCA_UNKNOWN_ACTION,
         p_msg_args => msg_args(utl_apex.get_request));
     end case;
     
@@ -544,7 +544,7 @@ as
     else
       adc.register_error(
         p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
-        p_message_name => msg.ADCA_UI_UNKNOWN_ACTION,
+        p_message_name => msg.ADCA_UNKNOWN_ACTION,
         p_msg_args => msg_args(utl_apex.get_request));
     end case;
     
@@ -599,7 +599,7 @@ as
     else
       adc.register_error(
         p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
-        p_message_name => msg.ADCA_UI_UNKNOWN_ACTION,
+        p_message_name => msg.ADCA_UNKNOWN_ACTION,
         p_msg_args => msg_args(utl_apex.get_request));
     end case;
     
@@ -696,7 +696,7 @@ as
     else
       adc.register_error(
         p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
-        p_message_name => msg.ADCA_UI_UNKNOWN_ACTION,
+        p_message_name => msg.ADCA_UNKNOWN_ACTION,
         p_msg_args => msg_args(utl_apex.get_request));
     end case;
     
@@ -729,7 +729,7 @@ as
     else
       adc.register_error(
         p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
-        p_message_name => msg.ADCA_UI_UNKNOWN_ACTION,
+        p_message_name => msg.ADCA_UNKNOWN_ACTION,
         p_msg_args => msg_args(utl_apex.get_request));
     end case;
     

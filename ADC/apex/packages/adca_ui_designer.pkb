@@ -899,7 +899,6 @@ as
         l_environment.action := adc_api.get_event_data('command');
       else
         -- Method was called due to a changed selection in hierarchy or rule report. ID is passed in directly
-        pit.tweet(adc_api.get_event_data);
         l_environment.selected_node := adc_api.get_event_data;
         l_environment.target_mode := substr(l_environment.selected_node, 1, 3);
         l_environment.node_id := to_number(substr(l_environment.selected_node, 5), 'fm99999990');

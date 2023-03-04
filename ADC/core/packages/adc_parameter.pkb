@@ -98,7 +98,7 @@ as
 
     pit.leave_detailed;
   exception
-    when msg.SQL_ACCESS_DENIED_ERR then
+    when msg.ORA_SQL_ACCESS_DENIED_ERR then
       dbms_sql.close_cursor(l_ctx);
       pit.leave_detailed;
     when others then
@@ -656,7 +656,7 @@ end;~';
     p_msg_args in msg_args)
     return varchar2
   as
-    l_pms_name pit_message_v.pms_name%type;
+    l_pms_name adc_util.ora_name_type;
     l_message adc_util.max_char;
   begin
     pit.enter_detailed('get_pit_message');

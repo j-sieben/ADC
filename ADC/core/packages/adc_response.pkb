@@ -218,11 +218,10 @@ as
     select max(decode(uttm_name, 'JSON_ERRORS', uttm_text)) json_errors,
            max(decode(uttm_name, 'JS_SCRIPT_FRAME', uttm_text)) js_script_frame
       into g_json_error_template, g_js_script_frame_template
-      from table(
-             utl_text_admin.get_templates(
-               p_type => adc_util.C_PARAM_GROUP,
-               p_mode => 'FRAME'))
-     where uttm_name in('JSON_ERRORS', 'JS_SCRIPT_FRAME');
+      from utl_text_templates
+     where uttm_type = adc_util.C_PARAM_GROUP
+       and uttm_name in('JSON_ERRORS', 'JS_SCRIPT_FRAME')
+       and uttm_mode = 'FRAME';
   end initialize;
   
 
@@ -348,11 +347,10 @@ as
                         when l_error.page_item_name = adc_util.C_NO_FIRING_ITEM  then '"page"' 
                         when p_severity = pit.level_warn then '"inline"'
                         else '["inline","page"]' end location
-                 from table(
-                        utl_text_admin.get_templates(
-                          p_type => adc_util.C_PARAM_GROUP,
-                          p_name => 'JSON_ERRORS',
-                          p_mode => 'ERROR'))))
+                 from utl_text_templates
+                where uttm_type = adc_util.C_PARAM_GROUP
+                  and uttm_name = 'JSON_ERRORS'
+                  and uttm_mode = 'ERROR'))
         into l_error_json
         from dual;
         

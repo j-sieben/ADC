@@ -357,10 +357,9 @@ as
                   utl_apex.get_application_id g_app_id,
                   utl_apex.get_page_id g_page_id,
                   p_static_id g_static_id
-             from table(
-                    utl_text_admin.get_templates(
-                      p_type => 'ADC',
-                      p_name => 'INITIALIZE_FORM')))
+             from utl_text_templates
+            where uttm_type = 'ADC'
+              and uttm_name = 'INITIALIZE_FORM')
     select utl_text.generate_text(cursor(
            select t.template, table_name,
                   utl_text.generate_text(cursor(
