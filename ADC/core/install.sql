@@ -2,13 +2,13 @@
 
 prompt &h2.Create database objects
 prompt &h3.Create sequences
-prompt &s1.Create sequence ADC_SEQ
-@&seq_dir.adc_seq.seq
+@&tool_dir.create_sequence adc_seq
 
 
 prompt &h3.Create tables
 @&tool_dir.create_table adc_rule_groups
 @&tool_dir.create_table adc_action_type_groups
+@&tool_dir.create_table adc_action_type_owners
 @&tool_dir.create_table adc_action_item_focus
 @&tool_dir.create_table adc_action_types
 @&tool_dir.create_table adc_action_param_visual_types
@@ -25,6 +25,10 @@ prompt &h3.Create tables
 @&tool_dir.create_table adc_rules
 @&tool_dir.create_table adc_rule_actions
 
+-- Migrationsskripte
+@&table_dir.alter_adc_page_items.sql
+@&table_dir.alter_adc_action_types.sql
+
 prompt &h2.Predefine package ADC_UTIL for reference from views
 @&tool_dir.create_package adc_util
 
@@ -35,10 +39,12 @@ prompt &h3.Create views
 @&tool_dir.create_view adc_action_parameters_v
 @&tool_dir.create_view adc_action_types_v
 @&tool_dir.create_view adc_action_type_groups_v
+@&tool_dir.create_view adc_action_type_owners_v
 @&tool_dir.create_view adc_apex_action_types_v
 @&tool_dir.create_view adc_apex_actions_v
 @&tool_dir.create_view adc_page_item_types_v
 @&tool_dir.create_view adc_event_types_v
+@&tool_dir.create_view adc_bl_bind_items
 @&tool_dir.create_view adc_bl_page_items
 @&tool_dir.create_view adc_bl_page_targets
 @&tool_dir.create_view adc_bl_rules
@@ -48,6 +54,7 @@ prompt &h3.Create views
 prompt &h3.Create parameter lov views
 @&tool_dir.create_lov_view adc_param_lov_apex_action
 @&tool_dir.create_lov_view adc_param_lov_event
+@&tool_dir.create_lov_view adc_param_lov_input_fields
 @&tool_dir.create_lov_view adc_param_lov_item_status
 @&tool_dir.create_lov_view adc_param_lov_page_item
 @&tool_dir.create_lov_view adc_param_lov_pit_message

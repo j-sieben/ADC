@@ -212,6 +212,20 @@ as
     p_name in varchar2)
     return varchar2;
     
+    
+  /**
+    Function: harmonize_page_item_name
+      Method to assure that a page item has got a page prefix
+      
+    Parameter:
+      p_cpi_id - Name of the page item to harmonize
+      
+    Returns: Page item name with page prefix
+   */
+  function harmonize_page_item_name(
+    p_cpi_id in adc_page_items.cpi_id%type)
+    return varchar2;
+    
   
   /** 
     Function: get_trans_item_name

@@ -1,6 +1,6 @@
 begin
-  pit_admin.delete_message_group('ORACLE', true);
-  pit_admin.create_message_package;
+  pit_admin.delete_message_group('ORA', true);
+  
   pit_admin.merge_message_group(
     p_pmg_name => 'ORA',
     p_pmg_description => q'^Meldungen für Oracle-Fehler^');

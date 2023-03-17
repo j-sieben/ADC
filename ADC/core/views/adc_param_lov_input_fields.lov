@@ -1,0 +1,8 @@
+create or replace force view ADC_PARAM_LOV_INPUT_FIELDS as select cpi_id d, cpi_id r, cpi_crg_id crg_id
+  from adc_page_items
+  join adc_page_item_types
+    on cpi_cpit_id = cpit_id
+ where cpit_cpitg_id = 'ITEM'
+   and cpi_cpit_id not in ('APP_ITEM')
+   and cpi_may_have_value = (select adc_util.c_true from dual)
+ order by cpi_crg_id, cpi_id;

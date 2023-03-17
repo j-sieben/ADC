@@ -11,6 +11,7 @@ prompt &section.
 prompt &h1.APEX Dynamic Controller (ADC) Sample Application Installation
 
 @&tool_dir.set_compiler_flags.sql
+
 prompt
 prompt &section.
 prompt &h1.APEX Dynamic Controller (ADC) APEX Sample Application Installation

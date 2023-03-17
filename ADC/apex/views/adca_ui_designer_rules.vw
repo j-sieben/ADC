@@ -1,7 +1,7 @@
 create or replace editionable view adca_ui_designer_rules
 as
 with session_state as (
-       select /*+ no_merge */ adc_api.get_number('CRG_ID') g_crg_id
+       select /*+ no_merge */ utl_apex.get_number('CRG_ID') g_crg_id
          from dual),
      translations as(
               select max(decode(pti_id, 'ADC_AUTO_INITIALIZE', to_char(pti_description))) auto_initialize,
@@ -64,12 +64,13 @@ with session_state as (
                  replace(p.delimiter || cru.cru_firing_items || p.delimiter, p.delimiter || cpi_id || p.delimiter, p.span_error || cpi_id || p.close_span)
                else cru.cru_firing_items
              end, p.delimiter, p.br || p.crg_page_prefix) cru_firing_items,
+             replace(href, '#ID#', cra_id) || 
              case
                when cpi.cpi_has_error = p.c_true then p.span_error || cat_name || p.close_span
                when cra_on_error = p.c_true then p.span_on_error || cat_name || p.close_span
                when cra_active = p.c_false then p.span_disabled || cat_name || p.close_span
                when cat_active = p.c_false then p.span_deprecated || cat_name || p.close_span
-               else replace(href, '#ID#', cra_id) || cat_name
+               else cat_name
              end cra_name,
              ul_open, ul_close, li_open, li_close, br
         from params p

@@ -254,14 +254,17 @@ as object (
                  
      Parameter: 
        p_mapping - CHAR_TABLE instance with error code - page item names couples, according to DECODE function
-       p_ignore_unmapped - Flag to indicate whether missing error code mappings are shown as page errors (C_FALSE)
-                           or ignored (C_TRUE). Defaults to C_FALSE. This feature is useful if you want to
-                           execute only specific validations to dynamically validate a single page item by mapping
-                           only error codes relevant for this item and setting this flag to C_TRUE.
+       p_filter_list - Optional list of items to filter the message collection. If NOT NULL, it reduces the
+                       error output to those items which are both on the p_mapping list and the p_filter_list.
+                       This allows to control which validations are taken into account for a specific page state.
+                       Normal use of this filter would be to limit the validation to the firing item, but it is
+                       also possible to pass more than one item name in, fi when validating a pair of
+                       VALID_FROM and VALID_UNTIL date ranges or similar.
+                       Several item names are passed in as a colon delimited list.
    */
   static procedure handle_bulk_errors(
     p_mapping in char_table default null,
-    p_ignore_unmapped in varchar2 default 0),
+    p_filter_list in varchar2 default null),
     
     
   /** 
@@ -656,3 +659,4 @@ as object (
    */
   static procedure validate_page
 ) not instantiable not final;
+/

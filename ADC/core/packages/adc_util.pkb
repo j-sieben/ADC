@@ -165,6 +165,36 @@ as
 
   
   /**
+    Function: harmonize_page_item_name
+      See <ADC_UTIL.harmonize_page_item_name>
+   */
+  function harmonize_page_item_name(
+    p_cpi_id in adc_page_items.cpi_id%type)
+    return varchar2
+  as
+    l_item_name adc_util.ora_name_type;
+    l_page_prefix adc_util.ora_name_type;
+  begin
+    pit.enter_detailed('harmonize_page_item_name',
+      p_params => msg_params(msg_param('p_cpi_id', p_cpi_id)));
+      
+    l_item_name := p_cpi_id;
+    
+    if l_item_name != adc_util.C_NO_FIRING_ITEM and p_cpi_id is not null then
+      l_page_prefix := utl_apex.get_page_prefix;
+        
+      if substr(l_item_name, 1, length(l_page_prefix)) != l_page_prefix then
+        l_item_name := l_page_prefix || l_item_name;
+      end if;
+    end if;
+      
+    pit.leave_detailed(
+      p_params => msg_params(msg_param('item_name', l_item_name)));
+    return l_item_name;
+  end harmonize_page_item_name;
+
+  
+  /**
     Function: get_trans_item_name
       See <ADC_UTIL.get_trans_item_name>
    */

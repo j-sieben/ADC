@@ -20,6 +20,9 @@ as
   C_JS_NAMESPACE constant adc_util.ora_name_type := 'de.condes.plugin.adc.actions';
   C_JS_COMMENT_STRING constant adc_util.sql_char := '// ';
   C_COMMENT_OUT constant varchar2(20) := C_JS_COMMENT_STRING || '(double)';
+  C_ERR_LOCATION_PAGE constant adc_util.ora_name_type := '"page"';
+  C_ERR_LOCATION_INLINE constant adc_util.ora_name_type := '"inline"';
+  C_ERR_LOCATION_BOTH constant adc_util.ora_name_type := '["inline","page"]';
   
   /**
     Group: Private package types
@@ -344,9 +347,8 @@ as
                       l_error.message message,
                       l_error.additional_info additional_info,
                       case 
-                        when l_error.page_item_name = adc_util.C_NO_FIRING_ITEM  then '"page"' 
-                        when p_severity = pit.level_warn then '"inline"'
-                        else '["inline","page"]' end location
+                        when l_error.page_item_name = adc_util.C_NO_FIRING_ITEM  then C_ERR_LOCATION_PAGE
+                        else C_ERR_LOCATION_INLINE end location
                  from utl_text_templates
                 where uttm_type = adc_util.C_PARAM_GROUP
                   and uttm_name = 'JSON_ERRORS'

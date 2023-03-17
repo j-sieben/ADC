@@ -2,6 +2,7 @@ create table adc_action_types(
   cat_id varchar2(50 char) constraint c_cat_id_nn not null,
   cat_catg_id varchar2(50 char) constraint c_cat_catg_id_nn not null,
   cat_caif_id varchar2(50 char),
+  cat_cato_id varchar2(50 char) default on null 'ADC' constraint c_cat_cato_id_nn not null,
 	cat_pti_id varchar2(50 char) constraint c_cat_pti_id_nn not null, 
   cat_pmg_name varchar2(3 byte) default on null 'ADC' constraint c_cat_pmg_name_nn not null,
 	cat_pl_sql varchar2(200 byte), 
@@ -14,6 +15,8 @@ create table adc_action_types(
     references adc_action_type_groups(catg_id),
   constraint r_cat_caif_id foreign key(cat_caif_id)
     references adc_action_item_focus(caif_id),
+  constraint r_cat_cato_id foreign key(cat_cato_id)
+    references adc_action_item_focus(cato_id),
   constraint r_cat_pti_id foreign key(cat_pti_id, cat_pmg_name)
     references &UTIL_OWNER..pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
   constraint c_cat_is_editable check (cat_is_editable in (&C_FALSE., &C_TRUE.)),
@@ -25,6 +28,7 @@ organization index;
 
 create index idx_fk_cat_catg_id on adc_action_types(cat_catg_id);
 create index idx_fk_cat_caif_id on adc_action_types(cat_caif_id);
+create index idx_fk_cat_cato_id on adc_action_types(cat_cato_id);
 create unique index idx_cat_pti_pmg_name on adc_action_types(cat_pti_id, cat_pmg_name);
 
 

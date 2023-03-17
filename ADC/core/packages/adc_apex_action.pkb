@@ -173,17 +173,17 @@ as
   begin
     pit.enter_optional;
 
-    -- Aktualisieurng der UI-Elemente der Aktion anfordern, falls erforderlich
+    -- Request update of the UI elements of the action, if necessary.
     if g_action.needs_update then
       append(C_UPDATE_TEMPLATE);
     end if;
 
-    -- Falls Ausfuehren angefordert und nicht INLINE, dann hier Befehl zum Ausfuehren ergaenzen
+    -- If execute is requested and not INLINE, then add command to execute here
     if g_action.execute_immediate then
       append(C_EXECUTE_IMMEDIATE);
     end if;
 
-    -- Eventuelle zusaetzliche Skripte anschliessen
+    -- Add possible additional scripts
     append(g_action.additional_javascript);
 
     l_script := g_action.javascript_stack;
@@ -194,6 +194,17 @@ as
                     msg_param('Script', l_script)));
     return l_script;
   end get_action_script;
+  
+
+  /**
+    Procedure: register_action_script
+      See <ADC_APEX_ACTIONS.register_action_script>
+   */
+  procedure register_action_script
+  is
+  begin
+    adc_api.add_javascript(get_action_script);
+  end register_action_script;
   
   
   /**  

@@ -1,8 +1,7 @@
-create or replace force view adc_param_lov_submit_type as
-select pti_name d, substr(pti_id, 15) r, null crg_id
-  from pit_translatable_item_v
- where pti_pmg_name = 'ADC'
-   and pti_id like 'SUBMIT_TYPE%'
- order by pti_id;
-  
-comment on table adc_param_lov_submit_type is 'List of translatable items of for that parameter type';
+create or replace force view ADC_PARAM_LOV_SUBMIT_TYPE as 
+  select pti_name d, substr(pti_id, 15) r, null crg_id
+    from pit_translatable_item_v
+   where pti_pmg_name = 'ADC'
+     and pti_id like 'SUBMIT_TYPE%';
+
+comment on table ADC_PARAM_LOV_SUBMIT_TYPE is 'List of translatable items of for that parameter type';

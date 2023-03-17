@@ -301,16 +301,17 @@ as
                  
      Parameter: 
        p_mapping - CHAR_TABLE instance with error code - page item names couples, according to DECODE function
-       p_ignore_missing - Flag to indicate whether missing error codes have to be ignored (C_TRUE) or be
-                          displayed as page errors without item reference (C_FALSE). Defaults to C_FALSE, showing
-                          missing error codes as document errors.
-                          If set to C_TRUE, this comes in handy if you want to selectively perform checks for a given
-                          page item only. Advisable only if validation of the page does not last long to avoid unnecessary
-                          resource consumption.
+       p_filter_list - Optional list of items to filter the message collection. If NOT NULL, it reduces the
+                       error output to those items which are both on the p_mapping list and the p_filter_list.
+                       This allows to control which validations are taken into account for a specific page state.
+                       Normal use of this filter would be to limit the validation to the firing item, but it is
+                       also possible to pass more than one item name in, fi when validating a pair of
+                       VALID_FROM and VALID_UNTIL date ranges or similar.
+                       Several item names are passed in as a colon delimited list.
    */
   procedure handle_bulk_errors(
     p_mapping in char_table default null,
-    p_ignore_missing in adc_util.flag_type default adc_util.C_FALSE);
+    p_filter_list in varchar2 default null);
 
 
   /**
@@ -476,7 +477,7 @@ as
    */
   procedure register_observer(
     p_cpi_id in adc_page_items.cpi_id%type);
-        
+    
     
   /** 
     Procedure: set_session_state

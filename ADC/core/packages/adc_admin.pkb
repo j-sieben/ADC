@@ -225,8 +225,240 @@ as
       p_key := adc_seq.nextval;
     end if;
   end get_key;
+  
+  
+  /**
+    Procedure: mark_number_date_required_fields
+      Mark any item with a conversion or mandatory as required to enable ADC to dynamically validate the format.
+      Mark any item with a required label as mandatory to dynamically check for NOT NULL.
+      
+    Parameters:
+      p_crg_id - Rule group ID
+   */
+  procedure mark_number_date_required_fields(
+    p_crg_id in adc_rule_groups.crg_id%type)
+  as
+  begin
+    pit.enter_optional('mark_number_date_required_fields');
+    
+    merge into adc_page_items t
+    using (select cpi_crg_id,
+                  cpi_cpit_id,
+                  cpi_caat_id,
+                  cpi_id,
+                  cpi_label,
+                  cpi_conversion,
+                  cpi_item_default,
+                  cpi_css,
+                  adc_util.C_FALSE cpi_has_error,
+                  cpi_is_required,
+                  cpi_is_mandatory,
+                  cpi_may_have_value
+             from adc_bl_page_targets
+            where cpi_crg_id = p_crg_id
+              and cpi_id is not null) s
+       on (t.cpi_id = s.cpi_id and t.cpi_crg_id = s.cpi_crg_id)
+     when matched then update set
+          t.cpi_cpit_id = s.cpi_cpit_id,
+          t.cpi_caat_id = s.cpi_caat_id,
+          t.cpi_label = s.cpi_label,
+          t.cpi_conversion = s.cpi_conversion,
+          t.cpi_item_default = s.cpi_item_default,
+          t.cpi_css = s.cpi_css,
+          t.cpi_has_error = s.cpi_has_error,
+          t.cpi_is_required = s.cpi_is_required,
+          t.cpi_is_mandatory = s.cpi_is_mandatory,
+          t.cpi_may_have_value = s.cpi_may_have_value
+     when not matched then insert(
+            cpi_id, cpi_cpit_id, cpi_caat_id, cpi_label, cpi_crg_id, 
+            cpi_conversion, cpi_item_default, cpi_css, cpi_is_required, 
+            cpi_is_mandatory, cpi_may_have_value)
+          values(
+            s.cpi_id, s.cpi_cpit_id, s.cpi_caat_id, s.cpi_label, s.cpi_crg_id, 
+            s.cpi_conversion, s.cpi_item_default, s.cpi_css, s.cpi_is_required, 
+            s.cpi_is_mandatory, s.cpi_may_have_value);
+            
+    pit.leave_optional;
+  end mark_number_date_required_fields;
+  
+  
+  /**
+    Procedure: mark_rule_condition_items
+      Mark any page item that is referenced in a technical rule condition as required.
+      Method evaluates existing and newly added rule conditions.
+      
+    Parameters:
+      p_crg_id - Rule group ID
+      p_new_condition - Optional. If a new rule is created, the new rule condition must be obeyed as well
+   */
+  procedure mark_rule_condition_items(
+    p_crg_id in adc_rule_groups.crg_id%type,
+    p_new_condition in adc_rules.cru_condition%type default null)
+  as
+  begin
+    pit.enter_optional('mark_rule_condition_items');
+    
+    merge into adc_page_items t
+    using (select distinct cpi_crg_id, cpi_id
+             from (select cgr.crg_id cpi_crg_id, i.column_value cpi_id
+                     from adc_rules cru
+                     join adc_rule_groups cgr
+                       on cru.cru_crg_id = cgr.crg_id
+                    cross join table(utl_text.string_to_table(cru.cru_firing_items, ',')) i
+                    where crg_id = p_crg_id
+                    union all
+                   select cpi_crg_id, cpi_id
+                     from adc_page_items cpi
+                    where (regexp_instr(upper(p_new_condition), replace(C_REGEX_ITEM, '#ITEM#', cpi.cpi_id)) > 0
+                       or instr(cpi.cpi_css, replace(regexp_substr(p_new_condition, C_REGEX_CSS), adc_util.C_APOS, C_PIPE)) > 0)
+                      and cpi_crg_id = p_crg_id)) s
+       on (t.cpi_id = s.cpi_id
+       and t.cpi_crg_id = s.cpi_crg_id)
+     when matched then update set
+          t.cpi_is_required = adc_util.C_TRUE;
+            
+    pit.leave_optional;
+  end mark_rule_condition_items;
+  
+  
+  /**
+    Procedure: mark_auto_validate_fields
+      Mark any item that is referenced in action type VALIDATE_ITEMS and
+      store the validation method name with the item.
+      
+    Parameters:
+      p_crg_id - Rule group ID
+   */
+  procedure mark_auto_validate_fields(
+    p_crg_id in adc_rule_groups.crg_id%type)
+  as
+  begin
+    pit.enter_optional('mark_auto_validate_fields');
+    
+    merge into adc_page_items t
+    using (with data as(
+                  select cra_param_1, cra_param_2
+                    from adc_rule_actions
+                   where cra_crg_id = 162
+                     and cra_cat_id = 'VALIDATE_ITEMS')
+           select p_crg_id cpi_crg_id,
+                  column_value cpi_id, 
+                  replace(cra_param_2, '#ITEM#', column_value) cpi_validation_method,
+                  adc_util.c_true cpi_is_required
+             from data
+            cross join table(
+                  select utl_text.string_to_table(cra_param_1)
+                    from data)) s
+       on (t.cpi_id = s.cpi_id and t.cpi_crg_id = s.cpi_crg_id)
+     when matched then update set
+          t.cpi_validation_method = s.cpi_validation_method,
+          t.cpi_is_required = s.cpi_is_required;
+            
+    pit.leave_optional;
+  end mark_auto_validate_fields;
+  
+  
+  /**
+    Procedure: remove_irrelevant_fields
+      Remove any item that is 
+     
+      - irrelevant and
+      - erroneus (fi not existing anymore) and
+      - not referenced by rule actions
+      
+    Parameters:
+      p_crg_id - Rule group ID
+   */
+  procedure remove_irrelevant_fields(
+    p_crg_id in adc_rule_groups.crg_id%type)
+  as
+  begin
+    pit.enter_optional('mark_auto_validate_fields');
+    
+      delete from adc_page_items
+       where cpi_crg_id = p_crg_id
+         and cpi_is_required = adc_util.C_FALSE
+         and cpi_has_error = adc_util.C_TRUE
+         and cpi_id not in (
+             select cra_cpi_id
+               from adc_rule_actions
+              where cra_crg_id = p_crg_id);
+            
+    pit.leave_optional;
+  end remove_irrelevant_fields;
+  
+  
+  /**
+    Procedure: mark_error_fields
+      Marks rules and rule actions that have any errors
+      
+    Parameters:
+      p_crg_id - Rule group ID
+   */
+  procedure mark_error_fields(
+    p_crg_id in adc_rule_groups.crg_id%type)
+  as
+  begin
+    pit.enter_optional('mark_error_fields');
 
+      update adc_rules
+         set cru_has_error = adc_util.C_FALSE
+       where cru_crg_id = p_crg_id;
+    
+      merge into adc_rules t
+      using (select distinct cru.cru_id
+               from adc_page_items cpi
+               join adc_rules cru
+                 on utl_text.contains(cru_firing_items, cpi_id) = adc_util.C_TRUE
+              where cpi_crg_id = p_crg_id
+                and cpi_has_error = adc_util.C_TRUE) s
+         on (t.cru_id = s.cru_id)
+       when matched then update set
+            t.cru_has_error = adc_util.C_TRUE;
+            
+      update adc_rule_actions
+         set cra_has_error = adc_util.C_FALSE
+       where cra_crg_id = p_crg_id;
 
+      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_8);
+      merge into adc_rule_actions t
+      using (select cpi_crg_id cra_crg_id, cpi_id cra_cpi_id
+               from adc_page_items
+              where cpi_crg_id = p_crg_id
+                and cpi_has_error = adc_util.C_TRUE) s
+         on (t.cra_crg_id = s.cra_crg_id
+         and t.cra_cpi_id = s.cra_cpi_id)
+       when matched then update set
+            t.cra_has_error = adc_util.C_TRUE;
+            
+    pit.leave_optional;
+  end mark_error_fields;
+  
+  
+  /**
+    Procedure: create_initialization_code
+      Creates optional initialization code for the rule group
+      
+    Parameters:
+      p_crg_id - Rule group ID
+   */
+  procedure create_initialization_code(
+    p_crg_id in adc_rule_groups.crg_id%type)
+  as
+    l_initialization_code adc_rule_groups.crg_initialization_code%type;
+  begin
+    pit.enter_optional('create_initialization_code');
+            
+    l_initialization_code := create_initialization_code(p_crg_id);
+
+    update adc_rule_groups
+       set crg_initialization_code = l_initialization_code
+     where crg_id = p_crg_id;
+     
+    pit.leave_optional;
+  end create_initialization_code;
+  
+  
   /** 
     Procedure: harmonize_adc_page_item
       Method to harmonize <Tables.ADC_PAGE_ITEMS> against APEX Data Dictionary.
@@ -249,124 +481,30 @@ as
     p_crg_id in adc_rule_groups.crg_id%type,
     p_new_condition in adc_rules.cru_condition%type default null)
   as
-    l_initialization_code adc_rule_groups.crg_initialization_code%type;
-    l_is_true utl_text.flag_type := utl_apex.C_TRUE;
   begin
     pit.enter_optional('harmonize_adc_page_item',
       p_params => msg_params(
                     msg_param('p_crg_id', p_crg_id)));
 
-      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_1);
-      update adc_page_items
-         set cpi_is_required = adc_util.C_FALSE,
-             cpi_has_error = adc_util.C_TRUE
-       where cpi_crg_id = p_crg_id;
+    -- Initialize
+    pit.debug(msg.ADC_HARMONIZE_CPI_STEP_1);
+    update adc_page_items
+       set cpi_is_required = adc_util.C_FALSE,
+           cpi_has_error = adc_util.C_TRUE,
+           cpi_validation_method = null
+     where cpi_crg_id = p_crg_id;
 
-      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_2);
-      --         Mark any item with a conversion or mandatory as required to enable ADC to dynamically validate the format
-      --         Mark any item with a required label as mandatory to dynamically check for NOT NULL
-      merge into adc_page_items t
-      using (select cpi_crg_id,
-                    cpi_cpit_id,
-                    cpi_caat_id,
-                    cpi_id,
-                    cpi_label,
-                    cpi_conversion,
-                    cpi_item_default,
-                    cpi_css,
-                    adc_util.C_FALSE cpi_has_error,
-                    cpi_is_required,
-                    cpi_is_mandatory
-               from adc_bl_page_targets
-              where cpi_crg_id = p_crg_id
-                and cpi_id is not null) s
-         on (t.cpi_id = s.cpi_id and t.cpi_crg_id = s.cpi_crg_id)
-       when matched then update set
-            t.cpi_cpit_id = s.cpi_cpit_id,
-            t.cpi_caat_id = s.cpi_caat_id,
-            t.cpi_label = s.cpi_label,
-            t.cpi_conversion = s.cpi_conversion,
-            t.cpi_item_default = s.cpi_item_default,
-            t.cpi_css = s.cpi_css,
-            t.cpi_has_error = s.cpi_has_error,
-            t.cpi_is_required = s.cpi_is_required,
-            t.cpi_is_mandatory = s.cpi_is_mandatory
-       when not matched then insert(cpi_id, cpi_cpit_id, cpi_caat_id, cpi_label, cpi_crg_id, cpi_conversion, cpi_item_default, cpi_css, cpi_is_required, cpi_is_mandatory)
-            values(s.cpi_id, s.cpi_cpit_id, s.cpi_caat_id, s.cpi_label, s.cpi_crg_id, s.cpi_conversion, s.cpi_item_default, s.cpi_css, s.cpi_is_required, s.cpi_is_mandatory);
+    mark_number_date_required_fields(p_crg_id);
 
-      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_3);
-      merge into adc_page_items t
-      using (select distinct cpi_crg_id, cpi_id
-               from (select cgr.crg_id cpi_crg_id, i.column_value cpi_id
-                       from adc_rules cru
-                       join adc_rule_groups cgr
-                         on cru.cru_crg_id = cgr.crg_id
-                      cross join table(utl_text.string_to_table(cru.cru_firing_items, ',')) i
-                      where crg_id = p_crg_id
-                      union all
-                     -- Match newly created condition against adc_page_items to find new firing items
-                     select cpi_crg_id, cpi_id
-                       from adc_page_items cpi
-                      where (regexp_instr(upper(p_new_condition), replace(C_REGEX_ITEM, '#ITEM#', cpi.cpi_id)) > 0
-                         or instr(cpi.cpi_css, replace(regexp_substr(p_new_condition, C_REGEX_CSS), adc_util.C_APOS, C_PIPE)) > 0)
-                        and cpi_crg_id = p_crg_id)) s
-         on (t.cpi_id = s.cpi_id
-         and t.cpi_crg_id = s.cpi_crg_id)
-       when matched then update set
-            t.cpi_is_required = adc_util.C_TRUE;
-
-      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_4);
-      -- - irrelevant and
-      -- - erroneus (fi not existing anymore) and
-      -- - not referenced by rule actions
-      delete from adc_page_items
-       where cpi_crg_id = p_crg_id
-         and cpi_is_required = adc_util.C_FALSE
-         and cpi_has_error = adc_util.C_TRUE
-         and cpi_id not in (
-             select cra_cpi_id
-               from adc_rule_actions
-              where cra_crg_id = p_crg_id);
-
-      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_5);
-      update adc_rules
-         set cru_has_error = adc_util.C_FALSE
-       where cru_crg_id = p_crg_id;
+    mark_rule_condition_items(p_crg_id, p_new_condition);
+    
+    mark_auto_validate_fields(p_crg_id);
+    
+    remove_irrelevant_fields(p_crg_id);
       
-      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_6);
-      merge into adc_rules t
-      using (select distinct cru.cru_id
-               from adc_page_items cpi
-               join adc_rules cru
-                 on utl_text.contains(cru_firing_items, cpi_id) = l_is_true
-              where cpi_crg_id = p_crg_id
-                and cpi_has_error = adc_util.C_TRUE) s
-         on (t.cru_id = s.cru_id)
-       when matched then update set
-            t.cru_has_error = adc_util.C_TRUE;
-
-      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_7);
-      update adc_rule_actions
-         set cra_has_error = adc_util.C_FALSE
-       where cra_crg_id = p_crg_id;
-
-      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_8);
-      merge into adc_rule_actions t
-      using (select cpi_crg_id cra_crg_id, cpi_id cra_cpi_id
-               from adc_page_items
-              where cpi_crg_id = p_crg_id
-                and cpi_has_error = adc_util.C_TRUE) s
-         on (t.cra_crg_id = s.cra_crg_id
-         and t.cra_cpi_id = s.cra_cpi_id)
-       when matched then update set
-            t.cra_has_error = adc_util.C_TRUE;
-
-      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_9);
-      l_initialization_code := create_initialization_code(p_crg_id);
-
-      update adc_rule_groups
-         set crg_initialization_code = l_initialization_code
-       where crg_id = p_crg_id;
+    mark_error_fields(p_crg_id);
+    
+    create_initialization_code(p_crg_id);
 
     pit.leave_optional;
   exception
@@ -1718,6 +1856,116 @@ as
     pit.leave_mandatory;
   end validate_action_type_group;
   
+    
+  /**
+    Procedure: merge_action_type_owner
+      See <ADC_ADMIN.merge_action_type_owner>
+   */ 
+  procedure merge_action_type_owner(
+    p_cato_id in adc_action_type_owners_v.cato_id%type,
+    p_cato_description in adc_action_type_owners_v.cato_description%type,
+    p_cato_active in adc_action_type_owners_v.cato_active%type default adc_util.C_TRUE)
+  as
+    l_row adc_action_type_owners_v%rowtype;
+  begin
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_cato_id', p_cato_id),
+                    msg_param('p_cato_description', p_cato_description),
+                    msg_param('p_cato_active', p_cato_active)));
+                    
+    l_row.cato_id := p_cato_id;
+    l_row.cato_description := utl_text.unwrap_string(p_cato_description);
+    l_row.cato_active := adc_util.get_boolean(p_cato_active);
+    
+    merge_action_type_owner(l_row);
+
+    pit.leave_mandatory;
+  end merge_action_type_owner;
+
+
+  /**
+    Procedure: merge_action_type_owner
+      See <ADC_ADMIN.merge_action_type_owner>
+   */ 
+  procedure merge_action_type_owner(
+    p_row in out nocopy adc_action_type_owners_v%rowtype)
+  as
+    l_pti_id pit_translatable_item.pti_id%type;
+  begin
+    pit.enter_mandatory;
+    
+    validate_action_type_owner(p_row);
+
+    -- store local data
+    merge into adc_action_type_owners t
+    using (select p_row.cato_id cato_id,
+                  p_row.cato_description cato_description,
+                  p_row.cato_active cato_active
+             from dual) s
+       on (t.cato_id = s.cato_id)
+     when matched then update set
+          t.cato_active = s.cato_active
+     when not matched then insert(cato_id, cato_description, cato_active)
+          values(s.cato_id, s.cato_description, s.cato_active);
+    
+    pit.leave_mandatory;
+  end merge_action_type_owner;
+
+
+  /**
+    Procedure: delete_action_type_owner
+      See <ADC_ADMIN.delete_action_type_owner>
+   */ 
+  procedure delete_action_type_owner(
+    p_cato_id in adc_action_type_owners_v.cato_id%type)
+  as
+    l_row adc_action_type_owners_v%rowtype;
+  begin
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_cato_id', p_cato_id)));
+    
+    l_row.cato_id := p_cato_id;
+    
+    delete_action_type_owner(l_row);
+    
+    pit.leave_mandatory;
+  end delete_action_type_owner;
+
+
+  /**
+    Procedure: delete_action_type_owner
+      See <ADC_ADMIN.delete_action_type_owner>
+   */ 
+  procedure delete_action_type_owner(
+    p_row in adc_action_type_owners_v%rowtype)
+  as
+  begin
+    pit.enter_mandatory;
+                    
+    delete from adc_action_type_owners
+     where cato_id = p_row.cato_id;
+    
+    pit.leave_mandatory;
+  end delete_action_type_owner;
+
+
+  /**
+    Procedure: validate_action_type_owner
+      See <ADC_ADMIN.validate_action_type_owner>
+   */ 
+  procedure validate_action_type_owner(
+    p_row in adc_action_type_owners_v%rowtype)
+  as
+  begin
+    pit.enter_mandatory;
+    
+    pit.assert_not_null(p_row.cato_id, msg.ADC_PARAM_MISSING, p_error_code => 'CATO_ID_MISSING');
+    
+    pit.leave_mandatory;
+  end validate_action_type_owner;
+  
   
   /**
     Procedure: merge_action_param_visual_type
@@ -2182,6 +2430,7 @@ as
     p_cat_id in adc_action_types_v.cat_id%type,
     p_cat_catg_id in adc_action_types_v.cat_catg_id%type,
     p_cat_caif_id in adc_action_types_v.cat_caif_id%type,
+    p_cat_cato_id in adc_action_types_v.cat_cato_id%type,
     p_cat_name in adc_action_types_v.cat_name%type,
     p_cat_display_name in adc_action_types_v.cat_display_name%type default null,
     p_cat_description in adc_action_types_v.cat_description%type default null,
@@ -2198,6 +2447,7 @@ as
                     msg_param('p_cat_id', p_cat_id),
                     msg_param('p_cat_catg_id', p_cat_catg_id),
                     msg_param('p_cat_caif_id', p_cat_caif_id),
+                    msg_param('p_cat_cato_id', p_cat_cato_id),
                     msg_param('p_cat_name', p_cat_name),
                     msg_param('p_cat_display_name', p_cat_display_name),
                     msg_param('p_cat_description', p_cat_description),
@@ -2210,6 +2460,7 @@ as
     l_row.cat_id := p_cat_id;
     l_row.cat_catg_id := p_cat_catg_id;
     l_row.cat_caif_id := p_cat_caif_id;
+    l_row.cat_cato_id := p_cat_cato_id;
     l_row.cat_name := p_cat_name;
     l_row.cat_display_name := p_cat_display_name;
     l_row.cat_description := utl_text.unwrap_string(p_cat_description);
@@ -2253,6 +2504,7 @@ as
     using (select p_row.cat_id cat_id,
                   p_row.cat_catg_id cat_catg_id,
                   p_row.cat_caif_id cat_caif_id,
+                  p_row.cat_cato_id cat_cato_id,
                   l_pti_id cat_pti_id,
                   C_ADC cat_pmg_name,
                   p_row.cat_pl_sql cat_pl_sql,
@@ -2265,16 +2517,17 @@ as
      when matched then update set
           t.cat_catg_id = s.cat_catg_id,
           t.cat_caif_id = s.cat_caif_id,
+          t.cat_cato_id = s.cat_cato_id,
           t.cat_pl_sql = s.cat_pl_sql,
           t.cat_js = s.cat_js,
           t.cat_is_editable = s.cat_is_editable,
           t.cat_raise_recursive = s.cat_raise_recursive,
           t.cat_active = s.cat_active
      when not matched then insert(
-            cat_id, cat_catg_id, cat_caif_id, cat_pti_id, cat_pmg_name, cat_pl_sql, cat_js,
+            cat_id, cat_catg_id, cat_caif_id, cat_cato_id, cat_pti_id, cat_pmg_name, cat_pl_sql, cat_js,
             cat_is_editable, cat_raise_recursive, cat_active)
           values (
-            s.cat_id, s.cat_catg_id, s.cat_caif_id, s.cat_pti_id, s.cat_pmg_name, s.cat_pl_sql, s.cat_js,
+            s.cat_id, s.cat_catg_id, s.cat_caif_id, s.cat_cato_id, s.cat_pti_id, s.cat_pmg_name, s.cat_pl_sql, s.cat_js,
             s.cat_is_editable, s.cat_raise_recursive, s.cat_active);
       
     pit.leave_mandatory;
@@ -2332,6 +2585,7 @@ as
     pit.assert_not_null(p_row.cat_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAT_ID_MISSING');
     pit.assert_not_null(p_row.cat_catg_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAT_CATG_ID_MISSING');
     pit.assert_not_null(p_row.cat_caif_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAT_CAIF_ID_MISSING');
+    pit.assert_not_null(p_row.cat_cato_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAT_CATO_ID_MISSING');
     pit.assert_not_null(p_row.cat_name, msg.ADC_PARAM_MISSING, p_error_code => 'CAT_NAME_MISSING');
     
     pit.leave_mandatory;
@@ -2360,6 +2614,7 @@ as
     l_page_item_types clob;
     l_action_item_focus clob;
     l_action_type_groups clob;
+    l_action_type_owners clob;
     l_action_type_list clob_table;
     l_action_types clob;
     l_apex_action_types clob;
@@ -2467,15 +2722,28 @@ as
 
     select utl_text.generate_text(cursor(
             select uttm_text template,
-                   stg.catg_id, stg.catg_name, adc_util.to_bool(stg.catg_active) catg_active,
-                   utl_text.wrap_string(stg.catg_description, C_WRAP_START, C_WRAP_END) catg_description
-              from adc_action_type_groups_v stg
+                   catg_id, catg_name, adc_util.to_bool(catg_active) catg_active,
+                   utl_text.wrap_string(catg_description, C_WRAP_START, C_WRAP_END) catg_description
+              from adc_action_type_groups_v
            ), adc_util.C_CR)
       into l_action_type_groups
       from utl_text_templates
      where uttm_type = C_ADC
        and uttm_name = C_UTTM_NAME
        and uttm_mode = 'ACTION_TYPE_GROUP';
+
+    select utl_text.generate_text(cursor(
+            select uttm_text template,
+                   cato_id, 
+                   adc_util.to_bool(cato_active) cato_active,
+                   utl_text.wrap_string(cato_description, C_WRAP_START, C_WRAP_END) cato_description
+              from adc_action_type_owners_v 
+           ), adc_util.C_CR)
+      into l_action_type_owners
+      from utl_text_templates
+     where uttm_type = C_ADC
+       and uttm_name = C_UTTM_NAME
+       and uttm_mode = 'ACTION_TYPE_OWNER';
 
     select utl_text.generate_text(cursor(
             select uttm_text template,
@@ -2493,36 +2761,36 @@ as
     dbms_lob.createtemporary(l_action_types, false, dbms_lob.call);
     open l_cur for         
        with params as (
-              select uttm_mode, uttm_text template, null cat_is_editable
+              select uttm_mode, uttm_text template, null p_cat_is_editable
                 from utl_text_templates
                where uttm_type = C_ADC
                  and uttm_name = C_UTTM_NAME)
-       select p.template,
-              cat.cat_id, cat.cat_catg_id, cat.cat_caif_id, cat.cat_name,
-              utl_text.wrap_string(cat.cat_display_name, C_WRAP_START, C_WRAP_END) cat_display_name,
-              utl_text.wrap_string(cat.cat_description, C_WRAP_START, C_WRAP_END) cat_description,
-              utl_text.wrap_string(cat.cat_pl_sql, C_WRAP_START, C_WRAP_END) cat_pl_sql,
-              utl_text.wrap_string(cat.cat_js, C_WRAP_START, C_WRAP_END) cat_js,
-              adc_util.to_bool(cat.cat_is_editable) cat_is_editable,
-              adc_util.to_bool(cat.cat_raise_recursive) cat_raise_recursive,
+       select template,
+              cat_id, cat_catg_id, cat_caif_id, cat_cato_id, cat_name,
+              utl_text.wrap_string(cat_display_name, C_WRAP_START, C_WRAP_END) cat_display_name,
+              utl_text.wrap_string(cat_description, C_WRAP_START, C_WRAP_END) cat_description,
+              utl_text.wrap_string(cat_pl_sql, C_WRAP_START, C_WRAP_END) cat_pl_sql,
+              utl_text.wrap_string(cat_js, C_WRAP_START, C_WRAP_END) cat_js,
+              adc_util.to_bool(cat_is_editable) cat_is_editable,
+              adc_util.to_bool(cat_raise_recursive) cat_raise_recursive,
               -- rule action_params
               utl_text.generate_text(cursor(
-                select p.template, ap.cap_cat_id, ap.cap_capt_id, ap.cap_sort_seq,
-                       adc_util.to_bool(ap.cap_mandatory) cap_mandatory,
-                       adc_util.to_bool(ap.cap_active) cap_active,
-                       utl_text.wrap_string(ap.cap_default, C_WRAP_START, C_WRAP_END) cap_default,
-                       utl_text.wrap_string(ap.cap_description, C_WRAP_START, C_WRAP_END) cap_description,
+                select template, cap_cat_id, cap_capt_id, cap_sort_seq,
+                       adc_util.to_bool(cap_mandatory) cap_mandatory,
+                       adc_util.to_bool(cap_active) cap_active,
+                       utl_text.wrap_string(cap_default, C_WRAP_START, C_WRAP_END) cap_default,
+                       utl_text.wrap_string(cap_description, C_WRAP_START, C_WRAP_END) cap_description,
                        cap_display_name
-                  from adc_action_parameters_v ap
+                  from adc_action_parameters_v
                  cross join params p
                  where uttm_mode = 'ACTION_PARAMS'
-                   and ap.cap_cat_id = cat.cat_id
+                   and cap_cat_id = cat_id
               ), adc_util.C_CR) rule_action_params
-         from adc_action_types_v cat
-        cross join params p
-        where (cat.cat_is_editable = p.cat_is_editable
-           or p.cat_is_editable is null)
-          and p.uttm_mode = 'ACTION_TYPE';
+         from adc_action_types_v
+         join params
+           on cat_is_editable = p_cat_is_editable
+           or p_cat_is_editable is null
+        where uttm_mode = 'ACTION_TYPE';
     utl_text.generate_text_table(l_cur, l_action_type_list);
 
     for i in 1 .. l_action_type_list.count loop
@@ -2539,6 +2807,7 @@ as
                     l_page_item_types page_item_types,
                     l_action_item_focus action_item_focus,
                     l_action_type_groups action_type_groups,
+                    l_action_type_owners action_type_owners,
                     l_action_types action_types,
                     l_apex_action_types apex_action_types
                from dual

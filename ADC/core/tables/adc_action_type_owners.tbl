@@ -1,0 +1,15 @@
+create table adc_action_type_owners(
+  cato_id varchar2(50 char) constraint c_cato_id_nn not null,
+  cato_description varchar2(200 char),
+  cato_active &FLAG_TYPE. default on null &C_TRUE. constraint c_cato_active_nn not null,
+  constraint p_cato_id primary key(cato_id),
+  constraint c_cato_active check(cato_active in (&C_FALSE., &C_TRUE.))
+) 
+organization index;
+
+
+comment on table adc_action_type_owners is 'Table to store ADC Action Type Owners to group action types into different owner schemes. Default owner is ADC, others may be added by the end users';
+comment on column adc_action_type_owners.cato_id is 'PK, technical key';
+comment on column adc_action_type_owners.cato_description is 'Optional technical description';
+comment on column adc_action_type_owners.cato_active is 'Flag to indicate whether rule owner is in use';
+

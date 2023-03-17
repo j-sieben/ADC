@@ -10,7 +10,9 @@ create table adc_page_items(
   cpi_is_required &FLAG_TYPE. default on null &C_FALSE. constraint c_cpi_is_required_nn not null, 
   cpi_is_mandatory &FLAG_TYPE. default on null &C_FALSE. constraint c_cpi_is_mandatory_nn not null, 
   cpi_mandatory_message varchar2(200 char), 
- cpi_has_error &FLAG_TYPE. default on null &C_FALSE. constraint c_cpi_has_error_nn not null,
+  cpi_validation_method varchar2(200 char),
+  cpi_may_have_value &FLAG_TYPE. default on null &C_TRUE. constraint c_cpi_may_have_value_nn not null
+  cpi_has_error &FLAG_TYPE. default on null &C_FALSE. constraint c_cpi_has_error_nn not null,
   constraint p_cpi_cpi_crg_id primary key (cpi_crg_id, cpi_id),
   constraint r_cpi_cpit_id foreign key (cpi_cpit_id)
     references adc_page_item_types (cpit_id) on delete cascade,
@@ -38,5 +40,7 @@ comment on column adc_page_items.cpi_css is 'CSS classes per page item as entere
 comment on column adc_page_items.cpi_is_required is 'Flag to indicate whether rule conditions reference this item and therefore must be bound by ADC';
 comment on column adc_page_items.cpi_is_mandatory is 'Flag to indicate whether item is mandatory element and therefore must be checked prior to submitting the page';
 comment on column adc_page_items.cpi_mandatory_message is 'Message that is emitted if this element is null';
+comment on column adc_page_items.cpi_validation_method is 'Optional PL/SQL-call to a validation method. Passes firing item name to filter validation to that item';
+comment on column adc_page_items.cpi_may_have_value is 'Flag to indicate whether the page item is not hidden or display only and may contain a session state value';
 comment on column adc_page_items.cpi_has_error is 'Flag to indicate whether actions reference non existent page items';
 

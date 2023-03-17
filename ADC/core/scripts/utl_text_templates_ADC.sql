@@ -651,7 +651,6 @@ q'[]',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
     p_uttm_text => q'[set define off\CR\]' || 
-q'[set sqlblanklines on\CR\]' || 
 q'[\CR\]' || 
 q'[begin\CR\]' || 
 q'[  -- ACTION_PARAM_VISUAL_TYPES\CR\]' || 
@@ -675,6 +674,9 @@ q'[\CR\]' ||
 q'[  -- ACTION_TYPE_GROUPS\CR\]' || 
 q'[#ACTION_TYPE_GROUPS#\CR\]' || 
 q'[\CR\]' || 
+q'[  -- ACTION_TYPE_OWNERS\CR\]' || 
+q'[#ACTION_TYPE_OWNERS#\CR\]' || 
+q'[\CR\]' || 
 q'[  -- ACTION TYPES\CR\]' || 
 q'[#ACTION_TYPES#\CR\]' || 
 q'[\CR\]' || 
@@ -685,7 +687,6 @@ q'[end;\CR\]' ||
 q'[/\CR\]' || 
 q'[\CR\]' || 
 q'[set define on\CR\]' || 
-q'[set sqlblanklines off\CR\]' || 
 q'[]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
@@ -776,6 +777,19 @@ q'[]',
   );
 
   utl_text_admin.merge_template(
+    p_uttm_name => 'EXPORT_ACTION_TYPE',
+    p_uttm_type => 'ADC',
+    p_uttm_mode => 'ACTION_TYPE_OWNER',
+    p_uttm_text => q'[  adc_admin.merge_action_type_owner(\CR\]' || 
+q'[    p_cato_id => '#CATO_ID#',\CR\]' || 
+q'[    p_cato_description => #CATO_DESCRIPTION#,\CR\]' || 
+q'[    p_cato_active => #CATO_ACTIVE#);\CR\]' || 
+q'[]',
+    p_uttm_log_text => q'[]',
+    p_uttm_log_severity => 70
+  );
+
+  utl_text_admin.merge_template(
     p_uttm_name => 'INITIALIZE_CODE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
@@ -821,6 +835,7 @@ q'[ where #ATTRIBUTE_04# = (select v('#ATTRIBUTE_03#') from dual)]',
 q'[    p_cat_id => '#CAT_ID#',\CR\]' || 
 q'[    p_cat_catg_id => '#CAT_CATG_ID#',\CR\]' || 
 q'[    p_cat_caif_id => '#CAT_CAIF_ID#',\CR\]' || 
+q'[    p_cat_cato_id => '#CAT_CATO_ID#',\CR\]' || 
 q'[    p_cat_name => '#CAT_NAME#',\CR\]' || 
 q'[    p_cat_display_name => #CAT_DISPLAY_NAME#,\CR\]' || 
 q'[    p_cat_description => #CAT_DESCRIPTION#,\CR\]' || 

@@ -12,34 +12,6 @@ as
     Group: Private type definitions
    */
   
-  /** 
-    Type: param_rec
-      Central record for the plugin attributes.
-      
-    Properties:
-      crg_id adc_rule_groups.crg_id%type - actual CRG_ID
-      firing_item adc_page_items.cpi_id%type - actual firing item (or adc_util.C_NO_FIRING_ITEM)
-      firing_event adc_page_item_types.cpit_cet_id%type - actual firing event (normally change or click, but can be any event)
-      initialize_mode boolean - Flag to indicate whether automatic mandatory checks should be paused
-      event_data adc_util.max_char - optional event data that is returned from modal dialog pages etc.
-      bind_event_items char_table - List of items for which ADC binds event handlers
-      stop_flag adc_util.flag_type - Flag to indicate that all rule execution has to be stopped
-      now binary_integer - timestamp, used to calculate the execution duration
-      has_errors boolean - Flag to indicate whether a rule has encounterd an error so far. Is reset per rule execution
-   */
-  type param_rec is record(
-    crg_id adc_rule_groups.crg_id%type, 
-    firing_item adc_page_items.cpi_id%type,
-    firing_event adc_page_item_types.cpit_cet_id%type,
-    initialize_mode boolean,
-    event_data adc_util.max_char,
-    bind_event_items char_table,
-    stop_flag adc_util.flag_type,
-    has_errors boolean,
-    rule_counter binary_integer
-  );
-  
-  
   /**
     Type: rule_action_rec
       Record for recording data of the actually executed rule and rule action.
@@ -81,8 +53,34 @@ as
     is_first_action adc_util.flag_type
   );
 
-  g_param param_rec;
   
+  /** 
+    Type: param_rec
+      Central record for the plugin attributes.
+      
+    Properties:
+      crg_id adc_rule_groups.crg_id%type - actual CRG_ID
+      firing_item adc_page_items.cpi_id%type - actual firing item (or adc_util.C_NO_FIRING_ITEM)
+      firing_event adc_page_item_types.cpit_cet_id%type - actual firing event (normally change or click, but can be any event)
+      initialize_mode boolean - Flag to indicate whether automatic mandatory checks should be paused
+      event_data adc_util.max_char - optional event data that is returned from modal dialog pages etc.
+      bind_event_items char_table - List of items for which ADC binds event handlers
+      stop_flag adc_util.flag_type - Flag to indicate that all rule execution has to be stopped
+      now binary_integer - timestamp, used to calculate the execution duration
+      has_errors boolean - Flag to indicate whether a rule has encounterd an error so far. Is reset per rule execution
+   */
+  type param_rec is record(
+    crg_id adc_rule_groups.crg_id%type, 
+    firing_item adc_page_items.cpi_id%type,
+    firing_event adc_page_item_types.cpit_cet_id%type,
+    initialize_mode boolean,
+    event_data adc_util.max_char,
+    bind_event_items char_table,
+    stop_flag adc_util.flag_type,
+    has_errors boolean,
+    rule_counter binary_integer
+  );
+  g_param param_rec;
   
   C_CMD constant varchar2(100) := 'begin :x := #CMD#; end;';
     
@@ -95,33 +93,37 @@ as
       
       Is called if ADC detects that a page which references ADC does not yet 
       own a rule group and an initial rule. It then creates the default rule group and rule.
-      
-    Parameter:
-      p_rule_group_row - Instance of the rule group row with predefined attributes
    */
-  procedure create_initial_rule_group_and_rule(
-    p_rule_group_row in out nocopy adc_rule_groups%rowtype)
+  procedure create_initial_rule_group_and_rule
   as
-    l_rule_row adc_rules%rowtype;
+    l_rule_group_rec adc_rule_groups%rowtype;
+    l_rule_rec adc_rules%rowtype;
   begin
     pit.enter_optional('create_initial_rule_group_and_rule');
     
-    adc_admin.merge_rule_group(p_rule_group_row);
-    l_rule_row.cru_crg_id := p_rule_group_row.crg_id;
-    l_rule_row.cru_name := 'die Seite öffnet';
-    l_rule_row.cru_condition := 'initializing = c_true';
-    l_rule_row.cru_sort_seq := 10;
-    l_rule_row.cru_active := adc_util.c_true;
-    l_rule_row.cru_fire_on_page_load := adc_util.C_FALSE;
-    adc_admin.merge_rule(l_rule_row);
-    adc_admin.propagate_rule_change(p_rule_group_row.crg_id);
+    -- create rule group entry
+    l_rule_group_rec.crg_app_id := utl_apex.get_application_id;
+    l_rule_group_rec.crg_page_id := utl_apex.get_page_id;    
+    adc_admin.merge_rule_group(l_rule_group_rec);
+    
+    -- create intial rule
+    g_param.crg_id := l_rule_group_rec.crg_id;
+    l_rule_rec.cru_crg_id := l_rule_group_rec.crg_id;
+    l_rule_rec.cru_name := adc_util.get_trans_item_name('CRU_INITIAL_RULE_NAME');
+    l_rule_rec.cru_condition := 'initializing = c_true';
+    l_rule_rec.cru_sort_seq := 10;
+    l_rule_rec.cru_active := adc_util.C_TRUE;
+    l_rule_rec.cru_fire_on_page_load := adc_util.C_FALSE;
+    adc_admin.merge_rule(l_rule_rec);
+    
+    adc_admin.propagate_rule_change(l_rule_group_rec.crg_id);
     
     pit.leave_optional;
   end create_initial_rule_group_and_rule;
   
   
   /**
-    Function: generate_parameter_code
+    Function: generate_parameterized_code
       Method to calculate the concrete resulting javascript or pl/sql code based 
       on rule action settings.
       
@@ -131,7 +133,7 @@ as
     Returns:
       String containing the javascript or pl/sql code.
    */
-  function generate_parameter_code(
+  function generate_parameterized_code(
     p_mode in varchar2,
     p_row in rule_action_rec)
     return varchar2
@@ -139,7 +141,7 @@ as
     l_template adc_util.max_char;
     l_code adc_util.max_char;
   begin
-    pit.enter_detailed('generate_parameter_code');
+    pit.enter_detailed('generate_parameterized_code');
     
     if p_mode = 'JAVASCRIPT' then
       l_template := p_row.cat_js;
@@ -162,7 +164,7 @@ as
     pit.leave_detailed(
       p_params => msg_params(msg_param('Code', l_code)));
     return l_code;
-  end generate_parameter_code;
+  end generate_parameterized_code;
   
 
   /** 
@@ -180,22 +182,24 @@ as
     p_action_rec in rule_action_rec)
   as
   begin
-    pit.enter_optional('get_and_collect_js_code',
-      p_params => msg_params(
-                    msg_param('p_action_rec.js', p_action_rec.cat_js),
-                    msg_param('p_action_rec.cra_param_1', p_action_rec.cra_param_1),
-                    msg_param('p_action_rec.cra_param_2', p_action_rec.cra_param_2),
-                    msg_param('p_action_rec.cra_param_3', p_action_rec.cra_param_3),
-                    msg_param('p_action_rec.item', p_action_rec.cra_item)));
-
-    -- Extract JavaScript chunk, replace parameters and register with response
-    if g_param.stop_flag = adc_util.C_FALSE then
-      adc_response.add_javascript(generate_parameter_code('JAVASCRIPT', p_action_rec));
-    else
-      pit.info(msg.ADC_STOP_NO_JAVASCRIPT);
+    if p_action_rec.cat_js is not null then
+      pit.enter_optional('get_and_collect_js_code',
+        p_params => msg_params(
+                      msg_param('p_action_rec.cat_js', p_action_rec.cat_js),
+                      msg_param('p_action_rec.cra_param_1', p_action_rec.cra_param_1),
+                      msg_param('p_action_rec.cra_param_2', p_action_rec.cra_param_2),
+                      msg_param('p_action_rec.cra_param_3', p_action_rec.cra_param_3),
+                      msg_param('p_action_rec.item', p_action_rec.cra_item)));
+  
+      -- Extract JavaScript chunk, replace parameters and register with response
+      if g_param.stop_flag = adc_util.C_FALSE then
+        adc_response.add_javascript(generate_parameterized_code('JAVASCRIPT', p_action_rec));
+      else
+        pit.info(msg.ADC_STOP_NO_JAVASCRIPT);
+      end if;
+      
+      pit.leave_optional;
     end if;
-    
-    pit.leave_optional;
   end get_and_collect_js_code;
   
 
@@ -218,37 +222,39 @@ as
     C_PLSQL_CODE_TEMPLATE constant adc_util.sql_char := 'begin #CODE#; commit; end;';
     l_plsql_code adc_util.max_char;
   begin
-    pit.enter_optional('get_and_execute_plsql_code',
-      p_params => msg_params(
-                    msg_param('p_action_rec.pl_sql', p_action_rec.cat_pl_sql),
-                    msg_param('p_action_rec.cra_param_1', p_action_rec.cra_param_1),
-                    msg_param('p_action_rec.cra_param_2', p_action_rec.cra_param_2),
-                    msg_param('p_action_rec.cra_param_3', p_action_rec.cra_param_3),
-                    msg_param('p_action_rec.item', p_action_rec.cra_item)));
-                    
-    -- create PL/QSL code from template
-    if g_param.stop_flag = adc_util.C_FALSE then
-      l_plsql_code := generate_parameter_code('PLSQL', p_action_rec);
-                        
-      l_plsql_code := replace(C_PLSQL_CODE_TEMPLATE, '#CODE#', l_plsql_code);      
-      adc_response.add_comment(msg.ADC_PLSQL_CODE, msg_args(l_plsql_code));
-
-      -- Execute PL/SQL code. Stop if an error occurs
-      begin
-        execute immediate l_plsql_code;
-      exception
-        when others then
-          -- Display error
-          pit.handle_exception(msg.ADC_PLSQL_ERROR, msg_args(l_plsql_code));
-          register_error(p_action_rec.cra_item, msg.ADC_PLSQL_ERROR, msg_args(apex_escape.json(l_plsql_code)));
-          -- surpress recursion
-          stop_rule;
-      end;
-    else
-      adc_response.add_comment(msg.ADC_STOP_NO_PLSQL);
+    if p_action_rec.cat_pl_sql is not null then
+      pit.enter_optional('get_and_execute_plsql_code',
+        p_params => msg_params(
+                      msg_param('p_action_rec.cat_pl_sql', p_action_rec.cat_pl_sql),
+                      msg_param('p_action_rec.cra_param_1', p_action_rec.cra_param_1),
+                      msg_param('p_action_rec.cra_param_2', p_action_rec.cra_param_2),
+                      msg_param('p_action_rec.cra_param_3', p_action_rec.cra_param_3),
+                      msg_param('p_action_rec.item', p_action_rec.cra_item)));
+                      
+      -- create PL/QSL code from template
+      if g_param.stop_flag = adc_util.C_FALSE then
+        l_plsql_code := generate_parameterized_code('PLSQL', p_action_rec);
+                          
+        l_plsql_code := replace(C_PLSQL_CODE_TEMPLATE, '#CODE#', l_plsql_code);      
+        adc_response.add_comment(msg.ADC_PLSQL_CODE, msg_args(l_plsql_code));
+  
+        -- Execute PL/SQL code. Stop if an error occurs
+        begin
+          execute immediate l_plsql_code;
+        exception
+          when others then
+            -- Display error
+            pit.handle_exception(msg.ADC_PLSQL_ERROR, msg_args(l_plsql_code));
+            register_error(p_action_rec.cra_item, msg.ADC_PLSQL_ERROR, msg_args(apex_escape.json(l_plsql_code)));
+            -- surpress recursion
+            stop_rule;
+        end;
+      else
+        adc_response.add_comment(msg.ADC_STOP_NO_PLSQL);
+      end if;
+      
+      pit.leave_optional;
     end if;
-    
-    pit.leave_optional;
   end get_and_execute_plsql_code;
   
 
@@ -305,6 +311,89 @@ as
   end get_items_by_selector;
   
   
+  /**
+    Procedure: add_origin_comment
+      Adds a comment that indicates the origin of a rule execution
+      
+    Parameter:
+      p_action_rec - Record of the active rule execution
+   */
+  procedure add_origin_comment(
+    p_action_rec rule_action_rec)
+  as
+    l_origin_msg adc_util.max_char;
+  begin
+    pit.enter_detailed('add_origin_comment');
+    
+    case 
+    when g_param.has_errors then
+      l_origin_msg := msg.ADC_ERROR_HANDLING;
+    when g_param.initialize_mode and p_action_rec.cru_fire_on_page_load = adc_util.C_TRUE then
+      l_origin_msg := msg.ADC_INIT_ORIGIN;
+    else
+      l_origin_msg := msg.ADC_RULE_ORIGIN;
+    end case;
+    
+    adc_response.register_recursion_start(
+      p_origin_message => l_origin_msg,
+      p_run_count => g_param.rule_counter,
+      p_cru_sort_seq => p_action_rec.cru_sort_seq,
+      p_cru_name => p_action_rec.cru_name,
+      p_firing_item => g_param.firing_item);
+      
+    pit.leave_detailed;
+  end add_origin_comment;
+  
+  
+  /**
+    Function: check_execute_rule
+      Method checks whether a found rule has to be executed
+      
+    Parameter:
+      p_action_rec - Record of the active rule execution
+      
+    Returns:
+      TRUE, if the rule has to be executed, FALSE otherwise
+   */
+  function check_execute_rule(
+    p_action_rec rule_action_rec)
+    return boolean
+  as
+    l_ignore_rule_errors boolean;
+    l_action_is_error_handler boolean;
+    l_result boolean;
+    l_message adc_util.ora_name_type;
+  begin
+    pit.enter_detailed('check_execute_rule');
+    
+    l_ignore_rule_errors := p_action_rec.cru_has_error_handler = adc_util.C_FALSE;
+    l_action_is_error_handler := p_action_rec.cra_on_error = adc_util.C_TRUE;
+    
+    case
+      when (not g_param.has_errors and not l_action_is_error_handler) -- normal execution
+             or (g_param.has_errors and l_action_is_error_handler)    -- error handler
+             or (l_ignore_rule_errors)                                -- errors are ignored
+      then 
+        l_result := true;
+      when not g_param.has_errors and l_action_is_error_handler then
+        -- Execution rejected, because no exception occured and action is an exception handler
+        l_result := false;
+        l_message := msg.ADC_NO_ERROR;
+      else
+        -- Execution rejected, because an exception occured and action is not an exception handler
+        l_result := false;
+        l_message := msg.ADC_ACTION_REJECTED;
+    end case;
+    
+    if not l_result then         
+      adc_response.add_comment(l_message, msg_args(to_char(p_action_rec.cra_sort_seq)));
+    end if;
+    
+    pit.leave_detailed;
+    return l_result;
+  end check_execute_rule;
+  
+  
   /** 
     Procedure: evaluate_and_execute_rule_action
       Method calculates the answer for a given situation in the session state based on the ADC rules for the active page.
@@ -323,11 +412,8 @@ as
   as
     l_action_rec rule_action_rec;
     l_action_cur sys_refcursor;
-    l_ignore_rule_errors boolean;
-    l_action_is_error_handler boolean;
     l_loop_counter binary_integer;
     l_rule_found boolean;
-    l_origin_msg adc_util.max_char;
   begin
     pit.enter_mandatory('evaluate_and_execute_rule_action');
 
@@ -340,52 +426,20 @@ as
     fetch l_action_cur into l_action_rec;
     pit.info(msg.ADC_PROCESSING_RULE, msg_args(to_char(l_action_rec.cru_sort_seq), l_action_rec.cru_name));
     
-    if l_action_cur%FOUND then
-      l_rule_found := true;
-      -- add origin message
-      case 
-      when g_param.has_errors then
-        l_origin_msg := msg.ADC_ERROR_HANDLING;
-      when l_action_rec.cru_fire_on_page_load = adc_util.C_TRUE then
-        l_origin_msg := msg.ADC_INIT_ORIGIN;
-      else
-        l_origin_msg := msg.ADC_RULE_ORIGIN;
-      end case;
-      
-      adc_response.register_recursion_start(
-        p_origin_message => l_origin_msg,
-        p_run_count => g_param.rule_counter,
-        p_cru_sort_seq => l_action_rec.cru_sort_seq,
-        p_cru_name => l_action_rec.cru_name,
-        p_firing_item => g_param.firing_item);
-    end if;
-    
     -- Process rule actions
     adc_util.monitor_loop;
     while l_action_cur%FOUND loop
-      -- Initialize
-      adc_response.add_comment(msg.ADC_ACTION_EXECUTED, msg_args(to_char(l_action_rec.cra_sort_seq)));
+      if not l_rule_found then        
+        l_rule_found := true;
+        add_origin_comment(l_action_rec);
+      end if;
       
-      -- Ignores rule errors if this rule has no exception handler action
-      l_ignore_rule_errors := l_action_rec.cru_has_error_handler = adc_util.C_FALSE;
-      l_action_is_error_handler := l_action_rec.cra_on_error = adc_util.C_TRUE;
-      -- check whether action has to be executed
-      case   
-        -- Normal execution. This is true in three possible cases:
-        when (not g_param.has_errors and not l_action_is_error_handler) 
-          or (g_param.has_errors and l_action_is_error_handler)
-          or (l_ignore_rule_errors) 
-        then
-          if l_action_rec.cat_pl_sql is not null then
-            get_and_execute_plsql_code(l_action_rec);
-          end if;
-          if l_action_rec.cat_js is not null then
-            get_and_collect_js_code(l_action_rec);
-          end if;
-      else
-        -- Execution rejected, because an exception occured and action is not an exception handler
-        adc_response.add_comment(msg.ADC_ACTION_REJECTED, msg_args(to_char(l_action_rec.cra_sort_seq)));
-      end case;
+      -- execute rule action if possible
+      if check_execute_rule(l_action_rec) then
+        get_and_execute_plsql_code(l_action_rec);
+        get_and_collect_js_code(l_action_rec);
+        adc_response.add_comment(msg.ADC_ACTION_EXECUTED, msg_args(to_char(l_action_rec.cra_sort_seq)));
+      end if;
       
       -- get next action
       fetch l_action_cur into l_action_rec;
@@ -563,7 +617,6 @@ as
     return varchar2
   as
   begin
-    -- Tracing done in ADC_API
     return g_param.firing_event;
   end get_event;
   
@@ -629,6 +682,7 @@ as
         
     pit.leave_optional(
       p_params => msg_params(msg_param('FiringItem', g_param.firing_item)));
+      
     return g_param.firing_item;
   end get_firing_item;
   
@@ -647,29 +701,9 @@ as
     C_BIND_JSON_ELEMENT constant adc_util.sql_char := '{"id":"#ID#","event":"#EVENT#","action":"#STATIC_ACTION#"}';
     -- List of item which need to bind an event
     cursor rule_group_cpi_ids(p_crg_id adc_rule_groups.crg_id%type) is
-      select cpi_id, cpit_cet_id, cpit_has_value, to_char(null) static_action
-        from adc_page_items    
-        join adc_page_item_types_v
-          on cpi_cpit_id = cpit_id
-        join adc_rule_groups
-          on cpi_crg_id = crg_id
-             -- List of mandatory items
-        left join adc_rule_group_status
-          on crg_id = cgs_crg_id
-         and cpi_id = cgs_cpi_id
-       where cpit_cet_id is not null
-         and (cpi_is_required = adc_util.C_TRUE
-          or cgs_cpi_id is not null)
-         and crg_active = adc_util.C_TRUE
-         and crg_id = p_crg_id
-     union all
-     -- List of items which have to be bound to custom specific events
-     select cra_cpi_id, cet_id, adc_util.C_FALSE, to_char(cra_param_2)
-       from adc_rule_actions
-       join adc_event_types
-         on cet_id member of utl_text.string_to_table(cra_param_1, ':')
-      where cra_cat_id = 'MONITOR_EVENT'
-        and cra_crg_id = p_crg_id;
+      select cpi_id, cpit_cet_id, cpit_has_value, static_action
+        from adc_bl_bind_items
+       where crg_id = p_crg_id;
     l_json clob;
   begin
     pit.enter_optional('get_bind_items_as_json',
@@ -686,8 +720,6 @@ as
         adc_util.C_DELIMITER, true);
     end loop;
     
-    -- Create items with '~' as a replacement for '"' to prevent APEX from escaping it with an escape sequence.
-    -- This assures that the browser is able to create a JavaScript object from it
     l_json := replace(C_BIND_JSON_TEMPLATE, '#JSON#', l_json);
     
     pit.leave_optional(
@@ -708,7 +740,7 @@ as
   begin
     pit.enter_optional;
     
-    select listagg(
+    select listagg(distinct 
              case when cra_cpi_id = adc_util.C_NO_FIRING_ITEM
                   then to_char(cra_param_2) 
                   else cra_cpi_id end, adc_util.C_DELIMITER) within group (order by cru_firing_items)
@@ -740,8 +772,9 @@ as
     -- concatenate list
     l_changed_value_items := adc_page_state.get_changed_items_as_json;
     
-    pit.leave_optional;
-    return trim(adc_util.C_DELIMITER from l_changed_value_items);
+    pit.leave_optional(
+      p_params => msg_params(msg_param('changed_value_items', l_changed_value_items)));
+    return l_changed_value_items;
   end get_page_items;
   
   
@@ -767,10 +800,11 @@ as
       into l_rule_stmt
       from adc_rule_groups
      where crg_id = g_param.crg_id;
+    -- recursively evaluate all applicable rules and execute them
     process_rule(l_rule_stmt);
     
+    -- Collect the response and clean up
     l_js_script := adc_response.get_response;
-    
     adc_page_state.reset;
       
     pit.leave_mandatory(
@@ -791,7 +825,6 @@ as
     pit.enter_optional;
   
     adc_response.add_error(p_error, p_severity);
-    
     g_param.has_errors := true;
     
     pit.leave_optional;
@@ -807,8 +840,7 @@ as
     p_event in varchar2,
     p_event_data in varchar2)
   as
-    l_rule_group_row adc_rule_groups%rowtype;
-    l_rule_row adc_rules%rowtype;
+    l_rule_rec adc_rules%rowtype;
     l_message message_type;
   begin
     pit.enter_optional(
@@ -819,17 +851,7 @@ as
                     
     pit.assert_not_null(p_firing_item);
     pit.assert_not_null(p_event);
-    l_rule_group_row.crg_app_id := utl_apex.get_application_id;
-    l_rule_group_row.crg_page_id := utl_apex.get_page_id;
-    
-    -- Read rule group
-    select crg_id
-      into g_param.crg_id
-      from adc_rule_groups
-     where crg_app_id = l_rule_group_row.crg_app_id
-       and crg_page_id = l_rule_group_row.crg_page_id;
-    
-        
+           
     -- Initialize collections
     g_param.bind_event_items := char_table();
     g_param.firing_item := p_firing_item;
@@ -839,6 +861,7 @@ as
     g_param.stop_flag := adc_util.C_FALSE;
     g_param.has_errors := false;
     g_param.rule_counter := 0;
+    g_param.crg_id := get_crg_id;
     adc_recursion_stack.reset(g_param.crg_id, g_param.firing_item);    
     adc_page_state.reset;
     adc_response.initialize_response(g_param.initialize_mode, g_param.crg_id);
@@ -861,18 +884,20 @@ as
     pit.leave_optional;
   exception
     when msg.ADC_INVALID_NUMBER_ERR or msg.ADC_INVALID_DATE_ERR then
+      -- conversion could not be applied. Raise exception and stop rule
       l_message := pit.get_active_message;
       register_error(g_param.firing_item, l_message.message_name, l_message.message_args);
       stop_rule;
+      pit.leave_mandatory;
     when NO_DATA_FOUND then
-      create_initial_rule_group_and_rule(l_rule_group_row);
-      -- recursivley read the settings for the new rule group
+      -- page is run for the first time, no ADC rule group exists for it. Create and initialize again
+      create_initial_rule_group_and_rule;
       read_settings(p_firing_item, p_event, p_event_data);
+      pit.leave_mandatory;
     when msg.ADC_ITEM_IS_MANDATORY_ERR then
+      -- firing item is mandatory and contains NULL
       l_message := pit.get_active_message;
-      register_error(
-        p_cpi_id => g_param.firing_item, 
-        p_message_name => msg.ADC_ITEM_IS_MANDATORY);
+      register_error(g_param.firing_item, msg.ADC_ITEM_IS_MANDATORY);
       stop_rule;
       pit.leave_mandatory;
   end read_settings;
@@ -979,13 +1004,13 @@ as
      group by cat_pl_sql, cat_js;
                         
     if l_row.cat_pl_sql is not null then
-      l_pl_sql := generate_parameter_code('PLSQL', l_row);
+      l_pl_sql := generate_parameterized_code('PLSQL', l_row);
       l_pl_sql := replace(C_PLSQL_CODE_TEMPLATE, '#CODE#', l_pl_sql);
       execute immediate l_pl_sql;
     end if;
 
     if l_row.cat_js is not null then 
-      l_java_script := generate_parameter_code('JAVASCRIPT', l_row);      
+      l_java_script := generate_parameterized_code('JAVASCRIPT', l_row);      
       adc_response.add_javascript(l_java_script);
     end if;
   exception
@@ -1250,7 +1275,7 @@ as
     
     if p_cpi_id = adc_util.c_no_firing_item or p_cpi_id is null then
       pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Executing item statement'));
-      -- Wird kein Element angegeben, werden die Elemente gemaess des Spaltennamens gesetzt
+      -- If no element is specified, the elements are set according to the column name
       l_cur := dbms_sql.open_cursor;
       -- SQL parsen, um Spaltenbezeichner zu ermitteln
       dbms_sql.parse(l_cur, l_stmt, dbms_sql.native);
@@ -1260,13 +1285,13 @@ as
         dbms_sql.define_column(l_cur, i, l_result, 4000);
       end loop;
       
-      -- SQL ausfuehren und erste Zeile laden
+      -- Execute SQL and load the first row
       l_cnt := dbms_sql.execute_and_fetch(l_cur);
       -- Alle Spaltenwerte in Seitenelemente mit entsprechendem Spaltennamen kopieren
       for i in 1 .. l_col_cnt loop
         dbms_sql.column_value(l_cur, i, l_result);
         pit.debug(msg.PIT_PASS_MESSAGE, msg_args('... ' || l_desc_tab(i).col_name || ': ' || l_result));
-        -- Wert in Sessionstatus kopieren
+        -- Copy value to session status
         set_session_state(
           p_cpi_id => l_desc_tab(i).col_name,  
           p_value => l_result, 
@@ -1274,7 +1299,7 @@ as
       end loop;
       dbms_sql.close_cursor(l_cur);
     else
-      -- Konkretes Element angefordert, laut Konvention ist nur eine Spalte enthalten
+      -- Concrete element requested, according to convention only one column is included
       execute immediate l_stmt into l_result;
       set_session_state(
         p_cpi_id => p_cpi_id, 
@@ -1292,7 +1317,6 @@ as
   end set_value_from_statement;
   
   
-  
   /**
     Procedure: set_value_from_cursor
       See <ADC_API.set_value_from_cursor>
@@ -1307,15 +1331,15 @@ as
     l_desc_tab DBMS_SQL.DESC_TAB2;
   begin
     l_cur := dbms_sql.to_cursor_number(p_cursor);
-    -- SQL parsen, um Spaltenbezeichner zu ermitteln
+    -- Parse SQL to get column identifiers
     dbms_sql.describe_columns2(l_cur, l_col_cnt, l_desc_tab);
     for i in 1 .. l_col_cnt loop
       dbms_sql.define_column(l_cur, i, l_result, 4000);
     end loop;
     
-    -- SQL ausfuehren und erste Zeile laden
+    -- Execute SQL and load the first row
     l_cnt := dbms_sql.execute_and_fetch(l_cur);
-    -- Alle Spaltenwerte in Seitenelemente mit entsprechendem Spaltennamen kopieren
+    -- Copy all column values to page elements with corresponding column name
     for i in 1 .. l_col_cnt loop
       dbms_sql.column_value(l_cur, i, l_result);
       -- Wert in Sessionstatus kopieren
@@ -1326,6 +1350,7 @@ as
     end loop;
     dbms_sql.close_cursor(l_cur);
   end set_value_from_cursor;
+  
   
   /**
     Procedure: stop_rule
@@ -1357,7 +1382,15 @@ as
         from adc_rule_actions
        where cra_crg_id = g_param.crg_id
          and cra_raise_on_validation = adc_util.C_TRUE;
+         
+    cursor dynamic_validation_cur is
+      select distinct cpi_validation_method
+        from adc_page_items
+       where cpi_crg_id = g_param.crg_id
+         and cpi_validation_method is not null;
     l_exception message_type;
+    l_stmt adc_util.sql_char;
+    l_result boolean;
   begin
     -- Tracing done in ADC_API
     
@@ -1375,6 +1408,12 @@ as
             p_error_msg => l_exception.message_text,
             p_internal_error => null);
       end;
+    end loop;
+    
+    -- Check all dynamic validations of the current ADC group
+    for val in dynamic_validation_cur loop
+      l_stmt := replace(C_CMD, '#CMD#', replace(val.cpi_validation_method, '#ITEM#'));
+      execute immediate l_stmt using out l_result;
     end loop;
 
     -- Check all validations of the current ADC group

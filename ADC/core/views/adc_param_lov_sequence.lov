@@ -1,9 +1,6 @@
-create or replace force view adc_param_lov_sequence
-as
-select sequence_name d, sequence_name r, null crg_id
+create or replace force view ADC_PARAM_LOV_SEQUENCE as select sequence_name d, sequence_name r, null crg_id
   from user_sequences
        -- exclude column identity sequences
  where sequence_name not like 'ISEQ$$%';
-  
-  
-comment on table adc_param_lov_sequence is 'List of sequences owned by the user';
+
+comment on table ADC_PARAM_LOV_SEQUENCE is 'List of sequences owned by the user';

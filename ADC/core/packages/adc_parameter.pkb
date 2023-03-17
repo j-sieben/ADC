@@ -173,12 +173,15 @@ end;~';
     Parameters:
       p_method - Method to check.
       p_is_function - Flag to indicate whether p_value is a function
+      p_is_boolean_function - Flag to indicate whether the function returns a boolean value
    */
   procedure parse_method(
     p_method in out nocopy varchar2,
-    p_is_function in boolean default true)
+    p_is_function in boolean default true,
+    p_is_boolean_function in boolean default false)
   as
     C_FUNCTION_STMT constant varchar2(200) := q'^declare l_foo utl_apex.max_char; begin l_foo := #STMT#; end;^';
+    C_BOOL_FUNCTION_STMT constant varchar2(200) := q'^declare l_foo boolean; begin l_foo := #STMT#; end;^';
     C_PROCEDURE_STMT constant varchar2(200) := q'^begin #STMT#; end;^';
     l_ctx binary_integer;
     l_stmt varchar2(2000);
@@ -188,11 +191,14 @@ end;~';
                     msg_param('p_method', p_method)));
 
     p_method := rtrim(p_method, ';');
-    if p_is_function then
+    case
+    when p_is_boolean_function then
+      l_stmt := C_BOOL_FUNCTION_STMT;
+    when p_is_function then
       l_stmt := C_FUNCTION_STMT;
     else
       l_stmt := C_PROCEDURE_STMT;
-    end if;
+    end case;
     l_stmt := replace(l_stmt, '#STMT#', p_method);
     pit.log_state(
       p_params => msg_params(msg_param('Statement', l_stmt)));
@@ -302,6 +308,25 @@ end;~';
 
 
   /**
+    Procedure: validate_is_bool_function
+      Validate that p_value is a function
+
+    Parameters:
+      p_value - Value to check.
+      p_target - Page item to link the execption to
+   */
+  procedure validate_is_bool_function(
+    p_value in out nocopy varchar2,
+    p_target in varchar2)
+  as
+  begin
+    parse_method(
+      p_method => p_value,
+      p_is_boolean_function => true);
+  end validate_is_bool_function;
+
+
+  /**
     Procedure: validate_is_procedure
       Validate that p_value is a procedure
 
@@ -319,7 +344,9 @@ end;~';
                     msg_param('p_value', p_value),
                     msg_param('p_target', p_target)));
                     
-    parse_method(p_value, p_is_function => false);
+    parse_method(
+      p_method => p_value, 
+      p_is_function => false);
 
     pit.leave_detailed;
   end validate_is_procedure;
@@ -818,7 +845,12 @@ end;~';
       when C_APEX_ACTION then
         validate_is_apex_action(p_value);
       when C_FUNCTION then
-        validate_is_function(p_value, p_cpi_id);
+        begin
+          validate_is_function(p_value, p_cpi_id);
+        exception
+          when msg.ADC_PARAM_VALIDATION_FAILED_ERR then
+            validate_is_bool_function(p_value, p_cpi_id);
+        end;
       when C_JAVA_SCRIPT then
         null;
       when C_JAVA_SCRIPT_FUNCTION then

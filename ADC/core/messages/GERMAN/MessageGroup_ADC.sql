@@ -547,6 +547,14 @@ begin
     p_pms_pml_name => 'GERMAN');
 
   pit_admin.merge_message(
+    p_pms_name => 'ADC_NO_ERROR',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Aktion #1# wurde nicht ausgeführt, da kein Fehler vorlag und diese Aktion ein Fehlerhandler ist.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 40,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
     p_pms_name => 'ADC_STOP_NO_PLSQL',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^PL/SQL-Code wurde nicht ausgeführt, da ein Fehler vorlag und die Regel gestoppt wurde.^',

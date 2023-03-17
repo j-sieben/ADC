@@ -324,7 +324,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
           return e.pageItem != pItemId;
         });
         // remove the error from gWarnings
-        gWarnings = $.grep(gErrors, function(e){
+        gWarnings = $.grep(gWarnings, function(e){
           return e.pageItem != pItemId;
         });
         $(`#${pItemId}`)

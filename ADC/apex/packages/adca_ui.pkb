@@ -48,6 +48,7 @@ as
     p_row.cat_id := adc_util.clean_adc_name(utl_apex.get_string('cat_id'));
     p_row.cat_catg_id := adc_util.clean_adc_name(utl_apex.get_string('cat_catg_id'));
     p_row.cat_caif_id := adc_util.clean_adc_name(utl_apex.get_string('cat_caif_id'));
+    p_row.cat_cato_id := adc_util.clean_adc_name(utl_apex.get_string('cat_cato_id'));
     p_row.cat_name := utl_apex.get_string('cat_name');
     p_row.cat_display_name := utl_apex.get_string('cat_display_name');
     p_row.cat_description := utl_apex.get_string('cat_description');
@@ -489,6 +490,7 @@ as
         'CAT_ID_MISSING', 'CAT_ID',
         'CAT_CATG_ID_MISSING', 'CAT_CATG_ID',
         'CAT_CAIF_ID_MISSING', 'CAT_CAIF_ID',
+        'CAT_CATO_ID_MISSING', 'CAT_CATO_ID',
         'CAT_NAME_MISSING', 'CAT_NAME'));
     
     pit.leave_mandatory;

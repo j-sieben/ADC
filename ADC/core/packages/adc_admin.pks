@@ -456,7 +456,7 @@ as
                  
     Parameters:
       p_catg_id - ID of the action type group
-      p_srg_name - Name of the action type group
+      p_catg_name - Name of the action type group
       p_catg_description - Optional description of the action type group
       p_catg_active - Flag to indicate whether this action type group is actually in use. Defaults to ADC_UTIL.C_TRUE
    */
@@ -509,6 +509,65 @@ as
    */
   procedure validate_action_type_group(
     p_row in adc_action_type_groups_v%rowtype);
+    
+    
+  /**
+    Procedure: merge_action_type_owner
+      Administration of ACTION TYPE OWNERS
+                 
+    Parameters:
+      p_cato_id - ID of the action type owner
+      p_cato_description - Optional description of the action type owner
+      p_cato_active - Flag to indicate whether this action type owner is actually in use. Defaults to ADC_UTIL.C_TRUE
+   */
+  procedure merge_action_type_owner(
+    p_cato_id in adc_action_type_owners_v.cato_id%type,
+    p_cato_description in adc_action_type_owners_v.cato_description%type,
+    p_cato_active in adc_action_type_owners_v.cato_active%type default adc_util.C_TRUE);
+
+  /**
+    Procedure: merge_action_type_owner
+      Overload with a row record
+                 
+    Parameter:
+      p_row - Row record
+   */
+  procedure merge_action_type_owner(
+    p_row in out nocopy adc_action_type_owners_v%rowtype);
+
+  /**
+    Procedure: delete_action_type_owner
+      Overload with a row record
+                 
+    Parameter:
+      p_cato_id - ID of the action type owner to delete
+   */
+  procedure delete_action_type_owner(
+    p_cato_id in adc_action_type_owners_v.cato_id%type);
+
+  /**
+    Procedure: delete_action_type_owner
+      Overload with a row record
+                 
+    Parameter:
+      p_row - Row record
+   */
+  procedure delete_action_type_owner(
+    p_row in adc_action_type_owners_v%rowtype);
+
+  /**
+    Procedure: validate_action_type_owner
+      Validates an Action Type Owner
+                 
+    Parameter:
+      p_row - Row record
+      
+    Errors:
+      CATO_ID_MISSING - if parameter P_ROW.CATO_ID is null
+      CATO_NAME_MISSING - if parameter P_ROW.CATO_NAME is null
+   */
+  procedure validate_action_type_owner(
+    p_row in adc_action_type_owners_v%rowtype);
 
 
   /**
@@ -726,6 +785,7 @@ as
       p_cat_id - ID of the action type
       p_cat_catg_id - Reference to adc_action_type_groups
       p_cat_caif_id - Reference to ADC_ACTION_ITEM_FOCUS
+      p_cat_cato_id - Reference to ADC_ACTION_TYPE_OWNERS
       p_cat_name - Name of the action type
       p_cat_display_name - Optional verbose name of the action type
       p_cat_description - Optional description
@@ -739,6 +799,7 @@ as
     p_cat_id in adc_action_types_v.cat_id%type,
     p_cat_catg_id in adc_action_types_v.cat_catg_id%type,
     p_cat_caif_id in adc_action_types_v.cat_caif_id%type,
+    p_cat_cato_id in adc_action_types_v.cat_cato_id%type,
     p_cat_name in adc_action_types_v.cat_name%type,
     p_cat_display_name in adc_action_types_v.cat_display_name%type default null,
     p_cat_description in adc_action_types_v.cat_description%type default null,

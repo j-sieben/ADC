@@ -14,12 +14,6 @@ prompt &h1.Checking prerequisites
 
 prompt
 prompt &section.
-prompt &h1.Removing existing installation
-@&plugin_dir.uninstall.sql
-@core/uninstall.sql
-
-prompt
-prompt &section.
 prompt &h1.APEX Dynamic Controller (ADC) Installation
 @&core_dir.install.sql
 

@@ -204,14 +204,14 @@ as
 
   static procedure handle_bulk_errors(
     p_mapping in char_table default null,
-    p_ignore_unmapped in varchar2 default 0)
+    p_filter_list in varchar2 default null)
   as
   begin
     pit.enter_optional;
     
     adc_api.handle_bulk_errors(
       p_mapping => p_mapping, 
-      p_ignore_missing => p_ignore_unmapped = 1);
+      p_filter_list => p_filter_list);
     
     pit.leave_optional;
   end handle_bulk_errors;
@@ -734,3 +734,4 @@ as
   end validate_page;  
   
 end;
+/

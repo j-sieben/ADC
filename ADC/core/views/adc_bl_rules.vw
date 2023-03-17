@@ -1,11 +1,10 @@
 create or replace force view adc_bl_rules
 as 
 with params as(
-       select adc_util.c_true c_true
+       select /*+ no_merge */
+              adc_util.c_true c_true
          from dual)
-       -- get all rules and items denormalized
-select /*+ no_merge(p) */
-       cru_id, cru_crg_id crg_id, cru_sort_seq, cru_name,
+select cru_id, cru_crg_id crg_id, cru_sort_seq, cru_name,
        ',' || cru_firing_items|| ',DOCUMENT,' cru_firing_items, cru_fire_on_page_load, cra_raise_recursive,
        cra_cpi_id, cpi_css item_css, cra_cat_id, cra_param_1, cra_param_2, cra_param_3, cra_on_error, cra_sort_seq
   from adc_rule_groups

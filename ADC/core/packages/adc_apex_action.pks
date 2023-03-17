@@ -11,7 +11,7 @@ as
       Juergen Sieben, ConDeS GmbH
    */
 
-  /*+
+  /**
     Procedure: action_init
       Method initializes an ACTION JavaScript code. This method is called first before setting action options.
                  
@@ -31,6 +31,13 @@ as
    */
   function get_action_script
     return varchar2;
+    
+    
+  /**
+    Procedure: register_action_script
+      Method registers the action script with ADC. This is a shortcut for adc.add_javascript(adc_apex_action.get_action_script));
+   */
+  procedure register_action_script;
     
     
   /**  

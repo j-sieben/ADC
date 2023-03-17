@@ -1,8 +1,5 @@
 @&tool_dir.set_folder apex
 
-prompt &h2.Remove existing installation
-@&install_dir.uninstall.sql
-
 prompt &h2.Create database objects
 
 prompt &h3.Create tables
@@ -19,6 +16,7 @@ prompt &h3.Create views
 @&tool_dir.create_view adca_ui_lov_action_param_type
 @&tool_dir.create_view adca_ui_lov_action_param_visual_type
 @&tool_dir.create_view adca_ui_lov_action_type_group
+@&tool_dir.create_view adca_ui_lov_action_type_owner
 @&tool_dir.create_view adca_ui_lov_apex_action_items
 @&tool_dir.create_view adca_ui_lov_apex_action_type
 @&tool_dir.create_view adca_ui_lov_apex_action
