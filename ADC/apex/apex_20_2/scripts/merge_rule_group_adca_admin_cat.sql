@@ -13,15 +13,15 @@ begin
     p_crg_page_id => 2);
 
   adc_admin.merge_rule_group(
-    p_crg_id => adc_admin.map_id(1),
+    p_crg_id => adc_admin.map_id(755),
     p_crg_app_id => l_app_id,
     p_crg_page_id => 2,
     p_crg_with_recursion => adc_util.C_TRUE,
     p_crg_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(3),
-    p_cru_crg_id => adc_admin.map_id(1),
+    p_cru_id => adc_admin.map_id(757),
+    p_cru_crg_id => adc_admin.map_id(755),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = C_TRUE|',
     p_cru_sort_seq => 10,
@@ -29,9 +29,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(7),
-    p_cra_cru_id => adc_admin.map_id(3),
-    p_cra_crg_id => adc_admin.map_id(1),
+    p_cra_id => adc_admin.map_id(759),
+    p_cra_cru_id => adc_admin.map_id(757),
+    p_cra_crg_id => adc_admin.map_id(755),
     p_cra_cpi_id => 'R2_ACTION_TYPE',
     p_cra_cat_id => 'MONITOR_EVENT',
     p_cra_param_1 => q'|apexaftercanceldialog:apexafterclosedialog|',
@@ -43,8 +43,8 @@ begin
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(9),
-    p_cru_crg_id => adc_admin.map_id(1),
+    p_cru_id => adc_admin.map_id(761),
+    p_cru_crg_id => adc_admin.map_id(755),
     p_cru_name => 'einen Aktionstypen bearbeitet hat',
     p_cru_condition => q'|'R2_ACTION_TYPE' in (dialog_closed, dialog_cancelled)|',
     p_cru_sort_seq => 20,
@@ -52,9 +52,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(11),
-    p_cra_cru_id => adc_admin.map_id(9),
-    p_cra_crg_id => adc_admin.map_id(1),
+    p_cra_id => adc_admin.map_id(763),
+    p_cra_cru_id => adc_admin.map_id(761),
+    p_cra_crg_id => adc_admin.map_id(755),
     p_cra_cpi_id => 'R2_ACTION_TYPE',
     p_cra_cat_id => 'REFRESH_ITEM',
     p_cra_param_1 => q'||',
@@ -67,7 +67,7 @@ begin
     p_cra_active => adc_util.C_TRUE);
   
 
-  adc_admin.propagate_rule_change(adc_admin.map_id(1));
+  adc_admin.propagate_rule_change(adc_admin.map_id(755));
 
   commit;
 end;
