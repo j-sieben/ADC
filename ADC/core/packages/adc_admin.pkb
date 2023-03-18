@@ -30,6 +30,10 @@ as
   C_REGEX_ITEM constant varchar2(50 byte) := q'~(^|[ '\(])#ITEM#([ ',=<^>\)]|$)~';
   C_REGEX_CSS constant varchar2(50 byte) := q'~'.+'~';
   
+  C_UTTM_NAME constant adc_util.ora_name_type := 'EXPORT_ACTION_TYPE';
+  C_WRAP_START constant adc_util.tiny_char := 'q''{';
+  C_WRAP_END constant adc_util.tiny_char := '}''';
+  
   C_PIPE constant adc_util.tiny_char := '|';
   
 
@@ -679,6 +683,218 @@ as
     when others then
       pit.stop;
   end validate_export_rule_groups;
+  
+  
+  /**
+    Function: get_action_param_types
+      Method to retrieve all action parameter type scripts for the given action type owner.
+      
+      If the requested owner is different from the default owner C_ADC then only those
+      parameter types are returned which are not already defined within the core delivery.
+      
+    Parameter:
+      p_cato_id - Owner of the action parameter types
+      
+    Returns:
+      Install script with all API calls for the action parameter types for the requested owner
+   */
+  function get_action_param_types(
+    p_cato_id in adc_action_type_owners.cato_id%type)
+    return clob
+  as
+    l_action_param_types clob;
+  begin
+    pit.enter_optional('get_action_param_types',
+      p_params => msg_params(
+                    msg_param('p_cato_id', p_cato_id)));
+                    
+    select utl_text.generate_text(cursor(
+            select uttm_text template,
+                   capt_id, capt_name, adc_util.to_bool(capt_active) capt_active,
+                   utl_text.wrap_string(capt_description, C_WRAP_START, C_WRAP_END) capt_description,
+                   capt_capvt_id,
+                   utl_text.wrap_string(capt_select_list_query, C_WRAP_START, C_WRAP_END) capt_select_list_query,
+                   utl_text.wrap_string(capt_select_view_comment, C_WRAP_START, C_WRAP_END) capt_select_view_comment,
+                   capt_display_name, capt_sort_seq
+              from adc_action_param_types_v
+              join adc_action_parameters
+                on capt_id = cap_capt_id
+              join adc_action_types
+                on cap_cat_id = cat_id
+             where cat_cato_id = p_cato_id
+                   -- if CATO_ID is not C_ADC, exclude all parameter types already exported by C_ADC
+               and (capt_id not in (
+                      select cap_capt_id
+                        from adc_action_parameters
+                        join adc_action_types
+                          on cap_cat_id = cat_id
+                       where cat_cato_id = C_ADC)
+                or p_cato_id = C_ADC)
+           ), adc_util.C_CR)
+      into l_action_param_types
+      from utl_text_templates
+     where uttm_type = C_ADC
+       and uttm_name = C_UTTM_NAME
+       and uttm_mode = 'PARAM_TYPE';
+       
+    pit.leave_optional;
+    return l_action_param_types;
+  end get_action_param_types;
+  
+  
+  /**
+    Function: get_action_types
+      Method to retrieve all action type scripts for the given action type owner.
+      
+    Parameter:
+      p_cato_id - Owner of the action types
+      
+    Returns:
+      Install script with all API calls for the action types for the requested owner
+   */
+  function get_action_types(
+    p_cato_id in adc_action_type_owners.cato_id%type)
+    return clob
+  as
+    l_cur sys_refcursor;
+    l_action_types clob;
+    l_action_type_list clob_table;
+  begin
+    pit.enter_optional('get_action_types',
+      p_params => msg_params(
+                    msg_param('p_cato_id', p_cato_id)));
+                    
+    -- Collect action types. Different API for performance and size reasons
+    dbms_lob.createtemporary(l_action_types, false, dbms_lob.call);
+    open l_cur for         
+       with params as (
+              select uttm_mode, uttm_text template, null p_cat_is_editable
+                from utl_text_templates
+               where uttm_type = C_ADC
+                 and uttm_name = C_UTTM_NAME)
+       select template,
+              cat_id, cat_catg_id, cat_caif_id, cat_cato_id, cat_name,
+              utl_text.wrap_string(cat_display_name, C_WRAP_START, C_WRAP_END) cat_display_name,
+              utl_text.wrap_string(cat_description, C_WRAP_START, C_WRAP_END) cat_description,
+              utl_text.wrap_string(cat_pl_sql, C_WRAP_START, C_WRAP_END) cat_pl_sql,
+              utl_text.wrap_string(cat_js, C_WRAP_START, C_WRAP_END) cat_js,
+              adc_util.to_bool(cat_is_editable) cat_is_editable,
+              adc_util.to_bool(cat_raise_recursive) cat_raise_recursive,
+              -- rule action_params
+              utl_text.generate_text(cursor(
+                select template, cap_cat_id, cap_capt_id, cap_sort_seq,
+                       adc_util.to_bool(cap_mandatory) cap_mandatory,
+                       adc_util.to_bool(cap_active) cap_active,
+                       utl_text.wrap_string(cap_default, C_WRAP_START, C_WRAP_END) cap_default,
+                       utl_text.wrap_string(cap_description, C_WRAP_START, C_WRAP_END) cap_description,
+                       cap_display_name
+                  from adc_action_parameters_v
+                 cross join params p
+                 where uttm_mode = 'ACTION_PARAMS'
+                   and cap_cat_id = cat_id
+              ), adc_util.C_CR) rule_action_params
+         from adc_action_types_v
+         join params
+           on cat_is_editable = p_cat_is_editable
+           or p_cat_is_editable is null
+        where uttm_mode = 'ACTION_TYPE'
+          and cat_cato_id = p_cato_id;
+    utl_text.generate_text_table(l_cur, l_action_type_list);
+
+    for i in 1 .. l_action_type_list.count loop
+      dbms_lob.append(l_action_types, l_action_type_list(i));
+    end loop;
+    
+    pit.leave_optional;
+    return l_action_types;
+  end get_action_types;
+  
+  
+  /**
+    Procedure: add_param_lov_statements
+      Method to add install scripts vor dynamically defined, lov based action parameter types
+      
+    Parameter:
+      p_zip_file - ZIP file with all files generated so far
+      p_cato_id - Owner of the parameters
+   */
+  procedure add_param_lov_statements(
+    p_cato_id in adc_action_type_owners_v.cato_id%type,
+    p_zip_file in out nocopy blob)
+  as
+    l_export_script clob;
+  begin
+    pit.enter_optional('add_custom_action_types');
+    
+    -- Finally, add all create view statements for LOV-based parameter types
+    for cpt in (select v.*
+                  from adc_action_param_types_v v
+                  join adc_action_parameters
+                    on capt_id = cap_capt_id
+                  join adc_action_types
+                    on cap_cat_id = cat_id
+                 where cat_cato_id = p_cato_id
+                   and (capt_capvt_id = C_STATIC_LIST
+                    or capt_select_list_query is not null)) loop
+      l_export_script := adc_parameter.get_param_lov_query(cpt);
+    
+      apex_zip.add_file(
+        p_zipped_blob => p_zip_file,
+        p_file_name => 'adc_param_lov_' || lower(cpt.capt_id) || '.lov',
+        p_content => utl_text.clob_to_blob(l_export_script));
+    end loop;
+    
+    pit.leave_optional;
+  end add_param_lov_statements;
+  
+  
+  /**
+    Procedure: add_custom_action_types
+      Method to add all custom defined action types along with their exclusively
+      defined parameter types to separate installation files
+      
+    Parameter:
+      p_zip_file - ZIP file with all files generated so far
+   */
+  procedure add_custom_action_types(
+    p_zip_file in out nocopy blob)
+  as
+    cursor custom_actions_cur is
+      select cato_id
+        from adc_action_type_owners
+       where cato_id != C_ADC;
+    l_action_param_types clob;
+    l_action_types clob;
+    l_custom_action_types clob;
+    C_FILE_NAME_PATTERN constant adc_util.ora_name_type := 'adc_action_types_#CATO#.sql';
+  begin
+    pit.enter_optional('add_custom_action_types');
+    
+    for cato in custom_actions_cur loop
+      l_action_param_types := get_action_param_types(cato.cato_id);
+      l_action_types := get_action_types(cato.cato_id);
+      
+      select utl_text.generate_text(cursor(
+               select uttm_text template, 
+                      l_action_param_types action_param_types,
+                      l_action_types action_types
+                 from utl_text_templates
+                where uttm_type = C_ADC
+                  and uttm_name = C_UTTM_NAME
+                  and uttm_mode = 'CUSTOM_FRAME'))
+        into l_custom_action_types
+        from dual;
+      
+      apex_zip.add_file(
+        p_zipped_blob => p_zip_file,
+        p_file_name => replace(C_FILE_NAME_PATTERN, '#CATO#', cato.cato_id),
+        p_content => utl_text.clob_to_blob(l_custom_action_types));
+        
+      add_param_lov_statements(cato.cato_id, p_zip_file);
+    end loop;
+    
+    pit.leave_optional;
+  end add_custom_action_types;
   
 
   /**
@@ -2601,12 +2817,9 @@ as
       See <ADC_ADMIN.export_action_types>
    */
   function export_action_types(
-    p_cat_is_editable in adc_action_types.cat_is_editable%type default adc_util.C_TRUE)
+    p_mode in varchar2)
     return blob
   as
-    C_UTTM_NAME constant adc_util.ora_name_type := 'EXPORT_ACTION_TYPE';
-    C_WRAP_START constant adc_util.tiny_char := 'q''{';
-    C_WRAP_END constant adc_util.tiny_char := '}''';
     l_action_param_visual_types clob;
     l_action_param_types clob;
     l_page_item_type_groups clob;
@@ -2615,228 +2828,183 @@ as
     l_action_item_focus clob;
     l_action_type_groups clob;
     l_action_type_owners clob;
-    l_action_type_list clob_table;
     l_action_types clob;
     l_apex_action_types clob;
-    l_cur sys_refcursor;
-    l_stmt clob;
+    l_export_script clob;
     l_zip_file blob;
     l_zip_file_name adc_util.ora_name_type;
+    l_with_system boolean;
+    l_with_user boolean;
   begin
-    pit.enter_mandatory(p_params => msg_params(msg_param('p_cat_is_editable', p_cat_is_editable)));
+    pit.enter_mandatory(p_params => msg_params(msg_param('p_mode', p_mode)));
     -- prevent unwanted escapings on nested anchors
     utl_text.set_main_anchor_char('#');
     utl_text.set_secondary_anchor_char(null);
     
-    case p_cat_is_editable
-    when adc_util.C_TRUE then
+    -- Set export mode
+    case p_mode
+    when C_EXPORT_USER then
       l_zip_file_name := 'action_types_user.sql';
-    when adc_util.C_FALSE then
+      l_with_user := true;
+      l_with_system := false;
+    when C_EXPORT_SYSTEM then
       l_zip_file_name := 'action_types_system.sql';
+      l_with_user := false;
+      l_with_system := true;
     else
       l_zip_file_name := 'action_types_all.sql';
+      l_with_user := true;
+      l_with_system := true;
     end case;
 
-    select utl_text.generate_text(cursor(
-            select uttm_text template,
-                   cpt.capvt_id, cpt.capvt_name, adc_util.to_bool(cpt.capvt_active) capvt_active,
-                   utl_text.wrap_string(cpt.capvt_description, C_WRAP_START, C_WRAP_END) capvt_description,
-                   capvt_param_item_extension, capvt_display_name, capvt_sort_seq
-              from adc_action_param_visual_types_v cpt
-           ), adc_util.C_CR)
-      into l_action_param_visual_types
-      from utl_text_templates
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = 'PARAM_VISUAL_TYPE';
-
-    select utl_text.generate_text(cursor(
-            select uttm_text template,
-                   cpt.capt_id, cpt.capt_name, adc_util.to_bool(cpt.capt_active) capt_active,
-                   utl_text.wrap_string(cpt.capt_description, C_WRAP_START, C_WRAP_END) capt_description,
-                   capt_capvt_id,
-                   utl_text.wrap_string(cpt.capt_select_list_query, C_WRAP_START, C_WRAP_END) capt_select_list_query,
-                   utl_text.wrap_string(cpt.capt_select_view_comment, C_WRAP_START, C_WRAP_END) capt_select_view_comment,
-                   capt_display_name, capt_sort_seq
-              from adc_action_param_types_v cpt
-           ), adc_util.C_CR)
-      into l_action_param_types
-      from utl_text_templates
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = 'PARAM_TYPE';
-       
-    select utl_text.generate_text(cursor(
-            select uttm_text template,
-                   cpitg_id, 
-                   adc_util.to_bool(cpitg_has_value) cpitg_has_value, 
-                   adc_util.to_bool(cpitg_include_in_view) cpitg_include_in_view
-              from adc_page_item_type_groups
-          ))
-      into l_page_item_type_groups
-      from utl_text_templates
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = 'PAGE_ITEM_TYPE_GROUP';
-       
-    select utl_text.generate_text(cursor(
-            select uttm_text template,
-                   cet_id, cet_name, cet_cpitg_id, cet_column_name,
-                   adc_util.to_bool(cet_is_custom_event) cet_is_custom_event
-              from adc_event_types_v
-          ))
-      into l_event_types
-      from utl_text_templates
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = 'EVENT_TYPE';
-
-    select utl_text.generate_text(cursor(
-            select uttm_text template,
-                   cpit_id, cpit_cpitg_id, cpit_name, 
-                   adc_util.to_bool(cpit_has_value) cpit_has_value, 
-                   adc_util.to_bool(cpit_include_in_view) cpit_include_in_view, 
-                   cpit_cet_id, 
-                   utl_text.wrap_string(cpit_col_template, C_WRAP_START, C_WRAP_END) cpit_col_template, 
-                   utl_text.wrap_string(cpit_init_template, C_WRAP_START, C_WRAP_END) cpit_init_template
-              from adc_page_item_types_v
-          ))
-      into l_page_item_types
-      from utl_text_templates
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = 'PAGE_ITEM_TYPE';
-
-    select utl_text.generate_text(cursor(
-            select uttm_text template,
-                   caif_id, caif_name, adc_util.to_bool(caif_active) caif_active, caif_default,
-                   utl_text.wrap_string(caif_description, C_WRAP_START, C_WRAP_END) caif_description,
-                   adc_util.to_bool(caif_actual_page_only) caif_actual_page_only, caif_item_types
-              from adc_action_item_focus_v
-           ), adc_util.C_CR)
-      into l_action_item_focus
-      from utl_text_templates
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = 'ITEM_FOCUS';
-
-    select utl_text.generate_text(cursor(
-            select uttm_text template,
-                   catg_id, catg_name, adc_util.to_bool(catg_active) catg_active,
-                   utl_text.wrap_string(catg_description, C_WRAP_START, C_WRAP_END) catg_description
-              from adc_action_type_groups_v
-           ), adc_util.C_CR)
-      into l_action_type_groups
-      from utl_text_templates
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = 'ACTION_TYPE_GROUP';
-
-    select utl_text.generate_text(cursor(
-            select uttm_text template,
-                   cato_id, 
-                   adc_util.to_bool(cato_active) cato_active,
-                   utl_text.wrap_string(cato_description, C_WRAP_START, C_WRAP_END) cato_description
-              from adc_action_type_owners_v 
-           ), adc_util.C_CR)
-      into l_action_type_owners
-      from utl_text_templates
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = 'ACTION_TYPE_OWNER';
-
-    select utl_text.generate_text(cursor(
-            select uttm_text template,
-                   caat_id, caat_name, adc_util.to_bool(caat_active) caat_active,
-                   utl_text.wrap_string(caat_description, C_WRAP_START, C_WRAP_END) caat_description
-              from adc_apex_action_types_v 
-           ), adc_util.C_CR)
-      into l_apex_action_types
-      from utl_text_templates
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = 'APEX_ACTION_TYPE';
-
-    -- Collect action types. Different API for performance and size reasons
-    dbms_lob.createtemporary(l_action_types, false, dbms_lob.call);
-    open l_cur for         
-       with params as (
-              select uttm_mode, uttm_text template, null p_cat_is_editable
-                from utl_text_templates
-               where uttm_type = C_ADC
-                 and uttm_name = C_UTTM_NAME)
-       select template,
-              cat_id, cat_catg_id, cat_caif_id, cat_cato_id, cat_name,
-              utl_text.wrap_string(cat_display_name, C_WRAP_START, C_WRAP_END) cat_display_name,
-              utl_text.wrap_string(cat_description, C_WRAP_START, C_WRAP_END) cat_description,
-              utl_text.wrap_string(cat_pl_sql, C_WRAP_START, C_WRAP_END) cat_pl_sql,
-              utl_text.wrap_string(cat_js, C_WRAP_START, C_WRAP_END) cat_js,
-              adc_util.to_bool(cat_is_editable) cat_is_editable,
-              adc_util.to_bool(cat_raise_recursive) cat_raise_recursive,
-              -- rule action_params
-              utl_text.generate_text(cursor(
-                select template, cap_cat_id, cap_capt_id, cap_sort_seq,
-                       adc_util.to_bool(cap_mandatory) cap_mandatory,
-                       adc_util.to_bool(cap_active) cap_active,
-                       utl_text.wrap_string(cap_default, C_WRAP_START, C_WRAP_END) cap_default,
-                       utl_text.wrap_string(cap_description, C_WRAP_START, C_WRAP_END) cap_description,
-                       cap_display_name
-                  from adc_action_parameters_v
-                 cross join params p
-                 where uttm_mode = 'ACTION_PARAMS'
-                   and cap_cat_id = cat_id
-              ), adc_util.C_CR) rule_action_params
-         from adc_action_types_v
-         join params
-           on cat_is_editable = p_cat_is_editable
-           or p_cat_is_editable is null
-        where uttm_mode = 'ACTION_TYPE';
-    utl_text.generate_text_table(l_cur, l_action_type_list);
-
-    for i in 1 .. l_action_type_list.count loop
-      dbms_lob.append(l_action_types, l_action_type_list(i));
-    end loop;
-
-    -- create export statement
-    select utl_text.generate_text(cursor(
-             select uttm_text template,
-                    l_action_param_visual_types action_param_visual_types,
-                    l_action_param_types action_param_types,
-                    l_page_item_type_groups page_item_type_groups,
-                    l_event_types event_types,
-                    l_page_item_types page_item_types,
-                    l_action_item_focus action_item_focus,
-                    l_action_type_groups action_type_groups,
-                    l_action_type_owners action_type_owners,
-                    l_action_types action_types,
-                    l_apex_action_types apex_action_types
-               from dual
-           ), adc_util.C_CR) resultat
-      into l_stmt
-      from utl_text_templates
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = C_FRAME;
-    
-    apex_zip.add_file(
-      p_zipped_blob => l_zip_file,
-      p_file_name => l_zip_file_name,
-      p_content => utl_text.clob_to_blob(l_stmt));
-       
-    -- Finally, add all create view statements for LOV-based parameter types
-    for cpt in (select *
-                  from adc_action_param_types_v
-                 where capt_capvt_id = C_STATIC_LIST
-                    or capt_select_list_query is not null) loop
-      l_stmt := adc_parameter.get_param_lov_query(cpt);
-    
+    -- export system action types
+    if l_with_system then
+      select utl_text.generate_text(cursor(
+              select uttm_text template,
+                     capvt_id, capvt_name, adc_util.to_bool(capvt_active) capvt_active,
+                     utl_text.wrap_string(capvt_description, C_WRAP_START, C_WRAP_END) capvt_description,
+                     capvt_param_item_extension, capvt_display_name, capvt_sort_seq
+                from adc_action_param_visual_types_v
+             ), adc_util.C_CR)
+        into l_action_param_visual_types
+        from utl_text_templates
+       where uttm_type = C_ADC
+         and uttm_name = C_UTTM_NAME
+         and uttm_mode = 'PARAM_VISUAL_TYPE';
+         
+      l_action_param_types := get_action_param_types(C_ADC);
+         
+      select utl_text.generate_text(cursor(
+              select uttm_text template,
+                     cpitg_id, 
+                     adc_util.to_bool(cpitg_has_value) cpitg_has_value, 
+                     adc_util.to_bool(cpitg_include_in_view) cpitg_include_in_view
+                from adc_page_item_type_groups
+            ))
+        into l_page_item_type_groups
+        from utl_text_templates
+       where uttm_type = C_ADC
+         and uttm_name = C_UTTM_NAME
+         and uttm_mode = 'PAGE_ITEM_TYPE_GROUP';
+         
+      select utl_text.generate_text(cursor(
+              select uttm_text template,
+                     cet_id, cet_name, cet_cpitg_id, cet_column_name,
+                     adc_util.to_bool(cet_is_custom_event) cet_is_custom_event
+                from adc_event_types_v
+            ))
+        into l_event_types
+        from utl_text_templates
+       where uttm_type = C_ADC
+         and uttm_name = C_UTTM_NAME
+         and uttm_mode = 'EVENT_TYPE';
+  
+      select utl_text.generate_text(cursor(
+              select uttm_text template,
+                     cpit_id, cpit_cpitg_id, cpit_name, 
+                     adc_util.to_bool(cpit_has_value) cpit_has_value, 
+                     adc_util.to_bool(cpit_include_in_view) cpit_include_in_view, 
+                     cpit_cet_id, 
+                     utl_text.wrap_string(cpit_col_template, C_WRAP_START, C_WRAP_END) cpit_col_template, 
+                     utl_text.wrap_string(cpit_init_template, C_WRAP_START, C_WRAP_END) cpit_init_template
+                from adc_page_item_types_v
+            ))
+        into l_page_item_types
+        from utl_text_templates
+       where uttm_type = C_ADC
+         and uttm_name = C_UTTM_NAME
+         and uttm_mode = 'PAGE_ITEM_TYPE';
+  
+      select utl_text.generate_text(cursor(
+              select uttm_text template,
+                     caif_id, caif_name, adc_util.to_bool(caif_active) caif_active, caif_default,
+                     utl_text.wrap_string(caif_description, C_WRAP_START, C_WRAP_END) caif_description,
+                     adc_util.to_bool(caif_actual_page_only) caif_actual_page_only, caif_item_types
+                from adc_action_item_focus_v
+             ), adc_util.C_CR)
+        into l_action_item_focus
+        from utl_text_templates
+       where uttm_type = C_ADC
+         and uttm_name = C_UTTM_NAME
+         and uttm_mode = 'ITEM_FOCUS';
+  
+      select utl_text.generate_text(cursor(
+              select uttm_text template,
+                     catg_id, catg_name, adc_util.to_bool(catg_active) catg_active,
+                     utl_text.wrap_string(catg_description, C_WRAP_START, C_WRAP_END) catg_description
+                from adc_action_type_groups_v
+             ), adc_util.C_CR)
+        into l_action_type_groups
+        from utl_text_templates
+       where uttm_type = C_ADC
+         and uttm_name = C_UTTM_NAME
+         and uttm_mode = 'ACTION_TYPE_GROUP';
+  
+      select utl_text.generate_text(cursor(
+              select uttm_text template,
+                     cato_id, 
+                     adc_util.to_bool(cato_active) cato_active,
+                     utl_text.wrap_string(cato_description, C_WRAP_START, C_WRAP_END) cato_description
+                from adc_action_type_owners_v
+               where cato_id = C_ADC
+             ), adc_util.C_CR)
+        into l_action_type_owners
+        from utl_text_templates
+       where uttm_type = C_ADC
+         and uttm_name = C_UTTM_NAME
+         and uttm_mode = 'ACTION_TYPE_OWNER';
+  
+      select utl_text.generate_text(cursor(
+              select uttm_text template,
+                     caat_id, caat_name, adc_util.to_bool(caat_active) caat_active,
+                     utl_text.wrap_string(caat_description, C_WRAP_START, C_WRAP_END) caat_description
+                from adc_apex_action_types_v
+             ), adc_util.C_CR)
+        into l_apex_action_types
+        from utl_text_templates
+       where uttm_type = C_ADC
+         and uttm_name = C_UTTM_NAME
+         and uttm_mode = 'APEX_ACTION_TYPE';
+         
+      l_action_types := get_action_types(C_ADC);
+  
+      -- create export statement
+      select utl_text.generate_text(cursor(
+               select uttm_text template,
+                      l_action_param_visual_types action_param_visual_types,
+                      l_action_param_types action_param_types,
+                      l_page_item_type_groups page_item_type_groups,
+                      l_event_types event_types,
+                      l_page_item_types page_item_types,
+                      l_action_item_focus action_item_focus,
+                      l_action_type_groups action_type_groups,
+                      l_action_type_owners action_type_owners,
+                      l_action_types action_types,
+                      l_apex_action_types apex_action_types
+                 from dual
+             ), adc_util.C_CR) resultat
+        into l_export_script
+        from utl_text_templates
+       where uttm_type = C_ADC
+         and uttm_name = C_UTTM_NAME
+         and uttm_mode = C_FRAME;
+      
       apex_zip.add_file(
         p_zipped_blob => l_zip_file,
-        p_file_name => 'adc_param_lov_' || lower(cpt.capt_id) || '.lov',
-        p_content => utl_text.clob_to_blob(l_stmt));
-    end loop; 
-
-    apex_zip.finish(l_zip_file);
+        p_file_name => l_zip_file_name,
+        p_content => utl_text.clob_to_blob(l_export_script));
+        
+      add_param_lov_statements(C_ADC, l_zip_file);
+    end if;
+      
+    -- export user action types
+    if l_with_user then
+      add_custom_action_types(l_zip_file);
+    end if;
+    
+    if l_zip_file is not null then
+      apex_zip.finish(l_zip_file);
+    end if;
 
     -- reset utl_text to standard values
     utl_text.initialize;   

@@ -695,6 +695,29 @@ q'[]',
   utl_text_admin.merge_template(
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
+    p_uttm_mode => 'CUSTOM_FRAME',
+    p_uttm_text => q'[set define off\CR\]' || 
+q'[\CR\]' || 
+q'[begin\CR\]' || 
+q'[  -- ACTION_PARAM_TYPES\CR\]' || 
+q'[#ACTION_PARAM_TYPES#\CR\]' || 
+q'[\CR\]' || 
+q'[  -- ACTION TYPES\CR\]' || 
+q'[#ACTION_TYPES#\CR\]' || 
+q'[\CR\]' || 
+q'[  commit;\CR\]' || 
+q'[end;\CR\]' || 
+q'[/\CR\]' || 
+q'[\CR\]' || 
+q'[set define on\CR\]' || 
+q'[]',
+    p_uttm_log_text => q'[]',
+    p_uttm_log_severity => 70
+  );
+
+  utl_text_admin.merge_template(
+    p_uttm_name => 'EXPORT_ACTION_TYPE',
+    p_uttm_type => 'ADC',
     p_uttm_mode => 'PARAM_VISUAL_TYPE',
     p_uttm_text => q'[  adc_admin.merge_action_param_visual_type(\CR\]' || 
 q'[    p_capvt_id => '#CAPVT_ID#',\CR\]' || 

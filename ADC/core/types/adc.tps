@@ -1,4 +1,6 @@
-create or replace type adc under adc_basic(
+whenever sqlerror continue
+
+create type adc under adc_basic(
 
   /**
     Type: ADC
@@ -15,3 +17,5 @@ create or replace type adc under adc_basic(
    */
 );
 /
+
+whenever sqlerror exit

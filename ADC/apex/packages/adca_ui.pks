@@ -96,7 +96,7 @@ as
     Procedure: validate_edit_catg
       Method to validate page EDIT_CATG
       
-      Is called to validate user data if the page is submitted. (CTG = ADC Action Type Groups).
+      Is called to validate user data if the page is submitted. (CATG = ADC Action Type Groups).
    */
   function validate_edit_catg
     return boolean;
@@ -106,9 +106,28 @@ as
     Procedure: process_edit_catg
       Method to process page EDIT_CATG
       
-      Is called to persist user data if the page is submitted. (catg = ADC Action Type Groups).
+      Is called to persist user data if the page is submitted. (CATG = ADC Action Type Groups).
    */
   procedure process_edit_catg;
+  
+  
+  /** 
+    Procedure: validate_edit_cato
+      Method to validate page EDIT_CATO
+      
+      Is called to validate user data if the page is submitted. (CATO = ADC Action Type Owners).
+   */
+  function validate_edit_cato
+    return boolean;
+
+
+  /** 
+    Procedure: process_edit_cato
+      Method to process page EDIT_CATO
+      
+      Is called to persist user data if the page is submitted. (CATO = ADC Action Type Owners).
+   */
+  procedure process_edit_cato;
   
   
   /**

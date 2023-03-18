@@ -18,11 +18,19 @@ as
       C_APEX_APP - Export all ADC groups of an APEX application including the application itself
       C_APP_GROUPS - Export all ADC group of an APEX application
       C_PAGE_GROUP - Export a single ADC group
+      
+      C_EXPORT_USER - Export all user defined action types
+      C_EXPORT_SYSTEM - Export all ADC defined action types
+      C_EXPORT_ALL - Export ADC and user defined action types
   */
   C_ALL_GROUPS constant adc_util.ora_name_type := 'ALL_GROUPS';
   C_APEX_APP constant adc_util.ora_name_type := 'APEX_APP';
   C_APP_GROUPS constant adc_util.ora_name_type := 'APP_GROUPS';
   C_PAGE_GROUP constant adc_util.ora_name_type := 'PAGE_GROUP';
+  
+  C_EXPORT_USER constant adc_util.ora_name_type := 'CAT_EXPORT_USER';
+  C_EXPORT_SYSTEM constant adc_util.ora_name_type := 'CAT_EXPORT_SYSTEM';
+  C_EXPORT_ALL constant adc_util.ora_name_type := 'CAT_EXPORT_ALL';
 
   -- Group: Helper Methods
   /**
@@ -564,7 +572,6 @@ as
       
     Errors:
       CATO_ID_MISSING - if parameter P_ROW.CATO_ID is null
-      CATO_NAME_MISSING - if parameter P_ROW.CATO_NAME is null
    */
   procedure validate_action_type_owner(
     p_row in adc_action_type_owners_v%rowtype);
@@ -861,14 +868,14 @@ as
       Method to export an action type. Creates a BLOB instance with the requested action types for export.
                 
     Parameter:
-      p_cat_is_editable - Controls, which ADC rules to export:
+      p_mode - Controls, which ADC rules to export:
       
-                          - C_TRUE: User defined action types
-                          - C_FALSE: Internally defined action types
-                          - NULL: Both, internally and user defined action types
+               - C_EXPORT_USER: User defined action types
+               - C_EXPORT_SYSTEM: Internally defined action types
+               - C_EXPORT_ALL: Both, internally and user defined action types
    */
   function export_action_types(
-    p_cat_is_editable in adc_action_types.cat_is_editable%type default adc_util.C_TRUE)
+    p_mode in varchar2)
     return blob;
 
 

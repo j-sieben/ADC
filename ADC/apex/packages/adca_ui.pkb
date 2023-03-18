@@ -40,7 +40,7 @@ as
     Group: Private Methods
    */
   procedure copy_edit_cat(
-    p_row in out nocopy adca_ui_edit_cat%rowtype)
+    p_row out nocopy adca_ui_edit_cat%rowtype)
   as
   begin
     pit.enter_detailed('copy_edit_cat');
@@ -81,7 +81,7 @@ as
 
 
   procedure copy_edit_cif(
-    p_row in out nocopy adc_action_item_focus_v%rowtype)
+    p_row out nocopy adc_action_item_focus_v%rowtype)
   as
   begin
     pit.enter_detailed('copy_edit_cif');
@@ -98,7 +98,7 @@ as
 
 
   procedure copy_edit_cpit(
-    p_row in out nocopy adc_page_item_types_v%rowtype)
+    p_row out nocopy adc_page_item_types_v%rowtype)
   as
   begin
     pit.enter_detailed('copy_edit_cpit');
@@ -117,7 +117,7 @@ as
   
 
   procedure copy_edit_catg(
-    p_row in out nocopy adc_action_type_groups_v%rowtype)
+    p_row out nocopy adc_action_type_groups_v%rowtype)
   as
   begin
     pit.enter_detailed('copy_edit_catg');
@@ -130,9 +130,23 @@ as
     pit.leave_detailed;
   end copy_edit_catg;
   
+  
+  procedure copy_edit_cato(
+    p_row out nocopy adc_action_type_owners_v%rowtype)
+  as
+  begin
+    pit.enter_detailed('copy_edit_cato');
+  
+    p_row.cato_id := utl_apex.get_string('cato_id');
+    p_row.cato_description := utl_apex.get_string('cato_description');
+    p_row.cato_active := coalesce(utl_apex.get_string('cato_active'), utl_apex.C_TRUE);
+  
+    pit.leave_detailed;
+  end copy_edit_cato;
+  
 
   procedure copy_edit_capt(
-    p_row in out nocopy adc_action_param_types_v%rowtype)
+    p_row out nocopy adc_action_param_types_v%rowtype)
   as
   begin
     pit.enter_detailed('copy_edit_capt');
@@ -151,7 +165,7 @@ as
     
 
   procedure copy_edit_capt_static_list(
-    p_row in out nocopy adca_ui_edit_capt_static_list%rowtype)
+    p_row out nocopy adca_ui_edit_capt_static_list%rowtype)
   as
   begin
     pit.enter_detailed('copy_edit_capt_static_list');
@@ -182,6 +196,7 @@ as
     p_rec.cat_id := p_row.cat_id;
     p_rec.cat_catg_id := p_row.cat_catg_id;
     p_rec.cat_caif_id := p_row.cat_caif_id;
+    p_rec.cat_cato_id := p_row.cat_cato_id;
     p_rec.cat_name := p_row.cat_name;
     p_rec.cat_display_name := p_row.cat_display_name;
     p_rec.cat_description := p_row.cat_description;
@@ -254,36 +269,24 @@ as
   procedure process_export_cat
   as
     l_export_type pit_translatable_item_v.pti_id%type;
-    l_cat_is_editable adc_action_types.cat_is_editable%type;
     l_zip_file blob;
     l_zip_file_name adc_util.sql_char := 'action_types.zip';
-    
-    C_EXPORT_ALL constant pit_translatable_item_v.pti_id%type := 'CAT_EXPORT_ALL';
-    C_EXPORT_USER constant pit_translatable_item_v.pti_id%type := 'CAT_EXPORT_USER';
-    C_EXPORT_SYSTEM constant pit_translatable_item_v.pti_id%type := 'CAT_EXPORT_SYSTEM';
   begin
     pit.enter_mandatory;
     
     l_export_type := utl_apex.get_value('EXPORT_TYPE');
-    
-    case l_export_type
-    when C_EXPORT_ALL then
-      l_cat_is_editable := null;
-    when C_EXPORT_USER then
-      l_cat_is_editable := adc_util.C_TRUE;
-    when C_EXPORT_SYSTEM then
-      l_cat_is_editable := adc_util.C_FALSE;
-    else
-      adc.register_error(
-        p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
-        p_message_name => msg.ADCA_UNKNOWN_ACTION,
-        p_msg_args => msg_args(l_export_type));
-    end case;
+    utl_apex.assert(
+      p_condition => l_export_type in (adc_admin.C_EXPORT_ALL, adc_admin.C_EXPORT_USER, adc_admin.C_EXPORT_SYSTEM), 
+      p_message_name => msg.ADCA_UNKNOWN_ACTION,
+      p_msg_args => msg_args(l_export_type));
     
     -- generate ZIP with the requested action types and download.
     l_zip_file := adc_admin.export_action_types(
-                    p_cat_is_editable => l_cat_is_editable);
-    utl_apex.download_blob(l_zip_file, l_zip_file_name);
+                    p_mode => l_export_type);
+    
+    if l_zip_file is not null then
+      utl_apex.download_blob(l_zip_file, l_zip_file_name);
+    end if;
     
     pit.leave_mandatory;
   end process_export_cat;
@@ -584,7 +587,7 @@ as
   
     
   /** 
-    Function: process_edit_catg
+    Procedure: process_edit_catg
       See <adca_ui.process_edit_catg>
    */
   procedure process_edit_catg
@@ -607,6 +610,54 @@ as
     
     pit.leave_mandatory;
   end process_edit_catg;
+  
+    
+  /** 
+    Function: validate_edit_cato
+      See <adca_ui.validate_edit_cato>
+   */
+  function validate_edit_cato
+    return boolean
+  as
+    l_row adc_action_type_owners_v%rowtype;
+  begin
+    pit.enter_mandatory;
+  
+    copy_edit_cato(l_row);
+    
+    pit.start_message_collection;
+    adc_admin.validate_action_type_owner(l_row);
+    pit.stop_message_collection;
+  
+    pit.leave_mandatory;
+    return true;
+  exception
+    when msg.PIT_BULK_ERROR_ERR or msg.PIT_BULK_FATAL_ERR then
+      utl_apex.handle_bulk_errors(char_table(
+        'CATO_ID_MISSING', 'CATO_ID'));
+      return true;
+  end validate_edit_cato;
+  
+    
+  /** 
+    Procedure: process_edit_cato
+      See <adca_ui.process_edit_cato>
+   */
+  procedure process_edit_cato
+  as
+    l_row adc_action_type_owners_v%rowtype;
+  begin
+    pit.enter_mandatory;
+    
+    copy_edit_cato(l_row);
+    case when utl_apex.inserting or utl_apex.updating then
+      adc_admin.merge_action_type_owner(l_row);
+    else
+      adc_admin.delete_action_type_owner(l_row);
+    end case;
+    
+    pit.leave_mandatory;
+  end process_edit_cato;
   
   
   /** 
