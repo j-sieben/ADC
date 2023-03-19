@@ -33,6 +33,7 @@ prompt &h2.Predefine package ADC_UTIL for reference from views
 @&tool_dir.create_package adc_util
 
 prompt &h3.Create views
+@&tool_dir.create_view adc_rule_group_status
 @&tool_dir.create_view adc_action_item_focus_v
 @&tool_dir.create_view adc_action_param_types_v
 @&tool_dir.create_view adc_action_param_visual_types_v
@@ -49,7 +50,6 @@ prompt &h3.Create views
 @&tool_dir.create_view adc_bl_page_targets
 @&tool_dir.create_view adc_bl_rules
 @&tool_dir.create_view adc_bl_page_targets
-@&tool_dir.create_view adc_rule_group_status
 
 prompt &h3.Create parameter lov views
 @&tool_dir.create_lov_view adc_param_lov_apex_action

@@ -11,7 +11,7 @@ create table adc_page_items(
   cpi_is_mandatory &FLAG_TYPE. default on null &C_FALSE. constraint c_cpi_is_mandatory_nn not null, 
   cpi_mandatory_message varchar2(200 char), 
   cpi_validation_method varchar2(200 char),
-  cpi_may_have_value &FLAG_TYPE. default on null &C_TRUE. constraint c_cpi_may_have_value_nn not null
+  cpi_may_have_value &FLAG_TYPE. default on null &C_TRUE. constraint c_cpi_may_have_value_nn not null,
   cpi_has_error &FLAG_TYPE. default on null &C_FALSE. constraint c_cpi_has_error_nn not null,
   constraint p_cpi_cpi_crg_id primary key (cpi_crg_id, cpi_id),
   constraint r_cpi_cpit_id foreign key (cpi_cpit_id)
