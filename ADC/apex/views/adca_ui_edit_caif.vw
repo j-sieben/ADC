@@ -4,7 +4,7 @@ with caif_references as (
        select cat_caif_id, count(*) ref_amount
          from adc_action_types
         group by cat_caif_id)
-select caif_id, caif_name, caif_description, caif_actual_page_only, caif_item_types, caif_active,
+select caif_id, caif_name, caif_description, caif_default, caif_actual_page_only, caif_item_types, caif_active,
        coalesce(ref_amount, 0) ref_amount,
        case coalesce(ref_amount, 0)
          when 0 then 'UD'
