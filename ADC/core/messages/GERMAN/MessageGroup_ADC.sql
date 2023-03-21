@@ -557,7 +557,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_STOP_NO_PLSQL',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^PL/SQL-Code wurde nicht ausgeführt, da ein Fehler vorlag und die Regel gestoppt wurde.^',
+    p_pms_text => q'^PL/SQL-Code "#1#" wurde nicht ausgeführt, da ein Fehler vorlag und die Regel gestoppt wurde.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 40,
     p_pms_pml_name => 'GERMAN');
@@ -581,7 +581,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_STOP_NO_JAVASCRIPT',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^JavaScript-Code "#1#" wurde nicht berücksichtigt, da ein Fehler vorlag und die Regel gestoppt wurde.^',
+    p_pms_text => q'^JavaScript-Code "#1#" wurde ausgegeben, da ein Fehler vorlag und die Regel gestoppt wurde.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 40,
     p_pms_pml_name => 'GERMAN');
