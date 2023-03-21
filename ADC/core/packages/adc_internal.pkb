@@ -195,10 +195,12 @@ as
       if g_param.stop_flag = adc_util.C_FALSE then
         adc_response.add_javascript(generate_parameterized_code('JAVASCRIPT', p_action_rec));
       else
-        pit.info(msg.ADC_STOP_NO_JAVASCRIPT);
+        pit.info(msg.ADC_STOP_NO_JAVASCRIPT, msg_args(p_action_rec.cat_js));
       end if;
       
       pit.leave_optional;
+    else
+      pit.verbose(msg.ADC_NO_JAVASCRIPT_ACTION);
     end if;
   end get_and_collect_js_code;
   
@@ -250,7 +252,7 @@ as
             stop_rule;
         end;
       else
-        adc_response.add_comment(msg.ADC_STOP_NO_PLSQL);
+        adc_response.add_comment(msg.ADC_STOP_NO_PLSQL, msg_args(p_action_rec.cat_pl_sql));
       end if;
       
       pit.leave_optional;
@@ -1426,6 +1428,10 @@ as
         p_param_3 => sra.cra_param_3,
         p_allow_recursion => adc_util.C_FALSE);
     end loop;
+    
+    if g_param.has_errors then
+      g_param.stop_flag := adc_util.C_TRUE;
+    end if;
   end validate_page;
   
 begin
