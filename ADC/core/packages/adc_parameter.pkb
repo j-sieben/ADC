@@ -851,8 +851,6 @@ end;~';
           when msg.ADC_PARAM_VALIDATION_FAILED_ERR then
             validate_is_bool_function(p_value, p_cpi_id);
         end;
-      when C_JAVA_SCRIPT then
-        null;
       when C_JAVA_SCRIPT_FUNCTION then
         validate_is_function(p_value, p_cpi_id);
       when C_JQUERY_SELECTOR then
@@ -877,14 +875,8 @@ end;~';
         validate_is_string_or_message(p_value, p_cpi_id);
       when C_EVENT then
         validate_is_event(p_value, p_cpi_id);
-      when C_ITEM_STATUS then
-        null;
-      when C_SUBMIT_TYPE then
-        null;
-      when C_SWITCH then
-        null;
       else
-        pit.error(msg.ADC_UNKNOWN_CPT, msg_args(p_capt_id));
+        null;
       end case;
 
     pit.leave_mandatory;
@@ -1066,26 +1058,6 @@ end;~';
       else
         if p_capt_id is not null then
           case p_capt_id
-            when C_APEX_ACTION then
-              null;
-            when C_FUNCTION then
-              l_value := execute_function(l_value);
-            when C_JAVA_SCRIPT then
-              null;
-            when C_JAVA_SCRIPT_FUNCTION then
-              null;
-            when C_JQUERY_SELECTOR then
-              null;
-            when C_PAGE_ITEM then
-              null;
-            when C_PIT_MESSAGE then
-              l_value := get_pit_message(l_value, null);
-            when C_PROCEDURE then
-              null;
-            when C_SEQUENCE then
-              null;
-            when C_SQL_STATEMENT then
-              null;
             when C_STRING then
               l_value := trim(adc_util.C_APOS from l_value);
             when C_STRING_OR_FUNCTION then
@@ -1094,24 +1066,14 @@ end;~';
               else
                 l_value := trim(adc_util.C_APOS from l_value);
               end if;
-            when C_STRING_OR_JAVASCRIPT then
-              null;
             when C_STRING_OR_PIT_MESSAGE then
               if substr(l_value, 1, 1) != adc_util.C_APOS then
                 l_value := get_pit_message(l_value, null);
               else
                 l_value := trim(adc_util.C_APOS from l_value);
               end if;
-            when C_EVENT then
-              null;
-            when C_ITEM_STATUS then
-              null;
-            when C_SUBMIT_TYPE then
-              null;
-            when C_SWITCH then
-              null;
             else
-              pit.error(msg.ADC_UNKNOWN_CPT, msg_args(p_capt_id));
+              null;
             end case;
         end if;
       end if;
