@@ -1,3 +1,8 @@
+
+:root{
+  --a-form-warning-text-color:#FBCE4A;
+}
+
 .adc-error {
   color:red;
 }
@@ -35,7 +40,7 @@
 .apex-item-text.apex-page-item-warning, .apex-item-select.apex-page-item-warning, .apex-item-textarea.apex-page-item-warning, .u-TF-item--text.apex-page-item-warning, 
 .u-TF-item--select.apex-page-item-warning, select.listmanager.apex-page-item-warning, select.group_selectlist.apex-page-item-warning, .apex-item-multi.apex-page-item-warning, 
 .datetimepicker_newMonth.apex-page-item-warning {
-    border-color: #FBCE4A;
+    border-color: var(--a-form-warning-text-color);
 }
 
 .t-Form-warning{
@@ -45,10 +50,21 @@
 .t-Form-warning:before{
   content: "\f071";
   font-family: 'Font APEX Small'!important;
-  font-size: 1.6rem;
-  line-height: 1.2rem;
-  vertical-align: bottom;
-  color: #FBCE4A;
+  color: var(--a-form-warning-text-color);
+  float:left;
+  margin-right:0.4rem;
+}
+
+.t-Form-error div{
+    color: black;
+}
+
+.t-Form-error:before{
+  content: "\f057";
+  font-family: 'Font APEX Small'!important;
+  color: var(--a-form-error-text-color);
+  float:left;
+  margin-right:0.4rem;
 }
 
 .a-GV-header{
