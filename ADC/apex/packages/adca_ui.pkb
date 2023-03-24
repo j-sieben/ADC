@@ -302,9 +302,8 @@ as
     l_mode adc_util.ora_name_type;
     l_zip_file_name adc_util.sql_char;
     l_zip_file blob;
-
-    C_ZIP_APEX_APP_NAME constant adc_util.ora_name_type := 'application_#APP_ID#.zip';
-    C_ZIP_APP_RULES_NAME constant adc_util.ora_name_type := 'application_#APP_ID#_rule_groups.zip';
+    l_application_filename adc_util.ora_name_type := param.get_string(C_ADC, 'APPLICATION_FILENAME');
+    l_rule_group_name adc_util.ora_name_type := param.get_string(C_ADC, 'RULE_GROUP_FILENAME');
   begin
     pit.enter_mandatory;
 
@@ -312,10 +311,10 @@ as
     
     if utl_apex.get_string('INCLUDE_APP') = adc_util.c_true then
       l_mode := adc_admin.C_APEX_APP;
-      l_zip_file_name := replace(C_ZIP_APEX_APP_NAME, '#APP_ID#', l_crg_app_id);
+      l_zip_file_name := replace(l_application_filename, '#APP_ID#', l_crg_app_id);
     else
       l_mode := adc_admin.c_APP_GROUPS;
-      l_zip_file_name := replace(C_ZIP_APP_RULES_NAME, '#APP_ID#', l_crg_app_id);
+      l_zip_file_name := replace(l_rule_group_name, '#APP_ID#', l_crg_app_id);
     end if;
 
     -- generate ZIP with the requested rule group files and download.

@@ -39,7 +39,9 @@ as
 
   /* Globale Variablen */
   g_offset binary_integer;
-
+  g_action_type_filename adc_util.ora_name_type;
+  g_user_action_type_filename adc_util.ora_name_type;
+  g_rule_group_filename adc_util.ora_name_type;
   
   /**
     Group: Type definitions
@@ -866,7 +868,6 @@ as
     l_action_param_types clob;
     l_action_types clob;
     l_custom_action_types clob;
-    C_FILE_NAME_PATTERN constant adc_util.ora_name_type := 'adc_action_types_#CATO#.sql';
   begin
     pit.enter_optional('add_custom_action_types');
     
@@ -887,7 +888,7 @@ as
       
       apex_zip.add_file(
         p_zipped_blob => p_zip_file,
-        p_file_name => replace(C_FILE_NAME_PATTERN, '#CATO#', cato.cato_id),
+        p_file_name => replace(g_user_action_type_filename, '#CATO#', cato.cato_id),
         p_content => utl_text.clob_to_blob(l_custom_action_types));
         
       add_param_lov_statements(cato.cato_id, p_zip_file);
@@ -905,6 +906,9 @@ as
   as
   begin
     g_offset := 0;
+    g_action_type_filename := param.get_string(C_ADC, 'ACTION_TYPE_FILENAME');
+    g_user_action_type_filename := param.get_string(C_ADC, 'USER_ACTION_TYPE_FILENAME');
+    g_rule_group_filename := param.get_string(C_ADC, 'RULE_GROUP_FILENAME');
   end;
 
 
@@ -1329,9 +1333,6 @@ as
          and (crg_page_id = p_crg_page_id or p_crg_page_id is null)
        order by p.page_id;
     
-    C_FILE_NAME_PATTERN constant varchar2(100 byte) := 'merge_rule_group_#CRG_FILE_NAME#.sql';
-    C_ACTION_TYPE_FILE_NAME constant adc_util.ora_name_type := 'merge_action_types.sql';
-    C_FILE_NAME_APPLICATION constant adc_util.ora_name_type := 'f#APP_ID#_dynamic.sql';
     l_zip_file blob;
     l_clob clob;
     l_blob blob;
@@ -1390,7 +1391,7 @@ as
                       p_crg_id => cgr.crg_id,
                       p_mode => p_mode));
                   
-        l_file_name := replace(C_FILE_NAME_PATTERN, '#CRG_FILE_NAME#', cgr.crg_file_name);
+        l_file_name := replace(g_rule_group_filename, '#CRG_FILE_NAME#', cgr.crg_file_name);
      
         apex_zip.add_file(
           p_zipped_blob => l_zip_file,

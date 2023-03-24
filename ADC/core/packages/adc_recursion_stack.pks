@@ -83,6 +83,20 @@ as
     p_event_data in adc_util.max_char default null,
     p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE,
     p_force in adc_util.flag_type default adc_util.C_FALSE);
+    
+    
+  /**
+    Procedure: register_touched_item
+      Method to register that a validation or similar has "touched" a page item. This method
+      is used to make sure that any errors which were shown on the page are removed from the
+      error list, even if the page items were not processed as part of a rule evaluation.
+      This could happen, if the page as a whole is validated.
+      
+    Parameter:
+      p_cpi_id - ID of the page item to push. May also be C_NO_FIRING_ITEM
+   */
+  procedure register_touched_item(
+    p_cpi_id in adc_page_items.cpi_id%type);
   
   
   /**

@@ -27,7 +27,6 @@ prompt &h3.Create views
 @&tool_dir.create_view adca_ui_lov_crg_page_items
 @&tool_dir.create_view adca_ui_lov_export_cat
 @&tool_dir.create_view adca_ui_lov_export_types
-@&tool_dir.create_view adca_ui_lov_item_types
 @&tool_dir.create_view adca_ui_lov_page_item_type
 @&tool_dir.create_view adca_ui_lov_page_item_type_group
 @&tool_dir.create_view adca_ui_lov_page_items_p11

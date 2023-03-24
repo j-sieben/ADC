@@ -1386,7 +1386,7 @@ as
          and cra_raise_on_validation = adc_util.C_TRUE;
          
     cursor dynamic_validation_cur is
-      select distinct cpi_validation_method
+      select distinct cpi_id, cpi_validation_method
         from adc_page_items
        where cpi_crg_id = g_param.crg_id
          and cpi_validation_method is not null;
@@ -1399,6 +1399,7 @@ as
     -- Check all mandatory fields (elements may not have triggered a CHANGE event)
     for itm in mandatory_item_cur loop
       begin
+        adc_recursion_stack.register_touched_item(itm.cgs_cpi_id);
         adc_page_state.check_mandatory(
           p_crg_id => g_param.crg_id,
           p_cpi_id => itm.cgs_cpi_id);
@@ -1416,6 +1417,7 @@ as
     for val in dynamic_validation_cur loop
       l_stmt := replace(C_CMD, '#CMD#', replace(val.cpi_validation_method, '#ITEM#'));
       execute immediate l_stmt using out l_result;
+      adc_recursion_stack.register_touched_item(val.cpi_id);
     end loop;
 
     -- Check all validations of the current ADC group
@@ -1427,6 +1429,7 @@ as
         p_param_2 => sra.cra_param_2,
         p_param_3 => sra.cra_param_3,
         p_allow_recursion => adc_util.C_FALSE);
+      adc_recursion_stack.register_touched_item(sra.cra_cpi_id);
     end loop;
     
     if g_param.has_errors then

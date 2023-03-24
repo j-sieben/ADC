@@ -11,7 +11,7 @@ as
     Author::
       Juergen Sieben, ConDeS GmbH
    */
-
+  C_ADC constant adc_util.ora_name_type := 'ADC';
   C_CMD constant adc_util.ora_name_type := 'begin :x := to_char(#CMD#); end;';
   C_CAPT_VIEW_NAME_PREFIX constant adc_util.ora_name_type := 'ADC_PARAM_LOV_';
   C_STATIC_LIST constant adc_util.ora_name_type := 'STATIC_LIST';
@@ -32,6 +32,7 @@ as
   C_STRING_OR_FUNCTION constant adc_action_param_types.capt_id%type := 'STRING_OR_FUNCTION';
   C_STRING_OR_JAVASCRIPT constant adc_action_param_types.capt_id%type := 'STRING_OR_JAVASCRIPT';
   C_STRING_OR_PIT_MESSAGE constant adc_action_param_types.capt_id%type := 'STRING_OR_PIT_MESSAGE';
+  C_STRING_ON_PARAMETER constant adc_action_param_types.capt_id%type := 'STRING_ON_PARAMETER';
   C_EVENT constant adc_action_param_types.capt_id%type := 'EVENT';
   C_ITEM_STATUS constant adc_action_param_types.capt_id%type := 'ITEM_STATUS';
   C_SUBMIT_TYPE constant adc_action_param_types.capt_id%type := 'SUBMIT_TYPE';
@@ -1072,6 +1073,8 @@ end;~';
               else
                 l_value := trim(adc_util.C_APOS from l_value);
               end if;
+            when C_STRING_ON_PARAMETER then
+              l_value := param.get_string(C_ADC, l_value);
             else
               null;
             end case;

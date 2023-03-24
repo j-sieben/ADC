@@ -60,7 +60,7 @@ as
     Constants:
       C_PARAM_GROUP - Name of the parameter group
    */
-  C_PARAM_GROUP constant adc_util.ora_name_type := 'ADC';
+  C_PARAM_GROUP constant parameter_v.par_pgr_id%type := 'ADC';
   C_COMMAND constant adc_util.ora_name_type := 'COMMAND';
   
   /**
@@ -202,10 +202,7 @@ as
         
         if (l_must_be_processed > 0 or p_force = adc_util.C_TRUE) and p_cpi_id != adc_util.C_NO_FIRING_ITEM then
           -- First, push item uniquely on g_recursion.firing_items to retrieve all firing items later
-          if p_cpi_id not member of g_recursion.firing_items then
-            g_recursion.firing_items.extend;
-            g_recursion.firing_items(g_recursion.firing_items.last) := p_cpi_id;
-          end if;
+          register_touched_item(p_cpi_id);
           -- then add item to the recursive stack. After succesful completion the firing item will be popped from that stack
           l_stack_entry.cpi_id := p_cpi_id;
           l_stack_entry.recursive_level := case g_recursion.item_stack.count when 0 then 1 else get_level + 1 end;
@@ -221,6 +218,27 @@ as
   end push_firing_item;
   
   
+  /**
+    Procedure : register_touched_item
+      See <ADC_RECURSION_STACK.register_touched_item>
+   */
+  procedure register_touched_item(
+    p_cpi_id in adc_page_items.cpi_id%type)
+  as
+  begin
+    pit.enter_optional('register_touched_item',
+      p_params => msg_params(
+                    msg_param('p_cpi_id', p_cpi_id)));
+                    
+    if p_cpi_id not member of g_recursion.firing_items then
+      g_recursion.firing_items.extend;
+      g_recursion.firing_items(g_recursion.firing_items.last) := p_cpi_id;
+    end if;
+    
+    pit.leave_optional;
+  end register_touched_item;
+  
+    
   /**
     Procedure: pop_firing_item
       See <ADC_RECURSION_STACK.pop_firing_item>
