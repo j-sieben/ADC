@@ -703,7 +703,8 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pItemList - Array of item names to add to the page state
    */
   ctl.setAdditionalItems = function(pItemList){
-    props.additionalItems = pItemList;
+    props.pageItems = new Set([...props.pageItems, ...pItemList]);
+    props.pageItems = Array.from(props.pageItems);
   } // setAdditionalItems
 
 
@@ -784,28 +785,30 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
    */
   adc.init = function (pAction) {
 
-    // bind all page items required by ADC
-    props.bindItems = $.parseJSON(pAction.attribute01.replace(/~/g, '"'));
+    if (pAction.attribute01){
+        // bind all page items required by ADC
+        props.bindItems = $.parseJSON(pAction.attribute01.replace(/~/g, '"'));
 
-    // register adc.renderer namespace object and Ajax identifier
-    adc.renderer = eval(pAction.attribute03);
-    props.ajaxIdentifier = pAction.ajaxIdentifier;
-    props.eventData.ajaxIdentifier = props.ajaxIdentifier;
-    props.eventData.pageItems = props.pageItems;
+        // register adc.renderer namespace object and Ajax identifier
+        adc.renderer = eval(pAction.attribute03);
+        props.ajaxIdentifier = pAction.ajaxIdentifier;
+        props.eventData.ajaxIdentifier = props.ajaxIdentifier;
+        props.eventData.pageItems = props.pageItems;
 
-    if (pAction.attribute02) {
-      apex.debug.info('Required pageItems: ' + pAction.attribute02);
-      props.pageItems = pAction.attribute02.split(',');
+        if (pAction.attribute02) {
+        apex.debug.info('Required pageItems: ' + pAction.attribute02);
+        props.pageItems = pAction.attribute02.split(',');
+        }
+
+        bindObserverItems(pAction.attribute05);
+
+        // Prepare page for ADC usage
+        bindEvents();
+        apex.debug.info('ADC initialized');
+
+        // execute initial JavaScript code passed in from the server
+        executeCode(hexToChar(pAction.attribute04));
     }
-
-    bindObserverItems(pAction.attribute05);
-
-    // Prepare page for ADC usage
-    bindEvents();
-    apex.debug.info('ADC initialized');
-
-    // execute initial JavaScript code passed in from the server
-    executeCode(hexToChar(pAction.attribute04));
   }; // init
 
   /* +++++++++ END CORE FUNCTIONALITY +++++++++++ */

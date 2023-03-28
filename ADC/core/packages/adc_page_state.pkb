@@ -144,175 +144,6 @@ as
   
   
   /**
-    Group: Public methods
-   */
-  /**
-    Function: check_mandatory
-      See <ADC_PAGE_STATE.check_mandatory>
-   */
-  procedure check_mandatory(
-    p_crg_id in adc_rule_groups.crg_id%type, 
-    p_cpi_id in adc_page_items.cpi_id%type)
-  as
-    l_is_mandatory pls_integer;
-    l_message adc_util.max_char;
-  begin
-    pit.enter_optional('check_mandatory',
-      p_params => msg_params(
-                    msg_param('p_crg_id', p_crg_id),
-                    msg_param('p_cpi_id', p_cpi_id)));
-                    
-    select count(*), max(cgs_cpi_mandatory_message)
-      into l_is_mandatory, l_message
-      from adc_rule_group_status
-     where cgs_crg_id = p_crg_id
-       and cgs_cpi_id = p_cpi_id;
-       
-    if l_is_mandatory = 1 then
-      pit.assert_not_null(get_string(p_crg_id, p_cpi_id), msg.ADC_ITEM_IS_MANDATORY, msg_args(l_message));
-    end if;
-       
-    pit.leave_optional;
-  end check_mandatory;
-    
-    
-  /**
-    Function: item_may_have_value
-      See <ADC_PAGE_STATE.item_may_have_value>
-   */
-  function item_may_have_value(
-    p_crg_id in adc_rule_groups.crg_id%type, 
-    p_cpi_id in adc_page_items.cpi_id%type)
-    return boolean
-  as
-    l_count pls_integer;
-    l_item_name adc_util.ora_name_type;
-    l_is_value_item boolean;
-  begin
-    pit.enter_optional(
-      p_params => msg_params(
-                    msg_param('p_crg_id', p_crg_id),
-                    msg_param('p_cpi_id', p_cpi_id)));
-    
-    l_item_name := adc_util.harmonize_page_item_name(p_cpi_id);
-    
-    select count(*)
-      into l_count
-      from adc_page_items
-     where cpi_crg_id = p_crg_id
-       and cpi_id = l_item_name
-       and cpi_cpit_id in (C_ITEM, C_APP_ITEM, C_NUMBER_ITEM, C_DATE_ITEM);
-       
-    l_is_value_item := l_count = 1;
-       
-    if not l_is_value_item and g_session_values.exists(p_cpi_id) then
-      g_session_values.delete(p_cpi_id);
-    end if;
-  
-    pit.leave_optional(
-      p_params => msg_params(
-                    msg_param('Result', case  l_count when 1 then adc_util.C_TRUE else adc_util.C_FALSE end)));
-                    
-    return l_is_value_item;
-  end item_may_have_value;
-  
-  
-  /**
-    Procedure: register_mandatory
-      See <ADC_PAGE_STATE.register_mandatory>
-   */
-  procedure register_mandatory(
-    p_crg_id in adc_rule_groups.crg_id%type, 
-    p_cpi_id in adc_page_items.cpi_id%type,
-    p_cpi_mandatory_message in varchar2,
-    p_is_mandatory in adc_util.flag_type)
-  as
-    l_collection_name adc_util.ora_name_type;
-    l_cgs_row adc_rule_group_status%rowtype;
-    cursor mandatory_items_cur is
-      select cpi_id, cpi_label, cpi_mandatory_message
-        from adc_page_items
-       where cpi_crg_id = p_crg_id
-         and cpi_is_mandatory = adc_util.C_TRUE;
-  begin
-    pit.enter_optional(
-      p_params => msg_params(
-                    msg_param('p_crg_id', p_crg_id),
-                    msg_param('p_cpi_id', p_cpi_id),
-                    msg_param('p_cpi_mandatory_message', p_cpi_mandatory_message),
-                    msg_param('p_is_mandatory', p_is_mandatory)));
-    
-    l_collection_name := C_COLLECTION_NAME || p_crg_id;
-    
-    if p_cpi_id = adc_util.C_NO_FIRING_ITEM then
-      -- This option is called during page initialization only
-      -- Initialize internal APEX mandatory item collection
-      begin
-        apex_collection.create_or_truncate_collection(l_collection_name);
-      exception
-        when DUP_VAL_ON_INDEX then
-          -- This error can occur with hectic, multiple clicks, ignore.
-          null;
-      end;
-      
-      -- register all statically mandatory items, identifified by CPI_IS_MANDATORY
-      for item in mandatory_items_cur loop
-        apex_collection.add_member(
-          p_collection_name => l_collection_name,
-          p_c001 => item.cpi_id,
-          p_c002 => item.cpi_label,
-          p_c003 => item.cpi_mandatory_message,
-          p_generate_md5 => 'NO');
-      end loop;
-    else
-      -- Item ist registered or de-registered as mandatory explicitly
-      select cgs_crg_id, cgs_id, cpi_id, cpi_label, cgs_cpi_mandatory_message
-        into l_cgs_row
-        from adc_page_items
-        left join adc_rule_group_status
-          on cpi_crg_id = cgs_crg_id
-         and cpi_id = cgs_cpi_id
-       where cpi_crg_id = p_crg_id
-         and cpi_id = p_cpi_id;
-         
-      case when p_is_mandatory = adc_util.C_TRUE and l_cgs_row.cgs_id is null then
-        pit.info(msg.PIT_PASS_MESSAGE, msg_args('Page item has become a mandatory field, register in collection'));
-        apex_collection.add_member(
-          p_collection_name => l_collection_name,
-          p_c001 => l_cgs_row.cgs_cpi_id,
-          p_c002 => l_cgs_row.cgs_cpi_label,
-          p_c003 => coalesce(p_cpi_mandatory_message, get_mandatory_message(p_crg_id, l_cgs_row.cgs_cpi_id), 'null'),
-          p_generate_md5 => 'NO');
-      when p_is_mandatory = adc_util.C_FALSE and l_cgs_row.cgs_id is not null then
-        pit.info(msg.PIT_PASS_MESSAGE, msg_args('Page item must be removed from the list of mandatory elements'));
-        apex_collection.delete_member(
-          p_seq => l_cgs_row.cgs_id,
-          p_collection_name => l_collection_name);
-      else
-        pit.info(msg.PIT_PASS_MESSAGE, msg_args('Status of the page item has not changed'));
-      end case;
-    end if;
-    
-    pit.leave_optional;
-  end register_mandatory;
-  
-  
-  /**
-    Procedure: reset
-      See <ADC_PAGE_STATE.reset>
-   */
-  procedure reset
-  as
-  begin
-    pit.enter_optional;
-    
-    g_session_values.delete;
-    
-    pit.leave_optional;
-  end reset;
-  
-  
-  /**
     Procedure: convert_session_value
       Method to convert a session value based on its metadata
     
@@ -388,6 +219,14 @@ as
   end convert_session_value;
   
   
+  /**
+    Procedure: dynamically_validate_value
+      Method to call a validation method, filtered by the respective item name
+      
+    Parameters:
+      p_crg_id - ID of the rule group
+      p_cpi_id - ID of the page item
+   */
   procedure dynamically_validate_value(
     p_crg_id in adc_rule_groups.crg_id%type, 
     p_cpi_id in adc_page_items.cpi_id%type)
@@ -396,7 +235,10 @@ as
     l_cpi_validation_method adc_page_items.cpi_validation_method%type;
     l_result boolean;
   begin
-    pit.enter_detailed('dynamically_validate_value');
+    pit.enter_detailed('dynamically_validate_value',
+      p_params => msg_params(
+                    msg_param ('p_crg_id', p_crg_id),
+                    msg_param ('p_cpi_id', p_cpi_id)));
     
     -- Check whether page item is allowed to have a value and get the item type and format mask
     select cpi_validation_method
@@ -415,6 +257,199 @@ as
   
   
   /**
+    Procedure: set_session_value
+      Wrapper method around apex_util.set_session state with an autonomous transaction. This method assures
+      that DML is possible even inside a select statement.
+      
+    Parameters:
+      p_cpi_id - ID of the page item
+      p_value - new value of the item
+   */
+  procedure set_session_value(
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_value in varchar2)
+  as
+    pragma autonomous_transaction;
+  begin
+    apex_util.set_session_state(p_cpi_id, p_value);
+    commit;
+  end set_session_value;
+  
+  
+  /**
+    Group: Public methods
+   */
+  /**
+    Function: check_mandatory
+      See <ADC_PAGE_STATE.check_mandatory>
+   */
+  procedure check_mandatory(
+    p_crg_id in adc_rule_groups.crg_id%type, 
+    p_cpi_id in adc_page_items.cpi_id%type)
+  as
+    l_is_mandatory pls_integer;
+    l_message adc_util.max_char;
+    l_cpi_id adc_util.ora_name_type;
+  begin
+    pit.enter_optional('check_mandatory',
+      p_params => msg_params(
+                    msg_param('p_crg_id', p_crg_id),
+                    msg_param('p_cpi_id', p_cpi_id)));
+                    
+    l_cpi_id := adc_util.harmonize_page_item_name(p_cpi_id);
+    select count(*), max(cgs_cpi_mandatory_message)
+      into l_is_mandatory, l_message
+      from adc_rule_group_status
+     where cgs_crg_id = p_crg_id
+       and cgs_cpi_id = l_cpi_id;
+       
+    if l_is_mandatory = 1 then
+      pit.assert_not_null(get_string(p_crg_id, l_cpi_id), msg.ADC_ITEM_IS_MANDATORY, msg_args(l_message));
+    end if;
+       
+    pit.leave_optional;
+  end check_mandatory;
+    
+    
+  /**
+    Function: item_may_have_value
+      See <ADC_PAGE_STATE.item_may_have_value>
+   */
+  function item_may_have_value(
+    p_crg_id in adc_rule_groups.crg_id%type, 
+    p_cpi_id in adc_page_items.cpi_id%type)
+    return boolean
+  as
+    l_count pls_integer;
+    l_cpi_id adc_util.ora_name_type;
+    l_is_value_item boolean;
+  begin
+    pit.enter_optional(
+      p_params => msg_params(
+                    msg_param('p_crg_id', p_crg_id),
+                    msg_param('p_cpi_id', p_cpi_id)));
+    
+    l_cpi_id := adc_util.harmonize_page_item_name(p_cpi_id);
+    
+    select count(*)
+      into l_count
+      from adc_page_items
+     where cpi_crg_id = p_crg_id
+       and cpi_id = l_cpi_id
+       and cpi_cpit_id in (C_ITEM, C_APP_ITEM, C_NUMBER_ITEM, C_DATE_ITEM);
+       
+    l_is_value_item := l_count = 1;
+       
+    if not l_is_value_item and g_session_values.exists(l_cpi_id) then
+      g_session_values.delete(l_cpi_id);
+    end if;
+  
+    pit.leave_optional(
+      p_params => msg_params(
+                    msg_param('Result', case  l_count when 1 then adc_util.C_TRUE else adc_util.C_FALSE end)));
+                    
+    return l_is_value_item;
+  end item_may_have_value;
+  
+  
+  /**
+    Procedure: register_mandatory
+      See <ADC_PAGE_STATE.register_mandatory>
+   */
+  procedure register_mandatory(
+    p_crg_id in adc_rule_groups.crg_id%type, 
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_cpi_mandatory_message in varchar2,
+    p_is_mandatory in adc_util.flag_type)
+  as
+    l_collection_name adc_util.ora_name_type;
+    l_cpi_id adc_util.ora_name_type;
+    l_cgs_row adc_rule_group_status%rowtype;
+    cursor mandatory_items_cur is
+      select cpi_id, cpi_label, cpi_mandatory_message
+        from adc_page_items
+       where cpi_crg_id = p_crg_id
+         and cpi_is_mandatory = adc_util.C_TRUE;
+  begin
+    pit.enter_optional(
+      p_params => msg_params(
+                    msg_param('p_crg_id', p_crg_id),
+                    msg_param('p_cpi_id', p_cpi_id),
+                    msg_param('p_cpi_mandatory_message', p_cpi_mandatory_message),
+                    msg_param('p_is_mandatory', p_is_mandatory)));
+    
+    l_collection_name := C_COLLECTION_NAME || p_crg_id;
+    l_cpi_id := adc_util.harmonize_page_item_name(p_cpi_id);
+    
+    if l_cpi_id = adc_util.C_NO_FIRING_ITEM then
+      -- This option is called during page initialization only
+      -- Initialize internal APEX mandatory item collection
+      begin
+        apex_collection.create_or_truncate_collection(l_collection_name);
+      exception
+        when DUP_VAL_ON_INDEX then
+          -- This error can occur with hectic, multiple clicks, ignore.
+          null;
+      end;
+      
+      -- register all statically mandatory items, identifified by CPI_IS_MANDATORY
+      for item in mandatory_items_cur loop
+        apex_collection.add_member(
+          p_collection_name => l_collection_name,
+          p_c001 => item.cpi_id,
+          p_c002 => item.cpi_label,
+          p_c003 => item.cpi_mandatory_message,
+          p_generate_md5 => 'NO');
+      end loop;
+    else
+      -- Item ist registered or de-registered as mandatory explicitly
+      select cgs_crg_id, cgs_id, cpi_id, cpi_label, cgs_cpi_mandatory_message
+        into l_cgs_row
+        from adc_page_items
+        left join adc_rule_group_status
+          on cpi_crg_id = cgs_crg_id
+         and cpi_id = cgs_cpi_id
+       where cpi_crg_id = p_crg_id
+         and cpi_id = l_cpi_id;
+         
+      case when p_is_mandatory = adc_util.C_TRUE and l_cgs_row.cgs_id is null then
+        pit.info(msg.PIT_PASS_MESSAGE, msg_args('Page item has become a mandatory field, register in collection'));
+        apex_collection.add_member(
+          p_collection_name => l_collection_name,
+          p_c001 => l_cgs_row.cgs_cpi_id,
+          p_c002 => l_cgs_row.cgs_cpi_label,
+          p_c003 => coalesce(p_cpi_mandatory_message, get_mandatory_message(p_crg_id, l_cgs_row.cgs_cpi_id), 'null'),
+          p_generate_md5 => 'NO');
+      when p_is_mandatory = adc_util.C_FALSE and l_cgs_row.cgs_id is not null then
+        pit.info(msg.PIT_PASS_MESSAGE, msg_args('Page item must be removed from the list of mandatory elements'));
+        apex_collection.delete_member(
+          p_seq => l_cgs_row.cgs_id,
+          p_collection_name => l_collection_name);
+      else
+        pit.info(msg.PIT_PASS_MESSAGE, msg_args('Status of the page item has not changed'));
+      end case;
+    end if;
+    
+    pit.leave_optional;
+  end register_mandatory;
+  
+  
+  /**
+    Procedure: reset
+      See <ADC_PAGE_STATE.reset>
+   */
+  procedure reset
+  as
+  begin
+    pit.enter_optional;
+    
+    g_session_values.delete;
+    
+    pit.leave_optional;
+  end reset;
+  
+  
+  /**
     Procedure: set_value
       See <ADC_PAGE_STATE.set_value>
    */
@@ -428,7 +463,7 @@ as
     p_throw_error in adc_util.flag_type default adc_util.C_FALSE)
   as
     l_value session_value_rec;
-    l_item_name adc_util.ora_name_type;
+    l_cpi_id adc_util.ora_name_type;
   begin
     pit.enter_optional(
       p_params => msg_params(
@@ -448,29 +483,29 @@ as
     
     -- If requested, get the value from the session state
     if p_value = C_FROM_SESSION_STATE then
-      l_value.string_value := coalesce(utl_apex.get_string(l_value.cpi_id), get_mandatory_default_value(p_crg_id, p_cpi_id));
+      l_value.string_value := coalesce(utl_apex.get_string(l_value.cpi_id), get_mandatory_default_value(p_crg_id, l_value.cpi_id));
     else
       l_value.string_value := p_value;
     end if;
     
-    g_session_values(p_cpi_id) := l_value;
+    g_session_values(l_value.cpi_id) := l_value;
     
     -- Explicitly set the value and harmonize with the session state (fi when changing a session values during rule execution)
     convert_session_value(p_crg_id, l_value, p_throw_error);
     
     if p_throw_error = adc_util.C_TRUE then
-      check_mandatory(p_crg_id, p_cpi_id);
+      check_mandatory(p_crg_id, l_value.cpi_id);
     end if;
     
-    dynamically_validate_value(p_crg_id, p_cpi_id);
+    dynamically_validate_value(p_crg_id, l_value.cpi_id);
         
-    apex_util.set_session_state(l_value.cpi_id, g_session_values(p_cpi_id).string_value);
+    set_session_value(l_value.cpi_id, g_session_values(l_value.cpi_id).string_value);
     
     pit.leave_optional;
   exception
     when NO_DATA_FOUND then
       -- no session state value, ignore.
-      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Item ' || p_cpi_id || ' does not have a value, ignored'));
+      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Item ' || l_value.cpi_id || ' does not have a value, ignored'));
       pit.leave_optional;
     when INVALID_NUMBER or VALUE_ERROR or msg.ADC_ITEM_IS_MANDATORY_ERR then
       pit.leave_optional;
@@ -491,21 +526,23 @@ as
     return varchar2
   as
     l_string_value adc_util.max_char;
+    l_cpi_id adc_util.ora_name_type;
   begin
     pit.enter_optional('get_string',
       p_params => msg_params(
                     msg_param('p_crg_id', p_crg_id),
                     msg_param('p_cpi_id', p_cpi_id)));
     
+    l_cpi_id := adc_util.harmonize_page_item_name(p_cpi_id);
     case
-      when g_session_values.exists(p_cpi_id) then
-        l_string_value := g_session_values(p_cpi_id).string_value;
-      when item_may_have_value(p_crg_id, p_cpi_id) then
+      when g_session_values.exists(l_cpi_id) then
+        l_string_value := g_session_values(l_cpi_id).string_value;
+      when item_may_have_value(p_crg_id, l_cpi_id) then
         set_value(
           p_crg_id => p_crg_id,
-          p_cpi_id => p_cpi_id,
+          p_cpi_id => l_cpi_id,
           p_value => C_FROM_SESSION_STATE);
-        l_string_value := g_session_values(p_cpi_id).string_value;
+        l_string_value := g_session_values(l_cpi_id).string_value;
       else
         null;
     end case;
@@ -528,6 +565,7 @@ as
     return date
   as
     l_date_value date;
+    l_cpi_id adc_util.ora_name_type;
   begin
     pit.enter_optional('get_date',
       p_params => msg_params(
@@ -535,16 +573,17 @@ as
                     msg_param('p_cpi_id', p_cpi_id),
                     msg_param('p_format_mask', p_format_mask)));
                     
+    l_cpi_id := adc_util.harmonize_page_item_name(p_cpi_id);
     case
-      when g_session_values.exists(p_cpi_id) then
-        l_date_value := g_session_values(p_cpi_id).date_value;
-      when item_may_have_value(p_crg_id, p_cpi_id) then
+      when g_session_values.exists(l_cpi_id) then
+        l_date_value := g_session_values(l_cpi_id).date_value;
+      when item_may_have_value(p_crg_id, l_cpi_id) then
         set_value(
           p_crg_id => p_crg_id,
-          p_cpi_id => p_cpi_id,
+          p_cpi_id => l_cpi_id,
           p_value => C_FROM_SESSION_STATE, 
           p_format_mask => p_format_mask);
-        l_date_value := g_session_values(p_cpi_id).date_value;
+        l_date_value := g_session_values(l_cpi_id).date_value;
       else
         null;
     end case;
@@ -567,6 +606,7 @@ as
     return number
   as
     l_number_value number;
+    l_cpi_id adc_util.ora_name_type;
   begin
     pit.enter_optional('get_number',
       p_params => msg_params(
@@ -574,16 +614,17 @@ as
                     msg_param('p_cpi_id', p_cpi_id),
                     msg_param('p_format_mask', p_format_mask)));
     
+    l_cpi_id := adc_util.harmonize_page_item_name(p_cpi_id);
     case
-      when g_session_values.exists(p_cpi_id) then
-        l_number_value := g_session_values(p_cpi_id).number_value;
-      when item_may_have_value(p_crg_id, p_cpi_id) then
+      when g_session_values.exists(l_cpi_id) then
+        l_number_value := g_session_values(l_cpi_id).number_value;
+      when item_may_have_value(p_crg_id, l_cpi_id) then
         set_value(
           p_crg_id => p_crg_id,
-          p_cpi_id => p_cpi_id,
+          p_cpi_id => l_cpi_id,
           p_value => C_FROM_SESSION_STATE, 
           p_format_mask => p_format_mask);
-        l_number_value := g_session_values(p_cpi_id).number_value;
+        l_number_value := g_session_values(l_cpi_id).number_value;
       else
         null;
     end case;

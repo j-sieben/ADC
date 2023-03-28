@@ -201,7 +201,7 @@ as
     
     
   /**
-    Procedure: read_settings
+    Function: read_settings
       Helper to copy plugin settings to an internal record G_PARAM.
       
       Is called before the actual rule action takes place (at the beginning of render and AJAX methods)
@@ -214,11 +214,16 @@ as
       p_firing_item - Firing item
       p_event - Firing event
       p_event_data - Additional event information
+      
+    Returns:
+      TRUE - If a rule group could be found or instantiated
+      FALSE - If the rule group is deactive
    */
-  procedure read_settings(
+  function read_settings(
     p_firing_item in varchar2,
     p_event in varchar2,
-    p_event_data in varchar2);
+    p_event_data in varchar2)
+    return boolean;
   
   
   /**

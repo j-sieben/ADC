@@ -174,16 +174,20 @@ as
   as
     l_item_name adc_util.ora_name_type;
     l_page_prefix adc_util.ora_name_type;
+    l_button_prefix adc_util.ora_name_type;
+    l_region_prefix adc_util.ora_name_type;
   begin
     pit.enter_detailed('harmonize_page_item_name',
       p_params => msg_params(msg_param('p_cpi_id', p_cpi_id)));
       
-    l_item_name := p_cpi_id;
+    l_item_name := upper(p_cpi_id);
     
     if l_item_name != adc_util.C_NO_FIRING_ITEM and p_cpi_id is not null then
       l_page_prefix := utl_apex.get_page_prefix;
+      l_button_prefix := replace(l_page_prefix, 'P', 'B');
+      l_region_prefix := replace(l_page_prefix, 'P', 'R');
         
-      if substr(l_item_name, 1, length(l_page_prefix)) != l_page_prefix then
+      if substr(l_item_name, 1, length(l_page_prefix)) not in (l_page_prefix, l_button_prefix, l_region_prefix) then
         l_item_name := l_page_prefix || l_item_name;
       end if;
     end if;
