@@ -35,9 +35,9 @@
  <div class="CBody"><p>Adds a comment to the JavaScript answer if applicable. Is used to append comments about the inner workings to the JavaScript answer. Whether a message is added depends on the severity of the message and debug level.</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">p_message_name<div class="CDLParameterType"><span class="SHKeyword">in</span> <span class="SHKeyword">varchar2</span></div></td><td class="CDLDefinition"><p>Name of the Message</p></td></tr><tr><td class="CDLEntry">p_msg_args<div class="CDLParameterType"><span class="SHKeyword">in</span> msg_args</div></td><td class="CDLDefinition"><p>Optional argument object</p></td></tr></table></div>
 </div>
 
-<a name="ADC_RESPONSE.get_response"></a><a name="Topic526"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_RESPONSE.get_response"></a><a name="Topic296"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">get_response</div>
- <div id="NDPrototype526" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> get_response</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">varchar2</span></div></div>
+ <div id="NDPrototype296" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> get_response</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">clob</span></div></div>
  <div class="CBody"><p>Method to compose the JavaScript result of the rule evaluation</p><p>Depending on parameterization and length of the response, the response will contain more or lesse code.&nbsp; As the maximum response size is limited to 32KByte, the method may decide to skip comments in order to respect the size limit.</p><p>Calling this method also terminates and resets the internal response structures.</p><div class="CHeading">Returns</div><p>JavaScript code to execute in response to the rule evaluation request.</p></div>
 </div>
 

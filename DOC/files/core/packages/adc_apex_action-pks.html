@@ -17,10 +17,22 @@
  <div class="CTitle">Functions</div>
 </div>
 
+<a name="ADC_APEX_ACTIONS.action_init"></a><a name="Topic588"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">action_init</div>
+ <div id="NDPrototype588" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> action_init(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_action_name&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_name<span class="SHKeyword">%type</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Method initializes an ACTION JavaScript code. This method is called first before setting action options.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">p_action_name<div class="CDLParameterType"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_name<span class="SHKeyword">%type</span></div></td><td class="CDLDefinition"><p>Name of the action</p></td></tr></table></div>
+</div>
+
 <a name="ADC_APEX_ACTIONS.get_action_script"></a><a name="Topic720"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">get_action_script</div>
  <div id="NDPrototype720" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> get_action_script</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">varchar2</span></div></div>
  <div class="CBody"><p>Method to retrieve the created JavaScript.</p><div class="CHeading">Returns</div><p>JavaScript code to include in the ADC answer to adjust APEX Action settings on the page.</p></div>
+</div>
+
+<a name="ADC_APEX_ACTIONS.register_action_script"></a><a name="Topic796"></a><div class="CTopic TFunction LSQL">
+ <div class="CTitle">register_action_script</div>
+ <div id="NDPrototype796" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> register_action_script</div></div>
+ <div class="CBody"><p>Method registers the action script with ADC. This is a shortcut for adc.add_javascript(adc_apex_action.get_action_script));</p></div>
 </div>
 
 <a name="ADC_APEX_ACTIONS.get_crg_apex_actions"></a><a name="Topic274"></a><div class="CTopic TFunction LSQL">
