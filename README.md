@@ -72,11 +72,11 @@ Package `ADC_API` implements an API to access ADC programmatically. You normally
 
 Package `ADC_ADMIN` is used to maintain the ADC metadata. It offers methods to create new metadata entries or to export existing metadata. This is normally used by the ADC application (see below) but may be used directly by batch scripts as well.
 
-#### Types `ADC_BASIC` and `ADC`
+### Types `ADC_BASIC` and `ADC`
 
 These types form the PL/SQL API for your own projects. You exclusive want to use type `ADC` which inherits any functionality from `ADC_BASIC`. Reason for these types is that you may want to extend type `ADC` with your own action types without affecting the predelivered actions types. That way, it is save to install a new version of ADC with new or changed functionality. It will replace `ADC_BASIC` with a new version leaving your etended copy of `ADC`untouched.
 
-The approach of using types as a package replacement may sound a bit unusual but it adds a feature unavailable in PL/SQL: Inheritance. By inheriting type ADC from ADC_BASIC, it is possible to separate two layers of functionality into one final database object. Had I chosen a package and you'd add an extensiion to it, you would be unable to simply replace this package with a newer version as you would loose all your extensions. Merging those packages would be a real mess. Using the type approach, this all disappears. Never touch ADC_BASIC, but add you extensions into ADC and you're prepared for all new releases.
+The approach of using types as a package replacement may sound a bit unusual but it adds a feature unavailable in PL/SQL: Inheritance. By inheriting type `ADC` from `ADC_BASIC`, it is possible to separate two layers of functionality into one final database object. Had I chosen a package and you'd add an extensiion to it, you would be unable to simply replace this package with a newer version as you would loose all your extensions. Merging those packages would be a real mess. Using the type approach, this all disappears. Never touch `ADC_BASIC`, but add you extensions into `ADC` and you're prepared for all new releases.
 
 ### Tables and Views
 
