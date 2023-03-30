@@ -43,8 +43,8 @@ as object (
    */
   /** 
     Procedure: assert
-      Methods call <PIT.PIT_ASSERT>, catches its exception and passes it to the APEX UI by adding them to the APEX error stack.
-      @see <PIT.assert>
+      Methods calls <ASSERT>, catches its exception and passes it to the APEX UI by adding them to the APEX error stack.
+      See <PIT.assert>
       
     Parameters: 
       p_condition - Test to execute
@@ -63,8 +63,8 @@ as object (
 
   /** 
     Procedure: assert_is_null
-      Methods call <PIT.PIT_ASSERT_IS_NULL>, catches its exception and passes it to the APEX UI by adding them to the APEX error stack.
-      @see <PIT.assert_not_null>
+      Methods calls <PIT.ASSERT_IS_NULL>, catches its exception and passes it to the APEX UI by adding them to the APEX error stack.
+      See <PIT.assert_not_null>
       
     Parameters: 
       p_condition - Test to execute
@@ -83,8 +83,8 @@ as object (
 
   /** 
     Procedure: assert_not_null
-      Methods call <PIT.PIT_ASSERT_NOT_NULL>, catches its exception and passes it to the APEX UI by adding them to the APEX error stack.
-      @see <PIT.assert_not_null>
+      Methods calls <PIT.ASSERT_NOT_NULL>, catches its exception and passes it to the APEX UI by adding them to the APEX error stack.
+      See <PIT.assert_not_null>
       
     Parameters: 
       p_condition - Test to execute
@@ -103,8 +103,8 @@ as object (
 
   /** 
     Procedure: assert_exists
-      Methods call <PIT.PIT_ASSERT_EXISTS>, catches its exception and passes it to the APEX UI by adding them to the APEX error stack.
-      @see <PIT.assert_exists>
+      Methods calls <PIT.ASSERT_EXISTS>, catches its exception and passes it to the APEX UI by adding them to the APEX error stack.
+      See <PIT.assert_exists>
       
     Parameters: 
       p_stmt - select statement to check. Passes if the statement returns one row at least.
@@ -123,8 +123,8 @@ as object (
 
   /** 
     Procedure: assert_not_exists
-      Methods call <PIT.PIT_ASSERT_NOT_EXISTS>, catches its exception and passes it to the APEX UI by adding them to the APEX error stack.
-      @see <PIT.assert_not_exists>
+      Methods calls <PIT.ASSERT_NOT_EXISTS>, catches its exception and passes it to the APEX UI by adding them to the APEX error stack.
+      See <PIT.assert_not_exists>
       
     Parameters: 
       p_stmt - select statement to check. Passes if the statement returns no row only.
@@ -143,8 +143,8 @@ as object (
 
   /** 
     Procedure: assert_datatype
-      Methods call <PIT.PIT_ASSERT_DATATYPE>, catches its exception and passes it to the APEX UI by adding them to the APEX error stack.
-      @see <PIT.assert_datatype>
+      Methods calls <PIT.ASSERT_DATATYPE>, catches its exception and passes it to the APEX UI by adding them to the APEX error stack.
+      See <PIT.assert_datatype>
       
     Parameters: 
       p_value - Value of the page item
