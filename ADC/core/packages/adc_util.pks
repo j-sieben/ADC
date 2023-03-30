@@ -70,7 +70,7 @@ as
       C_CR - Carriage return 
   */
   C_PARAM_GROUP constant adc_util.ora_name_type := 'ADC';
-  C_ADC constant ora_name_type := 'ADCA';
+  C_ADC constant ora_name_type := 'ADC';
   
   C_WITH_UNIT_TESTS constant boolean := &WITH_UT.;
   C_WITH_FLOWS constant boolean := &WITH_FLOWS.;

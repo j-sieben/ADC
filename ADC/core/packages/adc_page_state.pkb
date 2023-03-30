@@ -269,10 +269,10 @@ as
     p_cpi_id in adc_page_items.cpi_id%type,
     p_value in varchar2)
   as
-    pragma autonomous_transaction;
+    --pragma autonomous_transaction;
   begin
     apex_util.set_session_state(p_cpi_id, p_value);
-    commit;
+   -- commit;
   end set_session_value;
   
   

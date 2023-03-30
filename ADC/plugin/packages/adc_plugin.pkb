@@ -7,6 +7,38 @@ as
   C_EVENT_INITIALIZE constant adc_util.ora_name_type := 'initialize';
   C_JS_FUNCTION constant varchar2(50 byte) := 'de_condes_plugin_adc';
   
+  
+  /**
+    Procedure: print_to_stream
+      Helper method to print JavaScript code larger than 32KByte to the http stream
+    
+    Parameter:
+      p_script - CLOB to print. Realistic maximum size is around 100KByte.
+   */
+  procedure print_to_stream(
+    p_script in clob)
+  as
+    l_temp adc_util.max_char;
+    l_amount number := 32000;
+    l_offset number := 1;
+    l_length number := dbms_lob.getlength(p_script);
+  begin
+    pit.enter_detailed('print_to_stream');
+    
+    while l_length >= l_offset loop
+        l_temp:= dbms_lob.substr(p_script, l_amount, l_offset);
+        htp.prn(l_temp);
+        l_offset := l_offset + length(l_temp);
+    end loop;
+    
+    pit.leave_detailed;
+  end print_to_stream;
+  
+  
+  /**
+    Procedure: initialize
+      Initialization method. Gets character set of the datatabase, if different from UTF-8
+   */
   procedure initialize
   as
   begin
@@ -20,6 +52,11 @@ as
       null;
   end initialize;
   
+  
+  /**
+    Function: render
+      See <ADC_PLUGIN.render>
+   */
   function render(
     p_dynamic_action in apex_plugin.t_dynamic_action,
     p_plugin in apex_plugin.t_plugin)
@@ -67,7 +104,11 @@ as
     return l_result;
   end render;
   
-
+  
+  /**
+    Function: ajax
+      See <ADC_PLUGIN.ajax>
+   */
   function ajax(
     p_dynamic_action in apex_plugin.t_dynamic_action,
     p_plugin in apex_plugin.t_plugin)
@@ -94,7 +135,7 @@ as
       l_java_script := adc_internal.process_request;
       
       -- Return JavaScript response
-      htp.prn(l_java_script);
+      print_to_stream(l_java_script);
     
     end if;
     

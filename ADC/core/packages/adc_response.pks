@@ -104,7 +104,7 @@ as
       JavaScript code to execute in response to the rule evaluation request.
    */
   function get_response
-    return varchar2;
+    return clob;
     
   
   /**

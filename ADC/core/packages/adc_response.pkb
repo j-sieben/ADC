@@ -368,9 +368,9 @@ as
       See <adc_response.get_response>
    */
   function get_response
-    return varchar2
+    return clob
   as
-    l_response adc_util.max_char;
+    l_response clob;
     l_remaining_length binary_integer := 30000;
     l_changed_items adc_util.max_char;
     l_firing_items adc_util.max_char;
@@ -397,7 +397,7 @@ as
     end if;
     
     -- wrap JavaScript in <script> tag and add item value and error scripts
-    -- Replace script explicitely to circumvent length limitation of CHAR_TABLE
+    -- Replace explicitely to circumvent length limitation of CHAR_TABLE
     l_response := replace(g_js_script_frame_template, '#SCRIPT#', l_response);
     
     -- Prepare remaining chunks and check overall length
@@ -417,14 +417,6 @@ as
                     'FIRING_ITEMS', l_firing_items,
                     'JS_FILE', C_JS_NAMESPACE,
                     'DURATION', to_char(dbms_utility.get_time - g_param.request_start)));
-    
-    -- BULK_REPLACE uses # as a control character, unmask it after conversion
-   -- l_response := replace(l_response, adc_util.C_HASH, '#');
-    
-    pit.log_state(
-      msg_params(
-        msg_param('JS Action Stack Count', g_param.js_action_stack.count),
-        msg_param('Response', l_response)));
     
     reset;
     
