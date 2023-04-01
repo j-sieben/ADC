@@ -1,4 +1,5 @@
 set serveroutput on
+whenever sqlerror continue
 
 prompt &h2.Removing existing tables
 declare
@@ -422,6 +423,7 @@ select 204, 'Hermann', 'Baer', 'HBAER', '515.123.8888', to_date('07.06.2002', 'd
 select 205, 'Shelley', 'Higgins', 'SHIGGINS', '515.123.8080', to_date('07.06.2002', 'dd.mm.yyyy'), 'AC_MGR', 12008, null, 101, 110 from dual union all
 select 206, 'William', 'Gietz', 'WGIETZ', '515.123.8181', to_date('07.06.2002', 'dd.mm.yyyy'), 'AC_ACCOUNT', 8300, null, 205, 110 from dual;
 
+
 update hr_employees t
    set emp_is_manager = case when substr(emp_job_id, 4) in ('PRES', 'VP', 'MGR', 'MAN') then 'Y' else 'N' end;
 
@@ -430,3 +432,5 @@ commit;
 prompt &s1.Enable integrity constraint to hr_departments
 
 alter table hr_departments enable constraint dep_mgr_id_fk;
+
+whenever sqlerror exit
