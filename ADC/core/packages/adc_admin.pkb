@@ -906,9 +906,9 @@ as
   as
   begin
     g_offset := 0;
-    g_action_type_filename := param.get_string(C_ADC, 'ACTION_TYPE_FILENAME');
-    g_user_action_type_filename := param.get_string(C_ADC, 'USER_ACTION_TYPE_FILENAME');
-    g_rule_group_filename := param.get_string(C_ADC, 'RULE_GROUP_FILENAME');
+    g_action_type_filename := param.get_string('ACTION_TYPE_FILENAME', C_ADC);
+    g_user_action_type_filename := param.get_string('USER_ACTION_TYPE_FILENAME', C_ADC);
+    g_rule_group_filename := param.get_string('RULE_GROUP_FILENAME', C_ADC);
   end;
 
 
