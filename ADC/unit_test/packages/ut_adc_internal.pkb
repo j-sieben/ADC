@@ -19,6 +19,7 @@ as
   C_INVALID_DATE_STRING constant adc_util.ora_name_type := '31.05.2020 10:30:45';
   
   C_JAVA_SCRIPT constant adc_util.max_char := 'apex.message.alert("Hello World!");';
+  C_ADC_ACTION_NAMESPACE constant adc_util.max_char := 'de.condes.plugin.adc.actions.';
   
   -- Aplication pages
   
@@ -29,16 +30,30 @@ as
   
   -- Items
   C_PREFIX constant adc_util.ora_name_type := 'P' || C_PAGE_TEST || '_';
-  C_STRING_ITEM constant adc_util.ora_name_type := C_PREFIX || 'LAST_NAME';
-  C_NUMBER_ITEM constant adc_util.ora_name_type := C_PREFIX || 'SALARY';
-  C_DATE_ITEM constant adc_util.ora_name_type := C_PREFIX || 'HIRE_DATE';
-  C_OPTIONAL_ITEM constant adc_util.ora_name_type := C_PREFIX || 'FIRST_NAME';
+  C_STRING_ITEM constant adc_util.ora_name_type := C_PREFIX || 'EMP_LAST_NAME';
+  C_NUMBER_ITEM constant adc_util.ora_name_type := C_PREFIX || 'EMP_SALARY';
+  C_DATE_ITEM constant adc_util.ora_name_type := C_PREFIX || 'EMP_HIRE_DATE';
+  C_OPTIONAL_ITEM constant adc_util.ora_name_type := C_PREFIX || 'EMP_FIRST_NAME';
+  C_MANDATORY_ITEM constant adc_util.ora_name_type := C_PREFIX || 'EMP_JOB_ID';
   
   g_application_id pls_integer;
   g_crg_id pls_integer;
   g_page_prefix adc_util.ora_name_type;
   g_scenario adc_util.ora_name_type;
   
+  procedure read_settings(
+    p_firing_item in varchar2,
+    p_event in varchar2,
+    p_event_data in varchar2)
+  as
+    l_crg_is_active boolean;
+  begin
+    l_crg_is_active :=
+      adc_internal.read_settings(
+        p_firing_item => p_firing_item,
+        p_event => p_event,
+        p_event_data => p_event_data);
+  end read_settings;
 
   procedure create_session
   as
@@ -64,8 +79,8 @@ as
   as
     pragma autonomous_transaction;
   begin
-    --pit.initialize;
-    pit.set_context('DEBUG');
+    pit.initialize;
+    --pit.set_context('DEBUG');
     null;
   end before_all;
   
@@ -119,7 +134,7 @@ as
     apex_application.g_date_format := C_DATE_FORMAT;
     g_scenario := p_scenario;
     
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => adc_util.C_NO_FIRING_ITEM,
       p_event => 'initialize',
       p_event_data => null);
@@ -135,7 +150,7 @@ as
   begin
     initialize_adc(p_scenario);
       
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => C_OPTIONAL_ITEM,
       p_event => 'change',
       p_event_data => null);
@@ -158,7 +173,7 @@ as
           p_cpi_id => C_STRING_ITEM,
           p_param_1 => dbms_assert.enquote_literal(C_STRING),
           p_param_2 => null,
-          p_param_3 => null,
+          p_param_3 => adc.C_SHOW_ENABLE,
           p_allow_recursion => adc_util.C_TRUE);
       when 'execute_non_existing_action' then
         adc_internal.execute_action(
@@ -166,7 +181,7 @@ as
           p_cpi_id => C_STRING_ITEM,
           p_param_1 => dbms_assert.enquote_literal(C_STRING),
           p_param_2 => null,
-          p_param_3 => null,
+          p_param_3 => adc.C_SHOW_ENABLE,
           p_allow_recursion => adc_util.C_FALSE);
       when 'execute_action_with_css_selector' then
         adc_internal.execute_action(
@@ -174,7 +189,7 @@ as
           p_cpi_id => adc_util.C_NO_FIRING_ITEM,
           p_param_1 => null,
           p_param_2 => '.sadc-mandatory',
-          p_param_3 => null,
+          p_param_3 => adc.C_SHOW_ENABLE,
           p_allow_recursion => adc_util.C_FALSE);
       when 'register_error' then
         adc_internal.register_error(
@@ -238,7 +253,7 @@ as
   begin
     create_session;
     
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => adc_util.C_NO_FIRING_ITEM,
       p_event => 'initialize',
       p_event_data => null);
@@ -267,7 +282,7 @@ as
   begin
     create_session;
     
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => adc_util.C_NO_FIRING_ITEM,
       p_event => 'initialize',
       p_event_data => null);
@@ -284,7 +299,7 @@ as
   begin
     create_session;
     
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => adc_util.C_NO_FIRING_ITEM,
       p_event => 'initialize',
       p_event_data => null);
@@ -301,7 +316,7 @@ as
   begin
     create_session;
     
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => adc_util.C_NO_FIRING_ITEM,
       p_event => 'initialize',
       p_event_data => C_STRING);
@@ -318,7 +333,7 @@ as
   begin
     create_session;
     
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => adc_util.C_NO_FIRING_ITEM,
       p_event => 'initialize',
       p_event_data => C_JSON_STRING);
@@ -335,7 +350,7 @@ as
   begin
     create_session;
     
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => adc_util.C_NO_FIRING_ITEM,
       p_event => 'initialize',
       p_event_data => C_JSON_STRING);
@@ -352,7 +367,7 @@ as
   begin
     create_session;
     
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => adc_util.C_NO_FIRING_ITEM,
       p_event => 'initialize',
       p_event_data => C_INVALID_JSON_STRING);
@@ -370,7 +385,7 @@ as
   begin
     create_session;
     
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => adc_util.C_NO_FIRING_ITEM,
       p_event => 'initialize',
       p_event_data => C_JSON_STRING);
@@ -387,7 +402,7 @@ as
   begin
     create_session;
     
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => adc_util.C_NO_FIRING_ITEM,
       p_event => 'initialize',
       p_event_data => C_JSON_STRING);
@@ -409,7 +424,7 @@ as
   begin
     create_session;
     
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => adc_util.C_NO_FIRING_ITEM,
       p_event => 'initialize',
       p_event_data => null);
@@ -426,7 +441,7 @@ as
   begin
     create_session;
     
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => C_STRING_ITEM,
       p_event => 'change',
       p_event_data => C_JSON_STRING);
@@ -442,18 +457,18 @@ as
   as
     l_target_item json_object_t;
     l_actual json_array_t;
-    l_bind_item adc_util.ora_name_type := C_OPTIONAL_ITEM;
+    l_bind_item adc_util.ora_name_type := C_NUMBER_ITEM;
   begin
     create_session;
     
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => adc_util.C_NO_FIRING_ITEM,
       p_event => 'initialize',
       p_event_data => null);
       
     -- Find l_bind_item in the list of bind items
     l_actual := json_array_t.parse(replace(adc_internal.get_bind_items_as_json(), '~', '"'));
-    dbms_output.put_line(l_actual.stringify());
+    -- dbms_output.put_line(l_actual.stringify());
     for i in 0 .. l_actual.get_size - 1 loop
       l_target_item := treat(l_actual.get(i) as json_object_t);
       if l_target_item.get_string('id') = l_bind_item then
@@ -472,7 +487,6 @@ as
   as
     l_target_item json_object_t;
     l_actual json_array_t;
-    l_bind_item adc_util.ora_name_type := 'P99_LAST_NAME';
     l_result adc_util.max_char;
   begin
     initialize_adc(
@@ -482,12 +496,12 @@ as
     l_actual := json_array_t.parse(adc_internal.get_bind_items_as_json());
     for i in 0 .. l_actual.get_size - 1 loop
       l_target_item := treat(l_actual.get(i) as json_object_t);
-      if l_target_item.get_string('id') = l_bind_item then
+      if l_target_item.get_string('id') = C_STRING_ITEM then
         exit;
       end if;
     end loop;
     
-    ut.expect(l_target_item.get_string('id')).to_equal(l_bind_item);
+    ut.expect(l_target_item.get_string('id')).to_equal(C_STRING_ITEM);
   end find_mandatory_item_in_bind_items;
   
   
@@ -498,7 +512,6 @@ as
   as
     l_target_item json_object_t;
     l_actual json_array_t;
-    l_bind_item adc_util.ora_name_type := 'P99_SALARY';
     l_result adc_util.max_char;
   begin
     initialize_adc(
@@ -508,12 +521,12 @@ as
     l_actual := json_array_t.parse(adc_internal.get_bind_items_as_json());
     for i in 0 .. l_actual.get_size - 1 loop
       l_target_item := treat(l_actual.get(i) as json_object_t);
-      if l_target_item.get_string('id') = l_bind_item then
+      if l_target_item.get_string('id') = C_NUMBER_ITEM then
         exit;
       end if;
     end loop;
     
-    ut.expect(l_target_item.get_string('id')).to_equal(l_bind_item);
+    ut.expect(l_target_item.get_string('id')).to_equal(C_NUMBER_ITEM);
   end find_number_item_in_bind_items;
   
   
@@ -524,7 +537,6 @@ as
   as
     l_target_item json_object_t;
     l_actual json_array_t;
-    l_bind_item adc_util.ora_name_type := 'P99_HIRE_DATE';
     l_result adc_util.max_char;
   begin
     initialize_adc(
@@ -534,12 +546,12 @@ as
     l_actual := json_array_t.parse(adc_internal.get_bind_items_as_json());
     for i in 0 .. l_actual.get_size - 1 loop
       l_target_item := treat(l_actual.get(i) as json_object_t);
-      if l_target_item.get_string('id') = l_bind_item then
+      if l_target_item.get_string('id') = C_DATE_ITEM then
         exit;
       end if;
     end loop;
     
-    ut.expect(l_target_item.get_string('id')).to_equal(l_bind_item);
+    ut.expect(l_target_item.get_string('id')).to_equal(C_DATE_ITEM);
   end find_date_item_in_bind_items;
   
   
@@ -548,22 +560,21 @@ as
   --
   procedure get_page_items
   as
-    l_bind_item adc_util.ora_name_type := C_OPTIONAL_ITEM;
     l_result adc_util.max_char;
   begin
     create_session;
     
     utl_apex.set_value(
-      p_page_item => l_bind_item,
+      p_page_item => C_OPTIONAL_ITEM,
       p_value => C_STRING);
       
-    adc_internal.read_settings(
-      p_firing_item => l_bind_item,
+    read_settings(
+      p_firing_item => C_OPTIONAL_ITEM,
       p_event => 'change',
       p_event_data => null);
     l_result := adc_internal.process_request;
     
-    ut.expect(instr(l_result, '"firingItems":["P99_FIRST_NAME"]')).to_be_greater_than(0);
+    ut.expect(instr(l_result, '"firingItems":["' || C_OPTIONAL_ITEM || '"]')).to_be_greater_than(0);
   end get_page_items;
   
   
@@ -572,7 +583,6 @@ as
   --
   procedure process_request_initialize
   as
-    l_bind_item adc_util.ora_name_type := C_OPTIONAL_ITEM;
     l_result adc_util.max_char;
   begin
     initialize_adc(
@@ -587,18 +597,17 @@ as
   --
   procedure process_request_mandatory
   as
-    l_bind_item adc_util.ora_name_type := 'P99_JOB_ID';
     l_result adc_util.max_char;
   begin
     initialize_adc(
      p_scenario => 'process_request_mandatory');
     
     utl_apex.set_value(
-      p_page_item => l_bind_item,
+      p_page_item => C_MANDATORY_ITEM,
       p_value => C_STRING);
       
-    adc_internal.read_settings(
-      p_firing_item => l_bind_item,
+    read_settings(
+      p_firing_item => C_MANDATORY_ITEM,
       p_event => 'change',
       p_event_data => null);
     l_result := adc_internal.process_request;
@@ -622,7 +631,7 @@ as
       p_page_item => l_bind_item,
       p_value => C_NUMBER);
       
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => l_bind_item,
       p_event => 'change',
       p_event_data => null);
@@ -647,7 +656,7 @@ as
       p_page_item => l_bind_item,
       p_value => C_VALID_DATE_STRING);
       
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => l_bind_item,
       p_event => 'change',
       p_event_data => null);
@@ -662,14 +671,13 @@ as
   --
   procedure process_request_mandatory_null
   as
-    l_bind_item adc_util.ora_name_type := 'P99_JOB_ID';
     l_result adc_util.max_char;
   begin
     initialize_adc(
      p_scenario => 'process_request_mandatory_null');
       
-    adc_internal.read_settings(
-      p_firing_item => l_bind_item,
+    read_settings(
+      p_firing_item => C_MANDATORY_ITEM,
       p_event => 'change',
       p_event_data => null);
     l_result := adc_internal.process_request;
@@ -683,18 +691,17 @@ as
   --
   procedure process_request_invalid_number
   as
-    l_bind_item adc_util.ora_name_type := C_NUMBER_ITEM;
     l_result adc_util.max_char;
   begin
     initialize_adc(
      p_scenario => 'process_request_invalid_number');
     
     utl_apex.set_value(
-      p_page_item => l_bind_item,
+      p_page_item => C_NUMBER_ITEM,
       p_value => C_STRING);
       
-    adc_internal.read_settings(
-      p_firing_item => l_bind_item,
+    read_settings(
+      p_firing_item => C_NUMBER_ITEM,
       p_event => 'change',
       p_event_data => null);
     l_result := adc_internal.process_request;
@@ -718,7 +725,7 @@ as
       p_page_item => l_bind_item,
       p_value => C_STRING);
       
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => l_bind_item,
       p_event => 'change',
       p_event_data => null);
@@ -737,7 +744,7 @@ as
   begin
     create_session;
       
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => adc_util.C_NO_FIRING_ITEM,
       p_event => 'initialize',
       p_event_data => null);
@@ -759,7 +766,7 @@ as
   begin
     create_session;
       
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => adc_util.C_NO_FIRING_ITEM,
       p_event => 'initialize',
       p_event_data => null);
@@ -783,7 +790,7 @@ as
   begin
     create_session;
       
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => adc_util.C_NO_FIRING_ITEM,
       p_event => 'initialize',
       p_event_data => null);
@@ -815,7 +822,7 @@ as
       p_page_item => l_bind_item,
       p_value => C_NUMBER);
       
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => l_bind_item,
       p_event => 'change',
       p_event_data => null);
@@ -841,7 +848,7 @@ as
       p_page_item => l_bind_item,
       p_value => C_NUMBER);
       
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => l_bind_item,
       p_event => 'change',
       p_event_data => null);
@@ -867,7 +874,7 @@ as
       p_page_item => l_bind_item,
       p_value => C_NUMBER);
       
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => l_bind_item,
       p_event => 'change',
       p_event_data => null);
@@ -891,7 +898,7 @@ as
     initialize_adc(
      p_scenario => 'check_mandatory_on_initialize');
       
-    adc_internal.read_settings(
+    read_settings(
       p_firing_item => adc_util.C_NO_FIRING_ITEM,
       p_event => 'initialize',
       p_event_data => null);
@@ -909,12 +916,11 @@ as
   as
     l_result adc_util.max_char;
   begin
-      
     l_result := call_scenario_plsql_code('execute_action');
     -- See execute_ut_scenario
     
     ut.expect(adc_api.get_string(C_STRING_ITEM)).to_equal(C_STRING);
-    ut.expect(instr(l_result, 'de.condes.plugin.adc.setDisplayState')).to_be_greater_than(0);
+    ut.expect(instr(l_result, C_ADC_ACTION_NAMESPACE || 'setDisplayState')).to_be_greater_than(0);
   end execute_action;
   
   

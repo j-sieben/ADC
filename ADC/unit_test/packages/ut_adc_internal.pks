@@ -78,7 +78,7 @@ as
   
   --%context(Method get_page_items)
   
-  --%test (... returns the items which have beenn touched by rules)
+  --%test (... returns the items which have been touched by rules)
   procedure get_page_items;
   
   --%endcontext
@@ -91,10 +91,10 @@ as
   --%test (... proceeds normally if the firing item is a mandatory item with a value)
   procedure process_request_mandatory;
   
-  --%test (... proceeds normally if the firing item is a number item with a value)
+  --%test (... proceeds normally if the firing item is a number item with a number value)
   procedure process_request_number;
   
-  --%test (... proceeds normally if the firing item is a date item with a value)
+  --%test (... proceeds normally if the firing item is a date item with a date value)
   procedure process_request_date;
   
   --%test (... registers an exception if the firing item is a mandatory item but is NULL)

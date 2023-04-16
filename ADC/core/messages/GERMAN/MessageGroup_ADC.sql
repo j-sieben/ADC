@@ -64,7 +64,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_EXPECTED_FORMAT',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Erwartetes Format ~#1#~.^',
+    p_pms_text => q'^Erwartetes Format "#1#".^',
     p_pms_description => q'^^',
     p_pms_pse_id => 40,
     p_pms_pml_name => 'GERMAN',
@@ -118,7 +118,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_INVALID_DATE',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Ungültiges Datum: #1#.^',
+    p_pms_text => q'^#SQLERRM#^',
     p_pms_description => q'^^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
@@ -127,7 +127,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_INVALID_NUMBER',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Ungültige Zahl. Erwartetes Format ~#1#~.^',
+    p_pms_text => q'^Ungültige Zahl "#1#". Erwartetes Format: "#2#".^',
     p_pms_description => q'^^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
@@ -433,7 +433,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_SESSION_STATE_SET',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Element ~#1#~ wurde auf den Wert ~#2#~ gesetzt^',
+    p_pms_text => q'^Element "#1#" wurde auf den Wert "#2#" gesetzt^',
     p_pms_description => q'^^',
     p_pms_pse_id => 50,
     p_pms_pml_name => 'GERMAN',
@@ -478,7 +478,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_UNEXPECTED_CONV_TYPE',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Unerwarteter Elementtyp ~#1#~ mit Formatmaske.^',
+    p_pms_text => q'^Unerwarteter Elementtyp "#1#" mit Formatmaske.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',

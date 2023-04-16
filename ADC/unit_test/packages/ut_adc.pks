@@ -24,10 +24,10 @@ as
   
   --%context(Plugin ADC)
   
-  --%test (identifies 3 well known items as relevant when rendering page ADMIN_CGR of the ADC application)
+  --%test (identifies 3 well known items as relevant when rendering page ADMIN_CRG of the ADC application)
   procedure render_plugin;
   
-  --%test (executes 1 rule with 1 action if setting item P1_CRG_ID to the ID of ADC_ADMIN_CGR rule group)
+  --%test (executes 1 rule with 1 action if setting item P1_CRG_ID to the ID of ADC_ADMIN_CRG rule group)
   procedure refresh_plugin;
   
   --%endcontext

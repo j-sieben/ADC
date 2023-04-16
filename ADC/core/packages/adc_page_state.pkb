@@ -201,19 +201,23 @@ as
         p_params => msg_params(
                       msg_param('Result', g_session_values(p_value.cpi_id).string_value)));
       if p_throw_error = adc_util.C_TRUE then
-        pit.error(msg.ADC_INVALID_NUMBER, msg_args(g_session_values(p_value.cpi_id).string_value, l_format_mask));
+        pit.error(
+          p_message_name => msg.ADC_INVALID_NUMBER, 
+          p_msg_args => msg_args(
+                          g_session_values(p_value.cpi_id).string_value, 
+                          replace(lower(l_format_mask), 'fm')));
       end if;
     when others then
       if p_throw_error = adc_util.C_TRUE then
         case 
         when sqlcode in (-1858, -1862) then
           -- Number format related errors
-          pit.error(msg.ADC_INVALID_NUMBER, msg_args(substr(sqlerrm, 12)));
+          pit.error(msg.ADC_INVALID_NUMBER);
         when sqlcode between -1866 and -1800 then
-          -- Date related errors. oo many to map them explicitly
-          pit.error(msg.ADC_INVALID_DATE, msg_args(substr(sqlerrm, 12)));
+          -- Date related errors. too many to map them explicitly
+          pit.error(msg.ADC_INVALID_DATE);
         else
-          pit.error(msg.PIT_SQL_ERROR);
+          raise;
         end case;
       end if;
   end convert_session_value;
@@ -272,7 +276,7 @@ as
     --pragma autonomous_transaction;
   begin
     apex_util.set_session_state(p_cpi_id, p_value);
-   -- commit;
+    --commit;
   end set_session_value;
   
   
@@ -492,7 +496,7 @@ as
     
     -- Explicitly set the value and harmonize with the session state (fi when changing a session values during rule execution)
     convert_session_value(p_crg_id, l_value, p_throw_error);
-    
+            
     if p_throw_error = adc_util.C_TRUE then
       check_mandatory(p_crg_id, l_value.cpi_id);
     end if;
@@ -506,6 +510,7 @@ as
     when NO_DATA_FOUND then
       -- no session state value, ignore.
       pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Item ' || l_value.cpi_id || ' does not have a value, ignored'));
+      g_session_values(l_value.cpi_id) := null;
       pit.leave_optional;
     when INVALID_NUMBER or VALUE_ERROR or msg.ADC_ITEM_IS_MANDATORY_ERR then
       pit.leave_optional;

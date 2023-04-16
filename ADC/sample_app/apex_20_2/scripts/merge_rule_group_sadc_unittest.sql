@@ -42,6 +42,29 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_raise_on_validation => adc_util.C_TRUE,
     p_cra_active => adc_util.C_TRUE);
+  adc_admin.merge_rule(
+    p_cru_id => adc_admin.map_id(1073),
+    p_cru_crg_id => adc_admin.map_id(219),
+    p_cru_name => 'eine Testaktion ausführen möchte',
+    p_cru_condition => q'|firing_item='P99_EMP_FIRST_NAME'|',
+    p_cru_sort_seq => 20,
+    p_cru_fire_on_page_load => adc_util.C_FALSE,
+    p_cru_active => adc_util.C_TRUE);
+  
+  adc_admin.merge_rule_action(
+    p_cra_id => adc_admin.map_id(1075),
+    p_cra_cru_id => adc_admin.map_id(1073),
+    p_cra_crg_id => adc_admin.map_id(219),
+    p_cra_cpi_id => 'DOCUMENT',
+    p_cra_cat_id => 'PLSQL_CODE',
+    p_cra_param_1 => q'|ut_adc_internal.execute_ut_scenario;|',
+    p_cra_param_2 => q'||',
+    p_cra_param_3 => q'||',
+    p_cra_sort_seq => 10,
+    p_cra_on_error => adc_util.C_FALSE,
+    p_cra_raise_recursive => adc_util.C_TRUE,
+    p_cra_raise_on_validation => adc_util.C_FALSE,
+    p_cra_active => adc_util.C_TRUE);
   
 
   adc_admin.propagate_rule_change(adc_admin.map_id(219));

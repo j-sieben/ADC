@@ -13,10 +13,10 @@ as
   
   -- Aplication pages
   C_PAGE_TEST constant number := 98;
-  C_PAGE_ADMIN_CGR constant number := 1;
+  C_PAGE_ADMIN_CRG constant number := 1;
   
   -- Rule groups
-  C_CRG_ADMIN_CGR constant utl_apex.ora_name_type := 'ADC_ADMIN_CGR';
+  C_CRG_ADMIN_CRG constant utl_apex.ora_name_type := 'ADC_ADMIN_CRG';
   C_CRG_EDIT_CRU constant utl_apex.ora_name_type := 'ADC_EDIT_CRU';
   C_CRG_TEST constant utl_apex.ora_name_type := 'ADC_TEST';
   
@@ -43,7 +43,7 @@ as
   g_decimal_delimiter char(1 byte);
 
   procedure get_session(
-    p_page_id in number default C_PAGE_ADMIN_CGR)
+    p_page_id in number default C_PAGE_ADMIN_CRG)
   as
   begin
     rollback;
@@ -60,10 +60,7 @@ as
   as
   begin
     rollback;
-    $IF utl_apex.ver_le_05 $THEN
-    $ELSE
     utl_dev_apex.drop_session;
-    $END
   end drop_session;
   
   
@@ -191,7 +188,7 @@ as
   begin
     g_test_name := 'render_plugin';
     get_session;
-    set_environment(C_CRG_ADMIN_CGR, C_NO_ITEM, C_EVENT_INITIALIZE);
+    set_environment(C_CRG_ADMIN_CRG, C_NO_ITEM, C_EVENT_INITIALIZE);
     
     g_render_result := adc_plugin.render(g_da_type, g_plugin_type);
     
@@ -212,7 +209,7 @@ as
     g_test_name := 'refresh_plugin';
     get_session;
     utl_apex.set_value(C_ITEM_CRG_ID, g_crg_id);
-    set_environment(C_CRG_ADMIN_CGR, C_ITEM_CRG_ID, C_EVENT_CHANGE);
+    set_environment(C_CRG_ADMIN_CRG, C_ITEM_CRG_ID, C_EVENT_CHANGE);
     
     g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
     l_result := adc.get_test_result;
@@ -235,7 +232,7 @@ as
     g_test_name := 'get_event';
     get_session;
     utl_apex.set_value(C_ITEM_CRG_ID, g_crg_id);
-    set_environment(C_CRG_ADMIN_CGR, C_ITEM_CRG_ID, C_EVENT_CHANGE);    
+    set_environment(C_CRG_ADMIN_CRG, C_ITEM_CRG_ID, C_EVENT_CHANGE);    
     g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
     
     ut.expect(adc.get_event()).to_equal(C_EVENT_CHANGE);
@@ -251,7 +248,7 @@ as
     g_test_name := 'get_firing_item';
     get_session;
     utl_apex.set_value(C_ITEM_CRG_ID, g_crg_id);
-    set_environment(C_CRG_ADMIN_CGR, C_ITEM_CRG_ID, C_EVENT_CHANGE);    
+    set_environment(C_CRG_ADMIN_CRG, C_ITEM_CRG_ID, C_EVENT_CHANGE);    
     g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
     
     ut.expect(adc.get_event()).to_equal(C_EVENT_CHANGE);
@@ -265,7 +262,7 @@ as
     g_test_name := 'get_char';
     get_session;
     utl_apex.set_value(C_ITEM_CRG_ID, g_crg_id);
-    set_environment(C_CRG_ADMIN_CGR, C_ITEM_CRG_ID, C_EVENT_CHANGE);    
+    set_environment(C_CRG_ADMIN_CRG, C_ITEM_CRG_ID, C_EVENT_CHANGE);    
     g_ajax_result := adc_plugin.ajax(g_da_type, g_plugin_type);
     
     ut.expect(adc.get_char(C_ITEM_CRG_ID)).to_equal(to_char(g_crg_id));
