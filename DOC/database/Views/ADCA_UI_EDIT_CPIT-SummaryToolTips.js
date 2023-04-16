@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADCA_UI_EDIT_CPIT",{292:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">View for APEX page EDIT_CPIT</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADCA_UI_EDIT_CPIT",{353:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">View for APEX page EDIT_CPIT</div></div>"});

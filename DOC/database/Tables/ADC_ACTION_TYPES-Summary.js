@@ -1,1 +1,1 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Tables.ADC_ACTION_TYPES","ADC_ACTION_TYPES");NDSummary.OnSummaryLoaded("Database:Tables.ADC_ACTION_TYPES",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[336,0,0,"<span class=\"Qualifier\">Tables.</span>&#8203;ADC_ACTION_TYPES"]]);
+﻿NDFramePage.OnPageTitleLoaded("Database:Tables.ADC_ACTION_TYPES","ADC_ACTION_TYPES");NDSummary.OnSummaryLoaded("Database:Tables.ADC_ACTION_TYPES",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[329,0,0,"<span class=\"Qualifier\">Tables.</span>&#8203;ADC_ACTION_TYPES"]]);

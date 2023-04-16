@@ -8,7 +8,7 @@
 
 <body onload="NDLoader.OnLoad('Content');" class="NDPage NDContentPage">
 
-<a name="Topic276"></a><div class="CTopic TDatabaseTable LSQL first">
+<a name="Topic320"></a><div class="CTopic TDatabaseTable LSQL first">
  <div class="CTitle"><span class="Qualifier">Tables.</span>&#8203;ADC_RULES</div>
  <div class="CBody"><p>Table to store a single rule</p><div class="CHeading">Fields</div><table class="CDefinitionList"><tr><td class="CDLEntry">cru_id</td><td class="CDLDefinition"><p>PK, technical key</p></td></tr><tr><td class="CDLEntry">cru_crg_id</td><td class="CDLDefinition"><p>FK, reference to ADC_GROUP</p></td></tr><tr><td class="CDLEntry">cru_name</td><td class="CDLDefinition"><p>Descriptive Name</p></td></tr><tr><td class="CDLEntry">cru_condition</td><td class="CDLDefinition"><p>Condition, syntactically in the form of a partial where-clause</p></td></tr><tr><td class="CDLEntry">cru_sort_seq</td><td class="CDLDefinition"><p>Sort criterion, defines execution order. Defaults to 10</p></td></tr><tr><td class="CDLEntry">cru_firing_items</td><td class="CDLDefinition"><p>List of page items that are referenced within cru_condition</p></td></tr><tr><td class="CDLEntry">cru_active</td><td class="CDLDefinition"><p>Flag indicating whether the rule should be used currently. Defaults to TRUE</p></td></tr><tr><td class="CDLEntry">cru_fire_on_page_load</td><td class="CDLDefinition"><p>Flag indicating whether this rule should be fired when the page is initialized. Defaults to FALSE</p></td></tr><tr><td class="CDLEntry">cru_has_error</td><td class="CDLDefinition"><p>flag indicating whether this rule contains an error or not. Defaults to FALSE</p></td></tr></table></div>
 </div>

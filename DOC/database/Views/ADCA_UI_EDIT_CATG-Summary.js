@@ -1,1 +1,1 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADCA_UI_EDIT_CATG","ADCA_UI_EDIT_CATG");NDSummary.OnSummaryLoaded("Database:Views.ADCA_UI_EDIT_CATG",[["SQL","SQL"]],[["Views","DatabaseView"]],[[291,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADCA_UI_EDIT_CATG"]]);
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADCA_UI_EDIT_CATG","ADCA_UI_EDIT_CATG");NDSummary.OnSummaryLoaded("Database:Views.ADCA_UI_EDIT_CATG",[["SQL","SQL"]],[["Views","DatabaseView"]],[[352,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADCA_UI_EDIT_CATG"]]);

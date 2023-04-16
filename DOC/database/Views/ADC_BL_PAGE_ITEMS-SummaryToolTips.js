@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_BL_PAGE_ITEMS",{244:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">View to collect metadata from the APEX dictionary for all ADC supported kinds of page items</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_BL_PAGE_ITEMS",{382:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">View to collect metadata from the APEX dictionary for all ADC supported kinds of page items</div></div>"});

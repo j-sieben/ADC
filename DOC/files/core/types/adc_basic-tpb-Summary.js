@@ -1,1 +1,1 @@
-﻿NDFramePage.OnPageTitleLoaded("File:core/types/adc_basic.tpb","adc_basic.tpb");NDSummary.OnSummaryLoaded("File:core/types/adc_basic.tpb",[["SQL","SQL"]],[["Groups","Group"],["Types","Type"]],[[139,0,0,"Types","Types"],[140,0,1,"ADC_BASIC Body","ADC_BASIC_Body"]]);
+﻿NDFramePage.OnPageTitleLoaded("File:core/types/adc_basic.tpb","adc_basic.tpb");NDSummary.OnSummaryLoaded("File:core/types/adc_basic.tpb",[["SQL","SQL"]],[["Groups","Group"],["Types","Type"]],[[206,0,0,"Types","Types"],[207,0,1,"ADC_BASIC Body","ADC_BASIC_Body"]]);

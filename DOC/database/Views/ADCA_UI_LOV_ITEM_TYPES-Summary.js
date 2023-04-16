@@ -1,1 +1,1 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADCA_UI_LOV_ITEM_TYPES","ADCA_UI_LOV_ITEM_TYPES");NDSummary.OnSummaryLoaded("Database:Views.ADCA_UI_LOV_ITEM_TYPES",[["SQL","SQL"]],[["Views","DatabaseView"]],[[857,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADCA_UI_LOV_ITEM_TYPES"]]);
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADCA_UI_LOV_ITEM_TYPES","ADCA_UI_LOV_ITEM_TYPES");NDSummary.OnSummaryLoaded("Database:Views.ADCA_UI_LOV_ITEM_TYPES",[["SQL","SQL"]],[["Views","DatabaseView"]],[[368,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADCA_UI_LOV_ITEM_TYPES"]]);

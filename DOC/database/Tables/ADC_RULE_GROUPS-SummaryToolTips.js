@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Tables.ADC_RULE_GROUPS",{308:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store ADC Rule Groups</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Tables.ADC_RULE_GROUPS",{318:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store ADC Rule Groups</div></div>"});

@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADCA_UI_DESIGNER_RULE_GROUP",{833:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Form data including an overview over the rule and a switch to disable the rule group</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADCA_UI_DESIGNER_RULE_GROUP",{346:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Form data including an overview over the rule and a switch to disable the rule group</div></div>"});

@@ -8,24 +8,24 @@
 
 <body onload="NDLoader.OnLoad('Content');" class="NDPage NDContentPage">
 
-<a name="Topic17"></a><div class="CTopic TClass LSQL first">
+<a name="Topic71"></a><div class="CTopic TClass LSQL first">
  <div class="CTitle">SPLITTER_PLUGIN</div>
  <div class="CBody"><p>Package to maintain a splitter oriented APEX page.</p><p>This package implements the splitter plugin as provided by APEX in the page designer, but enhanced and without the requirement to grant access to an APEX internal package.</p><p>I just extracted the render and ajax method into this package and adopted it to my coding style (optically).</p><div class="CHeading">Author</div><p>FOS = FOEX Open Source (fos.world), by FOEX GmbH, Austria (www.foex.at)</p><p><a href="https://github.com/foex-open-source/fos-splitter" target="_top">On GitHub</a></p></div>
 </div>
 
-<a name="Functions"></a><a name="Topic18"></a><div class="CTopic TGroup LSQL">
+<a name="Functions"></a><a name="Topic72"></a><div class="CTopic TGroup LSQL">
  <div class="CTitle">Functions</div>
 </div>
 
-<a name="render"></a><a name="Topic19"></a><div class="CTopic TFunction LSQL">
+<a name="render"></a><a name="Topic73"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">render</div>
- <div id="NDPrototype19" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> render(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_region&nbsp;</td><td class="PType last">apex_plugin.t_region,</td></tr><tr><td class="PName first">p_plugin&nbsp;</td><td class="PType last">apex_plugin.t_plugin,</td></tr><tr><td class="PName first">p_is_printer_friendly&nbsp;</td><td class="PType last"><span class="SHKeyword">boolean</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> apex_plugin.t_region_render_result</div></div>
+ <div id="NDPrototype73" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> render(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_region&nbsp;</td><td class="PType last">apex_plugin.t_region,</td></tr><tr><td class="PName first">p_plugin&nbsp;</td><td class="PType last">apex_plugin.t_plugin,</td></tr><tr><td class="PName first">p_is_printer_friendly&nbsp;</td><td class="PType last"><span class="SHKeyword">boolean</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> apex_plugin.t_region_render_result</div></div>
  <div class="CBody"><p>Implementation of the render interface of an APEX region plugin</p></div>
 </div>
 
-<a name="ajax"></a><a name="Topic20"></a><div class="CTopic TFunction LSQL last">
+<a name="ajax"></a><a name="Topic74"></a><div class="CTopic TFunction LSQL last">
  <div class="CTitle">ajax</div>
- <div id="NDPrototype20" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> ajax(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_region&nbsp;</td><td class="PType last">apex_plugin.t_region,</td></tr><tr><td class="PName first">p_plugin&nbsp;</td><td class="PType last">apex_plugin.t_plugin</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> apex_plugin.t_region_ajax_result</div></div>
+ <div id="NDPrototype74" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> ajax(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_region&nbsp;</td><td class="PType last">apex_plugin.t_region,</td></tr><tr><td class="PName first">p_plugin&nbsp;</td><td class="PType last">apex_plugin.t_plugin</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> apex_plugin.t_region_ajax_result</div></div>
  <div class="CBody"><p>Implementation of the ajax interface of an APEX region plugin</p></div>
 </div>
 

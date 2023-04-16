@@ -8,103 +8,103 @@
 
 <body onload="NDLoader.OnLoad('Content');" class="NDPage NDContentPage">
 
-<a name="Topic448"></a><div class="CTopic TClass LSQL first">
+<a name="Topic566"></a><div class="CTopic TClass LSQL first">
  <div class="CTitle">ADC_APEX_ACTIONS Body</div>
  <div class="CBody"><p>Implementation of the helper package to maintain APEX Actions</p><div class="CHeading">Author</div><p>Juergen Sieben, ConDeS GmbH</p></div>
 </div>
 
-<a name="Type_definitions"></a><a name="Topic449"></a><div class="CTopic TGroup LSQL">
+<a name="Type_definitions"></a><a name="Topic567"></a><div class="CTopic TGroup LSQL">
  <div class="CTitle">Type definitions</div>
 </div>
 
-<a name="action_rec"></a><a name="Topic450"></a><div class="CTopic TType LSQL">
+<a name="action_rec"></a><a name="Topic568"></a><div class="CTopic TType LSQL">
  <div class="CTitle">action_rec</div>
  <div class="CBody"><p>Record to store controlling properties to put toghether a working JavaScript</p><div class="CHeading">Properties</div><table class="CDefinitionList"><tr><td class="CDLEntry">action_name</td><td class="CDLDefinition"><p>Name of the APEX Action</p></td></tr><tr><td class="CDLEntry">needs_update</td><td class="CDLDefinition"><p>Flag to indicate whether a call to apex.actions.update is required</p></td></tr><tr><td class="CDLEntry">execute_immediate</td><td class="CDLDefinition"><p>Flag to indicate wheter a call to apex.actions.invoke is required</p></td></tr><tr><td class="CDLEntry">javascript_stack</td><td class="CDLDefinition"><p>Stack of JavaScrip snippets to form the resulting JavaScript code</p></td></tr><tr><td class="CDLEntry">additional_javascript</td><td class="CDLDefinition"><p>JavaScript function to integrate into the JavaScript answer.</p></td></tr></table></div>
 </div>
 
-<a name="Private_Methods"></a><a name="Topic452"></a><div class="CTopic TGroup LSQL">
+<a name="Private_Methods"></a><a name="Topic570"></a><div class="CTopic TGroup LSQL">
  <div class="CTitle">Private Methods</div>
 </div>
 
-<a name="append"></a><a name="Topic453"></a><div class="CTopic TFunction LSQL">
+<a name="append"></a><a name="Topic571"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">append</div>
- <div id="NDPrototype453" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> append(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_text&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">varchar2</span>,</td><td></td><td class="last"></td></tr><tr><td class="PName first">p_for_action&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td><td class="PDefaultValueSeparator">&nbsp;<span class="SHKeyword">default</span>&nbsp;</td><td class="PDefaultValue last">TRUE</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype571" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> append(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_text&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">varchar2</span>,</td><td></td><td class="last"></td></tr><tr><td class="PName first">p_for_action&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td><td class="PDefaultValueSeparator">&nbsp;<span class="SHKeyword">default</span>&nbsp;</td><td class="PDefaultValue last">TRUE</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Helper method to append a chunk to the JavaScript stack. Replaces #ACTION# with action name.</p><p>Is used to collect a JacaScript instance performing the requested operations client side.&nbsp; Normal usage is to collect JavaScript to the G_ACTION.JAVASCRIPT_STACK. If you need additional JavaScript code, add it to G_ACTION.ADDITIONAL_JAVASCRIPT to make sure this code gets executed after G_ACTION.JAVASCRIPT_STACK.</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">p_text<div class="CDLParameterType"><span class="SHKeyword">in</span> <span class="SHKeyword">varchar2</span></div></td><td class="CDLDefinition"><p>Text to append to the JavaScript stack</p></td></tr><tr><td class="CDLEntry">p_for_action<div class="CDLParameterType"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></div></td><td class="CDLDefinition"><p>Optional flag to indicate where to append P_TEXT to - TRUE (Default): P_TEXT is appended to G_ACTION.JAVASCRIPT_STACK - FALSE: P_TEXT is appended to G_ACTION.ADDITIONAL_JAVASCRIPT</p></td></tr></table></div>
 </div>
 
-<a name="Public_Methods"></a><a name="Topic454"></a><div class="CTopic TGroup LSQL">
+<a name="Public_Methods"></a><a name="Topic572"></a><div class="CTopic TGroup LSQL">
  <div class="CTitle">Public Methods</div>
 </div>
 
-<a name="action_init"></a><a name="Topic455"></a><div class="CTopic TFunction LSQL">
+<a name="action_init"></a><a name="Topic573"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">action_init</div>
- <div id="NDPrototype455" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> action_init(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_action_name&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_name<span class="SHKeyword">%type</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:action_init" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,588);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.action_init</a></p></div>
+ <div id="NDPrototype573" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> action_init(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_action_name&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_name<span class="SHKeyword">%type</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:action_init" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,886);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.action_init</a></p></div>
 </div>
 
-<a name="get_action_script"></a><a name="Topic456"></a><div class="CTopic TFunction LSQL">
+<a name="get_action_script"></a><a name="Topic574"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">get_action_script</div>
- <div id="NDPrototype456" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> get_action_script</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">varchar2</span></div></div>
- <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:get_action_script" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,720);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.get_action_script</a></p></div>
+ <div id="NDPrototype574" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> get_action_script</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">varchar2</span></div></div>
+ <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:get_action_script" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,887);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.get_action_script</a></p></div>
 </div>
 
-<a name="register_action_script"></a><a name="Topic395"></a><div class="CTopic TFunction LSQL">
+<a name="register_action_script"></a><a name="Topic575"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">register_action_script</div>
- <div id="NDPrototype395" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> register_action_script</div></div>
- <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:register_action_script" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,796);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.register_action_script</a></p></div>
+ <div id="NDPrototype575" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> register_action_script</div></div>
+ <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:register_action_script" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,888);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.register_action_script</a></p></div>
 </div>
 
-<a name="append_apex_actions"></a><a name="Topic435"></a><div class="CTopic TFunction LSQL">
+<a name="append_apex_actions"></a><a name="Topic576"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">append_apex_actions</div>
- <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:get_crg_apex_actions" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,274);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.get_crg_apex_actions</a></p></div>
+ <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:get_crg_apex_actions" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,889);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.get_crg_apex_actions</a></p></div>
 </div>
 
-<a name="set_href"></a><a name="Topic458"></a><div class="CTopic TFunction LSQL">
+<a name="set_href"></a><a name="Topic577"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">set_href</div>
- <div id="NDPrototype458" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_href(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_href&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_href<span class="SHKeyword">%type</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:set_href" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,722);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.set_href</a></p></div>
+ <div id="NDPrototype577" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_href(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_href&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_href<span class="SHKeyword">%type</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:set_href" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,890);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.set_href</a></p></div>
 </div>
 
-<a name="set_action"></a><a name="Topic459"></a><div class="CTopic TFunction LSQL">
+<a name="set_action"></a><a name="Topic578"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">set_action</div>
- <div id="NDPrototype459" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_action(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_action&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_action<span class="SHKeyword">%type</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:set_action" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,723);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.set_action</a></p></div>
+ <div id="NDPrototype578" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_action(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_action&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_action<span class="SHKeyword">%type</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:set_action" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,891);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.set_action</a></p></div>
 </div>
 
-<a name="execute_immediate"></a><a name="Topic460"></a><div class="CTopic TFunction LSQL">
+<a name="execute_immediate"></a><a name="Topic579"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">execute_immediate</div>
- <div id="NDPrototype460" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> execute_immediate(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_inline&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td><td class="PDefaultValueSeparator">&nbsp;<span class="SHKeyword">default</span>&nbsp;</td><td class="PDefaultValue last">FALSE</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:execute_immediate" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,724);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.execute_immediate</a></p></div>
+ <div id="NDPrototype579" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> execute_immediate(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_inline&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td><td class="PDefaultValueSeparator">&nbsp;<span class="SHKeyword">default</span>&nbsp;</td><td class="PDefaultValue last">FALSE</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:execute_immediate" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,892);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.execute_immediate</a></p></div>
 </div>
 
-<a name="set_label"></a><a name="Topic461"></a><div class="CTopic TFunction LSQL">
+<a name="set_label"></a><a name="Topic580"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">set_label</div>
- <div id="NDPrototype461" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_label(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_label&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_label<span class="SHKeyword">%type</span>,</td><td></td><td class="last"></td></tr><tr><td class="PName first">p_is_key&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td><td class="PDefaultValueSeparator">&nbsp;<span class="SHKeyword">default</span>&nbsp;</td><td class="PDefaultValue last">false</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:set_label" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,725);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.set_label</a></p></div>
+ <div id="NDPrototype580" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_label(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_label&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_label<span class="SHKeyword">%type</span>,</td><td></td><td class="last"></td></tr><tr><td class="PName first">p_is_key&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td><td class="PDefaultValueSeparator">&nbsp;<span class="SHKeyword">default</span>&nbsp;</td><td class="PDefaultValue last">false</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:set_label" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,893);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.set_label</a></p></div>
 </div>
 
-<a name="set_title"></a><a name="Topic462"></a><div class="CTopic TFunction LSQL">
+<a name="set_title"></a><a name="Topic581"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">set_title</div>
- <div id="NDPrototype462" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_title(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_title&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_title<span class="SHKeyword">%type</span>,</td><td></td><td class="last"></td></tr><tr><td class="PName first">p_is_key&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td><td class="PDefaultValueSeparator">&nbsp;<span class="SHKeyword">default</span>&nbsp;</td><td class="PDefaultValue last">false</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:set_title" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,726);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.set_title</a></p></div>
+ <div id="NDPrototype581" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_title(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_title&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> adc_apex_actions_v.caa_title<span class="SHKeyword">%type</span>,</td><td></td><td class="last"></td></tr><tr><td class="PName first">p_is_key&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td><td class="PDefaultValueSeparator">&nbsp;<span class="SHKeyword">default</span>&nbsp;</td><td class="PDefaultValue last">false</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:set_title" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,894);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.set_title</a></p></div>
 </div>
 
-<a name="set_disabled"></a><a name="Topic463"></a><div class="CTopic TFunction LSQL">
+<a name="set_disabled"></a><a name="Topic582"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">set_disabled</div>
- <div id="NDPrototype463" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_disabled(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_disabled&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:set_disabled" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,727);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.set_disabled</a></p></div>
+ <div id="NDPrototype582" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_disabled(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_disabled&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:set_disabled" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,895);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.set_disabled</a></p></div>
 </div>
 
-<a name="set_visible"></a><a name="Topic464"></a><div class="CTopic TFunction LSQL">
+<a name="set_visible"></a><a name="Topic583"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">set_visible</div>
- <div id="NDPrototype464" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_visible(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_visible&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:set_visible" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,728);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.set_visible</a></p></div>
+ <div id="NDPrototype583" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> set_visible(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_visible&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:set_visible" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,896);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.set_visible</a></p></div>
 </div>
 
-<a name="add_script"></a><a name="Topic465"></a><div class="CTopic TFunction LSQL last">
+<a name="add_script"></a><a name="Topic584"></a><div class="CTopic TFunction LSQL last">
  <div class="CTitle">add_script</div>
- <div id="NDPrototype465" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> add_script(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_script&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">varchar2</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:add_script" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,729);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.add_script</a></p></div>
+ <div id="NDPrototype584" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> add_script(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_script&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">varchar2</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>See <a href="../../index.html#SQLClass:ADC_APEX_ACTIONS:add_script" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,897);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_APEX_ACTIONS.add_script</a></p></div>
 </div>
 
 </body></html>

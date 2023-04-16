@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_PARAM_LOV_EVENT",{382:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Parameterview to display all custom events</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_PARAM_LOV_EVENT",{388:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Parameterview to display all custom events</div></div>"});

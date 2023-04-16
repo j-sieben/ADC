@@ -8,121 +8,121 @@
 
 <body onload="NDLoader.OnLoad('Content');" class="NDPage NDContentPage">
 
-<a name="ADC_RESPONSE_Body"></a><a name="Topic174"></a><div class="CTopic TClass LSQL first">
+<a name="ADC_RESPONSE_Body"></a><a name="Topic276"></a><div class="CTopic TClass LSQL first">
  <div class="CTitle">ADC_RESPONSE Body</div>
  <div class="CBody"><p>Implementation of the response related logic for ADC</p><div class="CHeading">Author</div><p>Juergen Sieben, ConDeS GmbH</p></div>
 </div>
 
-<a name="ADC_RESPONSE_Body.Private_package_constants"></a><a name="Topic175"></a><div class="CTopic TGroup LSQL">
+<a name="ADC_RESPONSE_Body.Private_package_constants"></a><a name="Topic277"></a><div class="CTopic TGroup LSQL">
  <div class="CTitle">Private package constants</div>
 </div>
 
-<a name="ADC_RESPONSE_Body.JavaScript_constants"></a><a name="Topic176"></a><div class="CTopic TConstant LSQL">
+<a name="ADC_RESPONSE_Body.JavaScript_constants"></a><a name="Topic278"></a><div class="CTopic TConstant LSQL">
  <div class="CTitle">JavaScript constants</div>
- <div class="CBody"><table class="CDefinitionList"><tr><td class="CDLEntry"><a name="ADC_RESPONSE_Body.C_JS_NAMESPACE"></a><a name="Topic177"></a>C_JS_NAMESPACE</td><td class="CDLDefinition"><p>Namespace of the core JavaScript functionality</p></td></tr><tr><td class="CDLEntry"><a name="ADC_RESPONSE_Body.C_JS_COMMENT_STRING"></a><a name="Topic178"></a>C_JS_COMMENT_STRING</td><td class="CDLDefinition"><p>Comment string to comment unneeded or double JavaScript snippets</p></td></tr></table></div>
+ <div class="CBody"><table class="CDefinitionList"><tr><td class="CDLEntry"><a name="ADC_RESPONSE_Body.C_JS_NAMESPACE"></a><a name="Topic279"></a>C_JS_NAMESPACE</td><td class="CDLDefinition"><p>Namespace of the core JavaScript functionality</p></td></tr><tr><td class="CDLEntry"><a name="ADC_RESPONSE_Body.C_JS_COMMENT_STRING"></a><a name="Topic280"></a>C_JS_COMMENT_STRING</td><td class="CDLDefinition"><p>Comment string to comment unneeded or double JavaScript snippets</p></td></tr></table></div>
 </div>
 
-<a name="ADC_RESPONSE_Body.Private_package_types"></a><a name="Topic179"></a><div class="CTopic TGroup LSQL">
+<a name="ADC_RESPONSE_Body.Private_package_types"></a><a name="Topic281"></a><div class="CTopic TGroup LSQL">
  <div class="CTitle">Private package types</div>
 </div>
 
-<a name="ADC_RESPONSE_Body.javascript_rec"></a><a name="Topic180"></a><div class="CTopic TType LSQL">
+<a name="ADC_RESPONSE_Body.javascript_rec"></a><a name="Topic282"></a><div class="CTopic TType LSQL">
  <div class="CTitle">javascript_rec</div>
- <div class="CBody"><p>JavaScript snippet with hash and debug level as entry for <a href="../../../index.html#File:core/packages/adc_response.pkb:ADC_RESPONSE_Body.javascript_list" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,181);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >javascript_list</a>.</p><div class="CHeading">Properties</div><table class="CDefinitionList"><tr><td class="CDLEntry">script</td><td class="CDLDefinition"><p>Java Script snippet</p></td></tr><tr><td class="CDLEntry">javascript_hash</td><td class="CDLDefinition"><p>Hashcode over &lt;script&gt; to remove duplicate entries</p></td></tr><tr><td class="CDLEntry">debug_level</td><td class="CDLDefinition"><p>Level indicating the importance of the &lt;script&gt; entry.&nbsp; Is used to distinguish between &quot;real&quot; code and comments of different importance. Allows to reduce the output size.</p></td></tr></table></div>
+ <div class="CBody"><p>JavaScript snippet with hash and debug level as entry for <a href="../../../index.html#File:core/packages/adc_response.pkb:ADC_RESPONSE_Body.javascript_list" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,283);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >javascript_list</a>.</p><div class="CHeading">Properties</div><table class="CDefinitionList"><tr><td class="CDLEntry">script</td><td class="CDLDefinition"><p>Java Script snippet</p></td></tr><tr><td class="CDLEntry">javascript_hash</td><td class="CDLDefinition"><p>Hashcode over &lt;script&gt; to remove duplicate entries</p></td></tr><tr><td class="CDLEntry">debug_level</td><td class="CDLDefinition"><p>Level indicating the importance of the &lt;script&gt; entry.&nbsp; Is used to distinguish between &quot;real&quot; code and comments of different importance. Allows to reduce the output size.</p></td></tr></table></div>
 </div>
 
-<a name="ADC_RESPONSE_Body.javascript_list"></a><a name="Topic181"></a><div class="CTopic TType LSQL">
+<a name="ADC_RESPONSE_Body.javascript_list"></a><a name="Topic283"></a><div class="CTopic TType LSQL">
  <div class="CTitle">javascript_list</div>
- <div class="CBody"><p>Stack of <a href="../../../index.html#File:core/packages/adc_response.pkb:ADC_RESPONSE_Body.javascript_rec" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,180);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >javascript_rec</a> containing all collected JavaScript snippets for the response.</p></div>
+ <div class="CBody"><p>Stack of <a href="../../../index.html#File:core/packages/adc_response.pkb:ADC_RESPONSE_Body.javascript_rec" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,282);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >javascript_rec</a> containing all collected JavaScript snippets for the response.</p></div>
 </div>
 
-<a name="ADC_RESPONSE_Body.level_length_t"></a><a name="Topic182"></a><div class="CTopic TType LSQL">
+<a name="ADC_RESPONSE_Body.level_length_t"></a><a name="Topic284"></a><div class="CTopic TType LSQL">
  <div class="CTitle">level_length_t</div>
  <div class="CBody"><p>Table to store the length of the JavaScript entries per level.</p><p>Is used to calculate the overall answer length and exclude snippets of lower importance if the answer would be too large otherwise.</p></div>
 </div>
 
-<a name="ADC_RESPONSE_Body.error_stack_t"></a><a name="Topic183"></a><div class="CTopic TType LSQL">
+<a name="ADC_RESPONSE_Body.error_stack_t"></a><a name="Topic285"></a><div class="CTopic TType LSQL">
  <div class="CTitle">error_stack_t</div>
  <div class="CBody"><p>Stack to store error messages</p></div>
 </div>
 
-<a name="ADC_RESPONSE_Body.param_rec"></a><a name="Topic184"></a><div class="CTopic TType LSQL">
+<a name="ADC_RESPONSE_Body.param_rec"></a><a name="Topic286"></a><div class="CTopic TType LSQL">
  <div class="CTitle">param_rec</div>
  <div class="CBody"><p>Record for response attributes.</p><div class="CHeading">Properties</div><table class="CDefinitionList"><tr><td class="CDLEntry">js_action_stack</td><td class="CDLDefinition"><p>JavaScript action stack, rule outcome of the rules executed so far</p></td></tr><tr><td class="CDLEntry">error_stack</td><td class="CDLDefinition"><p>List errors that occurred ATTENTION: Don't refactor to CHAR_TABLE, the key is a hash to remove double entries</p></td></tr><tr><td class="CDLEntry">level_length</td><td class="CDLDefinition"><p>cumulated length of the strings on the respective severity levels</p></td></tr><tr><td class="CDLEntry">cru_name</td><td class="CDLDefinition"><p>Cached name of the actually evaluated rule</p></td></tr><tr><td class="CDLEntry">request_start</td><td class="CDLDefinition"><p>Timing information of the overall start time of the evaluation</p></td></tr><tr><td class="CDLEntry">rule_start</td><td class="CDLDefinition"><p>Timing information of the recursive rule evaluation start time</p></td></tr></table></div>
 </div>
 
-<a name="ADC_RESPONSE_Body.Private_methods"></a><a name="Topic185"></a><div class="CTopic TGroup LSQL">
+<a name="ADC_RESPONSE_Body.Private_methods"></a><a name="Topic287"></a><div class="CTopic TGroup LSQL">
  <div class="CTitle">Private methods</div>
 </div>
 
-<a name="ADC_RESPONSE_Body.get_max_level"></a><a name="Topic186"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_RESPONSE_Body.get_max_level"></a><a name="Topic288"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">get_max_level</div>
- <div id="NDPrototype186" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> get_max_level</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> binary_integer</div></div>
- <div class="CBody"><p>Method to calculate up to which level the response fits into 32KByte</p><p>The responding JavaScript should not exceed <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.C_MAX_LENGTH" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,543);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UTIL.C_MAX_LENGTH</a> Byte. The response may still fit into this limit if more and more comments are left out.&nbsp; Comments are organized in levels. This method evaluates, up to which level comments may be integrated without breaking the limit.</p><p>Maximum level is also dependent on the PIT settings actually valid. It can not exceed the actual log level of PIT.</p><div class="CHeading">Returns</div><p>Maximum level up to which the response remains under <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.C_MAX_LENGTH" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,543);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UTIL.C_MAX_LENGTH</a> or the log level PIT allows, whatever is less.</p></div>
+ <div id="NDPrototype288" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> get_max_level</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> binary_integer</div></div>
+ <div class="CBody"><p>Method to calculate up to which level the response fits into 32KByte</p><p>The responding JavaScript should not exceed <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.C_MAX_LENGTH" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,605);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UTIL.C_MAX_LENGTH</a> Byte. The response may still fit into this limit if more and more comments are left out.&nbsp; Comments are organized in levels. This method evaluates, up to which level comments may be integrated without breaking the limit.</p><p>Maximum level is also dependent on the PIT settings actually valid. It can not exceed the actual log level of PIT.</p><div class="CHeading">Returns</div><p>Maximum level up to which the response remains under <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.C_MAX_LENGTH" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,605);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >ADC_UTIL.C_MAX_LENGTH</a> or the log level PIT allows, whatever is less.</p></div>
 </div>
 
-<a name="ADC_RESPONSE_Body.get_errors_as_json"></a><a name="Topic975"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_RESPONSE_Body.get_errors_as_json"></a><a name="Topic289"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">get_errors_as_json</div>
- <div id="NDPrototype975" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> get_errors_as_json(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_max_length&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">binary_integer</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">varchar2</span></div></div>
+ <div id="NDPrototype289" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">function</span> get_errors_as_json(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_max_length&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">binary_integer</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">varchar2</span></div></div>
  <div class="CBody"><p>Method calculates all errors registered during rule evaluation and collects them as JSON.&nbsp; Creates a JSON instance according to the APEX requirements with the following structure:</p><pre class="CCode">{<span class="SHString">&quot;type&quot;</span>:<span class="SHString">&quot;error&quot;</span>,<span class="SHString">&quot;item&quot;</span>:<span class="SHString">&quot;#PAGE_ITEM#&quot;</span>,<span class="SHString">&quot;message&quot;</span>:<span class="SHString">&quot;#MESSAGE#&quot;</span>,<span class="SHString">&quot;location&quot;</span>:#LOCATION#,<span class="SHString">&quot;additionalInfo&quot;</span>:<span class="SHString">&quot;#ADDITIONAL_INFO#&quot;</span>,<span class="SHString">&quot;unsafe&quot;</span>:<span class="SHString">&quot;false&quot;</span>}</pre><div class="CHeading">Returns</div><p>JSON instance for all page items referenced by the rule executed.</p></div>
 </div>
 
-<a name="ADC_RESPONSE_Body.reset"></a><a name="Topic188"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_RESPONSE_Body.reset"></a><a name="Topic290"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">reset</div>
- <div id="NDPrototype188" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> reset</div></div>
+ <div id="NDPrototype290" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> reset</div></div>
  <div class="CBody"><p>Helper method to reset the internal memory structures</p></div>
 </div>
 
-<a name="ADC_RESPONSE_Body.initialize"></a><a name="Topic189"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_RESPONSE_Body.initialize"></a><a name="Topic291"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">initialize</div>
- <div id="NDPrototype189" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> initialize</div></div>
+ <div id="NDPrototype291" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> initialize</div></div>
  <div class="CBody"><p>Method to initalize the package</p></div>
 </div>
 
-<a name="ADC_RESPONSE_Body.Public_methods"></a><a name="Topic190"></a><div class="CTopic TGroup LSQL">
+<a name="ADC_RESPONSE_Body.Public_methods"></a><a name="Topic292"></a><div class="CTopic TGroup LSQL">
  <div class="CTitle">Public methods</div>
 </div>
 
-<a name="ADC_RESPONSE_Body.add_javascript"></a><a name="Topic191"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_RESPONSE_Body.add_javascript"></a><a name="Topic293"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">add_javascript</div>
- <div id="NDPrototype191" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> add_javascript(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_java_script&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">varchar2</span>,</td><td></td><td class="last"></td></tr><tr><td class="PName first">p_debug_level&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">binary_integer</span></td><td class="PDefaultValueSeparator">&nbsp;<span class="SHKeyword">default</span>&nbsp;</td><td class="PDefaultValue last">adc_util.C_JS_CODE</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>See <a href="../../../index.html#File:core/packages/adc_response.pks:ADC_RESPONSE.add_javascript" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,524);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_response.add_javascript</a></p></div>
+ <div id="NDPrototype293" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> add_javascript(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_java_script&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">varchar2</span>,</td><td></td><td class="last"></td></tr><tr><td class="PName first">p_debug_level&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">binary_integer</span></td><td class="PDefaultValueSeparator">&nbsp;<span class="SHKeyword">default</span>&nbsp;</td><td class="PDefaultValue last">adc_util.C_JS_CODE</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:core/packages/adc_response.pks:ADC_RESPONSE.add_javascript" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,639);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_response.add_javascript</a></p></div>
 </div>
 
-<a name="ADC_RESPONSE_Body.add_comment"></a><a name="Topic192"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_RESPONSE_Body.add_comment"></a><a name="Topic294"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">add_comment</div>
- <div id="NDPrototype192" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> add_comment(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_message_name&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">varchar2</span>,</td><td></td><td class="last"></td></tr><tr><td class="PName first">p_msg_args&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> msg_args</td><td class="PDefaultValueSeparator">&nbsp;<span class="SHKeyword">default</span>&nbsp;</td><td class="PDefaultValue last"><span class="SHKeyword">null</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>See <a href="../../../index.html#File:core/packages/adc_response.pks:ADC_RESPONSE.add_comment" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,525);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_response.add_comment</a></p></div>
+ <div id="NDPrototype294" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> add_comment(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_message_name&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">varchar2</span>,</td><td></td><td class="last"></td></tr><tr><td class="PName first">p_msg_args&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> msg_args</td><td class="PDefaultValueSeparator">&nbsp;<span class="SHKeyword">default</span>&nbsp;</td><td class="PDefaultValue last"><span class="SHKeyword">null</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:core/packages/adc_response.pks:ADC_RESPONSE.add_comment" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,640);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_response.add_comment</a></p></div>
 </div>
 
-<a name="ADC_RESPONSE_Body.add_error"></a><a name="Topic500"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_RESPONSE_Body.add_error"></a><a name="Topic295"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">add_error</div>
- <div id="NDPrototype500" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> add_error(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_error&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> apex_error.t_error,</td><td></td><td class="last"></td></tr><tr><td class="PName first">p_severity&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">binary_integer</span></td><td class="PDefaultValueSeparator">&nbsp;<span class="SHKeyword">default</span>&nbsp;</td><td class="PDefaultValue last">pit.level_error</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>See <a href="../../../index.html#File:core/packages/adc_response.pks:ADC_RESPONSE.add_error" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,219);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_response.add_error</a></p></div>
+ <div id="NDPrototype295" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> add_error(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_error&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> apex_error.t_error,</td><td></td><td class="last"></td></tr><tr><td class="PName first">p_severity&nbsp;</td><td class="PType"><span class="SHKeyword">in</span> <span class="SHKeyword">binary_integer</span></td><td class="PDefaultValueSeparator">&nbsp;<span class="SHKeyword">default</span>&nbsp;</td><td class="PDefaultValue last">pit.level_error</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:core/packages/adc_response.pks:ADC_RESPONSE.add_error" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,638);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_response.add_error</a></p></div>
 </div>
 
-<a name="ADC_RESPONSE_Body.get_response"></a><a name="Topic774"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_RESPONSE_Body.get_response"></a><a name="Topic296"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">get_response</div>
- <div id="NDPrototype774" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> get_response</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">clob</span></div></div>
- <div class="CBody"><p>See <a href="../../../index.html#File:core/packages/adc_response.pks:ADC_RESPONSE.get_response" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,296);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_response.get_response</a></p></div>
+ <div id="NDPrototype296" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> get_response</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">clob</span></div></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:core/packages/adc_response.pks:ADC_RESPONSE.get_response" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,641);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_response.get_response</a></p></div>
 </div>
 
-<a name="ADC_RESPONSE_Body.initialize_response"></a><a name="Topic501"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_RESPONSE_Body.initialize_response"></a><a name="Topic297"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">initialize_response</div>
- <div id="NDPrototype501" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> initialize_response(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_initialize_mode&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span>,</td></tr><tr><td class="PName first">p_crg_id&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_rule_groups.crg_id<span class="SHKeyword">%type</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div id="NDPrototype297" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> initialize_response(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_initialize_mode&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span>,</td></tr><tr><td class="PName first">p_crg_id&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_rule_groups.crg_id<span class="SHKeyword">%type</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>See &lt;adc_respnse.initialize_response&gt;</p></div>
 </div>
 
-<a name="ADC_RESPONSE_Body.register_recursion_end"></a><a name="Topic196"></a><div class="CTopic TFunction LSQL">
+<a name="ADC_RESPONSE_Body.register_recursion_end"></a><a name="Topic298"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">register_recursion_end</div>
- <div id="NDPrototype196" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> register_recursion_end(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_rule_found&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>See <a href="../../../index.html#File:core/packages/adc_response.pks:ADC_RESPONSE.register_recursion_end" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,528);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_response.register_recursion_end</a></p></div>
+ <div id="NDPrototype298" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> register_recursion_end(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_rule_found&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">boolean</span></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:core/packages/adc_response.pks:ADC_RESPONSE.register_recursion_end" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,643);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_response.register_recursion_end</a></p></div>
 </div>
 
-<a name="ADC_RESPONSE_Body.register_recursion_start"></a><a name="Topic197"></a><div class="CTopic TFunction LSQL last">
+<a name="ADC_RESPONSE_Body.register_recursion_start"></a><a name="Topic299"></a><div class="CTopic TFunction LSQL last">
  <div class="CTitle">register_recursion_start</div>
- <div id="NDPrototype197" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> register_recursion_start(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_origin_message&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.ora_name_type" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,533);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_util.ora_name_type</a>,</td></tr><tr><td class="PName first">p_run_count&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">binary_integer</span>,</td></tr><tr><td class="PName first">p_cru_sort_seq&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_rules.cru_sort_seq<span class="SHKeyword">%type</span>,</td></tr><tr><td class="PName first">p_cru_name&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_rules.cru_name<span class="SHKeyword">%type</span>,</td></tr><tr><td class="PName first">p_firing_item&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.ora_name_type" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,533);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_util.ora_name_type</a></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>See <a href="../../../index.html#File:core/packages/adc_response.pks:ADC_RESPONSE.register_recursion_start" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,529);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_response.register_recursion_start</a></p></div>
+ <div id="NDPrototype299" class="NDPrototype WideForm"><div class="PSection PParameterSection PascalStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">procedure</span> register_recursion_start(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first">p_origin_message&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.ora_name_type" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,595);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_util.ora_name_type</a>,</td></tr><tr><td class="PName first">p_run_count&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <span class="SHKeyword">binary_integer</span>,</td></tr><tr><td class="PName first">p_cru_sort_seq&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_rules.cru_sort_seq<span class="SHKeyword">%type</span>,</td></tr><tr><td class="PName first">p_cru_name&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> adc_rules.cru_name<span class="SHKeyword">%type</span>,</td></tr><tr><td class="PName first">p_firing_item&nbsp;</td><td class="PType last"><span class="SHKeyword">in</span> <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.ora_name_type" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,595);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_util.ora_name_type</a></td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>See <a href="../../../index.html#File:core/packages/adc_response.pks:ADC_RESPONSE.register_recursion_start" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,644);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_response.register_recursion_start</a></p></div>
 </div>
 
 </body></html>

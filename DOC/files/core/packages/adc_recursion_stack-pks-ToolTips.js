@@ -1,1 +1,1 @@
-﻿NDContentPage.OnToolTipsLoaded({270:"<div class=\"NDToolTip TClass LSQL\"><div class=\"TTSummary\">Implements a dynamic controller for APEX pages. Internal package, may only be called from package ADC_PLUGIN and ADC_API.</div></div>"});
+﻿NDContentPage.OnToolTipsLoaded({687:"<div class=\"NDToolTip TClass LSQL\"><div class=\"TTSummary\">Implements a dynamic controller for APEX pages. Internal package, may only be called from package ADC_PLUGIN and ADC_API.</div></div>"});

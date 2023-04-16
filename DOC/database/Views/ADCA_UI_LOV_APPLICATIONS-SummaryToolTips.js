@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADCA_UI_LOV_APPLICATIONS",{850:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">LOV view that displays all user defined APEX applications. Application ADC is excluded, unless the user is Administrator</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADCA_UI_LOV_APPLICATIONS",{361:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">LOV view that displays all user defined APEX applications. Application ADC is excluded, unless the user is Administrator</div></div>"});

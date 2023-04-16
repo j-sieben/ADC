@@ -1,1 +1,1 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADCA_UI_LOV_APP_PAGES","ADCA_UI_LOV_APP_PAGES");NDSummary.OnSummaryLoaded("Database:Views.ADCA_UI_LOV_APP_PAGES",[["SQL","SQL"]],[["Views","DatabaseView"]],[[851,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADCA_UI_LOV_APP_PAGES"]]);
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADCA_UI_LOV_APP_PAGES","ADCA_UI_LOV_APP_PAGES");NDSummary.OnSummaryLoaded("Database:Views.ADCA_UI_LOV_APP_PAGES",[["SQL","SQL"]],[["Views","DatabaseView"]],[[362,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADCA_UI_LOV_APP_PAGES"]]);

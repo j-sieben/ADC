@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_ACTION_PARAM_VISUAL_TYPES_V",{348:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Wrapper with with translated column values</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_ACTION_PARAM_VISUAL_TYPES_V",{377:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Wrapper with with translated column values</div></div>"});

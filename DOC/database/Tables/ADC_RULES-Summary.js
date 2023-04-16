@@ -1,1 +1,1 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Tables.ADC_RULES","ADC_RULES");NDSummary.OnSummaryLoaded("Database:Tables.ADC_RULES",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[276,0,0,"<span class=\"Qualifier\">Tables.</span>&#8203;ADC_RULES"]]);
+﻿NDFramePage.OnPageTitleLoaded("Database:Tables.ADC_RULES","ADC_RULES");NDSummary.OnSummaryLoaded("Database:Tables.ADC_RULES",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[320,0,0,"<span class=\"Qualifier\">Tables.</span>&#8203;ADC_RULES"]]);

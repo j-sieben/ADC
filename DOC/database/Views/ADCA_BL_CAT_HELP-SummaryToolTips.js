@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADCA_BL_CAT_HELP",{283:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Business logic view to put together a help text for the UI Designer</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADCA_BL_CAT_HELP",{336:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Business logic view to put together a help text for the UI Designer</div></div>"});

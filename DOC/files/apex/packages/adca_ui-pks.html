@@ -8,120 +8,120 @@
 
 <body onload="NDLoader.OnLoad('Content');" class="NDPage NDContentPage">
 
-<a name="ADCA_UI"></a><a name="Topic125"></a><div class="CTopic TClass LSQL first">
+<a name="ADCA_UI"></a><a name="Topic75"></a><div class="CTopic TClass LSQL first">
  <div class="CTitle">ADCA_UI</div>
  <div class="CBody"><p>Maintain ADC rules via an APEX frontend.&nbsp; This package implements the methods required to maintain ADC rule groups via an APEX application.</p><p>Author:: Juergen Sieben, ConDeS GmbH</p></div>
 </div>
 
-<a name="ADCA_UI.Functions"></a><a name="Topic126"></a><div class="CTopic TGroup LSQL">
+<a name="ADCA_UI.Functions"></a><a name="Topic76"></a><div class="CTopic TGroup LSQL">
  <div class="CTitle">Functions</div>
 </div>
 
-<a name="ADCA_UI.process_export_crg"></a><a name="Topic127"></a><div class="CTopic TFunction LSQL">
+<a name="ADCA_UI.process_export_crg"></a><a name="Topic77"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">process_export_crg</div>
- <div id="NDPrototype127" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_export_crg</div></div>
+ <div id="NDPrototype77" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_export_crg</div></div>
  <div class="CBody"><p>Method to download one or many rule groups as a zip file</p></div>
 </div>
 
-<a name="ADCA_UI.process_export_cat"></a><a name="Topic128"></a><div class="CTopic TFunction LSQL">
+<a name="ADCA_UI.process_export_cat"></a><a name="Topic78"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">process_export_cat</div>
- <div id="NDPrototype128" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_export_cat</div></div>
+ <div id="NDPrototype78" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_export_cat</div></div>
  <div class="CBody"><p>Method to download action type definitions as a zip file</p></div>
 </div>
 
-<a name="ADCA_UI.get_export_type"></a><a name="Topic129"></a><div class="CTopic TFunction LSQL">
+<a name="ADCA_UI.get_export_type"></a><a name="Topic79"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">get_export_type</div>
- <div id="NDPrototype129" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> get_export_type</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">varchar2</span></div></div>
+ <div id="NDPrototype79" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> get_export_type</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">varchar2</span></div></div>
  <div class="CBody"><p>Method to calculate the initial export state based on session state settings</p><div class="CHeading">Returns</div><p>One of the states ALL|APP|SGR</p></div>
 </div>
 
-<a name="ADCA_UI.validate_edit_cat"></a><a name="Topic130"></a><div class="CTopic TFunction LSQL">
+<a name="ADCA_UI.validate_edit_cat"></a><a name="Topic80"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">validate_edit_cat</div>
- <div id="NDPrototype130" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_cat</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
+ <div id="NDPrototype80" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_cat</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
  <div class="CBody"><p>Method to validate page EDIT_CAT</p><p>Is called to validate user data if the page is submitted. (CAT = ADC Action Types).</p></div>
 </div>
 
-<a name="ADCA_UI.process_edit_cat"></a><a name="Topic131"></a><div class="CTopic TFunction LSQL">
+<a name="ADCA_UI.process_edit_cat"></a><a name="Topic81"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">process_edit_cat</div>
- <div id="NDPrototype131" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_cat</div></div>
+ <div id="NDPrototype81" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_cat</div></div>
  <div class="CBody"><p>Method to process page EDIT_CAT</p><p>Is called to persist user data if the page is submitted. (CAT = ADC Action Types).</p></div>
 </div>
 
-<a name="ADCA_UI.validate_edit_cif"></a><a name="Topic132"></a><div class="CTopic TFunction LSQL">
+<a name="ADCA_UI.validate_edit_cif"></a><a name="Topic82"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">validate_edit_cif</div>
- <div id="NDPrototype132" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_cif</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
+ <div id="NDPrototype82" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_cif</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
  <div class="CBody"><p>Method to validate page EDIT_CIF</p><p>Is called to validate user data if the page is submitted. (CIF = ADC Action Item Focus).</p></div>
 </div>
 
-<a name="ADCA_UI.process_edit_cif"></a><a name="Topic133"></a><div class="CTopic TFunction LSQL">
+<a name="ADCA_UI.process_edit_cif"></a><a name="Topic83"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">process_edit_cif</div>
- <div id="NDPrototype133" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_cif</div></div>
+ <div id="NDPrototype83" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_cif</div></div>
  <div class="CBody"><p>Method to process page EDIT_CIF</p><p>Is called to persist user data if the page is submitted. (CIF = ADC Action Item Focus).</p></div>
 </div>
 
-<a name="ADCA_UI.validate_edit_cpit"></a><a name="Topic134"></a><div class="CTopic TFunction LSQL">
+<a name="ADCA_UI.validate_edit_cpit"></a><a name="Topic84"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">validate_edit_cpit</div>
- <div id="NDPrototype134" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_cpit</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
+ <div id="NDPrototype84" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_cpit</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
  <div class="CBody"><p>Method to validate page EDIT_CPIT</p><p>Is called to validate user data if the page is submitted. (CPIT = ADC Page Item Type).</p></div>
 </div>
 
-<a name="ADCA_UI.process_edit_cpit"></a><a name="Topic135"></a><div class="CTopic TFunction LSQL">
+<a name="ADCA_UI.process_edit_cpit"></a><a name="Topic85"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">process_edit_cpit</div>
- <div id="NDPrototype135" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_cpit</div></div>
+ <div id="NDPrototype85" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_cpit</div></div>
  <div class="CBody"><p>Method to process page EDIT_CPIT</p><p>Is called to persist user data if the page is submitted. (CPIT = ADC Page Item Type).</p></div>
 </div>
 
-<a name="ADCA_UI.validate_edit_catg"></a><a name="Topic827"></a><div class="CTopic TFunction LSQL">
+<a name="ADCA_UI.validate_edit_catg"></a><a name="Topic86"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">validate_edit_catg</div>
- <div id="NDPrototype827" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_catg</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
+ <div id="NDPrototype86" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_catg</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
  <div class="CBody"><p>Method to validate page EDIT_CATG</p><p>Is called to validate user data if the page is submitted. (CATG = ADC Action Type Groups).</p></div>
 </div>
 
-<a name="ADCA_UI.process_edit_catg"></a><a name="Topic829"></a><div class="CTopic TFunction LSQL">
+<a name="ADCA_UI.process_edit_catg"></a><a name="Topic87"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">process_edit_catg</div>
- <div id="NDPrototype829" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_catg</div></div>
+ <div id="NDPrototype87" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_catg</div></div>
  <div class="CBody"><p>Method to process page EDIT_CATG</p><p>Is called to persist user data if the page is submitted. (CATG = ADC Action Type Groups).</p></div>
 </div>
 
-<a name="ADCA_UI.validate_edit_cato"></a><a name="Topic832"></a><div class="CTopic TFunction LSQL">
+<a name="ADCA_UI.validate_edit_cato"></a><a name="Topic88"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">validate_edit_cato</div>
- <div id="NDPrototype832" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_cato</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
+ <div id="NDPrototype88" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_cato</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
  <div class="CBody"><p>Method to validate page EDIT_CATO</p><p>Is called to validate user data if the page is submitted. (CATO = ADC Action Type Owners).</p></div>
 </div>
 
-<a name="ADCA_UI.process_edit_cato"></a><a name="Topic836"></a><div class="CTopic TFunction LSQL">
+<a name="ADCA_UI.process_edit_cato"></a><a name="Topic89"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">process_edit_cato</div>
- <div id="NDPrototype836" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_cato</div></div>
+ <div id="NDPrototype89" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_cato</div></div>
  <div class="CBody"><p>Method to process page EDIT_CATO</p><p>Is called to persist user data if the page is submitted. (CATO = ADC Action Type Owners).</p></div>
 </div>
 
-<a name="ADCA_UI.handle_capvt_changed"></a><a name="Topic570"></a><div class="CTopic TFunction LSQL">
+<a name="ADCA_UI.handle_capvt_changed"></a><a name="Topic90"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">handle_capvt_changed</div>
- <div id="NDPrototype570" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> handle_capvt_changed</div></div>
+ <div id="NDPrototype90" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> handle_capvt_changed</div></div>
  <div class="CBody"><p>Method is called if the user changes the Action Parameter Visual Type of a Action Parameter.</p><p>It checks whether the parameter requires a select list or a static list. If so, it shows and initializes these regions, otherwise it hides the regions.</p></div>
 </div>
 
-<a name="ADCA_UI.validate_edit_capt"></a><a name="Topic593"></a><div class="CTopic TFunction LSQL">
+<a name="ADCA_UI.validate_edit_capt"></a><a name="Topic91"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">validate_edit_capt</div>
- <div id="NDPrototype593" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_capt</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
+ <div id="NDPrototype91" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> validate_edit_capt</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <span class="SHKeyword">boolean</span></div></div>
  <div class="CBody"><p>Method to validate page EDIT_CAPT</p><p>Is called to validate user data if the page is submitted. (cpt = ADC Action Parameter Value Type).</p></div>
 </div>
 
-<a name="ADCA_UI.process_edit_capt"></a><a name="Topic594"></a><div class="CTopic TFunction LSQL">
+<a name="ADCA_UI.process_edit_capt"></a><a name="Topic92"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">process_edit_capt</div>
- <div id="NDPrototype594" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_capt</div></div>
+ <div id="NDPrototype92" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_capt</div></div>
  <div class="CBody"><p>Method to process page EDIT_CAPT</p><p>Is called to persist user data if the page is submitted. (CTG = ADC Action Type Groups).</p></div>
 </div>
 
-<a name="ADCA_UI.process_edit_capt_static_list"></a><a name="Topic595"></a><div class="CTopic TFunction LSQL">
+<a name="ADCA_UI.process_edit_capt_static_list"></a><a name="Topic93"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">process_edit_capt_static_list</div>
- <div id="NDPrototype595" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_capt_static_list</div></div>
+ <div id="NDPrototype93" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> process_edit_capt_static_list</div></div>
  <div class="CBody"><p>Method to process page detail form R5_CAPT_STATIC_LIST_FORM</p><p>Is called to persist user data if the page is submitted. (CTG = ADC Action Type Groups).</p></div>
 </div>
 
-<a name="ADCA_UI.set_action_export_crg"></a><a name="Topic643"></a><div class="CTopic TFunction LSQL last">
+<a name="ADCA_UI.set_action_export_crg"></a><a name="Topic94"></a><div class="CTopic TFunction LSQL last">
  <div class="CTitle">set_action_export_crg</div>
- <div id="NDPrototype643" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> set_action_export_crg</div></div>
+ <div id="NDPrototype94" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> set_action_export_crg</div></div>
  <div class="CBody"><p>Method to maintain APEX actions for page export_crg.</p><p>Is called if relevant changes are reported to ADC.</p></div>
 </div>
 

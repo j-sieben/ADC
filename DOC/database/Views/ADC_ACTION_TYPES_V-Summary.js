@@ -1,1 +1,1 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_ACTION_TYPES_V","ADC_ACTION_TYPES_V");NDSummary.OnSummaryLoaded("Database:Views.ADC_ACTION_TYPES_V",[["SQL","SQL"]],[["Views","DatabaseView"]],[[351,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_ACTION_TYPES_V"]]);
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_ACTION_TYPES_V","ADC_ACTION_TYPES_V");NDSummary.OnSummaryLoaded("Database:Views.ADC_ACTION_TYPES_V",[["SQL","SQL"]],[["Views","DatabaseView"]],[[378,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_ACTION_TYPES_V"]]);

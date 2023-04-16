@@ -1,1 +1,1 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADCA_UI_ADMIN_CAIF","ADCA_UI_ADMIN_CAIF");NDSummary.OnSummaryLoaded("Database:Views.ADCA_UI_ADMIN_CAIF",[["SQL","SQL"]],[["Views","DatabaseView"]],[[285,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADCA_UI_ADMIN_CAIF"]]);
+﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADCA_UI_ADMIN_CAIF","ADCA_UI_ADMIN_CAIF");NDSummary.OnSummaryLoaded("Database:Views.ADCA_UI_ADMIN_CAIF",[["SQL","SQL"]],[["Views","DatabaseView"]],[[338,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADCA_UI_ADMIN_CAIF"]]);

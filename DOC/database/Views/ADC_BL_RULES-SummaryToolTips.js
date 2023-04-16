@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_BL_RULES",{377:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">View to collect common data for rules and their respective actions. Is used as the basis for ADC to execute the rule logic</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_BL_RULES",{384:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">View to collect common data for rules and their respective actions. Is used as the basis for ADC to execute the rule logic</div></div>"});
