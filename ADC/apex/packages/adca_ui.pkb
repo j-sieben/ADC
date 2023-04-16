@@ -299,11 +299,12 @@ as
   procedure process_export_crg
   as
     l_crg_app_id adc_rule_groups.crg_app_id%type;
+    l_app_alias adc_util.ora_name_type;
     l_mode adc_util.ora_name_type;
     l_zip_file_name adc_util.sql_char;
     l_zip_file blob;
-    l_application_filename adc_util.ora_name_type := param.get_string(C_ADC, 'APPLICATION_FILENAME');
-    l_rule_group_name adc_util.ora_name_type := param.get_string(C_ADC, 'RULE_GROUP_FILENAME');
+    l_application_filename adc_util.ora_name_type := param.get_string('APPLICATION_FILENAME', C_ADC);
+    l_dynamic_pages_filename adc_util.ora_name_type := param.get_string('DYNAMIC_PAGES_FILENAME', C_ADC);
   begin
     pit.enter_mandatory;
 
@@ -313,8 +314,12 @@ as
       l_mode := adc_admin.C_APEX_APP;
       l_zip_file_name := replace(l_application_filename, '#APP_ID#', l_crg_app_id);
     else
-      l_mode := adc_admin.c_APP_GROUPS;
-      l_zip_file_name := replace(l_rule_group_name, '#APP_ID#', l_crg_app_id);
+      l_mode := adc_admin.C_APP_GROUPS;
+      select alias
+        into l_app_alias
+        from apex_applications
+       where application_id = l_crg_app_id;
+      l_zip_file_name := replace(l_dynamic_pages_filename, '#APP_ALIAS#', l_app_alias);
     end if;
 
     -- generate ZIP with the requested rule group files and download.

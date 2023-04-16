@@ -52,7 +52,7 @@ begin
     p_par_id => 'DYNAMIC_PAGES_FILENAME',
     p_par_pgr_id => 'ADC',
     p_par_description => 'Filename for the zip file containing rule group scripts of an application',
-    p_par_string_value => 'ADC_Groups_#APP_ID#.sql'
+    p_par_string_value => 'rule_groups_#APP_ALIAS#.zip'
   );
   
   param_admin.edit_parameter(
