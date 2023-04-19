@@ -345,7 +345,7 @@ as
     using (with data as(
                   select cra_param_1, cra_param_2
                     from adc_rule_actions
-                   where cra_crg_id = 162
+                   where cra_crg_id = p_crg_id
                      and cra_cat_id = 'VALIDATE_ITEMS')
            select p_crg_id cpi_crg_id,
                   column_value cpi_id, 

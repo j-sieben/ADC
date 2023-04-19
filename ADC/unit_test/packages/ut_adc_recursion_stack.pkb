@@ -4,7 +4,7 @@ as
   C_APEX_USER constant adc_util.ora_name_type := $$PLSQL_UNIT_OWNER;
   
   -- Aplication pages
-  C_APP_ALIAS constant adc_util.ora_name_type := 'ADC';
+  C_APP_ALIAS constant adc_util.ora_name_type := 'ADCA';
   C_PAGE_DESIGNER constant number := 13;
   
   -- Items

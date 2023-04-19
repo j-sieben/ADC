@@ -44,14 +44,14 @@ begin
   param_admin.edit_parameter(
     p_par_id => 'APPLICATION_FILENAME',
     p_par_pgr_id => 'ADC',
-    p_par_description => 'Template to use for the export file of rule groups integrated into an apex export file',
+    p_par_description => 'Template to use for the export file of rule groups integrated into an apex export file. Use #APP_ID# to include the app ID, #APP_ALIAS# for the app alias',
     p_par_string_value => 'f#APP_ID#_dynamic.sql'
   );
 
   param_admin.edit_parameter(
     p_par_id => 'DYNAMIC_PAGES_FILENAME',
     p_par_pgr_id => 'ADC',
-    p_par_description => 'Filename for the zip file containing rule group scripts of an application',
+    p_par_description => 'Filename for the zip file containing rule group scripts of an application. Use #APP_ID# to include the app ID, #APP_ALIAS# for the app alias',
     p_par_string_value => 'rule_groups_#APP_ALIAS#.zip'
   );
   
