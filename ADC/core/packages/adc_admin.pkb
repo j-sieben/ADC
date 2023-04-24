@@ -348,8 +348,13 @@ as
                    where cra_crg_id = p_crg_id
                      and cra_cat_id = 'VALIDATE_ITEMS')
            select p_crg_id cpi_crg_id,
-                  column_value cpi_id, 
-                  replace(cra_param_2, '#ITEM#', column_value) cpi_validation_method,
+                  column_value cpi_id,
+                  case
+                    when instr(cra_param_2, '#ITEM#') > 0 then
+                      replace(replace(cra_param_2, '#ITEM#', column_value), ';')
+                    else
+                      replace(cra_param_2, ';') || '(''' || column_value || ''')'
+                    end cpi_validation_method,
                   adc_util.c_true cpi_is_required
              from data
             cross join table(
@@ -906,7 +911,7 @@ as
   as
   begin
     g_offset := 0;
-    g_action_type_filename := param.get_string(C_ADC, 'ACTION_TYPE_FILENAME);
+    g_action_type_filename := param.get_string(C_ADC, 'ACTION_TYPE_FILENAME');
     g_user_action_type_filename := param.get_string(C_ADC, 'USER_ACTION_TYPE_FILENAME');
     g_rule_group_filename := param.get_string(C_ADC, 'RULE_GROUP_FILENAME');
   end;

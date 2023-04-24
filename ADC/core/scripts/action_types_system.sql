@@ -211,7 +211,13 @@ q'{ order by pti_id}',
     p_capt_display_name => '',
     p_capt_description => q'{<p>Der Parameterwert muss als Zeichenkettenparameter der Gruppe ADC angelegt werden, als Schluessel wird die Parameter-ID verwendet</p>}',
     p_capt_capvt_id => 'SELECT_LIST',
-    p_capt_select_list_query => q'{}',
+    p_capt_select_list_query => q'{select pti_name d, par_id r, null crg_id\CR\}' || 
+q'{  from parameter_v\CR\}' || 
+q'{  join pit_translatable_item_v\CR\}' || 
+q'{    on par_id = pti_id\CR\}' || 
+q'{   and par_pgr_id = pti_pmg_name\CR\}' || 
+q'{ where par_pgr_id = 'ADC'\CR\}' || 
+q'{   and par_id like 'ADC_SHOW_MESSAGE%'}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -1493,11 +1499,11 @@ q'{ order by pti_id}',
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'VALIDATE_ITEMS',
-    p_cap_capt_id => 'FUNCTION',
+    p_cap_capt_id => 'PROCEDURE',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
-    p_cap_description => q'{<p>Validierungsmethode. Muss als Funktion implementiert werden, die einen booleschen Wert TRUE liefert.<br>Die Methode muss einen optionalen Parameter besitzen, dem der Attributwert #ITEM# übergeben wird. Dieser Wert wird zum Filtern der Fehlermeldungen verwendet. (Beispiel: <span style="font-family:'Courier New', Courier, monospace;">my_pkg.my_function(p_filter =&gt; ‘#ITEM#’)</span>)</p><p>Ist dieser Parameter der einzige Parameter der Funktion, muss er nicht angegeben werden.</p>}',
-    p_cap_display_name => 'Validierungsfunktion',
+    p_cap_description => q'{<p>Validierungsmethode. Muss als Prozedur implementiert werden, die Fehler in ADC registriert.<br>Die Methode muss einen optionalen Parameter besitzen, dem der Attributwert #ITEM# übergeben wird. Dieser Wert wird zum Filtern der Fehlermeldungen verwendet. (Beispiel: <span style="font-family:'Courier New', Courier, monospace;">my_pkg.my_function(p_filter =&gt; ‘#ITEM#’)</span>)</p><p>Ist dieser Parameter der einzige Parameter der Funktion, muss er nicht angegeben werden.</p>}',
+    p_cap_display_name => 'Validierungsmethode',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
   adc_admin.merge_action_parameter(
@@ -1573,8 +1579,6 @@ q'{ order by pti_id}',
     p_cap_display_name => 'Null ist erlaubt',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
-
 
   -- APEX_ACTION TYPES
   adc_admin.merge_apex_action_type(

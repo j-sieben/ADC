@@ -235,7 +235,7 @@ as
     p_crg_id in adc_rule_groups.crg_id%type, 
     p_cpi_id in adc_page_items.cpi_id%type)
   as
-    C_VALIDATION_TEMPLATE constant adc_util.sql_char := 'begin :x := #CODE#; end;';
+    C_VALIDATION_TEMPLATE constant adc_util.sql_char := 'begin #CODE#; end;';
     l_cpi_validation_method adc_page_items.cpi_validation_method%type;
     l_result boolean;
   begin
@@ -253,7 +253,7 @@ as
        
     if l_cpi_validation_method is not null then
       l_cpi_validation_method := replace(C_VALIDATION_TEMPLATE, '#CODE#', replace(l_cpi_validation_method, ';'));
-      execute immediate l_cpi_validation_method using out l_result;
+      execute immediate l_cpi_validation_method;
     end if;
     
     pit.leave_detailed;
