@@ -931,26 +931,26 @@ end;~';
       See <ADC_PARAMETER.get_param_lov_query>
    */
   function get_param_lov_query(
-    p_row in out nocopy adc_action_param_types_v%rowtype,
-    p_for_immediate in boolean default false)
+    p_row in out nocopy adc_action_param_types_v%rowtype)
+                                             
     return varchar2
   as
-    C_VIEW_STATEMENT_TEMPLATE constant adc_util.max_char := q'^create or replace force view #VIEW_NAME# as #QUERY#^';
+    C_VIEW_STATEMENT_TEMPLATE constant adc_util.max_char := q'^create or replace force view #VIEW_NAME# as #QUERY##CR#^';
     C_VIEW_STATIC_LIST_TEMPLATE constant adc_util.max_char := q'^
   select pti_name d, substr(pti_id, #IDX#) r, null crg_id
     from pit_translatable_item_v
    where pti_pmg_name = 'ADC'
      and pti_id like '#VIEW_NAME#%'^';
-    C_VIEW_COMMENT_TEMPLATE constant adc_util.max_char := q'^comment on table #VIEW_NAME# is '#COMMENT#'^';
+                                                                                                           
     l_stmt adc_util.max_char;
-    l_delimiter varchar2(10 byte);
+                                  
     l_idx binary_integer;
   begin
-    pit.enter_optional('get_param_lov_query');
+    pit.enter_optional;
 
-    if not p_for_immediate then
-      l_delimiter := ';' || adc_util.C_CR;
-    end if;
+                               
+                                          
+           
 
     if p_row.capt_capvt_id = C_STATIC_LIST then
 
@@ -972,20 +972,41 @@ end;~';
     end if;
 
     if p_row.capt_select_list_query is not null then
-      l_stmt := utl_text.bulk_replace(C_VIEW_STATEMENT_TEMPLATE || l_delimiter, char_table(
+      l_stmt := utl_text.bulk_replace(C_VIEW_STATEMENT_TEMPLATE, char_table(
                   '#VIEW_NAME#', C_CAPT_VIEW_NAME_PREFIX || p_row.capt_id,
-                  '#QUERY#', p_row.capt_select_list_query));
+                  '#QUERY#', p_row.capt_select_list_query,
+                  '#CR#', adc_util.C_CR));
     end if;
-
+    
+    pit.leave_optional;
+    return l_stmt;
+  end get_param_lov_query;
+  
+  
+  /**
+    Function: get_param_lov_comment
+      See <ADC_PARAMETER.get_param_lov_comment>
+   */
+  function get_param_lov_comment(
+    p_row in out nocopy adc_action_param_types_v%rowtype)
+    return varchar2
+  as
+    C_VIEW_COMMENT_TEMPLATE constant adc_util.max_char := q'^comment on table #VIEW_NAME# is '#COMMENT##CR#'^';
+    l_stmt adc_util.max_char;
+  begin
+    pit.enter_optional;
+    
     if p_row.capt_select_view_comment is not null then
       l_stmt := l_stmt || adc_util.C_CR ||
-                utl_text.bulk_replace(C_VIEW_COMMENT_TEMPLATE || l_delimiter, char_table(
+                utl_text.bulk_replace(C_VIEW_COMMENT_TEMPLATE, char_table(
                   '#VIEW_NAME#', C_CAPT_VIEW_NAME_PREFIX || p_row.capt_id,
-                  '#COMMENT#', p_row.capt_select_view_comment));
+                  '#COMMENT#', p_row.capt_select_view_comment,
+                  '#CR#', adc_util.C_CR));
     end if;
+    
+    pit.leave_optional;
     return l_stmt;
-
-  end get_param_lov_query;
+  end get_param_lov_comment;
 
 
    /**

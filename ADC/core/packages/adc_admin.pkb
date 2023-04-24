@@ -906,9 +906,9 @@ as
   as
   begin
     g_offset := 0;
-    g_action_type_filename := param.get_string('ACTION_TYPE_FILENAME', C_ADC);
-    g_user_action_type_filename := param.get_string('USER_ACTION_TYPE_FILENAME', C_ADC);
-    g_rule_group_filename := param.get_string('RULE_GROUP_FILENAME', C_ADC);
+    g_action_type_filename := param.get_string(C_ADC, 'ACTION_TYPE_FILENAME);
+    g_user_action_type_filename := param.get_string(C_ADC, 'USER_ACTION_TYPE_FILENAME');
+    g_rule_group_filename := param.get_string(C_ADC, 'RULE_GROUP_FILENAME');
   end;
 
 
@@ -2411,15 +2411,30 @@ as
           values(s.capt_id, s.capt_pti_id, s.capt_pmg_name, s.capt_capvt_id, s.capt_sort_seq, s.capt_active);
     
     -- Create generic View statement for static lists (they reference transalatable items)
-    l_stmt := adc_parameter.get_param_lov_query(p_row, true);
+    l_stmt := adc_parameter.get_param_lov_query(p_row);
     if l_stmt is not null then
-      execute immediate l_stmt;
-    end if;    
+      begin
+        execute immediate l_stmt;
+      exception
+        when others then
+          pit.error(msg.PIT_PASS_MESSAGE, msg_args('Fehler bei ' || l_stmt || ': ' || sqlerrm));
+      end;
+    end if;
+    
+    l_stmt := adc_parameter.get_param_lov_comment(p_row);
+    if l_stmt is not null then
+      begin
+        execute immediate l_stmt;
+      exception
+        when others then
+          pit.error(msg.PIT_PASS_MESSAGE, msg_args('Fehler bei ' || l_stmt || ': ' || sqlerrm));
+      end;
+    end if;
     
     pit.leave_mandatory;
   exception
     when others then
-      pit.handle_exception(msg.PIT_PASS_MESSAGE, msg_args(sqlerrm || ': ' || l_stmt));
+      pit.stop;
   end merge_action_param_type;
 
 

@@ -66,7 +66,7 @@ as
     Function: get_param_lov_query
       Method to caculate a query for a parameter in case its type mandates for a LOV.
       
-      Is called when create a new parameter type from within the ADC app as well as
+      Is called when creating a new parameter type from within the ADC app as well as
       when exporting. The statement must be present in the export file to circumvent
       the necessity of having a direct CREATE VIEW grant for any user working with ADC.
       
@@ -77,8 +77,26 @@ as
       A create view statement, if the parameter type includes a LOV and NULL otherwise
    */
   function get_param_lov_query(
-    p_row in out nocopy adc_action_param_types_v%rowtype,
-    p_for_immediate in boolean default false)
+    p_row in out nocopy adc_action_param_types_v%rowtype)
+    return varchar2;
+  
+  
+  /**
+    Function: get_param_lov_comment
+      Method to caculate a query for a parameter in case its type mandates for a LOV.
+      
+      Is called when creating a new parameter type from within the ADC app as well as
+      when exporting. The statement must be present in the export file to circumvent
+      the necessity of having a direct CREATE VIEW grant for any user working with ADC.
+      
+    Parameters:
+      p_row - Instance of <ADC_ACTION_PARAM_TYPES_V>
+      
+    Returns:
+      A create view comment statement, if the parameter type includes a LOV and NULL otherwise
+   */
+  function get_param_lov_comment(
+    p_row in out nocopy adc_action_param_types_v%rowtype)
     return varchar2;
     
     
