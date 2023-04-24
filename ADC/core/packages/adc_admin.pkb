@@ -42,6 +42,7 @@ as
   g_action_type_filename adc_util.ora_name_type;
   g_user_action_type_filename adc_util.ora_name_type;
   g_rule_group_filename adc_util.ora_name_type;
+  g_application_filename adc_util.ora_name_type;
   
   /**
     Group: Type definitions
@@ -165,18 +166,18 @@ as
 
       with params as (
            -- Get common values, depending on whether the page contains a DML_FETCH_ROW process
-           select cgr.crg_id, adc_util.C_CR cr,
+           select crg.crg_id, adc_util.C_CR cr,
                   uttm.uttm_name, uttm.uttm_mode, uttm.uttm_text template,
                   app.attribute_02, app.attribute_03, app.attribute_04, app.application_id, app.page_id
              from apex_application_page_proc app
-             join adc_rule_groups cgr
-               on app.application_id = cgr.crg_app_id
-              and app.page_id = cgr.crg_page_id
+             join adc_rule_groups crg
+               on app.application_id = crg.crg_app_id
+              and app.page_id = crg.crg_page_id
             cross join utl_text_templates uttm
             where app.process_type_code = 'DML_FETCH_ROW'
               and uttm_type = C_ADC
               and uttm_name like 'INITIALIZE%'
-              and cgr.crg_id = p_crg_id)
+              and crg.crg_id = p_crg_id)
     select utl_text.generate_text(cursor(
              select template,
                     cr,
@@ -306,10 +307,10 @@ as
     
     merge into adc_page_items t
     using (select distinct cpi_crg_id, cpi_id
-             from (select cgr.crg_id cpi_crg_id, i.column_value cpi_id
+             from (select crg.crg_id cpi_crg_id, i.column_value cpi_id
                      from adc_rules cru
-                     join adc_rule_groups cgr
-                       on cru.cru_crg_id = cgr.crg_id
+                     join adc_rule_groups crg
+                       on cru.cru_crg_id = crg.crg_id
                     cross join table(utl_text.string_to_table(cru.cru_firing_items, ',')) i
                     where crg_id = p_crg_id
                     union all
@@ -561,6 +562,35 @@ as
   end harmonize_firing_items;
   
   
+  /**
+    Function: export_apex_application
+      Method to export a requested APEX application
+      
+    Parameters:
+      p_app_id - ID of the application to export
+      
+    Returns:
+      CLOB with the export script
+   */
+  function export_apex_application(
+    p_app_id in binary_integer)
+    return clob
+  as
+    l_export_file apex_t_export_files;
+  begin
+    pit.enter_optional('export_apex_application',
+      p_params => msg_params(msg_param('p_app_id', p_app_id)));
+      
+    l_export_file := apex_export.get_application (
+                       p_application_id => p_app_id,
+                       p_with_ir_public_reports => true,
+                       p_with_supporting_objects => 'N');
+                       
+    pit.leave_optional;
+    return l_export_file(1).contents;
+  end export_apex_application;
+  
+  
   /** 
     Function: integrate_rule_groups_into_app
       Helper method to include rule group export script into the application export.
@@ -581,7 +611,6 @@ as
   as
     C_MAX_LENGTH constant pls_integer := 30000;
     C_END_COMMENT constant utl_apex.small_char := q'^prompt --application/end_environment^';
-    l_export_file apex_t_export_files;
     l_offset pls_integer := 1;
     l_add_amount pls_integer;
     l_amount pls_integer := C_MAX_LENGTH;
@@ -591,28 +620,23 @@ as
     l_prefix adc_util.max_char;
     l_no_end_comment_found boolean := true;
   begin
-    dbms_lob.createtemporary(l_script, false, dbms_lob.call);
-    
     -- Get APEX application
-    l_export_file := apex_export.get_application (
-                       p_application_id => p_crg_app_id,
-                       p_with_ir_public_reports => true,
-                       p_with_supporting_objects => 'N');
+    l_script := export_apex_application(p_crg_app_id);
                 
     -- Find position to integrate rule script into the export file
-    l_length := dbms_lob.getlength(l_export_file(1).contents);
+    l_length := length(l_script);
 
     while l_offset < l_length and l_no_end_comment_found loop
       -- Add some text to securly detect C_END_COMMENT
       l_add_amount := length(C_END_COMMENT);
       l_amount := l_amount + l_add_amount;
     
-      dbms_lob.read(l_export_file(1).contents, l_amount, l_offset, l_buffer);
+      dbms_lob.read(l_script, l_amount, l_offset, l_buffer);
       -- Try to find C_END_COMMENT.
       if instr(l_buffer, C_END_COMMENT) > 0 then
         -- found, read the rest of the file and split it
         l_amount := l_amount + 1000;
-        dbms_lob.read(l_export_file(1).contents, l_amount, l_offset, l_buffer);
+        dbms_lob.read(l_script, l_amount, l_offset, l_buffer);
         dbms_lob.append(l_script, substr(l_buffer, 1, instr(l_buffer, C_END_COMMENT) - 1));
       
       select replace(uttm_text, '#CRG_INSTALL_ID#', p_install_id)
@@ -654,37 +678,15 @@ as
       PAGE_ID_MISSING - if <P_MODE> requires an application page id
    */
   procedure validate_export_rule_groups(
-    p_crg_app_id in out nocopy adc_rule_groups.crg_app_id%type,
-    p_crg_page_id in out nocopy adc_rule_groups.crg_page_id%type,
-    p_mode in varchar2)
+    p_crg_app_id in out nocopy adc_rule_groups.crg_app_id%type)
   as
     l_cur sys_refcursor;
   begin
     pit.enter_optional(
       p_params => msg_params(
-                    msg_param('p_crg_app_id', p_crg_app_id),
-                    msg_param('p_crg_page_id', p_crg_page_id)));
-    case p_mode
-      when C_ALL_GROUPS then
-        -- Reset unneeded restrictions
-        p_crg_app_id := null;
-        p_crg_page_id := null;
-      when C_APEX_APP then
-        pit.assert_not_null(p_crg_app_id, p_error_code => 'APP_ID_MISSING');
-        -- Reset unneeded restrictions
-        p_crg_page_id := null;
-      when C_APP_GROUPS then
-        pit.assert_not_null(p_crg_app_id, p_error_code => 'APP_ID_MISSING');
-        -- Reset unneeded restrictions
-        p_crg_page_id := null;
-      when C_PAGE_GROUP then
-        pit.assert_not_null(p_crg_app_id, p_error_code => 'APP_ID_MISSING');
-        pit.assert_not_null(p_crg_page_id, p_error_code => 'PAGE_ID_MISSING');
-        -- Reset unneeded restrictions
-        p_crg_page_id := null;
-      else
-        pit.error(msg.ADC_UNKNOWN_EXPORT_MODE, msg_args(p_mode));
-      end case;
+                    msg_param('p_crg_app_id', p_crg_app_id)));
+    pit.assert_not_null(p_crg_app_id, p_error_code => 'APP_ID_MISSING');
+    
     pit.leave_optional;
   exception
     when others then
@@ -911,9 +913,10 @@ as
   as
   begin
     g_offset := 0;
-    g_action_type_filename := param.get_string(C_ADC, 'ACTION_TYPE_FILENAME');
-    g_user_action_type_filename := param.get_string(C_ADC, 'USER_ACTION_TYPE_FILENAME');
-    g_rule_group_filename := param.get_string(C_ADC, 'RULE_GROUP_FILENAME');
+    g_action_type_filename := param.get_string('ACTION_TYPE_FILENAME', C_ADC);
+    g_user_action_type_filename := param.get_string('USER_ACTION_TYPE_FILENAME', C_ADC);
+    g_rule_group_filename := param.get_string('RULE_GROUP_FILENAME', C_ADC);
+    g_application_filename := param.get_string('APPLICATION_FILENAME', C_ADC);
   end;
 
 
@@ -1296,8 +1299,8 @@ as
       select utl_text.generate_text(cursor(
                select uttm_text template, crg_id * crg_id crg_id_square, lower(page_alias) crg_page_alias, 
                       crg_sort_seq, p_install_id crg_install_id
-                 from (select cgr.*, rank() over (partition by crg_app_id order by crg_page_id) * 10 crg_sort_seq
-                         from adc_rule_groups cgr)
+                 from (select crg.*, rank() over (partition by crg_app_id order by crg_page_id) * 10 crg_sort_seq
+                         from adc_rule_groups crg)
                  join apex_application_pages
                    on crg_app_id = application_id
                   and crg_page_id = page_id
@@ -1318,24 +1321,21 @@ as
       See <ADC_ADMIN.export_rule_groups>
    */ 
   function export_rule_groups(
-    p_crg_app_id in adc_rule_groups.crg_app_id%type default null,
-    p_crg_page_id in adc_rule_groups.crg_page_id%type default null,
+    p_crg_app_id in adc_rule_groups.crg_app_id%type,
     p_mode in varchar2 default C_APP_GROUPS)
     return blob
   as
     cursor rule_group_cur(
-      p_crg_app_id in adc_rule_groups.crg_app_id%type,
-      p_crg_page_id in adc_rule_groups.crg_page_id%type) 
+      p_crg_app_id in adc_rule_groups.crg_app_id%type) 
     is
-      select crg_id, lower(a.alias || '_' || p.page_alias) crg_file_name
+      select crg_id, a.alias app_alias, p.page_alias, lower(a.alias || '_' || p.page_alias) crg_file_name
         from adc_rule_groups
         join apex_applications a
           on crg_app_id = a.application_id
         join apex_application_pages p
           on crg_app_id = p.application_id
          and crg_page_id = p.page_id
-       where (crg_app_id = p_crg_app_id or p_crg_app_id is null)
-         and (crg_page_id = p_crg_page_id or p_crg_page_id is null)
+       where crg_app_id = p_crg_app_id
        order by p.page_id;
     
     l_zip_file blob;
@@ -1344,59 +1344,85 @@ as
     l_file_name varchar2(100);
     
     l_crg_app_id adc_rule_groups.crg_app_id%type;
-    l_crg_page_id adc_rule_groups.crg_page_id%type;
+    l_app_alias adc_util.ora_name_type;
     l_install_id number;
+    l_embed_rule_groups boolean;
   begin
     pit.enter_mandatory(
       p_params => msg_params(
                     msg_param('p_crg_app_id', p_crg_app_id),
-                    msg_param('p_crg_page_id', p_crg_page_id),
                     msg_param('p_mode', p_mode)));
     
     -- Initialize
     dbms_lob.createtemporary(l_clob, false, dbms_lob.call);
     l_crg_app_id := p_crg_app_id;
-    l_crg_page_id := p_crg_page_id;
-    
-    if p_mode = C_APEX_APP then
-      l_install_id := trunc(dbms_random.value * 100000000);
-    end if;
                     
     validate_export_rule_groups(
-      p_crg_app_id => l_crg_app_id,
-      p_crg_page_id => l_crg_page_id,
-      p_mode => p_mode);      
+      p_crg_app_id => l_crg_app_id);      
     
     if p_mode = C_APEX_APP then
-      -- Get all rule groups
-      for cgr in rule_group_cur(l_crg_app_id, l_crg_page_id) loop
-        dbms_lob.append(
-          l_clob, 
-          export_rule_group(
-            p_crg_id => cgr.crg_id,
-            p_mode => p_mode,
-            p_install_id => l_install_id));
-      end loop;
-         
-      l_clob := integrate_rule_groups_into_app(
-                  p_crg_app_id => p_crg_app_id, 
-                  p_rule_group => l_clob,
-                  p_install_id => l_install_id);
-      l_blob := utl_text.clob_to_blob(l_clob);
-      
-      apex_zip.add_file(
-        p_zipped_blob => l_zip_file,
-        p_file_name => 'application.sql',
-        p_content => l_blob);   
+      -- Initialize
+      l_install_id := trunc(dbms_random.value * 100000000);
+      l_embed_rule_groups := param.get_boolean('ADC_EMBED_RULE_GROUPS', 'ADC');
+       
+      if l_embed_rule_groups then
+        -- Get all rule groups
+        for crg in rule_group_cur(l_crg_app_id) loop
+          dbms_lob.append(
+            l_clob, 
+            export_rule_group(
+              p_crg_id => crg.crg_id,
+              p_mode => p_mode,
+              p_install_id => l_install_id));
+        end loop;
+           
+        l_clob := integrate_rule_groups_into_app(
+                    p_crg_app_id => p_crg_app_id, 
+                    p_rule_group => l_clob,
+                    p_install_id => l_install_id);
+        l_blob := utl_text.clob_to_blob(l_clob);
+          
+        apex_zip.add_file(
+          p_zipped_blob => l_zip_file,
+          p_file_name => 'application.sql',
+          p_content => l_blob);   
+      else
+        -- combine rule group exports and apex export in one zip
+        for crg in rule_group_cur(l_crg_app_id) loop
+          l_app_alias := crg.app_alias;
+          l_blob := utl_text.clob_to_blob(
+                      export_rule_group(
+                        p_crg_id => crg.crg_id,
+                        p_mode => p_mode,
+                        p_install_id => l_install_id));
+          l_file_name := replace(g_rule_group_filename, '#CRG_FILE_NAME#', crg.crg_file_name);
+          apex_zip.add_file(
+            p_zipped_blob => l_zip_file,
+            p_file_name => l_file_name,
+            p_content => l_blob);
+        end loop;
+        
+        -- add apex application
+        l_blob := utl_text.clob_to_blob(
+                    export_apex_application(p_crg_app_id));        
+        l_file_name := utl_text.bulk_replace(g_application_filename, char_table(
+                         '#ALIAS#', upper(l_app_alias),
+                         '#alias#', lower(l_app_alias),
+                         '#APP_ID#', p_crg_app_id));
+        apex_zip.add_file(
+          p_zipped_blob => l_zip_file,
+          p_file_name => l_file_name,
+          p_content => l_blob);   
+      end if;
     else   
-      for cgr in rule_group_cur(l_crg_app_id, l_crg_page_id) loop
+      for crg in rule_group_cur(l_crg_app_id) loop
       
         l_blob := utl_text.clob_to_blob(
                     export_rule_group(
-                      p_crg_id => cgr.crg_id,
+                      p_crg_id => crg.crg_id,
                       p_mode => p_mode));
                   
-        l_file_name := replace(g_rule_group_filename, '#CRG_FILE_NAME#', cgr.crg_file_name);
+        l_file_name := replace(g_rule_group_filename, '#CRG_FILE_NAME#', crg.crg_file_name);
      
         apex_zip.add_file(
           p_zipped_blob => l_zip_file,

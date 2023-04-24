@@ -44,14 +44,21 @@ begin
   param_admin.edit_parameter(
     p_par_id => 'APPLICATION_FILENAME',
     p_par_pgr_id => 'ADC',
-    p_par_description => 'Template to use for the export file of rule groups integrated into an apex export file. Use #APP_ID# to include the app ID, #APP_ALIAS# for the app alias',
+    p_par_description => 'Template to use for the export files of the apex application. Anchors: #ALIAS#, #alias#, #APP_ID#',
+    p_par_string_value => 'app_#alias#_#APP_ID#.sql'
+  );
+
+  param_admin.edit_parameter(
+    p_par_id => 'APPLICATION_FILENAME',
+    p_par_pgr_id => 'ADC',
+    p_par_description => 'Template to use for the export file of rule groups integrated into an apex export file',
     p_par_string_value => 'f#APP_ID#_dynamic.sql'
   );
 
   param_admin.edit_parameter(
     p_par_id => 'DYNAMIC_PAGES_FILENAME',
     p_par_pgr_id => 'ADC',
-    p_par_description => 'Filename for the zip file containing rule group scripts of an application. Use #APP_ID# to include the app ID, #APP_ALIAS# for the app alias',
+    p_par_description => 'Filename for the zip file containing rule group scripts of an application',
     p_par_string_value => 'rule_groups_#APP_ALIAS#.zip'
   );
   
@@ -88,6 +95,13 @@ begin
     p_par_pgr_id => 'ADC',
     p_par_description => 'apex.message.showDialog.options objekt adjusting settings for the dialog',
     p_par_string_value => '{title:#PARAM_2#,modern:true,returnFocusTo:#ITEM#,confirm:true,type:dialog}'
+  );
+  
+  param_admin.edit_parameter(
+    p_par_id => 'ADC_EMBED_RULE_GROUPS',
+    p_par_pgr_id => 'ADC',
+    p_par_description => 'When exporting rule groups along with the application, it is possible to integrate the rule groups as supporting objects. If FALSE, application export and rule groups are exported seperately in a ZIP file',
+    p_par_boolean_value => false
   );
 
   -- Realms used

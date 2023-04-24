@@ -213,8 +213,7 @@ as
       - If parameters P_CRG_APP_ID and P_CRG_PAGE_ID is passed in only the rule group of the respecite APEX application page are exported.
    
     Parameters:
-      p_crg_app_id - Optional APEX application ID of the application of which all rule groups are to be exported
-      p_crg_page_id - Optional APEX page ID
+      p_crg_app_id - APEX application ID 
       p_mode - Optional flag to indicate what to export. Options include:
                 
                 - C_ALL_GROUPS: Exports all rule groups of that workspace
@@ -232,7 +231,6 @@ as
    */
   function export_rule_groups(
     p_crg_app_id in adc_rule_groups.crg_app_id%type default null,
-    p_crg_page_id in adc_rule_groups.crg_page_id%type default null,
     p_mode in varchar2 default C_APP_GROUPS)
     return blob;
 
