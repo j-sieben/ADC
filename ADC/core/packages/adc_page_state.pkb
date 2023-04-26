@@ -22,7 +22,7 @@ as
   C_APP_ITEM constant adc_page_item_types.cpit_id%type := 'APP_ITEM';
   C_NUMBER_ITEM constant adc_page_item_types.cpit_id%type := 'NUMBER_ITEM';
   C_DATE_ITEM constant adc_page_item_types.cpit_id%type := 'DATE_ITEM';
-  C_DEFAULT_NUMBER_MASK constant adc_util.sql_char := 'fm9999999999999999990D999999999999';
+  C_DEFAULT_NUMBER_MASK constant adc_util.sql_char := 'fm9999999999999999999';
   C_NUMBER_GROUP_MASK constant adc_util.sql_char := 'G';
   C_DELIMITER constant adc_util.sql_char := ',';
   C_COLLECTION_NAME constant adc_util.ora_name_type := adc_util.C_PARAM_GROUP || '_CRG_STATUS_';
@@ -157,6 +157,7 @@ as
     p_throw_error in adc_util.flag_type)
   as
     l_format_mask adc_util.ora_name_type;
+    l_to_number_mask adc_util.ora_name_type;
     l_cpi_cpit_id adc_page_items.cpi_cpit_id%type;
     l_cpi_conversion adc_page_items.cpi_conversion%type;
   begin    
@@ -175,29 +176,27 @@ as
     case l_cpi_cpit_id 
       when C_NUMBER_ITEM then
         -- first, get string value from parameter values
-        l_format_mask := coalesce(p_value.cpi_conversion, l_cpi_conversion, C_DEFAULT_NUMBER_MASK);
-        p_value.string_value := coalesce(to_char(p_value.number_value, l_format_mask), g_session_values(p_value.cpi_id).string_value);
+        l_format_mask := 'FM' || replace(upper(coalesce(p_value.cpi_conversion, l_cpi_conversion, C_DEFAULT_NUMBER_MASK)), 'FM');
+        l_to_number_mask := replace(replace(upper(l_format_mask), C_NUMBER_GROUP_MASK), 'FM');
+        p_value.string_value := rtrim(coalesce(to_char(p_value.number_value, l_format_mask), g_session_values(p_value.cpi_id).string_value), ',.');
         g_session_values(p_value.cpi_id).string_value := p_value.string_value;
-        select to_char(p_value.string_value, 'fm' || replace(lower(l_format_mask), 'fm'))
-          into g_session_values(p_value.cpi_id).string_value
-          from dual
-         where validate_conversion(p_value.string_value as number, l_format_mask) = 1;
         -- then persist number value, either directly or by converting the string value
-        l_format_mask := replace(l_format_mask, C_NUMBER_GROUP_MASK);
-        g_session_values(p_value.cpi_id).number_value := coalesce(p_value.number_value, to_number(p_value.string_value, l_format_mask));
-        pit.info(msg.ADC_NUMBER_ITEM_SET, msg_args(p_value.cpi_id, to_char(g_session_values(p_value.cpi_id).number_value), g_session_values(p_value.cpi_id).string_value));
+        g_session_values(p_value.cpi_id).number_value := coalesce(p_value.number_value, to_number(p_value.string_value, l_to_number_mask));
+        g_session_values(p_value.cpi_id).string_value := to_char(g_session_values(p_value.cpi_id).number_value, l_format_mask);
+        pit.info(
+          p_message_name => msg.ADC_NUMBER_ITEM_SET,
+          p_msg_args => msg_args(p_value.cpi_id, to_char(g_session_values(p_value.cpi_id).number_value), g_session_values(p_value.cpi_id).string_value));
       when C_DATE_ITEM then
         -- first, get string value from parameter values
         l_format_mask := coalesce(p_value.cpi_conversion, l_cpi_conversion, apex_application.g_date_format);
         p_value.string_value := coalesce(to_char(p_value.date_value, l_format_mask), g_session_values(p_value.cpi_id).string_value);
         g_session_values(p_value.cpi_id).string_value := p_value.string_value;
-        select to_char(p_value.string_value, l_format_mask)
-          into g_session_values(p_value.cpi_id).string_value
-          from dual
-         where validate_conversion(p_value.string_value as date, l_format_mask) = 1;
         -- then persist date value, either directly or by converting the string value
         g_session_values(p_value.cpi_id).date_value := coalesce(p_value.date_value, to_date(p_value.string_value, l_format_mask));
-        pit.info(msg.ADC_DATE_ITEM_SET, msg_args(p_value.cpi_id, to_char(g_session_values(p_value.cpi_id).date_value), g_session_values(p_value.cpi_id).string_value));
+        g_session_values(p_value.cpi_id).string_value := to_char(g_session_values(p_value.cpi_id).date_value, l_format_mask);
+        pit.info(
+          p_message_name => msg.ADC_DATE_ITEM_SET, 
+          p_msg_args => msg_args(p_value.cpi_id, to_char(g_session_values(p_value.cpi_id).date_value), g_session_values(p_value.cpi_id).string_value));
       else
         null;
     end case;
@@ -232,43 +231,6 @@ as
   
   
   /**
-    Procedure: dynamically_validate_value
-      Method to call a validation method, filtered by the respective item name
-      
-    Parameters:
-      p_crg_id - ID of the rule group
-      p_cpi_id - ID of the page item
-   */
-  procedure dynamically_validate_value(
-    p_crg_id in adc_rule_groups.crg_id%type, 
-    p_cpi_id in adc_page_items.cpi_id%type)
-  as
-    C_VALIDATION_TEMPLATE constant adc_util.sql_char := 'begin #CODE#; end;';
-    l_cpi_validation_method adc_page_items.cpi_validation_method%type;
-    l_result boolean;
-  begin
-    pit.enter_detailed('dynamically_validate_value',
-      p_params => msg_params(
-                    msg_param ('p_crg_id', p_crg_id),
-                    msg_param ('p_cpi_id', p_cpi_id)));
-    
-    -- Check whether page item is allowed to have a value and get the item type and format mask
-    select cpi_validation_method
-      into l_cpi_validation_method
-      from adc_page_items
-     where cpi_crg_id = p_crg_id
-       and cpi_id = p_cpi_id;
-       
-    if l_cpi_validation_method is not null then
-      l_cpi_validation_method := replace(C_VALIDATION_TEMPLATE, '#CODE#', replace(l_cpi_validation_method, ';'));
-      execute immediate l_cpi_validation_method;
-    end if;
-    
-    pit.leave_detailed;
-  end dynamically_validate_value;
-  
-  
-  /**
     Procedure: set_session_value
       Wrapper method around apex_util.set_session state with an autonomous transaction. This method assures
       that DML is possible even inside a select statement.
@@ -286,6 +248,54 @@ as
     apex_util.set_session_state(p_cpi_id, p_value);
     --commit;
   end set_session_value;
+  
+  
+  /**
+    Function: item_may_have_value
+      Method checks whether an item is allowed to have a page state value.
+      
+    Parameters:
+      p_crg_id - ID of the rule group.
+      p_cpi_id - ID of the page item
+      
+    Returns:
+      Flag to indicate whether this item is allowed to have a value (TRUE) or not (FALSE).
+   */
+  function item_may_have_value(
+    p_crg_id in adc_rule_groups.crg_id%type, 
+    p_cpi_id in adc_page_items.cpi_id%type)
+    return boolean
+  as
+    l_count pls_integer;
+    l_is_value_item boolean;
+  begin
+    pit.enter_optional(
+      p_params => msg_params(
+                    msg_param('p_crg_id', p_crg_id),
+                    msg_param('p_cpi_id', p_cpi_id)));
+    
+    select count(*)
+      into l_count
+      from dual
+     where exists(
+           select null
+             from adc_page_items
+            where cpi_crg_id = p_crg_id
+              and cpi_id = p_cpi_id
+              and cpi_cpit_id in (C_ITEM, C_APP_ITEM, C_NUMBER_ITEM, C_DATE_ITEM));
+       
+    l_is_value_item := l_count = 1;
+       
+    if not l_is_value_item and g_session_values.exists(p_cpi_id) then
+      g_session_values.delete(p_cpi_id);
+    end if;
+  
+    pit.leave_optional(
+      p_params => msg_params(
+                    msg_param('Result', case  l_count when 1 then adc_util.C_TRUE else adc_util.C_FALSE end)));
+                    
+    return l_is_value_item;
+  end item_may_have_value;
   
   
   /**
@@ -321,47 +331,6 @@ as
        
     pit.leave_optional;
   end check_mandatory;
-    
-    
-  /**
-    Function: item_may_have_value
-      See <ADC_PAGE_STATE.item_may_have_value>
-   */
-  function item_may_have_value(
-    p_crg_id in adc_rule_groups.crg_id%type, 
-    p_cpi_id in adc_page_items.cpi_id%type)
-    return boolean
-  as
-    l_count pls_integer;
-    l_cpi_id adc_util.ora_name_type;
-    l_is_value_item boolean;
-  begin
-    pit.enter_optional(
-      p_params => msg_params(
-                    msg_param('p_crg_id', p_crg_id),
-                    msg_param('p_cpi_id', p_cpi_id)));
-    
-    l_cpi_id := adc_util.harmonize_page_item_name(p_cpi_id);
-    
-    select count(*)
-      into l_count
-      from adc_page_items
-     where cpi_crg_id = p_crg_id
-       and cpi_id = l_cpi_id
-       and cpi_cpit_id in (C_ITEM, C_APP_ITEM, C_NUMBER_ITEM, C_DATE_ITEM);
-       
-    l_is_value_item := l_count = 1;
-       
-    if not l_is_value_item and g_session_values.exists(l_cpi_id) then
-      g_session_values.delete(l_cpi_id);
-    end if;
-  
-    pit.leave_optional(
-      p_params => msg_params(
-                    msg_param('Result', case  l_count when 1 then adc_util.C_TRUE else adc_util.C_FALSE end)));
-                    
-    return l_is_value_item;
-  end item_may_have_value;
   
   
   /**
@@ -493,25 +462,25 @@ as
     l_value.date_value := p_date_value;
     l_value.cpi_conversion := p_format_mask;
     
-    -- If requested, get the value from the session state
-    if p_value = C_FROM_SESSION_STATE then
-      l_value.string_value := coalesce(utl_apex.get_string(l_value.cpi_id), get_mandatory_default_value(p_crg_id, l_value.cpi_id));
-    else
-      l_value.string_value := p_value;
+    if item_may_have_value(p_crg_id, l_value.cpi_id) then    
+      -- If requested, get the value from the session state
+      if p_value = C_FROM_SESSION_STATE then
+        l_value.string_value := coalesce(utl_apex.get_string(l_value.cpi_id), get_mandatory_default_value(p_crg_id, l_value.cpi_id));
+      else
+        l_value.string_value := p_value;
+      end if;
+      
+      g_session_values(l_value.cpi_id) := l_value;
+      
+      -- Explicitly set the value and harmonize with the session state (fi when changing a session values during rule execution)
+      convert_session_value(p_crg_id, l_value, p_throw_error);
+              
+      if p_throw_error = adc_util.C_TRUE then
+        check_mandatory(p_crg_id, l_value.cpi_id);
+      end if;
+          
+      set_session_value(l_value.cpi_id, g_session_values(l_value.cpi_id).string_value);
     end if;
-    
-    g_session_values(l_value.cpi_id) := l_value;
-    
-    -- Explicitly set the value and harmonize with the session state (fi when changing a session values during rule execution)
-    convert_session_value(p_crg_id, l_value, p_throw_error);
-            
-    if p_throw_error = adc_util.C_TRUE then
-      check_mandatory(p_crg_id, l_value.cpi_id);
-    end if;
-    
-    dynamically_validate_value(p_crg_id, l_value.cpi_id);
-        
-    set_session_value(l_value.cpi_id, g_session_values(l_value.cpi_id).string_value);
     
     pit.leave_optional;
   exception
@@ -647,6 +616,39 @@ as
                     msg_param('Result', l_number_value)));
     return l_number_value;
   end get_number;
+  
+  
+  /**
+    Procedure: dynamically_validate_value
+      See <ADC_PAGE_STATE.dynamically_validate_value>
+   */
+  procedure dynamically_validate_value(
+    p_crg_id in adc_rule_groups.crg_id%type, 
+    p_cpi_id in adc_page_items.cpi_id%type)
+  as
+    C_VALIDATION_TEMPLATE constant adc_util.sql_char := 'begin #CODE#; end;';
+    l_cpi_validation_method adc_page_items.cpi_validation_method%type;
+    l_result boolean;
+  begin
+    pit.enter_detailed('dynamically_validate_value',
+      p_params => msg_params(
+                    msg_param ('p_crg_id', p_crg_id),
+                    msg_param ('p_cpi_id', p_cpi_id)));
+    
+    -- Check whether page item is allowed to have a value and get the item type and format mask
+    select cpi_validation_method
+      into l_cpi_validation_method
+      from adc_page_items
+     where cpi_crg_id = p_crg_id
+       and cpi_id = p_cpi_id;
+       
+    if l_cpi_validation_method is not null then
+      l_cpi_validation_method := replace(C_VALIDATION_TEMPLATE, '#CODE#', replace(l_cpi_validation_method, ';'));
+      execute immediate l_cpi_validation_method;
+    end if;
+    
+    pit.leave_detailed;
+  end dynamically_validate_value;
   
   
   /**

@@ -33,24 +33,7 @@ as
 
   /**
     Group: Public methods
-   */    
-  /**
-    Function: item_may_have_value
-      Method checks whether an item is allowed to have a page state value.
-      
-    Parameters:
-      p_crg_id - ID of the rule group.
-      p_cpi_id - ID of the page item
-      
-    Returns:
-      Flag to indicate whether this item is allowed to have a value (TRUE) or not (FALSE).
    */
-  function item_may_have_value(
-    p_crg_id in adc_rule_groups.crg_id%type, 
-    p_cpi_id in adc_page_items.cpi_id%type)
-    return boolean;
- 
-
   /**
     Function: check_mandatory
       Method checks whether an item is actually mandatory.
@@ -188,6 +171,19 @@ as
     p_cpi_id in adc_page_items.cpi_id%type,
     p_format_mask in varchar2)
     return number;
+  
+  
+  /**
+    Procedure: dynamically_validate_value
+      Method to call a validation method, filtered by the respective item name
+      
+    Parameters:
+      p_crg_id - ID of the rule group
+      p_cpi_id - ID of the page item
+   */
+  procedure dynamically_validate_value(
+    p_crg_id in adc_rule_groups.crg_id%type, 
+    p_cpi_id in adc_page_items.cpi_id%type);
     
     
   /**

@@ -65,18 +65,20 @@ as
       initialize_mode boolean - Flag to indicate whether automatic mandatory checks should be paused
       event_data adc_util.max_char - optional event data that is returned from modal dialog pages etc.
       bind_event_items char_table - List of items for which ADC binds event handlers
+      additional_items char_table - List of items for which ADC maintains page state in addition to 
       stop_flag adc_util.flag_type - Flag to indicate that all rule execution has to be stopped
       now binary_integer - timestamp, used to calculate the execution duration
       has_errors boolean - Flag to indicate whether a rule has encounterd an error so far. Is reset per rule execution
    */
   type param_rec is record(
-    crg_id adc_rule_groups.crg_id%type,
+    crg_id adc_rule_groups.crg_id%type, 
     crg_is_active boolean,
     firing_item adc_page_items.cpi_id%type,
     firing_event adc_page_item_types.cpit_cet_id%type,
     initialize_mode boolean,
     event_data adc_util.max_char,
     bind_event_items char_table,
+    additional_items char_table,
     stop_flag adc_util.flag_type,
     has_errors boolean,
     rule_counter binary_integer
@@ -589,7 +591,7 @@ as
   function get_crg_id
     return adc_rule_groups.crg_id%type
   as
-    l_active adc_util.flag_type;
+    l_active adc_util.flag_type;                 
   begin
     pit.enter_optional;
     
@@ -605,7 +607,7 @@ as
         join params p
           on crg_app_id = g_app_id
          and crg_page_id = g_page_id;
-      g_param.crg_is_active := case l_active when adc_util.C_TRUE then true else false end;
+      g_param.crg_is_active := case l_active when adc_util.C_TRUE then true else false end;                                               
     end if;
     
     pit.leave_optional(
@@ -857,9 +859,9 @@ as
                     msg_param('p_firing_item', p_firing_item),
                     msg_param('p_event', p_event),
                     msg_param('p_event_data', p_event_data)));
-                    
+                              
     g_param.crg_id := get_crg_id;
-    pit.assert_not_null(g_param.crg_id);
+    pit.assert_not_null(g_param.crg_id);                          
     
     if g_param.crg_is_active then
       pit.assert_not_null(p_firing_item);
@@ -881,18 +883,18 @@ as
       -- Any firing item that may have a page state value needs to be checked whether it is
       -- - possible to convert it to the required data type
       -- - a mandatory field (and, in that case, contains a value)
-      if adc_page_state.item_may_have_value(
-           p_crg_id => g_param.crg_id,
-           p_cpi_id => g_param.firing_item) then
-           
-        adc_page_state.set_value(
-          p_crg_id => g_param.crg_id, 
-          p_cpi_id => g_param.firing_item,
-          p_value => adc_page_state.C_FROM_SESSION_STATE,
-          p_throw_error => adc_util.C_TRUE);
-      end if;
+      adc_page_state.set_value(
+        p_crg_id => g_param.crg_id, 
+        p_cpi_id => g_param.firing_item,
+        p_value => adc_page_state.C_FROM_SESSION_STATE,
+        p_throw_error => adc_util.C_TRUE);
+      
+      adc_page_state.dynamically_validate_value(
+        p_crg_id => g_param.crg_id, 
+        p_cpi_id => g_param.firing_item);
     end if;
     
+                                        
     pit.leave_optional;
     return g_param.crg_is_active;
   exception
@@ -1226,20 +1228,7 @@ as
                     msg_param('p_allow_recursion', p_allow_recursion),
                     msg_param('p_jquery_selector', p_jquery_selector)));
                     
-    case
-    when adc_page_state.item_may_have_value(g_param.crg_id, p_cpi_id) then
-      adc_page_state.set_value(
-        p_crg_id => g_param.crg_id,
-        p_cpi_id => p_cpi_id,
-        p_value => p_value,
-        p_number_value => p_number_value,
-        p_date_value => p_date_value,
-        p_throw_error => p_allow_recursion);
-      if p_allow_recursion  = adc_util.C_TRUE then
-        raise_item_event(p_cpi_id);
-      end if;
-      adc_response.add_comment(msg.ADC_SESSION_STATE_SET, msg_args(p_cpi_id, adc_page_state.get_string(g_param.crg_id, p_cpi_id)));
-    when p_cpi_id = adc_util.C_NO_FIRING_ITEM and p_jquery_selector is not null then
+    if p_cpi_id = adc_util.C_NO_FIRING_ITEM and p_jquery_selector is not null then
       l_item_list := get_items_by_selector(p_cpi_id, p_jquery_selector);
       -- recursively call SET_SESSION_STATE for each found item
       for i in 1 .. l_item_list.count loop
@@ -1252,9 +1241,18 @@ as
           p_jquery_selector => null);
       end loop;
     else
-      -- page item can't have a value, ignore
-      null;
-    end case;
+      adc_page_state.set_value(
+        p_crg_id => g_param.crg_id,
+        p_cpi_id => p_cpi_id,
+        p_value => p_value,
+        p_number_value => p_number_value,
+        p_date_value => p_date_value,
+        p_throw_error => p_allow_recursion);
+      if p_allow_recursion = adc_util.C_TRUE then
+        raise_item_event(p_cpi_id);
+      end if;
+      adc_response.add_comment(msg.ADC_SESSION_STATE_SET, msg_args(p_cpi_id, adc_page_state.get_string(g_param.crg_id, p_cpi_id)));
+    end if;
       
     pit.leave_mandatory;
   exception
@@ -1279,8 +1277,8 @@ as
     p_statement in varchar2,
     p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE)
   as
-    C_STMT constant varchar2(200) := 'select * from (#STMT#) where rownum = 1';
-    C_ADDITIONAL_ITEMS constant adc_util.max_char := 'de.condes.plugin.adc.controller.setAdditionalItems(#ITEMS#);';
+    c_stmt constant varchar2(200) := 'select * from (#STMT#) where rownum = 1';
+    C_ADDITIONAL_ITEMS constant adc_util.max_char := 'de.condes.plugin.adc.controller.setAdditionalItems(#ITEMS#);';                                    
     l_stmt adc_util.max_char;
     l_result varchar2(4000);
     l_cur integer;
@@ -1290,9 +1288,8 @@ as
     l_additional_items adc_util.max_char;
   begin
     l_stmt := replace(C_STMT, '#STMT#', p_statement);
-    
     apex_json.initialize_clob_output;
-    apex_json.open_array;
+    apex_json.open_array;   
     if p_cpi_id = adc_util.c_no_firing_item or p_cpi_id is null then
       pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Executing item statement'));
       -- If no element is specified, the elements are set according to the column name
@@ -1339,7 +1336,7 @@ as
       set_session_state(
         p_cpi_id => p_cpi_id, 
         p_value => '');
-      apex_json.free_output;
+      apex_json.free_output; 
   end set_value_from_statement;
   
   
@@ -1408,12 +1405,6 @@ as
         from adc_rule_actions
        where cra_crg_id = g_param.crg_id
          and cra_raise_on_validation = adc_util.C_TRUE;
-         
-    cursor dynamic_validation_cur is
-      select distinct cpi_id, cpi_validation_method
-        from adc_page_items
-       where cpi_crg_id = g_param.crg_id
-         and cpi_validation_method is not null;
     l_exception message_type;
     l_stmt adc_util.sql_char;
     l_result boolean;
@@ -1435,13 +1426,6 @@ as
             p_error_msg => l_exception.message_text,
             p_internal_error => null);
       end;
-    end loop;
-    
-    -- Check all dynamic validations of the current ADC group
-    for val in dynamic_validation_cur loop
-      l_stmt := replace(C_CMD, '#CMD#', replace(val.cpi_validation_method, '#ITEM#'));
-      execute immediate l_stmt using out l_result;
-      adc_recursion_stack.register_touched_item(val.cpi_id);
     end loop;
 
     -- Check all validations of the current ADC group
