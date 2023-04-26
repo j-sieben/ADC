@@ -178,6 +178,10 @@ as
         l_format_mask := coalesce(p_value.cpi_conversion, l_cpi_conversion, C_DEFAULT_NUMBER_MASK);
         p_value.string_value := coalesce(to_char(p_value.number_value, l_format_mask), g_session_values(p_value.cpi_id).string_value);
         g_session_values(p_value.cpi_id).string_value := p_value.string_value;
+        select to_char(p_value.string_value, 'fm' || replace(lower(l_format_mask), 'fm'))
+          into g_session_values(p_value.cpi_id).string_value
+          from dual
+         where validate_conversion(p_value.string_value as number, l_format_mask) = 1;
         -- then persist number value, either directly or by converting the string value
         l_format_mask := replace(l_format_mask, C_NUMBER_GROUP_MASK);
         g_session_values(p_value.cpi_id).number_value := coalesce(p_value.number_value, to_number(p_value.string_value, l_format_mask));
@@ -187,6 +191,10 @@ as
         l_format_mask := coalesce(p_value.cpi_conversion, l_cpi_conversion, apex_application.g_date_format);
         p_value.string_value := coalesce(to_char(p_value.date_value, l_format_mask), g_session_values(p_value.cpi_id).string_value);
         g_session_values(p_value.cpi_id).string_value := p_value.string_value;
+        select to_char(p_value.string_value, l_format_mask)
+          into g_session_values(p_value.cpi_id).string_value
+          from dual
+         where validate_conversion(p_value.string_value as date, l_format_mask) = 1;
         -- then persist date value, either directly or by converting the string value
         g_session_values(p_value.cpi_id).date_value := coalesce(p_value.date_value, to_date(p_value.string_value, l_format_mask));
         pit.info(msg.ADC_DATE_ITEM_SET, msg_args(p_value.cpi_id, to_char(g_session_values(p_value.cpi_id).date_value), g_session_values(p_value.cpi_id).string_value));
