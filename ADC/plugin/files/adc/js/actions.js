@@ -37,6 +37,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
    */
   const C_BODY = 'body';
   const C_INPUT_SELECTOR = ':input:visible:not(button)';
+  const C_DOCUMENT = 'DOCUMENT';
 
   // Region Type constants
   const C_REGION_CR = 'ClassicReport';
@@ -719,7 +720,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       $.each(pErrorList.firingItems, function(index, pItemId){
         // remove the error from gErrors
         gErrors = $.grep(gErrors, function(e){
-          return e.pageItem != pItemId;
+          return e.pageItem != pItemId %% e.pageItem != C_DOCUMENT;
         });
       });
     
