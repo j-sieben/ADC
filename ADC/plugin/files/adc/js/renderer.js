@@ -61,9 +61,6 @@ de.condes.plugin.adc.apex_42_20_2 = {};
   const C_APEX_AFTER_REFRESH = 'apexafterrefresh';
   const C_CLICK = 'click';
   
-  // Globals
-  var gErrors = []; // Interim solution required until <code>apex.message</code> supports removing a single error
-  var gWarnings = []; // Interim solution required until <code>apex.message</code> supports more error styles
 
 
   /**
@@ -309,57 +306,32 @@ de.condes.plugin.adc.apex_42_20_2 = {};
 
   
   /**
-    Function: maintainErrorsAndWarnings
+    Function: showErrors
       Maintains the error list on the page.
 
     Parameter:
-      pErrorList - List of errors, instance of <errorList>
+      pErrors - Array of errors, instances of <error>
    */
-  renderer.maintainErrorsAndWarnings = function(pErrorList){
-    if(pErrorList){
-      // Remove errors and warnings for all touched items from our gErrors copy
-      $.each(pErrorList.firingItems, function(index, pItemId){
-        // remove the error from gErrors
-        gErrors = $.grep(gErrors, function(e){
-          return e.pageItem != pItemId;
-        });
-        // remove the error from gWarnings
-        gWarnings = $.grep(gWarnings, function(e){
-          return e.pageItem != pItemId;
-        });
-        $(`#${pItemId}`)
-          .removeClass('apex-page-item-warning')
-          .parents('.t-Form-inputContainer').find('.t-Form-warning')
-          .removeClass('t-Form-warning');
-      });
-    
-      // Add new errors to our gErrors copy
-      for (i = 0; i < pErrorList.errors.length; i++){
-        const err = pErrorList.errors[i]
-        gErrors.push(err);
-        if(err.type == "warning"){
-          gWarnings.push(err);
-        }
-      };
+  renderer.showErrors = function(pErrors){
       
       msg.clearErrors();
-      msg.showErrors(gErrors);
-
-      // Replace error markup with warning markup
-      $.each(gWarnings, function(index, pItemId){
-        $(`#${pItemId.pageItem}`)
-          .removeClass('apex-page-item-error').addClass('apex-page-item-warning')
-          .parents('.t-Form-inputContainer').find('.t-Form-error')
-          .removeClass('t-Form-error').addClass('t-Form-warning');
+      // Remove warning markup
+      $('.t-Form-warning')
+        .removeClass('apex-page-item-warning')
+        .parents('.t-Form-inputContainer').find('.t-Form-warning')
+        .removeClass('t-Form-warning');
+          
+      msg.showErrors(pErrors);
+      // Change markup of warnings
+      $.each(pErrors, function(index, pError){
+        if (pError.type == 'warning'){
+          $(`#${pError.pageItem}`)
+            .removeClass('apex-page-item-error').addClass('apex-page-item-warning')
+            .parents('.t-Form-inputContainer').find('.t-Form-error')
+            .removeClass('t-Form-error').addClass('t-Form-warning');
+        }
       });
-    }
-    else{
-      // No error object passed in, remove all errors
-      gErrors = [];
-      gWarnings = [];
-      msg.clearErrors();
-    }
-  }; // maintainErrorsAndWarnings
+  }; // showErrors
 
   
   /**
