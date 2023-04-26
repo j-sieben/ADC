@@ -62,6 +62,8 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   // Global vars
   adc.actions = adc.actions || {};
   var actions = adc.actions;
+  var gErrors = []; // Interim solution required until <code>apex.message</code> supports removing a single error
+  var gWarnings = []; // Interim solution required until <code>apex.message</code> supports more error styles
 
   /*++++++++ HELPER START ++++++++++++*/
   /**
@@ -373,7 +375,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
    */
   actions.clearErrors = function () {
-    adc.renderer.clearErrors();
+    adc.renderer.showErrors([]);
   }; // confirm
 
 
@@ -402,6 +404,55 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   actions.showSuccess = function (pMessage) {
     adc.renderer.showSuccess(pMessage);
   }; // showSuccess
+
+
+  /**
+    Function: showMessage
+      Generic action to show dialog, popup or page success messages
+
+    Parameter:
+      pMessage - Message that is shown to the user.
+      pTitle - Optional title of the dialog
+      pOptions - Options object to control how the message is displayed.
+                 The options object also contains the focus item to set the focus to
+                 after closing the dialog.
+                 Additional to the apex.message.showDialog.options parameter, pOptions
+                 contains an attribute dialogType to distinguish between successMessage
+                 and dialog
+   */
+  actions.showMessage = function (pMessage, pTitle, pOptions) {
+    switch(pOptions.dialogType){
+      case 'dialog':
+        adc.renderer.showMessage(pMessage, pTitle, pOptions);
+        break;
+      case 'success':
+        adc.renderer.showSuccess(pMessage);
+        break;
+    }
+  }; // showMessage
+
+
+  /**
+    Function: hideMessage
+      Generic action to hide success or error messages
+
+    Parameter:
+      pType - One of the constants success|error|both to decide what to hide
+   */
+  actions.hideMessage = function (pType) {
+    switch(pType){
+      case 'success':
+        adc.renderer.clearNotification();
+        break;
+      case 'error':
+        adc.renderer.clearErrors();
+        break;
+      case 'both':
+        adc.renderer.clearNotification();
+        adc.renderer.clearErrors();
+        break;
+    }
+  }; // hideMessage
 
   
   /** 
@@ -459,8 +510,6 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
     Parameter:
       pItemId - ID of the page item to refresh
-      pValue - Optional item value. If set, the item value will be set after refresh.
-               If pItemId represents a region, pValue will select the respective row of the report.
    */
   actions.refresh = function (pItemId, pValue) {
     if($(`div#${pItemId}.js-apex-region`).length > 0){
@@ -479,6 +528,31 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       apex.item(pItemId).refresh();
     };
   }; // refresh
+
+
+  /**
+    Function: refreshAndSetValue
+      Refreshes an item (region, page item etc.) and sets the item value afterwards.
+      
+      The following flow of actions are taken:
+      
+      - Persist the actual value of the page item
+      - Bind one time apexafterrefresh handler to set the page item value to the persisted value after refresh
+      - Trigger apexrefresh event
+      - enable the page item
+
+    Parameters:
+      pItemId - ID of the page item to refresh and set the value
+      pValue - Optional value. If not set, method looks for actual item value in cache or on page.
+   */
+  actions.refreshAndSetValue = function (pItemId, pValue) {
+    var itemValue = pValue || apex.item(pItemId).getValue() || adc.controller.findItemValue(pItemId);
+
+    adc.controller.pauseChangeEventDuringRefresh(pItemId, itemValue);
+    apex.item(pItemId).show();
+    apex.item(pItemId).enable();
+    apex.item(pItemId).refresh();
+  }; // refreshAndSetValue
 
 
   /** 
@@ -635,11 +709,32 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       the <click> event can be surpressed by clearing the queue.
    */
   actions.setErrors = function (pErrorList) {
-    if (pErrorList.errors.length > 0) {
+    
+    if (pErrorList){
       // If errors have occured, no further events must be processed.
-      $(C_BODY).clearQueue();
+      if (pErrorList.errors.length > 0) {
+        $(C_BODY).clearQueue();
+      }
+      // Remove errors and warnings for all touched items from our gErrors copy
+      $.each(pErrorList.firingItems, function(index, pItemId){
+        // remove the error from gErrors
+        gErrors = $.grep(gErrors, function(e){
+          return e.pageItem != pItemId;
+        });
+      });
+    
+      // Add new errors to our gErrors copy
+      for (let i = 0; i < pErrorList.errors.length; i++){
+        const err = pErrorList.errors[i]
+        gErrors.push(err);
+      };
     }
-    adc.renderer.maintainErrorsAndWarnings(pErrorList);
+    else{
+      // No error object passed in, remove all errors
+      gErrors = [];
+    }
+    
+    adc.renderer.showErrors(gErrors);
   }; // setErrors
 
 
