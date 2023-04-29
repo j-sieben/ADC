@@ -28,6 +28,36 @@ as
   end clear_page_state;
   
   
+  function get_javascript_for_action(
+    p_cat_id in adc_action_types.cat_id%type default adc_util.C_NO_FIRING_ITEM,
+    p_cpi_id in adc_page_items.cpi_id%type default null,
+    p_param_1 in adc_rule_actions.cra_param_1%type default null,
+    p_param_2 in adc_rule_actions.cra_param_2%type default null,
+    p_param_3 in adc_rule_actions.cra_param_3%type default adc_util.C_FALSE)
+    return varchar2
+  as
+    l_response adc_util.max_char;
+  begin
+    pit.enter_optional(
+      p_params => msg_params(
+                    msg_param('p_cat_id', p_cat_id),
+                    msg_param('p_cpi_id', p_cpi_id),
+                    msg_param('p_param_1', p_param_1),
+                    msg_param('p_param_2', p_param_2),
+                    msg_param('p_param_3', p_param_3)));
+        
+    l_response := adc_internal.get_javascript_for_action(
+                    p_cat_id => p_cat_id,
+                    p_cpi_id => p_cpi_id,
+                    p_param_1 => p_param_1,
+                    p_param_2 => p_param_2,
+                    p_param_3 => p_param_3);
+      
+    pit.leave_mandatory;
+    return l_response;
+  end get_javascript_for_action;
+  
+  
   procedure execute_action(
     p_cat_id in adc_action_types.cat_id%type,
     p_cpi_id in adc_page_items.cpi_id%type default adc_util.C_NO_FIRING_ITEM,
@@ -528,20 +558,6 @@ as
     
     pit.leave_mandatory;
   end register_mandatory;
-  
-  
-  procedure register_observer(
-    p_cpi_id in adc_page_items.cpi_id%type)
-  as
-  begin
-    pit.enter_mandatory(
-      p_params => msg_params(
-                    msg_param('p_cpi_id', p_cpi_id)));
-                    
-    adc_internal.register_observer(p_cpi_id);
-    
-    pit.leave_mandatory;
-  end register_observer;
   
   
   procedure remember_page_state(

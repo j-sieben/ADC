@@ -601,6 +601,28 @@ q'{}',
     p_capt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
+    p_capt_id => 'JQUERY_SELECTOR',
+    p_capt_name => 'jQuery-Selektor',
+    p_capt_display_name => '',
+    p_capt_description => q'{<p>jQuery-Ausdruck, um mehrere Elemente zu bearbeiten. Wird dieser Parameter verwendet, muss als ausl&ouml;sendes Element <code>DOCUMENT</code> eingetragen werden.</p>}',
+    p_capt_capvt_id => 'TEXT',
+    p_capt_select_list_query => q'{}',
+    p_capt_select_view_comment => q'{}',
+    p_capt_sort_seq => 10,
+    p_capt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_capt_id => 'JQUERY_SELECTOR',
+    p_capt_name => 'jQuery-Selektor',
+    p_capt_display_name => '',
+    p_capt_description => q'{<p>jQuery-Ausdruck, um mehrere Elemente zu bearbeiten. Wird dieser Parameter verwendet, muss als ausl&ouml;sendes Element <code>DOCUMENT</code> eingetragen werden.</p>}',
+    p_capt_capvt_id => 'TEXT',
+    p_capt_select_list_query => q'{}',
+    p_capt_select_view_comment => q'{}',
+    p_capt_sort_seq => 10,
+    p_capt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
     p_capt_id => 'SWITCH',
     p_capt_name => 'Schalter',
     p_capt_display_name => '',
@@ -872,7 +894,7 @@ q'{}',
     p_caif_name => 'Seitenelemente und Formularregionen',
     p_caif_description => q'{Es werden Seitenelemente und Formularregionen angezeigt}',
     p_caif_actual_page_only => adc_util.C_TRUE,
-    p_caif_item_types => 'ELEMENT:FORM_REGION:ITEM:DOCUMENT',
+    p_caif_item_types => 'ITEM:FORM_REGION:DOCUMENT',
     p_caif_default => '',
     p_caif_active => adc_util.C_TRUE);
 
@@ -1040,16 +1062,25 @@ q'{}',
   adc_admin.merge_action_type(
     p_cat_id => 'CANCEL_MODAL_DIALOG',
     p_cat_catg_id => 'ADC',
-    p_cat_caif_id => 'PAGE',
+    p_cat_caif_id => 'ALL',
     p_cat_cato_id => 'ADC',
     p_cat_name => 'brich modalen Dialog ab',
     p_cat_display_name => q'{<p><strong>brich Dialog</strong> #ITEM|"|" |#<strong>ab.</strong></p>}',
-    p_cat_description => q'{<p>Bricht die Anzeige des modalen Dialogs ab. Falls mehrere modale Fenster überlappend eingesetzt werden, muss das auslösende Element angegeben werden.</p>}',
+    p_cat_description => q'{<p>Bricht die Anzeige des modalen Dialogs ab und löst en Event <span style="font-family:'Courier New', Courier, monospace;">apexaftercanceldialog </span>aus.</p>}',
     p_cat_pl_sql => q'{}',
-    p_cat_js => q'{de.condes.plugin.adc.actions.cancelModalDialog('#ITEM#');}',
+    p_cat_js => q'{de.condes.plugin.adc.actions.cancelModalDialog('#PARAM_1#');}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_FALSE);
 
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'CANCEL_MODAL_DIALOG',
+    p_cap_capt_id => 'STRING',
+    p_cap_sort_seq => 1,
+    p_cap_default => q'{}',
+    p_cap_description => q'{<p>Element, auf das der Event <span style="font-family:'Courier New', Courier, monospace;">apexaftercanceldialog&nbsp;</span>ausgelöst werden soll. Muss nur angegeben werden, falls mehrere modale Fenster überlappend angeordnet werden, oder, wenn das auslösende Element beim Erstellen des Links zum Öffnen des modalen Fensters nicht angegeben wurde.</p>}',
+    p_cap_display_name => 'auslösendes Element',
+    p_cap_mandatory => adc_util.C_FALSE,
+    p_cap_active => adc_util.C_TRUE);
 
 
   adc_admin.merge_action_type(
@@ -1509,14 +1540,23 @@ q'{}',
     p_cat_catg_id => 'PAGE_ITEM',
     p_cat_caif_id => 'ELEMENT_AND_FORM',
     p_cat_cato_id => 'ADC',
-    p_cat_name => 'Feld beobachten',
+    p_cat_name => 'beobachte Feld',
     p_cat_display_name => q'{<p><strong>beobachte Feld </strong>“#ITEM#”</p>}',
     p_cat_description => q'{<p>Beobachtet ein Feld, auch wenn kein Anwendungsfall es in der technischen Bedingung referenziert. So wird dessen aktueller Wert in den Session State übernommen.</p>}',
-    p_cat_pl_sql => q'{adc_api.register_observer('#ITEM#');}',
+    p_cat_pl_sql => q'{adc_api.register_observer('#ITEM#', '#PARAM_2#');}',
     p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_TRUE);
 
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'REGISTER_OBSERVER',
+    p_cap_capt_id => 'JQUERY_SELECTOR',
+    p_cap_sort_seq => 2,
+    p_cap_default => q'{}',
+    p_cap_description => q'{}',
+    p_cap_display_name => '',
+    p_cap_mandatory => adc_util.C_FALSE,
+    p_cap_active => adc_util.C_TRUE);
 
 
   adc_admin.merge_action_type(
@@ -1527,18 +1567,18 @@ q'{}',
     p_cat_name => 'speichere aktuellen Seitenstatus',
     p_cat_display_name => q'{<p><strong>speichere</strong> den aktuellen <strong>Seitenstatus</strong></p>}',
     p_cat_description => q'{<p>Merkt sich den aktuellen Wert der zu überwachenden Eingabefelder. Dieser Aktionstyp wird benötigt, um dynamisch Änderungen an der Seite zu erkennen und eine Warnmeldung beim Verlassen oder Überschreiben der aktuell erfassten Werte zu geben.</p><p>Als Elementfokus stehen zur Verfügung:</p><ul><li>Dokument: Die zu beobachtenden Seitenelemente werden im Parameter “JSON oder jQuery-Ausdruck” näher bestimmt</li><li>Seitenelement: Nur das ausgewählte Seitenelement wird überwacht</li><li>Formularregion: Alle Seitenelemente der Formularregion werden überwacht.</li></ul>}',
-    p_cat_pl_sql => q'{adc_api.remember_page_state('#ITEM#', '#PARAM_1');}',
+    p_cat_pl_sql => q'{adc_api.remember_page_state('#ITEM#', '#PARAM_1#');}',
     p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'REMEMBER_PAGE_STATE',
-    p_cap_capt_id => 'STRING',
+    p_cap_capt_id => 'JQUERY_SELECTOR',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
-    p_cap_description => q'{<p>&nbsp;</p><p>Der Parameter erwartet ein JSON-Array &nbsp;ohne umgebende Hochkommata oder geschweifte Klammern, oder einen jQuery-Ausdruck mit einem oder mehreren ID- oder Klassenselektoren.</p><p>Wird kein Ausdruck verwendet und als Seitenfokus “Dokument” angegeben, werden alle Eingabeelemente der Anwendungsseite überwacht.</p><p>Beispiele:</p><ul><li>JSON: ["P1_ENAME","P1_JOB"…]</li><li>jQuery-Klassenselektor: .adc-remember</li><li>jQuery ID-Selektor: #P1_ENAME,#P1_JOB</li></ul>}',
-    p_cap_display_name => 'JSON oder jQuery-Ausdruck',
+    p_cap_description => q'{<p>&nbsp;</p><p>Der Parameter erwartet einen jQuery-Ausdruck mit einem oder mehreren ID- oder Klassenselektoren.</p><p>Wird kein Ausdruck verwendet und als Seitenfokus “Dokument” angegeben, werden alle Eingabeelemente der Anwendungsseite überwacht.</p><p>Beispiele:</p><ul><li>jQuery-Klassenselektor: .adc-remember</li><li>jQuery ID-Selektor: #P1_ENAME,#P1_JOB</li></ul>}',
+    p_cap_display_name => '',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
@@ -1611,8 +1651,8 @@ q'{}',
     p_cat_catg_id => 'ADC',
     p_cat_caif_id => 'DOCUMENT',
     p_cat_cato_id => 'ADC',
-    p_cat_name => 'Seite absenden und/oder validieren',
-    p_cat_display_name => q'{<p><strong>fordere Verarbeitung</strong> der Seite im Modus “#PARAM<i>1#” <strong>an. </strong>PARAM</i>2| Request: ||#</p>}',
+    p_cat_name => 'fordere Seitenverarbeitung an',
+    p_cat_display_name => q'{<p><strong>fordere Verarbeitung</strong> der Seite im Modus “#PARAM_1#” <strong>an.</strong> #PARAM_2| Request: ||#</p>}',
     p_cat_description => q'{<p>Validiert und/oder sendet die Seite ab.</p><p>Der Modus bestimmt, welche Aktionen durchgeführt werden. Soll die Seite validiert werden, kann ein Meldungstext definiert werden, der im Fall einer nicht erfolgreichen Validierung angezeigt wird. Wird diese Meldung weggelassen, werden nur die Fehlermeldungen der Validierungslogik angezeigt.</p>}',
     p_cat_pl_sql => q'{adc_api.validate_page('#PARAM_1#');}',
     p_cat_js => q'{de.condes.plugin.adc.actions.submit('#PARAM_2#', '#PARAM_3#');}',

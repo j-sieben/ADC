@@ -49,6 +49,33 @@ as
    */
   procedure clear_page_state;
   
+  /**
+    Function: get_javascript_for_action
+      Method to prepare and retrieve the JavaScript portion of an <ACTION TYPE>.
+      
+      Is used to allow PL/SQL code to get the JavaScript response for an action type. 
+      This is required in rare cases fi when defining the action of an apex action.
+      Don't use this method directly, but wrap the action type in package ADC to 
+      allow for action type specific parameter naming.
+                 
+    Parameters:
+      p_cat_id - ID of the action type
+      p_cpi_id - Optional page item the action refers to. If no page item is set, adc_util.C_NO_FIRING_ITEM is used
+      p_param_1 - Optional first parameter value of the action
+      p_param_2 - Optional second parameter value of the action
+      p_param_3 - Optional third parameter value of the action
+    
+    Returns:
+      JavaScript response with enriched parameter values.
+   */
+  function get_javascript_for_action(
+    p_cat_id in adc_action_types.cat_id%type default adc_util.C_NO_FIRING_ITEM,
+    p_cpi_id in adc_page_items.cpi_id%type default null,
+    p_param_1 in adc_rule_actions.cra_param_1%type default null,
+    p_param_2 in adc_rule_actions.cra_param_2%type default null,
+    p_param_3 in adc_rule_actions.cra_param_3%type default adc_util.C_FALSE)
+    return varchar2;
+
   
   /**
     Procedure: execute_action
@@ -474,26 +501,6 @@ as
   procedure remember_page_state(
     p_cpi_id in varchar2 default null,
     p_page_items in varchar2 default null);
-    
-    
-  /**
-    Procedure: register_observer
-      Method to register a page item as to be observed.
-      
-      Is used to register a page item with ADC. This is necessary only if:
-      
-      - ADC action require the actually set value at the session state with every roundtrip
-      - no technical condition references this item
-      
-      If these requirements are met, this method allows to register a page item for observation
-      This method is only applicable during page initialization, as lateron no event handlers
-      are added to the page
-      
-    Parameter:
-      p_cpi_id - page item to observe
-   */
-  procedure register_observer(
-    p_cpi_id in adc_page_items.cpi_id%type);
     
     
   /** 

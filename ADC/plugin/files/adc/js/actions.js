@@ -194,15 +194,15 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
    */
   actions.cancelModalDialog = function(pTriggeringItemId){
     if (typeof pTriggeringItemId != 'undefined' && pTriggeringItemId != ""){
-      parent.$('iframe')[0].contentWindow.$('#' + pTriggeringItemId ).trigger(C_MODAL_DIALOG_CANCEL_EVENT);
+      parent.$('#' + pTriggeringItemId ).trigger(C_MODAL_DIALOG_CANCEL_EVENT);
     }
     else {
-      pTriggeringItemId = parent.triggeringElement.id;
       if (pTriggeringItemId == ""){
         pTriggeringItemId = parent.$(C_MODAL_DIALOG_SELECTOR).data(C_MODAL_DIALOG_CLASS).opener.attr('id');
         parent.$(C_MODAL_DIALOG_SELECTOR).data(C_MODAL_DIALOG_CLASS).opener.trigger(C_MODAL_DIALOG_CANCEL_EVENT);
       }
       else {
+        pTriggeringItemId = parent.triggeringElement.id;
         parent.$('#' + pTriggeringItemId).trigger(C_MODAL_DIALOG_CANCEL_EVENT);
       };
     };

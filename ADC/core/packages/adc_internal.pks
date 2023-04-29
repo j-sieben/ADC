@@ -152,7 +152,8 @@ as
       This method is called from the ADC plugin
    
     Returns:
-      Comma separated list of item selectors to register for observation
+      Comma separated list of item selectors to register for observation or a jQuery class selector that
+      is evaluated by the client side JavaScript code.
    */
   function get_items_to_observe
     return varchar2;
@@ -216,8 +217,7 @@ as
       p_event_data - Additional event information
       
     Returns:
-      TRUE - If a rule group could be found or instantiated
-      FALSE - If the rule group is deactive
+      TRUE, if the rule group is active, FALSE otherwise
    */
   function read_settings(
     p_firing_item in varchar2,
@@ -245,6 +245,19 @@ as
   procedure check_mandatory(
     p_cpi_id in adc_page_items.cpi_id%type,
     p_stop in adc_util.flag_type default adc_util.C_FALSE);
+    
+    
+  /**
+    Function: get_javascript_for_action
+      See <adc_api.get_javascript_for_action>
+   */
+  function get_javascript_for_action(
+    p_cat_id in adc_action_types.cat_id%type,
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_param_1 in adc_rule_actions.cra_param_1%type,
+    p_param_2 in adc_rule_actions.cra_param_2%type,
+    p_param_3 in adc_rule_actions.cra_param_3%type)
+    return varchar2;
 
 
   /**
@@ -258,6 +271,7 @@ as
     p_param_2 in adc_rule_actions.cra_param_2%type,
     p_param_3 in adc_rule_actions.cra_param_3%type,
     p_allow_recursion in adc_util.flag_type);
+    
 
   /**
     Procedure: execute_command
@@ -305,14 +319,6 @@ as
     p_cpi_mandatory_message in varchar2,
     p_is_mandatory in adc_util.flag_type,
     p_jquery_selector in adc_rule_actions.cra_param_1%type default null);
-    
-  
-  /**
-    Procedure: register_observer
-      See <adc_api.register_observer>
-   */
-  procedure register_observer(
-    p_cpi_id in adc_page_items.cpi_id%type);
 
 
   /**

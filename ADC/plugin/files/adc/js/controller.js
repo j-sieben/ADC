@@ -241,7 +241,15 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
     // Check whether element exists on page (could be missing due to a server condition)
     if ($this.length > 0) {
-      callback = ((typeof pAction !== 'undefined' && pAction.length > 0) ? new Function(pAction) : changeCallback);
+      if (typeof pAction == 'function'){
+        callback = pAction;
+      }
+      else if(typeof pAction != 'undefined' && pAction.length > 0){
+        callback = new Function(pAction);
+      }
+      else {
+        callback = changeCallback;
+      }
 
       // ADC unbinds event handlers bound to this item to prevent problems between the different handlers
       $this
@@ -272,9 +280,14 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
    */
   const bindEvents = function () {
     $.each(props.bindItems, function () {
-      bindEvent(this.id, this.event, this.action);
-      if (this.event === C_CHANGE_EVENT) {
-        addPageItem(this.id);
+      if(this.event == C_ENTER_EVENT){
+        bindEvent(this.id, C_KEYPRESS_EVENT, this.action || enterCallback);
+      }
+      else{
+        bindEvent(this.id, this.event, this.action);
+        if (this.event === C_CHANGE_EVENT) {
+          addPageItem(this.id);
+        }
       }
     });
   }; // bindEvents

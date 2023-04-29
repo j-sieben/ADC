@@ -570,6 +570,47 @@ as
   
   
   /**
+    Function: evaluate_action_type
+      Method retrieve the parameters and other meta data for the requested action type.
+      Is called when an action is evaluated
+      
+    Returns:
+      row record for the requeste action type
+   */
+  function evaluate_action_type(
+    p_cat_id in adc_action_types.cat_id%type,
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_param_1 in adc_rule_actions.cra_param_1%type,
+    p_param_2 in adc_rule_actions.cra_param_2%type,
+    p_param_3 in adc_rule_actions.cra_param_3%type,
+    p_allow_recursion in adc_util.flag_type default null)
+    return rule_action_rec
+  as
+    l_row rule_action_rec;
+  begin
+    pit.enter_detailed(
+      p_params => msg_params(
+                    msg_param('p_cat_id', p_cat_id)));
+                    
+    select null cru_id, null cru_sort_seq, null cru_name, null cru_firing_items, null cru_fire_on_page_load,
+           p_cpi_id cra_item, cat_pl_sql, cat_js, null cra_sort_seq, null cra_on_error,
+           p_param_1 cra_param_1, max(decode(cap_sort_seq, 1, cap_capt_id)) cra_param_1_type,
+           p_param_2 cra_param_2, max(decode(cap_sort_seq, 2, cap_capt_id)) cra_param_2_type,
+           p_param_3 cra_param_3, max(decode(cap_sort_seq, 3, cap_capt_id)) cra_param_3_type,
+           null cru_has_error_handler, null is_first_action
+      into l_row
+      from adc_action_types
+      left join adc_action_parameters
+        on cat_id = cap_cat_id
+     where cat_id = p_cat_id
+     group by cat_pl_sql, cat_js;
+     
+    pit.leave_detailed;
+    return l_row;
+  end evaluate_action_type;
+  
+  
+  /**
     Procedure: initialize
       Method to initalize the package
    */
@@ -988,6 +1029,35 @@ as
       register_error(p_cpi_id, substr(sqlerrm, 12), '');
   end check_mandatory;
   
+  /**
+    Procedure: get_javascript_for_action
+      See <ADC_API.get_javascript_for_action>
+   */
+  function get_javascript_for_action(
+    p_cat_id in adc_action_types.cat_id%type,
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_param_1 in adc_rule_actions.cra_param_1%type,
+    p_param_2 in adc_rule_actions.cra_param_2%type,
+    p_param_3 in adc_rule_actions.cra_param_3%type)
+    return varchar2
+  as
+    l_row rule_action_rec;
+    l_java_script adc_util.max_char;
+  begin
+    l_row := evaluate_action_type(
+      p_cat_id => p_cat_id,
+      p_cpi_id => p_cpi_id,
+      p_param_1 => p_param_1,
+      p_param_2 => p_param_2,
+      p_param_3 => p_param_3);
+
+    if l_row.cat_js is not null then 
+      l_java_script := generate_parameterized_code('JAVASCRIPT', l_row);    
+    end if;
+    
+    return l_java_script;
+  end get_javascript_for_action;
+  
   
   /**
     Procedure: execute_action
@@ -1008,19 +1078,14 @@ as
     C_PLSQL_CODE_TEMPLATE constant adc_util.sql_char := 'begin #CODE#; commit; end;';
   begin
     -- Tracing done in ADC_API      
-    select null cru_id, null cru_sort_seq, null cru_name, null cru_firing_items, null cru_fire_on_page_load,
-           p_cpi_id cra_item, cat_pl_sql, cat_js, null cra_sort_seq, null cra_on_error,
-           p_param_1 cra_param_1, max(decode(cap_sort_seq, 1, cap_capt_id)) cra_param_1_type,
-           p_param_2 cra_param_2, max(decode(cap_sort_seq, 2, cap_capt_id)) cra_param_2_type,
-           p_param_3 cra_param_3, max(decode(cap_sort_seq, 3, cap_capt_id)) cra_param_3_type,
-           null cru_has_error_handler, null is_first_action
-      into l_row
-      from adc_action_types
-      left join adc_action_parameters
-        on cat_id = cap_cat_id
-     where cat_id = p_cat_id
-     group by cat_pl_sql, cat_js;
-                        
+    l_row := evaluate_action_type(
+      p_cat_id => p_cat_id,
+      p_cpi_id => p_cpi_id,
+      p_param_1 => p_param_1,
+      p_param_2 => p_param_2,
+      p_param_3 => p_param_3,
+      p_allow_recursion => p_allow_recursion);
+    
     if l_row.cat_pl_sql is not null then
       l_pl_sql := generate_parameterized_code('PLSQL', l_row);
       l_pl_sql := replace(C_PLSQL_CODE_TEMPLATE, '#CODE#', l_pl_sql);
@@ -1183,25 +1248,6 @@ as
       -- Item is not in mandatory list and is requested to be optional. Ignore
       null;
   end register_mandatory;
-  
-  
-  /**
-    Procedure: register_observer
-      See <ADC_API.register_observer>
-   */
-  procedure register_observer(
-    p_cpi_id in adc_page_items.cpi_id%type)
-  as
-  begin
-    pit.enter_optional;
-    
-    if g_param.initialize_mode then
-      g_param.bind_event_items.extend;
-      g_param.bind_event_items(g_param.bind_event_items.last) := p_cpi_id;
-    end if;
-    
-    pit.leave_optional;
-  end register_observer;
       
     
   /**
