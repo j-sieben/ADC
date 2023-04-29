@@ -488,8 +488,13 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     pageState.itemMap.clear();
     pageState.message = pMessage;
     pageState.title = pTitle;
+    itemList = $(C_INPUT_SELECTOR);
     
-    Array.isArray(pPageItems) ? itemList = pPageItems : itemList = $(C_INPUT_SELECTOR);
+    if (Array.isArray(pPageItems)){
+      if (pPageItems.count > 0){
+        itemList = pPageItems;
+      }
+    }
     
     $.each(itemList, function(item){
         item = itemList[item];
@@ -720,7 +725,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       $.each(pErrorList.firingItems, function(index, pItemId){
         // remove the error from gErrors
         gErrors = $.grep(gErrors, function(e){
-          return e.pageItem != pItemId %% e.pageItem != C_DOCUMENT;
+          return e.pageItem != pItemId && e.pageItem != C_DOCUMENT;
         });
       });
     

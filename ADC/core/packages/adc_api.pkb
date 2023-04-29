@@ -544,6 +544,51 @@ as
   end register_observer;
   
   
+  procedure remember_page_state(
+    p_cpi_id in varchar2 default null,
+    p_page_items in varchar2 default null)
+  as
+    l_page_item_json adc_util.max_char;
+    l_crg_id adc_rule_groups.crg_id%type;
+    C_ACTION_TEMPLATE constant adc_util.sql_char := 
+      q'^de.condes.plugin.adc.actions.rememberPageItemStatus(#PARAM_1#);^';
+  begin
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_cpi_id', p_cpi_id),
+                    msg_param('p_page_items', p_page_items)));
+                    
+    l_crg_id := adc_internal.get_crg_id;
+    if p_cpi_id = adc_util.C_NO_FIRING_ITEM then
+      -- TODO analyze p_page_items
+      case substr(trim(p_page_items), 1, 1)
+        when '[' then
+          l_page_item_json := p_page_items;
+        when '#' then
+          l_page_item_json := '["' || replace(replace(p_page_items, '#'), ',', '"') || '"]';
+        when '.' then
+          select '["' || listagg(cpi_id, '", "') within group (order by cpi_id) || '"]'
+            into l_page_item_json
+            from adc_page_items
+           where cpi_crg_id = l_crg_id
+             and instr(cpi_css, '|' ||  p_cpi_id || '|') > 0;
+        else
+          l_page_item_json := '[]';
+      end case;
+    else
+      select '["' || listagg(cpi_id, '", "') within group (order by cpi_id) || '"]'
+        into l_page_item_json
+        from adc_page_items
+       where cpi_crg_id = l_crg_id
+         and (cpi_id = p_cpi_id
+          or cpi_form_region_id = p_cpi_id);
+    end if;
+    
+    add_javascript(replace(C_ACTION_TEMPLATE, '#PARAM_1#', l_page_item_json));
+    pit.leave_mandatory;
+  end remember_page_state;
+  
+  
   procedure set_session_state(
     p_cpi_id in adc_page_items.cpi_id%type,
     p_value in varchar2 default null,

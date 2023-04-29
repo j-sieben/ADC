@@ -460,6 +460,23 @@ as
     
     
   /**
+    Procedure: remember_page_state
+      Method to calculate a list of page item for which the actual value has to be
+      stored for later comparison for changes.
+      
+      As a result, a JavaScript method call is added to the response.
+      
+    Parameters:
+      p_cpi_id - DOCUMENT, page item or form region static id. If Document, parameter
+                 p_page_items is evaluated.
+      p_page_items - jQuery selector (id or class selector) or a JSON array with page item IDs
+   */
+  procedure remember_page_state(
+    p_cpi_id in varchar2 default null,
+    p_page_items in varchar2 default null);
+    
+    
+  /**
     Procedure: register_observer
       Method to register a page item as to be observed.
       
@@ -473,7 +490,7 @@ as
       are added to the page
       
     Parameter:
-      p_cpi_id  page item to observe
+      p_cpi_id - page item to observe
    */
   procedure register_observer(
     p_cpi_id in adc_page_items.cpi_id%type);
@@ -562,6 +579,9 @@ as
       - all mandatory items (in case an initially empty item did not receive a change event)
       - all actions that are marked as validations (in case an exception that is shown on the
         page has not been fixed before submitting the page)
+      
+      Any dynamically validated items on the page will NOT be validated when calling this method.
+      This means that you should call the validaten logic separately when validating the whole page.
       
       This method is only useful if ADC controls the whole page completely. It can not intercept
       a apex.submit call raised by a button or a Dynamic Action on the page. Rather, validate

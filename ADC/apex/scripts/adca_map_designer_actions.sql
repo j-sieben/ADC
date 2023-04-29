@@ -23,7 +23,7 @@ using (select 'CRU' amda_aldm_id, 'show' amda_alda_id, 'Rule selected from hiera
         select 'CAG', 'cancel-action', 'Page Command edit cancelled', 'CRG_ID', adc_util.C_FALSE, adc_util.C_TRUE, 'CAA', adc_util.C_FALSE, adc_util.C_FALSE, null, null, adc_util.C_FALSE, null from dual
         union all
         select 'CAA', 'show', 'Page Command selected from hierarchy', 'CAA_ID', adc_util.C_TRUE, adc_util.C_FALSE, null, adc_util.C_TRUE, adc_util.C_TRUE, 'CAA', 'CAG', adc_util.C_TRUE, 'CAG' from dual union all
-        select 'CAA', 'create-action', 'Page Command created from CAG', null, adc_util.C_TRUE, adc_util.C_FALSE, null, adc_util.C_FALSE, adc_util.C_TRUE, 'CAA', 'CAG', adc_util.C_TRUE, 'CAG' from dual union all
+        select 'CAA', 'create-action', 'Page Command created from CAG', null, adc_util.C_TRUE, adc_util.C_FALSE, null, adc_util.C_TRUE, adc_util.C_TRUE, 'CAA', 'CAG', adc_util.C_TRUE, 'CAG' from dual union all
         select 'CAA', 'update-action', 'Page Command saved', 'CAA_ID', adc_util.C_TRUE, adc_util.C_FALSE, null, adc_util.C_TRUE, adc_util.C_TRUE, 'CAA', 'CAG', adc_util.C_TRUE, 'CAG' from dual
         union all
         select 'FLG', 'show', 'Flows headline selected from hierarchy', 'DIAGRAM_ID', adc_util.C_FALSE, adc_util.C_TRUE, 'FLS', adc_util.C_FALSE, adc_util.C_FALSE, null, null, adc_util.C_FALSE, null from dual union all

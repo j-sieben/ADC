@@ -885,7 +885,7 @@ as
       when C_ITEM_CRA_CAT_ID then
         l_cra_id := adc.get_number(C_ITEM_CRA_ID);
         l_environment.crg_id := adc.get_number(C_ITEM_CRG_ID);
-        l_environment.action := case when l_cra_id is not null then C_ACTION_SHOW end;
+        l_environment.action := null;
       when C_ITEM_CRU_CONDITION then
         l_environment.crg_id := adc.get_number(C_ITEM_CRG_ID);
       when C_COMMAND then
@@ -1253,7 +1253,8 @@ select null #PRE#CRA_ID, '#CRG_ID#' #PRE#CRA_CRG_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
     end if;
 
     set_cra_param_settings(
-      p_cra_id => l_cra_id,
+      -- removing the CRA_ID when changing CAT avoids search for existing parameter values
+      p_cra_id => case when p_environment.action is not null then l_cra_id end,
       p_cat_id => l_cat_id);
 
     set_cat_help_text(
@@ -1670,10 +1671,9 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
       end case;
 
       if page_state.amda_remember_page_state = adc_util.C_TRUE then
-        adc.remember_page_status(
-          p_page_items => get_form_items(page_state.amda_form_id),
-          p_message => pit.get_message_text(msg.ADCA_UNSAVED_DATA),
-          p_title => pit.get_trans_item_name(C_PTI_PMG, 'ADC_WARNING'));
+        adc_api.remember_page_state(
+          p_cpi_id => adc_util.C_NO_FIRING_ITEM,
+          p_page_items => get_form_items(page_state.amda_form_id));
       end if;
     end loop;
     

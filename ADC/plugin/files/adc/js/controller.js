@@ -545,7 +545,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     } else {
       innerCallback = changeCallback;
     }
-    callback = function(pEvent) {adc.renderer.confirmRequest(pEvent, innerCallback);};
+    callback = function(pEvent) {adc.renderer.confirmRequest(pEvent, innerCallback, pTarget.attr('id'));};
     addButtonHandler(pTarget, pMessage, pDialogTitle, callback);
   }; // bindConfirmationHandler
 

@@ -59,6 +59,8 @@ select crg_id, button_static_id, 'BUTTON', 'BUTTON', 'ACTION', label, null, null
 select crg_id, static_id, 
        case source_type_code
          when 'NATIVE_SQL_REPORT' then 'REPORT_REGION'
+         when 'SQL_QUERY' then 'REPORT_REGION'
+         when 'DYNAMIC_QUERY' then 'INTERACTIVE_REPORT_REGION'
          when 'NATIVE_IR' then 'INTERACTIVE_REPORT_REGION'
          when 'NATIVE_IG' then 'INTERACTIVE_GRID_REGION'
          when 'NATIVE_FORM' then 'FORM_REGION' 
@@ -85,17 +87,3 @@ select crg_id, 'DOCUMENT', 'DOCUMENT' || case page_mode when 'Modal Dialog' then
  union all
 select crg_id, 'ALL', 'ALL', 'FRAMEWORK', null, null, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE, adc_util.C_FALSE, null
   from adc_rule_groups;
-
-comment on table adc_bl_page_targets is 'View to collect all page components that are accessible by ADC, along with an item type categorization for grouping in ITEM_FOCUS etc.';
-comment on column adc_bl_page_targets.cpi_crg_id is 'ID to the rule group';
-comment on column adc_bl_page_targets.cpi_id is 'Static ID to the page item';
-comment on column adc_bl_page_targets.cpi_cpit_id is 'Item type of the page item, reference to ADC_PAGE_ITEM_TYPES';
-comment on column adc_bl_page_targets.cpi_cpitg_id is 'Item group of the page item, reference to ADC_PAGE_ITEM_TYPE_GROUPS';
-comment on column adc_bl_page_targets.cpi_caat_id is 'Optional APEX action type of the page item, if an APEX action, reference to ADC_APEX_ACTION_TYPES';
-comment on column adc_bl_page_targets.cpi_label is 'Label of the page item';
-comment on column adc_bl_page_targets.cpi_conversion is 'Optional format mask of the page item';
-comment on column adc_bl_page_targets.cpi_item_default is 'Optional default item value for a mandatory item';
-comment on column adc_bl_page_targets.cpi_css is 'Any CSS class attatched to the page item, separated by |-signs';
-comment on column adc_bl_page_targets.cpi_is_mandatory is 'Flag to indicate whether this page item is initially mandatory. Taken from the APEX metadata';
-comment on column adc_bl_page_targets.cpi_is_required is 'Flag to indicate whether this page item is necessary for ADC. A page item is necessary, if ADC has to react on item value changes';
-comment on column adc_bl_page_targets.cpi_may_have_value is 'Flag to indicate whether the actual page item may contain a (changeable) value. Applies to page items only and only if they are not hidden or display only';

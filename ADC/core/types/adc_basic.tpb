@@ -30,165 +30,7 @@ as
   as
   begin
     return 'SHOW_DISABLE';
-  end;  
-  
-  static procedure assert(
-    p_condition in boolean,
-    p_message_name in varchar2 default 'PIT_ASSERT_TRUE',
-    p_page_item in varchar2 default null,
-    p_msg_args msg_args default null)
-  is
-  begin
-    pit.enter_optional;
-    pit.assert(
-      p_condition => p_condition,
-      p_message_name => p_message_name,
-      p_msg_args => p_msg_args);
-    pit.leave_optional;
-  exception
-    when others then
-      register_error(
-        p_cpi_id => p_page_item,
-        p_message_name => p_message_name,
-        p_msg_args => p_msg_args);
-      pit.leave_optional;
-  end assert;
-
-
-  static procedure assert_is_null(
-    p_condition in varchar2,
-    p_message_name in varchar2 default 'PIT_ASSERT_IS_NULL',
-    p_page_item in varchar2 default null,
-    p_msg_args msg_args default null)
-  as
-  begin
-    pit.enter_optional;
-    pit.assert_is_null(
-      p_condition => p_condition,
-      p_message_name => p_message_name,
-      p_msg_args => p_msg_args);
-    pit.leave_optional;
-  exception
-    when others then
-      register_error(
-        p_cpi_id => p_page_item,
-        p_message_name => p_message_name,
-        p_msg_args => p_msg_args);
-      pit.leave_optional;
-  end assert_is_null;
-
-
-  static procedure assert_not_null(
-    p_condition in varchar2,
-    p_message_name in varchar2 default 'PIT_ASSERT_NOT_NULL',
-    p_page_item in varchar2 default null,
-    p_msg_args msg_args default null)
-  as
-  begin
-    pit.enter_optional;
-    pit.assert_not_null(
-      p_condition => p_condition,
-      p_message_name => p_message_name,
-      p_msg_args => p_msg_args);
-    pit.leave_optional;
-  exception
-    when others then
-      register_error(
-        p_cpi_id => p_page_item,
-        p_message_name => p_message_name,
-        p_msg_args => p_msg_args);
-      pit.leave_optional;
-  end assert_not_null;
-
-
-  static procedure assert_exists(
-    p_stmt in varchar2,
-    p_message_name in varchar2 default 'PIT_ASSERT_EXISTS',
-    p_page_item in varchar2 default null,
-    p_msg_args msg_args default null)
-  is
-  begin
-    pit.enter_optional;
-    pit.assert_exists(
-      p_stmt => p_stmt,
-      p_message_name => p_message_name,
-      p_msg_args => p_msg_args);
-    pit.leave_optional;
-  exception
-    when others then
-      register_error(
-        p_cpi_id => p_page_item,
-        p_message_name => p_message_name,
-        p_msg_args => p_msg_args);
-      pit.leave_optional;
-  end assert_exists;
-
-
-  static procedure assert_not_exists(
-    p_stmt in varchar2,
-    p_message_name in varchar2 default 'PIT_ASSERT_NOT_EXISTS',
-    p_page_item in varchar2 default null,
-    p_msg_args msg_args default null)
-  is
-  begin
-    pit.enter_optional;
-    pit.assert_not_exists(
-      p_stmt => p_stmt,
-      p_message_name => p_message_name,
-      p_msg_args => p_msg_args);
-    pit.leave_optional;
-  exception
-    when others then
-      register_error(
-        p_cpi_id => p_page_item,
-        p_message_name => p_message_name,
-        p_msg_args => p_msg_args);
-      pit.leave_optional;
-  end assert_not_exists;
-
-
-  static procedure assert_datatype(
-    p_value in varchar2,
-    p_type in varchar2,
-    p_format_mask in varchar2 default null,
-    p_message_name in varchar2 default 'PIT_ASSERT_DATATYPE',
-    p_page_item in varchar2 default null,
-    p_msg_args msg_args default null,
-    p_accept_null in boolean default true)
-  as
-  begin
-    pit.enter_optional;
-    pit.assert_datatype(
-      p_value => p_value,
-      p_type => p_type,
-      p_format_mask => p_format_mask,
-      p_message_name => p_message_name,
-      p_msg_args => coalesce(p_msg_args, msg_args(p_value, p_type)),
-      p_accept_null => p_accept_null);
-    pit.leave_optional;
-  exception
-    when others then
-      register_error(
-        p_cpi_id => p_page_item,
-        p_message_name => p_message_name,
-        p_msg_args => p_msg_args);
-      pit.leave_optional;
-  end assert_datatype;
-  
-
-  static procedure handle_bulk_errors(
-    p_mapping in char_table default null,
-    p_filter_list in varchar2 default null)
-  as
-  begin
-    pit.enter_optional;
-    
-    adc_api.handle_bulk_errors(
-      p_mapping => p_mapping, 
-      p_filter_list => p_filter_list);
-    
-    pit.leave_optional;
-  end handle_bulk_errors;
+  end;
   
   static procedure add_javascript(
     p_javascript in varchar2)
@@ -359,6 +201,21 @@ as
     return adc_api.get_string(p_cpi_id);
   end get_string;
   
+
+  static procedure handle_bulk_errors(
+    p_mapping in char_table default null,
+    p_filter_list in varchar2 default null)
+  as
+  begin
+    pit.enter_optional;
+    
+    adc_api.handle_bulk_errors(
+      p_mapping => p_mapping, 
+      p_filter_list => p_filter_list);
+    
+    pit.leave_optional;
+  end handle_bulk_errors;
+  
   
   static function firing_item_has_class(
     p_class in varchar2)
@@ -431,27 +288,22 @@ as
   end not_null;
   
   
-  static procedure remember_page_status(
-    p_page_items in varchar2,
-    p_message in varchar2,
-    p_title in varchar2 default null)
+  static procedure remember_page_state(
+    p_cpi_id in varchar2 default null,
+    p_page_items in varchar2 default null)
   as
   begin
     pit.enter_optional(
       p_params => msg_params(
-                    msg_param('p_page_items', p_page_items),
-                    msg_param('p_message', p_message),
-                    msg_param('p_title', p_title)));
+                    msg_param('p_cpi_id', p_cpi_id),
+                    msg_param('p_page_items', p_page_items)));
                     
-    adc_api.execute_action(
-      p_cat_id => 'REMEMBER_PAGE_STATE',
-      p_cpi_id => adc_util.C_NO_FIRING_ITEM,
-      p_param_1 => p_page_items,
-      p_param_2 => p_message,
-      p_param_3 => coalesce(p_title, pit.get_trans_item_name('ADCA', 'ADC_UNSAVED_ITEM_TITLE')));
+    adc_api.remember_page_state(
+      p_cpi_id => coalesce(p_cpi_id, adc_util.C_NO_FIRING_ITEM),
+      p_page_items => p_page_items);
 
     pit.leave_optional;
-  end remember_page_status;
+  end remember_page_state;
   
   
   static procedure remove_all_errors
