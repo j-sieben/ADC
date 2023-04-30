@@ -37,6 +37,160 @@ as object (
   
   static function C_SHOW_DISABLE
   return varchar2,
+  /**
+    Group: Validation
+   */
+  /** 
+    Procedure: assert
+      Methods calls <ASSERT>, catches its exception and passes it to the APEX UI by adding them to the APEX error stack.
+      See <PIT.assert>
+      
+    Parameters: 
+      p_condition - Test to execute
+      p_message_name - Optional PIT message name to throw if <P_CONDITION> evaluates to FALSE
+                       Defaults to msg.PIT_ASSERT_TRUE
+      p_page_item -  Page item( with or without page prefix or IG column name to bind the error message to.
+                     If NULL, the error message is shown without page item relation
+      p_msg_args - Optional message arguments. The message may contain a #LABEL# anchor which is replaced by the label of <p_page_item>.
+   */
+  static procedure assert(
+    p_condition in boolean,
+    p_message_name in varchar2 default 'PIT_ASSERT_TRUE',
+    p_page_item in varchar2 default null,
+    p_msg_args in msg_args default null),
+
+
+  /** 
+    Procedure: assert_is_null
+      Methods calls <PIT.ASSERT_IS_NULL>, catches its exception and passes it to the APEX UI by adding them to the APEX error stack.
+      See <PIT.assert_not_null>
+      
+    Parameters: 
+      p_condition - Test to execute
+      p_message_name - Optional PIT message name to throw if <P_CONDITION> evaluates to FALSE
+                       Defaults to msg.PIT_ASSERT_IS_NULL
+      p_page_item -  Page item( with or without page prefix or IG column name to bind the error message to.
+                     If NULL, the error message is shown without page item relation
+      p_msg_args - Optional message arguments. The message may contain a #LABEL# anchor which is replaced by the label of <p_page_item>.
+   */
+  static procedure assert_is_null(
+    p_condition in varchar2,
+    p_message_name in varchar2 default 'PIT_ASSERT_IS_NULL',
+    p_page_item in varchar2 default null,
+    p_msg_args in msg_args default null),
+
+
+  /** 
+    Procedure: assert_not_null
+      Methods calls <PIT.ASSERT_NOT_NULL>, catches its exception and passes it to the APEX UI by adding them to the APEX error stack.
+      See <PIT.assert_not_null>
+      
+    Parameters: 
+      p_condition - Test to execute
+      p_message_name - Optional PIT message name to throw if <P_CONDITION> evaluates to FALSE
+                       Defaults to msg.PIT_ASSERT_NOT_NULL
+      p_page_item -  Page item( with or without page prefix or IG column name to bind the error message to.
+                     If NULL, the error message is shown without page item relation
+      p_msg_args - Optional message arguments. The message may contain a #LABEL# anchor which is replaced by the label of <p_page_item>.
+   */
+  static procedure assert_not_null(
+    p_condition in varchar2,
+    p_message_name in varchar2 default 'PIT_ASSERT_NOT_NULL',
+    p_page_item in varchar2 default null,
+    p_msg_args msg_args default null),
+
+
+  /** 
+    Procedure: assert_exists
+      Methods calls <PIT.ASSERT_EXISTS>, catches its exception and passes it to the APEX UI by adding them to the APEX error stack.
+      See <PIT.assert_exists>
+      
+    Parameters: 
+      p_stmt - select statement to check. Passes if the statement returns one row at least.
+      p_message_name - Optional PIT message name to throw if <P_CONDITION> evaluates to FALSE
+                       Defaults to msg.PIT_ASSERT_EXISTS
+      p_page_item -  Page item( with or without page prefix or IG column name to bind the error message to.
+                     If NULL, the error message is shown without page item relation
+      p_msg_args - Optional message arguments. The message may contain a #LABEL# anchor which is replaced by the label of <p_page_item>.
+   */
+  static procedure assert_exists(
+    p_stmt in varchar2,
+    p_message_name in varchar2 default 'PIT_ASSERT_EXISTS',
+    p_page_item in varchar2 default null,
+    p_msg_args msg_args default null),
+
+
+  /** 
+    Procedure: assert_not_exists
+      Methods calls <PIT.ASSERT_NOT_EXISTS>, catches its exception and passes it to the APEX UI by adding them to the APEX error stack.
+      See <PIT.assert_not_exists>
+      
+    Parameters: 
+      p_stmt - select statement to check. Passes if the statement returns no row only.
+      p_message_name - Optional PIT message name to throw if <P_CONDITION> evaluates to FALSE
+                       Defaults to msg.PIT_ASSERT_NOT_EXISTS
+      p_page_item -  Page item( with or without page prefix or IG column name to bind the error message to.
+                     If NULL, the error message is shown without page item relation
+      p_msg_args - Optional message arguments. The message may contain a #LABEL# anchor which is replaced by the label of <p_page_item>.
+   */
+  static procedure assert_not_exists(
+    p_stmt in varchar2,
+    p_message_name in varchar2 default 'PIT_ASSERT_NOT_EXISTS',
+    p_page_item in varchar2 default null,
+    p_msg_args msg_args default null),
+
+
+  /** 
+    Procedure: assert_datatype
+      Methods calls <PIT.ASSERT_DATATYPE>, catches its exception and passes it to the APEX UI by adding them to the APEX error stack.
+      See <PIT.assert_datatype>
+      
+    Parameters: 
+      p_value - Value of the page item
+      p_type - Expected data type. One of <PIT.TYPE_...> function values, fi PIT.TYPE_DATE.
+      p_format_mask - Optional format mask to convert <p_value> with
+      p_message_name - Optional PIT message name to throw if <P_CONDITION> evaluates to FALSE
+                       Defaults to msg.PIT_ASSERT_DATATYPE
+      p_page_item -  Page item( with or without page prefix or IG column name to bind the error message to.
+                     If NULL, the error message is shown without page item relation
+      p_msg_args - Optional message arguments. The message may contain a #LABEL# anchor which is replaced by the label of <p_page_item>.
+      p_accept_null - Flag to indicate whether a NULL value is perceived to be an exception (FALSE) or not (TRUE). Defaults to TRUE.
+   */
+  static procedure assert_datatype(
+    p_value in varchar2,
+    p_type in varchar2,
+    p_format_mask in varchar2 default null,
+    p_message_name in varchar2 default 'PIT_ASSERT_DATATYPE',
+    p_page_item in varchar2 default null,
+    p_msg_args msg_args default null,
+    p_accept_null in boolean default true),
+
+  
+  /** 
+    Procedure: handle_bulk_errors
+      Method to encapsulate PIT collection mode error treatment
+      
+      Is used to retrieve the collection of messages collected during validation of a use case in PIT collect mode.
+      The method retrieves the messages and maps the error codes to page items passed in via <P_MAPPING>.
+      If found, it shows the exception inline with field and notification to those items, otherwise it shows the
+      message without item reference in the notification area only.
+      Supports #LABEL# replacement, page item name may be passed in with or without page prefix.
+      Similar to UTL_APEX.HANDLE_BULK_ERRORS, but uses ADC to show the messages dynamically as opposed to UTL_APEX
+      that encapsulates the messages in the validation life cycle step of APEX.
+                 
+     Parameter: 
+       p_mapping - CHAR_TABLE instance with error code - page item names couples, according to DECODE function
+       p_filter_list - Optional list of items to filter the message collection. If NOT NULL, it reduces the
+                       error output to those items which are both on the p_mapping list and the p_filter_list.
+                       This allows to control which validations are taken into account for a specific page state.
+                       Normal use of this filter would be to limit the validation to the firing item, but it is
+                       also possible to pass more than one item name in, fi when validating a pair of
+                       VALID_FROM and VALID_UNTIL date ranges or similar.
+                       Several item names are passed in as a colon delimited list.
+   */
+  static procedure handle_bulk_errors(
+    p_mapping in char_table default null,
+    p_filter_list in varchar2 default null),
   
   
   /**
@@ -238,33 +392,6 @@ as object (
   static function get_string(
     p_cpi_id in varchar2)
     return varchar2,
-
-  
-  /** 
-    Procedure: handle_bulk_errors
-      Method to encapsulate PIT collection mode error treatment
-      
-      Is used to retrieve the collection of messages collected during validation of a use case in PIT collect mode.
-      The method retrieves the messages and maps the error codes to page items passed in via <P_MAPPING>.
-      If found, it shows the exception inline with field and notification to those items, otherwise it shows the
-      message without item reference in the notification area only.
-      Supports #LABEL# replacement, page item name may be passed in with or without page prefix.
-      Similar to UTL_APEX.HANDLE_BULK_ERRORS, but uses ADC to show the messages dynamically as opposed to UTL_APEX
-      that encapsulates the messages in the validation life cycle step of APEX.
-                 
-     Parameter: 
-       p_mapping - CHAR_TABLE instance with error code - page item names couples, according to DECODE function
-       p_filter_list - Optional list of items to filter the message collection. If NOT NULL, it reduces the
-                       error output to those items which are both on the p_mapping list and the p_filter_list.
-                       This allows to control which validations are taken into account for a specific page state.
-                       Normal use of this filter would be to limit the validation to the firing item, but it is
-                       also possible to pass more than one item name in, fi when validating a pair of
-                       VALID_FROM and VALID_UNTIL date ranges or similar.
-                       Several item names are passed in as a colon delimited list.
-   */
-  static procedure handle_bulk_errors(
-    p_mapping in char_table default null,
-    p_filter_list in varchar2 default null),
     
     
   /** 
