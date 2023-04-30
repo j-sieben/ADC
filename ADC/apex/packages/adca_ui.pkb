@@ -325,7 +325,6 @@ as
     -- generate ZIP with the requested rule group files and download.
     l_zip_file := adc_admin.export_rule_groups(
                     p_crg_app_id => l_crg_app_id,
-                    p_crg_page_id => null,
                     p_mode => l_mode);
                     
     pit.leave_mandatory;

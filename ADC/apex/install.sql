@@ -46,6 +46,7 @@ prompt &h3.Create views
 @&tool_dir.create_view adca_ui_edit_caif
 @&tool_dir.create_view adca_ui_edit_cpit
 @&tool_dir.create_view adca_ui_edit_catg
+@&tool_dir.create_view adca_ui_edit_cato
 @&tool_dir.create_view adca_ui_edit_capt
 @&tool_dir.create_view adca_ui_edit_capt_static_list
 @&tool_dir.create_view adca_ui_list_action_type
