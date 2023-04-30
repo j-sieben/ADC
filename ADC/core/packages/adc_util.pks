@@ -71,6 +71,7 @@ as
   */
   C_PARAM_GROUP constant adc_util.ora_name_type := 'ADC';
   C_ADC constant ora_name_type := 'ADC';
+  C_ADCA constant ora_name_type := 'ADCA';
   
   C_WITH_UNIT_TESTS constant boolean := &WITH_UT.;
   C_WITH_FLOWS constant boolean := &WITH_FLOWS.;
@@ -234,13 +235,15 @@ as
     Parameters:
       p_item - Item to translate
       p_msg_args - Optional list of arguments to incorporate into the translated item name
+      p_pmg_name - Optional message group name to enable switching betwwen C_ADC and C_ADCA
       
     Returns:
       Translated item name
    */
   function get_trans_item_name(
     p_item in varchar2,
-    p_msg_args in msg_args default null)
+    p_msg_args in msg_args default null,
+    p_pmg_name in varchar2 default C_ADC)
     return varchar2;
   
   

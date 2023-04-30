@@ -204,11 +204,12 @@ as
    */
   function get_trans_item_name(
     p_item in varchar2,
-    p_msg_args in msg_args default null)
+    p_msg_args in msg_args default null,
+    p_pmg_name in varchar2 default C_ADC)
     return varchar2
   as
   begin
-    return pit.get_trans_item_name(C_ADC, p_item, p_msg_args);
+    return pit.get_trans_item_name(p_pmg_name, p_item, p_msg_args);
   end get_trans_item_name;
 
   

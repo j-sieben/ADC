@@ -1456,7 +1456,7 @@ q'{}',
     p_cat_name => 'PL/SQL-Code ausführen',
     p_cat_display_name => q'{<p>führe <strong>PL/SQL-Code</strong> “#PARAM_1#” aus</p>}',
     p_cat_description => q'{<p>Führt den als Parameter übergebenen PL/SQL-Code aus.</p>}',
-    p_cat_pl_sql => q'{adc_api.execute_plsql('#PARAM_1#');}',
+    p_cat_pl_sql => q'{adc_api.execute_plsql(q'[#PARAM_1#]s');}',
     p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_TRUE);
