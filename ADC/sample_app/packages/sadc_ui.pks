@@ -139,6 +139,25 @@ as
   function get_help_text(
     p_cat_id in adc_action_types.cat_id%type)
   return varchar2;
+  
+  
+  /**
+    Function: valbulk_validate
+      Method validates page VALBULK
+      
+    Returns:
+      Always TRUE, exceptions are integrated into the APEX error stack.
+   */
+  function valbulk_validate
+    return boolean;
+  
+  
+  /**
+    Procedure: valdyn_validate
+      Method validates page VALDYN
+   */
+  procedure valdyn_validate(
+    p_filter in varchar2 default null);
     
 end sadc_ui;
 /

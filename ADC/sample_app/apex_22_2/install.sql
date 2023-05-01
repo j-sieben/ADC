@@ -25,3 +25,5 @@ prompt &s1.Install ADC rules
 @&app_script_dir.merge_rule_group_sadc_specval1.sql
 @&app_script_dir.merge_rule_group_sadc_specval2.sql
 @&app_script_dir.merge_rule_group_sadc_unittest.sql
+@&app_script_dir.merge_rule_group_sadc_valbulk.sql
+@&app_script_dir.merge_rule_group_sadc_valdyn.sql

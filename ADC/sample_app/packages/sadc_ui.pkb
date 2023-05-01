@@ -17,15 +17,59 @@ as
   begin
     pit.enter_detailed('copy_edpti');
   
-    g_page_values := utl_apex.get_page_values('EDPTI_FORM');
-    p_row.pti_id := utl_apex.get(g_page_values, 'pti_id');
-    p_row.pti_pmg_name := utl_apex.get(g_page_values, 'pti_pmg_name');
-    p_row.pti_name := utl_apex.get(g_page_values, 'pti_name');
-    p_row.pti_display_name := utl_apex.get(g_page_values, 'pti_display_name');
-    p_row.pti_description := utl_apex.get(g_page_values, 'pti_description');
+    p_row.pti_id := utl_apex.get_string('pti_id');
+    p_row.pti_pmg_name := utl_apex.get_string('pti_pmg_name');
+    p_row.pti_name := utl_apex.get_string('pti_name');
+    p_row.pti_display_name := utl_apex.get_string('pti_display_name');
+    p_row.pti_description := utl_apex.get_string('pti_description');
   
     pit.leave_detailed;
   end copy_edpti;
+  
+  
+  procedure copy_valbulk(
+    p_row in out nocopy hr_employees%rowtype)
+  as
+  begin
+    pit.enter_detailed('copy_valbulk');
+    
+    p_row.emp_id := utl_apex.get_number('emp_id');
+    p_row.emp_first_name := utl_apex.get_string('emp_first_name');
+    p_row.emp_last_name := utl_apex.get_string('emp_last_name');
+    p_row.emp_email := utl_apex.get_string('emp_email');
+    p_row.emp_phone_number := utl_apex.get_string('emp_phone_number');
+    p_row.emp_hire_date := utl_apex.get_date('emp_hire_date');
+    p_row.emp_job_id := utl_apex.get_string('emp_job_id');
+    p_row.emp_salary := utl_apex.get_number('emp_salary');
+    p_row.emp_commission_pct := utl_apex.get_number('emp_commission_pct');
+    p_row.emp_mgr_id := utl_apex.get_number('emp_mgr_id');
+    p_row.emp_dep_id := utl_apex.get_number('emp_dep_id');
+    
+    pit.leave_detailed;
+  end copy_valbulk;
+  
+  
+  procedure copy_valdyn(
+    p_row in out nocopy hr_employees%rowtype)
+  as
+  begin
+    pit.enter_detailed('copy_valbulk');
+    
+    p_row.emp_id := adc.get_number('emp_id');
+    p_row.emp_first_name := adc.get_string('emp_first_name');
+    p_row.emp_last_name := adc.get_string('emp_last_name');
+    p_row.emp_email := adc.get_string('emp_email');
+    p_row.emp_phone_number := adc.get_string('emp_phone_number');
+    p_row.emp_hire_date := adc.get_date('emp_hire_date');
+    p_row.emp_job_id := adc.get_string('emp_job_id');
+    p_row.emp_salary := adc.get_number('emp_salary');
+    p_row.emp_commission_pct := adc.get_number('emp_commission_pct');
+    p_row.emp_mgr_id := adc.get_number('emp_mgr_id');
+    p_row.emp_dep_id := adc.get_number('emp_dep_id');
+    
+    pit.leave_detailed;
+  end copy_valdyn;
+  
 
   /* INTERFACE */
   function c_true
@@ -49,9 +93,13 @@ as
     l_prev_title utl_apex.ora_name_type;
     l_prev_target utl_apex.ora_name_type;
     l_prev_id apex_application_pages.page_id%type;
+    l_prev_item utl_apex.ora_name_type;
+    l_prev_value utl_apex.small_char;
     l_next_title utl_apex.ora_name_type;
     l_next_target utl_apex.ora_name_type;
     l_next_id apex_application_pages.page_id%type;
+    l_next_item utl_apex.ora_name_type;
+    l_next_value utl_apex.small_char;
   begin
     pit.enter_mandatory;
     
@@ -62,7 +110,9 @@ as
                   utl_apex.get_page_alias p_page_alias
              from dual),
          ui_list as (
-           select *
+           select m.*, 
+                  substr(target_value, instr(target_value, ':', 1, 6) + 1, (instr(target_value, ':', -2) - instr(target_value, ':', 1, 6) - 1)) target_item, 
+                  substr(target_value, instr(target_value, ':', -2) + 1, length(target_value) - instr(target_value, ':', -2) - 1) target_item_value
              from apex_ui_list_menu m
             where list_name = 'Desktop Navigation Menu'
               and parent_page_alias in (
@@ -79,15 +129,21 @@ as
            select lag(a.page_name) over (order by display_sequence) prev_title, 
                   lag(a.page_alias) over (order by display_sequence) prev_target,
                   lag(a.page_id) over (order by display_sequence) prev_id,
+                  lag(m.target_item) over(order by display_sequence) prev_item,
+                  lag(m.target_item_value) over(order by display_sequence) prev_value,
                   lead(page_name) over (order by display_sequence) next_title, 
                   lead(a.page_alias) over (order by display_sequence) next_target,
                   lead(a.page_id) over (order by display_sequence) next_id,
+                  lead(m.target_item) over(order by display_sequence) next_item,
+                  lead(m.target_item_value) over(order by display_sequence) next_value,
                   page_id, p_page_id, display_sequence
              from app_pages a
              join ui_list m
                on m.page_alias in (to_char(a.page_id), a.page_alias))
-    select prev_id, prev_title, prev_target, next_id, next_title, next_target
-      into l_prev_id, l_prev_title, l_prev_target, l_next_id, l_next_title, l_next_target
+    select prev_id, prev_title, prev_target, prev_item, prev_value,
+           next_id, next_title, next_target, next_item, next_value
+      into l_prev_id, l_prev_title, l_prev_target, l_prev_item, l_prev_value,
+           l_next_id, l_next_title, l_next_target, l_next_item, l_next_value
       from data
      where page_id = p_page_id
      order by display_sequence;
@@ -95,9 +151,13 @@ as
     utl_apex.set_value('SADC_PREV_TITLE', l_prev_title);
     utl_apex.set_value('SADC_PREV_TARGET', l_prev_target);
     utl_apex.set_value('SADC_PREV_ID', l_prev_id);
+    utl_apex.set_value('SADC_PREV_ITEM', l_prev_item);
+    utl_apex.set_value('SADC_PREV_VALUE', l_prev_value);
     utl_apex.set_value('SADC_NEXT_TITLE', l_next_title);
     utl_apex.set_value('SADC_NEXT_TARGET', l_next_target);
     utl_apex.set_value('SADC_NEXT_ID', l_next_id);
+    utl_apex.set_value('SADC_NEXT_ITEM', l_next_item);
+    utl_apex.set_value('SADC_NEXT_VALUE', l_next_value);
     
     pit.leave_mandatory(
       p_params => msg_params(
@@ -334,6 +394,55 @@ as
     pit.leave_mandatory;
     return(l_help_text);   
   end get_help_text;
+  
+  
+  function valbulk_validate
+    return boolean
+  as
+    l_row hr_employees%rowtype;
+  begin
+    pit.enter_mandatory;
+    
+    copy_valbulk(l_row);
+    
+    pit.start_message_collection;
+    bl_emp.validate_employee(l_row);
+    pit.stop_message_collection;
+    
+    pit.leave_mandatory;
+    return true;
+  exception
+    when msg.PIT_BULK_ERROR_ERR then
+      utl_apex.handle_bulk_errors(char_table(
+        'COMMISSION_PCT_REQUIRED', 'EMP_COMMISSION_PCT',
+        msg.SADC_CHECK_SAL_RANGE, 'EMP_SALARY',
+        msg.SADC_EMAIL_IN_USE, 'EMP_EMAIL'));
+      return true;
+  end valbulk_validate;
+  
+  
+  procedure valdyn_validate(
+    p_filter in varchar2 default null)
+  as
+    l_row hr_employees%rowtype;
+  begin
+    pit.enter_mandatory;
+    
+    copy_valdyn(l_row);
+    
+    pit.start_message_collection;
+    bl_emp.validate_employee(l_row);
+    pit.stop_message_collection;
+    
+    pit.leave_mandatory;
+  exception
+    when msg.PIT_BULK_ERROR_ERR then
+      adc.handle_bulk_errors(char_table(
+        'COMMISSION_PCT_REQUIRED', 'EMP_COMMISSION_PCT',
+        msg.SADC_CHECK_SAL_RANGE, 'EMP_SALARY',
+        msg.SADC_EMAIL_IN_USE, 'EMP_EMAIL'),
+      p_filter_list => p_filter);
+  end valdyn_validate;
   
 
 end sadc_ui;

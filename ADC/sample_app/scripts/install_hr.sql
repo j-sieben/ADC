@@ -433,4 +433,267 @@ prompt &s1.Enable integrity constraint to hr_departments
 
 alter table hr_departments enable constraint dep_mgr_id_fk;
 
+prompt &h2.Create business logic packages
+prompt &s1.Package BL_EMP
+create or replace package bl_emp
+  authid definer
+as
+  procedure merge_employee(
+    p_row in out nocopy hr_employees%rowtype);
+
+  procedure delete_employee(
+    p_row in hr_employees%rowtype);
+
+  /**
+    Procedure: validate_employee
+      Checks the employee record
+      
+    Throws:
+      msg.PIT_PARAM_MISSING - If a mandatory parameter is missing. Error codes:
+      LAST_NAME_MISSING - If the last name was not provided
+      EMAIL_MISSING - If no Email address was provided
+      HIRE_DATE_MISSING - If no hire date was provided
+      SALARY_MISSING - If no salary was provided
+      COMMISSION_PCT_REQUIRED - If a commission pct was expected (depending on job)
+      msg.SADC_CHECK_SAL_RANGE - If a salary was not in the expected range for the given job
+      msg.SADC_EMAIL_IN_USE - If the newly entered email address is already in use for another employee
+   */
+  procedure validate_employee(
+    p_row in hr_employees%rowtype);
+
+end bl_emp;
+/
+
+create or replace package body bl_emp
+as
+
+  C_TRUE constant char(1 byte) := 'Y';
+  C_FALSE constant char(1 byte) := 'N';
+  C_NUMBER_FORMAT constant varchar2(128 byte) := 'fm999G999G990D00';
+
+  function job_requires_commission_pct(
+    p_job_id in hr_employees.emp_job_id%type)
+    return boolean
+  as
+    l_result hr_jobs.job_is_commission_eligible%type;
+  begin
+    pit.enter_optional('job_requires_commission_pct',
+      p_params => msg_params(msg_param('p_job_id', p_job_id)));
+      
+    select job_is_commission_eligible
+      into l_result
+      from hr_jobs
+     where job_id = p_job_id;
+     
+    pit.leave_optional(
+      p_params => msg_params(msg_param('Result', l_result)));
+    return l_result = C_TRUE;
+  exception
+    when NO_DATA_FOUND then
+    pit.leave_optional(
+      p_params => msg_params(msg_param('Result', 'false')));
+      return false;
+  end job_requires_commission_pct;
+  
+  
+  procedure check_salary_is_in_job_range(
+    p_salary in hr_employees.emp_salary%type,
+    p_job_id in hr_jobs.job_id%type)
+  as
+    l_result binary_integer;
+    l_job_min_salary hr_jobs.job_min_salary%type;
+    l_job_max_salary hr_jobs.job_max_salary%type;
+    l_job_title hr_jobs.job_title%type;
+  begin
+    pit.enter_optional('check_salary_is_in_job_range',
+      p_params => msg_params(
+                    msg_param('p_salary', p_salary),
+                    msg_param('p_job_id', p_job_id)));
+      
+    select count(*), job_title, job_min_salary, job_max_salary
+      into l_result, l_job_title, l_job_min_salary, l_job_max_salary
+      from hr_jobs
+     where job_id = p_job_id
+     group by job_title, job_min_salary, job_max_salary;
+       
+    pit.assert(
+      p_condition => p_salary between l_job_min_salary and l_job_max_salary, 
+      p_message_name => msg.SADC_CHECK_SAL_RANGE,
+      p_msg_args => msg_args(
+                      to_char(p_salary, C_NUMBER_FORMAT),
+                      to_char(l_job_min_salary, C_NUMBER_FORMAT),
+                      to_char(l_job_max_salary, C_NUMBER_FORMAT),
+                      l_job_title));
+                      
+    pit.leave_optional(
+      p_params => msg_params(msg_param('Result', l_result)));
+  end check_salary_is_in_job_range;
+  
+  
+  procedure check_email_is_unique(
+    p_emp_id in hr_employees.emp_id%type,
+    p_emp_email in hr_employees.emp_email%type)
+  as
+    l_cur sys_refcursor;
+  begin
+    pit.enter_optional('check_email_is_unique',
+      p_params => msg_params(
+                    msg_param('p_emp_id', p_emp_id),
+                    msg_param('p_emp_email', p_emp_email)));
+                    
+    if p_emp_id is not null and p_emp_email is not null then
+      open l_cur for
+        select null
+          from hr_employees
+         where emp_id != p_emp_id
+           and emp_email = p_emp_email;
+           
+      pit.assert_not_exists(l_cur, msg.SADC_EMAIL_IN_USE, msg_args(p_emp_email));
+    end if;
+    
+    pit.leave_optional;
+  end check_email_is_unique;
+
+
+  procedure merge_employee(
+    p_row in out nocopy hr_employees%rowtype)
+  as
+  begin
+    validate_employee(p_row);
+
+    -- Initialisierung
+    p_row.emp_id := coalesce(p_row.emp_id, hr_employees_seq.nextval);
+
+    merge into hr_employees t
+    using (select p_row.emp_id emp_id,
+                  p_row.emp_first_name emp_first_name,
+                  p_row.emp_last_name emp_last_name,
+                  p_row.emp_email emp_email,
+                  p_row.emp_phone_number emp_phone_number,
+                  p_row.emp_hire_date emp_hire_date,
+                  p_row.emp_job_id emp_job_id,
+                  p_row.emp_salary emp_salary,
+                  p_row.emp_commission_pct emp_commission_pct,
+                  p_row.emp_mgr_id emp_mgr_id,
+                  p_row.emp_dep_id emp_dep_id
+             from dual) s
+       on (t.emp_id = s.emp_id)
+     when matched then update set
+       t.emp_first_name = s.emp_first_name,
+       t.emp_last_name = s.emp_last_name,
+       t.emp_email = s.emp_email,
+       t.emp_phone_number = s.emp_phone_number,
+       t.emp_hire_date = s.emp_hire_date,
+       t.emp_job_id = s.emp_job_id,
+       t.emp_salary = s.emp_salary,
+       t.emp_commission_pct = s.emp_commission_pct,
+       t.emp_mgr_id = s.emp_mgr_id,
+       t.emp_dep_id = s.emp_dep_id
+     when not matched then insert (
+            emp_id, emp_first_name, emp_last_name, emp_email, emp_phone_number,
+            emp_hire_date, emp_job_id, emp_salary , emp_commission_pct, emp_mgr_id, emp_dep_id)
+          values(
+            s.emp_id, s.emp_first_name, s.emp_last_name, s.emp_email, s.emp_phone_number,
+            s.emp_hire_date, s.emp_job_id, s.emp_salary, s.emp_commission_pct, s.emp_mgr_id, s.emp_dep_id);
+  end merge_employee;
+
+
+  procedure delete_employee(
+    p_row in hr_employees%rowtype)
+  as
+  begin
+    delete from hr_employees
+     where emp_id = p_row.emp_id;
+  end delete_employee;
+
+
+  procedure validate_employee(
+    p_row in hr_employees%rowtype)
+  as
+  begin
+    pit.enter_mandatory;
+    -- Mandatory items
+    pit.assert_not_null(p_row.emp_last_name, msg.PIT_PARAM_MISSING, p_error_code => 'LAST_NAME_MISSING');
+    pit.assert_not_null(p_row.emp_email, msg.PIT_PARAM_MISSING, p_error_code => 'EMAIL_MISSING');
+    pit.assert_not_null(p_row.emp_hire_date, msg.PIT_PARAM_MISSING, p_error_code => 'HIRE_DATE_MISSING');
+    pit.assert_not_null(p_row.emp_job_id, msg.PIT_PARAM_MISSING, p_error_code => 'JOB_ID_MISSING');
+    
+    -- If job mandates for it, commission_pct must be set
+    if job_requires_commission_pct(p_row.emp_job_id) then
+      pit.assert_not_null(p_row.emp_commission_pct, msg.PIT_PARAM_MISSING, p_error_code => 'COMMISSION_PCT_REQUIRED');
+    end if;
+    
+    check_salary_is_in_job_range(p_row.emp_salary, p_row.emp_job_id);
+    
+    check_email_is_unique(p_row.emp_id, p_row.emp_email);
+    
+    pit.leave_mandatory;
+  end validate_employee;
+
+end bl_emp;
+/
+
+prompt &s1.Package BL_DEP
+create or replace package bl_dep
+  authid definer
+as
+  procedure merge_department(
+    p_row in out nocopy hr_departments%rowtype);
+
+  procedure delete_department(
+    p_row in hr_departments%rowtype);
+
+  procedure validate_department(
+    p_row in hr_departments%rowtype);
+
+end bl_dep;
+/
+
+create or replace package body bl_dep
+as
+
+  procedure merge_department(
+    p_row in out nocopy hr_departments%rowtype)
+  as
+  begin
+    validate_department(p_row);
+
+    -- Initialisierung
+    p_row.dep_id := coalesce(p_row.dep_id, hr_departments_seq.nextval);
+
+    merge into hr_departments t
+    using (select p_row.dep_id dep_id,
+                  p_row.dep_name dep_name,
+                  p_row.dep_loc_id dep_loc_id
+             from dual) s
+       on (t.dep_id = s.dep_id)
+     when matched then update set
+       t.dep_name = s.dep_name,
+       t.dep_loc_id = s.dep_loc_id
+     when not matched then insert (
+            dep_id, dep_name, dep_loc_id)
+          values(
+            s.dep_id, s.dep_name, s.dep_loc_id);
+  end merge_department;
+
+
+  procedure delete_department(
+    p_row in hr_departments%rowtype)
+  as
+  begin
+    delete from hr_departments
+     where dep_id = p_row.dep_id;
+  end delete_department;
+
+
+  procedure validate_department(
+    p_row in hr_departments%rowtype)
+  as
+  begin
+    null;
+  end validate_department;
+
+end bl_dep;
+/
+
 whenever sqlerror exit
