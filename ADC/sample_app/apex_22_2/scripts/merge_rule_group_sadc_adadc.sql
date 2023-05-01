@@ -10,18 +10,18 @@ begin
 
   adc_admin.prepare_rule_group_import(
     p_crg_app_id => l_app_id,
-    p_crg_page_id => 14);
+    p_crg_page_id => 3);
 
   adc_admin.merge_rule_group(
-    p_crg_id => adc_admin.map_id(321),
+    p_crg_id => adc_admin.map_id(441),
     p_crg_app_id => l_app_id,
-    p_crg_page_id => 14,
+    p_crg_page_id => 3,
     p_crg_with_recursion => adc_util.C_TRUE,
     p_crg_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(323),
-    p_cru_crg_id => adc_admin.map_id(321),
+    p_cru_id => adc_admin.map_id(443),
+    p_cru_crg_id => adc_admin.map_id(441),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = c_true|',
     p_cru_sort_seq => 10,
@@ -30,7 +30,7 @@ begin
   
   
 
-  adc_admin.propagate_rule_change(adc_admin.map_id(321));
+  adc_admin.propagate_rule_change(adc_admin.map_id(441));
 
   commit;
 end;

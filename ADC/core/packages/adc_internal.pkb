@@ -112,7 +112,7 @@ as
     -- create intial rule
     g_param.crg_id := l_rule_group_rec.crg_id;
     l_rule_rec.cru_crg_id := l_rule_group_rec.crg_id;
-    l_rule_rec.cru_name := adc_util.get_trans_item_name('CRU_INITIAL_RULE_NAME');
+    l_rule_rec.cru_name := adc_util.get_trans_item_name('CRU_INITIAL_RULE_NAME', p_pmg_name => adc_util.C_ADCA);
     l_rule_rec.cru_condition := 'initializing = c_true';
     l_rule_rec.cru_sort_seq := 10;
     l_rule_rec.cru_active := adc_util.C_TRUE;
