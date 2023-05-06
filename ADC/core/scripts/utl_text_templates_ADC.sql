@@ -34,7 +34,7 @@ q'[end;\CR\]' ||
 q'[/\CR\]' || 
 q'[\CR\]' || 
 q'[]',
-    p_uttm_log_text => q'[Rule group page #CRG_PAGE_ID# exported.]',
+    p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
 
@@ -70,7 +70,7 @@ q'[  commit;\CR\]' ||
 q'[end;\CR\]' || 
 q'[/\CR\]' || 
 q'[]',
-    p_uttm_log_text => q'[APEX application #CRG_APP_ID# including all rule groups exported.]',
+    p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
 
@@ -317,7 +317,7 @@ q'[    on crg.cra_cat_id = cat.cat_id\CR\]' ||
 q'[  left join parameter_types cap\CR\]' || 
 q'[    on cat.cat_id = cap.cap_cat_id\CR\]' || 
 q'[ order by cru.cru_sort_seq desc, crg.cra_sort_seq]',
-    p_uttm_log_text => q'[Rule View #PREFIX##CRG_ID# created.]',
+    p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
 
@@ -342,7 +342,7 @@ q'[         from params)\CR\]' ||
 q'[select *\CR\]' || 
 q'[  from session_state\CR\]' || 
 q'[ where #CONDITION#]',
-    p_uttm_log_text => q'[Rule View #PREFIX##CRG_ID# validated.]',
+    p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
 
@@ -381,7 +381,7 @@ q'[/\CR\]' ||
 q'[\CR\]' || 
 q'[set define on\CR\]' || 
 q'[]',
-    p_uttm_log_text => q'[Rule group #CRG_ID# exported.]',
+    p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
 
@@ -843,7 +843,7 @@ q'[  for itm in item_cur loop\CR\]' ||
 q'[    #ITEM_STMT#\CR\]' || 
 q'[  end loop;\CR\]' || 
 q'[end;]',
-    p_uttm_log_text => q'[Initialization code for rule group #CRG_ID# created.]',
+    p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
 
@@ -930,7 +930,7 @@ q'[\CR\]' ||
 q'[apex.actions.add(\CR\]' || 
 q'[  [#ACTION_LIST#\CR\]' || 
 q'[  ]);]',
-    p_uttm_log_text => q'[APEX actions created]',
+    p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
 

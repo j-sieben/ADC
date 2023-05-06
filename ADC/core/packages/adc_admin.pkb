@@ -246,7 +246,7 @@ as
     p_crg_id in adc_rule_groups.crg_id%type)
   as
   begin
-    pit.enter_optional('mark_number_date_required_fields');
+    pit.enter_detailed('mark_number_date_required_fields');
     
     merge into adc_page_items t
     using (select cpi_crg_id,
@@ -285,7 +285,7 @@ as
             s.cpi_conversion, s.cpi_item_default, s.cpi_css, s.cpi_is_required, 
             s.cpi_is_mandatory, s.cpi_may_have_value);
             
-    pit.leave_optional;
+    pit.leave_detailed;
   end mark_number_date_required_fields;
   
   
@@ -303,7 +303,7 @@ as
     p_new_condition in adc_rules.cru_condition%type default null)
   as
   begin
-    pit.enter_optional('mark_rule_condition_items');
+    pit.enter_detailed('mark_rule_condition_items');
     
     merge into adc_page_items t
     using (select distinct cpi_crg_id, cpi_id
@@ -324,7 +324,7 @@ as
      when matched then update set
           t.cpi_is_required = adc_util.C_TRUE;
             
-    pit.leave_optional;
+    pit.leave_detailed;
   end mark_rule_condition_items;
   
   
@@ -340,7 +340,7 @@ as
     p_crg_id in adc_rule_groups.crg_id%type)
   as
   begin
-    pit.enter_optional('mark_auto_validate_fields');
+    pit.enter_detailed('mark_auto_validate_fields');
     
     merge into adc_page_items t
     using (with data as(
@@ -366,7 +366,7 @@ as
           t.cpi_validation_method = s.cpi_validation_method,
           t.cpi_is_required = s.cpi_is_required;
             
-    pit.leave_optional;
+    pit.leave_detailed;
   end mark_auto_validate_fields;
   
   
@@ -385,7 +385,7 @@ as
     p_crg_id in adc_rule_groups.crg_id%type)
   as
   begin
-    pit.enter_optional('mark_auto_validate_fields');
+    pit.enter_detailed('mark_auto_validate_fields');
     
       delete from adc_page_items
        where cpi_crg_id = p_crg_id
@@ -396,7 +396,7 @@ as
                from adc_rule_actions
               where cra_crg_id = p_crg_id);
             
-    pit.leave_optional;
+    pit.leave_detailed;
   end remove_irrelevant_fields;
   
   
@@ -411,7 +411,7 @@ as
     p_crg_id in adc_rule_groups.crg_id%type)
   as
   begin
-    pit.enter_optional('mark_error_fields');
+    pit.enter_detailed('mark_error_fields');
 
       update adc_rules
          set cru_has_error = adc_util.C_FALSE
@@ -432,7 +432,6 @@ as
          set cra_has_error = adc_util.C_FALSE
        where cra_crg_id = p_crg_id;
 
-      pit.debug(msg.ADC_HARMONIZE_CPI_STEP_8);
       merge into adc_rule_actions t
       using (select cpi_crg_id cra_crg_id, cpi_id cra_cpi_id
                from adc_page_items
@@ -443,7 +442,7 @@ as
        when matched then update set
             t.cra_has_error = adc_util.C_TRUE;
             
-    pit.leave_optional;
+    pit.leave_detailed;
   end mark_error_fields;
   
   
@@ -499,7 +498,6 @@ as
                     msg_param('p_crg_id', p_crg_id)));
 
     -- Initialize
-    pit.debug(msg.ADC_HARMONIZE_CPI_STEP_1);
     update adc_page_items
        set cpi_is_required = adc_util.C_FALSE,
            cpi_has_error = adc_util.C_TRUE,

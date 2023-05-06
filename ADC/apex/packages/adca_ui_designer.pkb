@@ -316,7 +316,26 @@ as
 
   /**
     Group: Private Methods
-   */  
+   */
+  /**
+    Function: enquote
+      Wrapper function around dbms_assert.enquote_literal
+     
+    Parameter:
+      p_string - String value to enquote
+      
+    Returns:
+      Enquoted string literal
+   */
+  function enquote(
+    p_string in varchar2)
+    return varchar2
+  as
+  begin
+    return dbms_assert.enquote_literal(p_string);
+  end enquote;
+  
+  
   /**
     Function: get_form_items
       Method to retrieve a list of items for a given form
@@ -746,7 +765,7 @@ as
       -- no help found, generate generic help text
       adc.set_region_content(
         p_region_id => C_REGION_HELP, 
-        p_html_code => adc_util.get_trans_item_name('CRA_NO_HELP'));
+        p_html_code => adc_util.get_trans_item_name('CRA_NO_HELP', p_pmg_name => adc_util.C_ADCA));
 
       pit.leave_mandatory;
   end set_cat_help_text;
@@ -825,7 +844,7 @@ as
          p_item_value => param.capt_id);
        adc.refresh_item(
          p_cpi_id => param.cap_page_item, 
-         p_item_value => param.cap_value);
+         p_item_value => enquote(param.cap_value));
      else
        adc.set_item(
          p_cpi_id => param.cap_page_item,
@@ -1134,7 +1153,7 @@ select null #PRE#caa_id, '#CRG_ID#' #PRE#caa_crg_id, 'ACTION' #PRE#caa_caat_id, 
     adc.show_hide_item('.adc-caa-' || lower(adc.get_string(C_ITEM_CAA_CAAT_ID)), '.adc-caa-hide');
     adc.refresh_item(
       p_cpi_id => C_ITEM_CAA_CAAI_LIST, 
-      p_item_value => utl_apex.get_string(C_ITEM_CAA_CAAI_LIST));
+      p_item_value => enquote(utl_apex.get_string(C_ITEM_CAA_CAAI_LIST)));
     adc.set_region_content(
       p_region_id => C_REGION_HELP,
       p_html_code => pit.get_trans_item_description(C_PTI_PMG, 'CAA_HELP'));
@@ -1231,7 +1250,7 @@ select null #PRE#CRA_ID, '#CRG_ID#' #PRE#CRA_CRG_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
     -- Filter CAT list
     adc.refresh_item(
       p_cpi_id => C_ITEM_CRA_CAT_ID,
-      p_item_value => l_cat_id);
+      p_item_value => enquote(l_cat_id));
 
     -- Adjust form for CAT if present
     if l_cat_id is not null then
@@ -1249,7 +1268,7 @@ select null #PRE#CRA_ID, '#CRG_ID#' #PRE#CRA_CRG_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
 
       adc.refresh_item(
         p_cpi_id => C_ITEM_CRA_CPI_ID,
-        p_item_value => l_caif_default);
+        p_item_value => enquote(l_caif_default));
     end if;
 
     set_cra_param_settings(
@@ -1621,14 +1640,14 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
         maintain_export_action(p_environment);
         adc.refresh_item(
           p_cpi_id => C_REGION_HIERARCHY,
-          p_item_value => p_environment.selected_node);
+          p_item_value => enquote(p_environment.selected_node));
         adc.refresh_item(
           p_cpi_id => C_REGION_RULES,
-          p_item_value => p_environment.selected_node);
+          p_item_value => enquote(p_environment.selected_node));
       when p_environment.crg_changed then
         adc.refresh_item(
           p_cpi_id => C_REGION_RULES, 
-          p_item_value => p_environment.selected_node);
+          p_item_value => enquote(p_environment.selected_node));
       when p_environment.cru_changed then      
         if p_environment.firing_item = C_REGION_RULES then
           l_target_region := C_REGION_HIERARCHY;

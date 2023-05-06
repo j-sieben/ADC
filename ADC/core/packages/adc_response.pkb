@@ -524,7 +524,8 @@ as
                        to_char(p_run_count),
                        to_char(p_cru_sort_seq), 
                        convert(p_cru_name, 'AL32UTF8'), 
-                       p_firing_item));
+                       p_firing_item,
+                       adc.get_string(p_firing_item)));
                        
     pit.leave_optional;
   end register_recursion_start;
