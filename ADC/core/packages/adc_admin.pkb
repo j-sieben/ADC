@@ -3116,11 +3116,13 @@ as
     pit.enter_mandatory;
     
     validate_action_parameter(p_row);
+    
+    -- Remove existing parameter entries
+    delete from adc_action_parameters
+     where cap_capt_id = p_row.cap_capt_id;
                     
     -- maintain translatable item
-    select 'CAP_' || p_row.cap_cat_id || '_PARAM_' || p_row.cap_sort_seq
-      into l_pti_id
-      from dual;
+    l_pti_id := 'CAP_' || p_row.cap_cat_id || '_PARAM_' || p_row.cap_sort_seq;
 
     pit_admin.merge_translatable_item(
       p_pti_id => l_pti_id,
@@ -3130,26 +3132,12 @@ as
       p_pti_description => p_row.cap_description);
 
     -- store local data
-    merge into adc_action_parameters t
-    using (select p_row.cap_cat_id cap_cat_id,
-                  p_row.cap_capt_id cap_capt_id,
-                  p_row.cap_sort_seq cap_sort_seq,
-                  p_row.cap_default cap_default,
-                  l_pti_id cap_pti_id,
-                  C_ADC cap_pmg_name,
-                  p_row.cap_mandatory cap_mandatory,
-                  p_row.cap_active cap_active
-             from dual) s
-       on (t.cap_cat_id = s.cap_cat_id
-      and t.cap_capt_id = s.cap_capt_id
-      and t.cap_sort_seq = s.cap_sort_seq)
-     when matched then update set
-          t.cap_pti_id = s.cap_pti_id,
-          t.cap_default = s.cap_default,
-          t.cap_mandatory = s.cap_mandatory,
-          t.cap_active = s.cap_active
-     when not matched then insert(cap_cat_id, cap_capt_id, cap_sort_seq, cap_default, cap_pti_id, cap_pmg_name, cap_mandatory, cap_active)
-          values(s.cap_cat_id, s.cap_capt_id, s.cap_sort_seq, s.cap_default, s.cap_pti_id, s.cap_pmg_name, s.cap_mandatory, s.cap_active);
+    insert into adc_action_parameters (
+      cap_cat_id, cap_capt_id, cap_sort_seq, cap_default,
+      cap_pti_id, cap_pmg_name, cap_mandatory, cap_active)
+    values ( 
+      p_row.cap_cat_id, p_row.cap_capt_id, p_row.cap_sort_seq, p_row.cap_default,
+      l_pti_id, C_ADC, p_row.cap_mandatory, p_row.cap_active);
     
     pit.leave_mandatory;
   end merge_action_parameter;
