@@ -976,7 +976,7 @@ as
     end if;
     adc_apex_action.set_disabled(l_disabled);
     adc_apex_action.set_action(p_action);
-    adc.add_javascript(adc_apex_action.get_action_script);
+    adc_apex_action.register_action_script;
     
     pit.leave_detailed;
   end maintain_action;
@@ -1039,7 +1039,6 @@ as
           p_active => adc_util.C_TRUE,
           p_action => l_javascript);
       end if;
-      adc.add_javascript(adc_apex_action.get_action_script);
     end if;
     
     pit.leave_detailed;
@@ -1047,7 +1046,7 @@ as
     when NO_DATA_FOUND then
       adc_apex_action.action_init(C_EXPORT_CRG);
       adc_apex_action.set_disabled(true);
-      adc.add_javascript(adc_apex_action.get_action_script);
+      adc_apex_action.register_action_script;
   end maintain_export_action;
 
 

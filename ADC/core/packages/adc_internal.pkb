@@ -238,10 +238,10 @@ as
                       
       -- create PL/QSL code from template
       if g_param.stop_flag = adc_util.C_FALSE then
-        l_plsql_code := generate_parameterized_code('PLSQL', p_action_rec);
-                          
-        l_plsql_code := replace(C_PLSQL_CODE_TEMPLATE, '#CODE#', l_plsql_code);      
+        l_plsql_code := generate_parameterized_code('PLSQL', p_action_rec); 
         adc_response.add_comment(msg.ADC_PLSQL_CODE, msg_args(l_plsql_code));
+        
+        l_plsql_code := replace(C_PLSQL_CODE_TEMPLATE, '#CODE#', l_plsql_code);     
   
         -- Execute PL/SQL code. Stop if an error occurs
         begin
@@ -515,12 +515,6 @@ as
     if l_initialization_code is not null then
       execute immediate l_initialization_code;
     end if;
-    
-    -- Register all predefined mandatory items
-    register_mandatory(
-      p_cpi_id => adc_util.C_NO_FIRING_ITEM,
-      p_cpi_mandatory_message => null,
-      p_is_mandatory => null);
     
     pit.leave_optional;
   end process_initialization_code;
@@ -846,6 +840,12 @@ as
       if g_param.firing_event = adc_util.C_INITIALIZE_EVENT then
         -- Initialize session state with page item default values
         process_initialization_code;
+    
+        -- Register all predefined mandatory items
+        register_mandatory(
+          p_cpi_id => adc_util.C_NO_FIRING_ITEM,
+          p_cpi_mandatory_message => null,
+          p_is_mandatory => null);
       end if;
       
       -- get rule statement to evaluate the necessary actions
