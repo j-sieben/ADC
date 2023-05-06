@@ -23,7 +23,7 @@ as
   subtype ora_name_type is varchar2(128 byte);
   subtype sql_char is varchar2(4000 byte);
   subtype max_char is varchar2(32767 byte);
-  subtype flag_type is &FLAG_TYPE.;
+  subtype flag_type is char(1 byte);--&FLAG_TYPE.;
   subtype tiny_char is varchar2(5 byte);
    
    
@@ -73,8 +73,8 @@ as
   C_ADC constant ora_name_type := 'ADC';
   C_ADCA constant ora_name_type := 'ADCA';
   
-  C_WITH_UNIT_TESTS constant boolean := &WITH_UT.;
-  C_WITH_FLOWS constant boolean := &WITH_FLOWS.;
+  C_WITH_UNIT_TESTS constant boolean := false;--&WITH_UT.;
+  C_WITH_FLOWS constant boolean := false; --&WITH_FLOWS.;
   
   C_MAX_LENGTH constant binary_integer := 24000;
   C_NO_FIRING_ITEM constant varchar2(30 byte) := 'DOCUMENT';

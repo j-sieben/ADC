@@ -515,19 +515,21 @@ as
                     msg_param('p_crg_id', p_crg_id),
                     msg_param('p_cpi_id', p_cpi_id)));
     
-    l_cpi_id := adc_util.harmonize_page_item_name(p_cpi_id);
-    case
-      when g_session_values.exists(l_cpi_id) then
-        l_string_value := g_session_values(l_cpi_id).string_value;
-      when item_may_have_value(p_crg_id, l_cpi_id) then
-        set_value(
-          p_crg_id => p_crg_id,
-          p_cpi_id => l_cpi_id,
-          p_value => C_FROM_SESSION_STATE);
-        l_string_value := g_session_values(l_cpi_id).string_value;
-      else
-        null;
-    end case;
+    if p_cpi_id != adc_util.C_NO_FIRING_ITEM then
+      l_cpi_id := adc_util.harmonize_page_item_name(p_cpi_id);
+      case
+        when g_session_values.exists(l_cpi_id) then
+          l_string_value := g_session_values(l_cpi_id).string_value;
+        when item_may_have_value(p_crg_id, l_cpi_id) then
+          set_value(
+            p_crg_id => p_crg_id,
+            p_cpi_id => l_cpi_id,
+            p_value => C_FROM_SESSION_STATE);
+          l_string_value := g_session_values(l_cpi_id).string_value;
+        else
+          null;
+      end case;
+    end if;
     
     pit.leave_optional(
       p_params => msg_params(

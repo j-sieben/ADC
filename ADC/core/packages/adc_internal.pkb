@@ -346,7 +346,8 @@ as
       p_cru_name => p_action_rec.cru_name,
       p_firing_item => g_param.firing_item);
       
-    pit.leave_detailed;
+    pit.leave_detailed(
+      p_params => msg_params(msg_param('add_origin_comment', 'Foo')));
   end add_origin_comment;
   
   
@@ -634,7 +635,7 @@ as
   as
     l_active adc_util.flag_type;                 
   begin
-    pit.enter_optional;
+    pit.enter_optional('get_crg_ID');
     
     if g_param.crg_id is null then
         with params as (
@@ -789,13 +790,16 @@ as
     pit.enter_optional;
     
     select listagg(distinct 
-             case when cra_cpi_id = adc_util.C_NO_FIRING_ITEM
+             case when cpi_id = adc_util.C_NO_FIRING_ITEM
                   then to_char(cra_param_2) 
-                  else cra_cpi_id end, adc_util.C_DELIMITER) within group (order by cru_firing_items)
+                  else cpi_id end, adc_util.C_DELIMITER) within group (order by cpi_id)
       into l_observable_objects
-      from adc_bl_rules
+      from adc_page_items
+      join adc_rule_actions
+        on cpi_id = cra_cpi_id
+       and cpi_crg_id = cra_crg_id
      where cra_cat_id = C_REGISTER_OBSERVER
-       and crg_id = g_param.crg_id;
+       and cpi_crg_id = g_param.crg_id;
        
     pit.leave_optional(p_params => msg_params(msg_param('Observable objects', l_observable_objects)));
     return l_observable_objects;
@@ -921,18 +925,20 @@ as
       adc_page_state.reset;
       adc_response.initialize_response(g_param.initialize_mode, g_param.crg_id);
       
-      -- Any firing item that may have a page state value needs to be checked whether it is
-      -- - possible to convert it to the required data type
-      -- - a mandatory field (and, in that case, contains a value)
-      adc_page_state.set_value(
-        p_crg_id => g_param.crg_id, 
-        p_cpi_id => g_param.firing_item,
-        p_value => adc_page_state.C_FROM_SESSION_STATE,
-        p_throw_error => adc_util.C_TRUE);
-      
-      adc_page_state.dynamically_validate_value(
-        p_crg_id => g_param.crg_id, 
-        p_cpi_id => g_param.firing_item);
+      if g_param.firing_item != adc_util.C_NO_FIRING_ITEM then
+        -- Any firing item that may have a page state value needs to be checked whether it is
+        -- - possible to convert it to the required data type
+        -- - a mandatory field (and, in that case, contains a value)
+        adc_page_state.set_value(
+          p_crg_id => g_param.crg_id, 
+          p_cpi_id => g_param.firing_item,
+          p_value => adc_page_state.C_FROM_SESSION_STATE,
+          p_throw_error => adc_util.C_TRUE);
+        
+        adc_page_state.dynamically_validate_value(
+          p_crg_id => g_param.crg_id, 
+          p_cpi_id => g_param.firing_item);
+      end if;
     end if;
     
                                         

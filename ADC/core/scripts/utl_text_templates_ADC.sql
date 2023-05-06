@@ -254,7 +254,8 @@ q'[              adc_util.c_false c_false,\CR\]' ||
 q'[              adc_util.c_true c_clicked,\CR\]' || 
 q'[              adc_api.get_event p_event,\CR\]' || 
 q'[              adc_api.get_event_data p_event_data,\CR\]' || 
-q'[              adc_api.get_firing_item p_firing_item\CR\]' || 
+q'[              adc_api.get_firing_item p_firing_item,\CR\]' || 
+q'[              #CRG_ID# p_crg_id\CR\]' ||  
 q'[         from dual),\CR\]' || 
 q'[     parameter_types as(\CR\]' || 
 q'[       select cap_cat_id,\CR\]' || 
@@ -268,18 +269,35 @@ q'[       select #EVENT_LIST#,\CR\]' ||
 q'[              #COLUMN_LIST#,\CR\]' || 
 q'[              c_true, c_false, c_clicked\CR\]' || 
 q'[         from params p),\CR\]' || 
-q'[       data as (\CR\]' || 
+q'[     rules as (\CR\]' || 
+q'[       select cru_id, cru_crg_id crg_id, cru_sort_seq, cru_name,\CR\]' || 
+q'[              ',' || cru_firing_items|| ',DOCUMENT,' cru_firing_items, cru_fire_on_page_load, cra_raise_recursive,\CR\]' || 
+q'[              cra_cpi_id, cpi_css item_css, cra_cat_id, cra_param_1, cra_param_2, cra_param_3, cra_on_error, cra_sort_seq\CR\]' || 
+q'[         from adc_rule_groups\CR\]' || 
+q'[         join adc_rules\CR\]' || 
+q'[           on crg_id = cru_crg_id\CR\]' || 
+q'[         join adc_rule_actions\CR\]' || 
+q'[           on cru_id in cra_cru_id\CR\]' || 
+q'[          and cru_crg_id in cra_crg_id\CR\]' || 
+q'[         join adc_page_items\CR\]' || 
+q'[           on crg_id = cpi_crg_id\CR\]' || 
+q'[          and cra_cpi_id = cpi_id\CR\]' || 
+q'[         join params\CR\]' || 
+q'[           on crg_id = p_crg_id\CR\]' || 
+q'[          and cru_active = c_true\CR\]' || 
+q'[          and cra_active = c_true\CR\]' || 
+q'[        where cra_cpi_id != 'ALL'),\CR\]' ||    
+q'[     data as (\CR\]' || 
 q'[       select r.cru_id, r.cru_name, r.cru_firing_items, r.cru_fire_on_page_load,\CR\]' || 
 q'[              r.cra_cpi_id, r.cra_cat_id, r.cra_sort_seq, r.cra_param_1, r.cra_param_2, r.cra_param_3, r.cra_on_error, r.cra_raise_recursive,\CR\]' || 
 q'[              rank() over (order by r.cru_sort_seq) rang, s.initializing initializing,\CR\]' || 
 q'[              firing_item, c_true, c_false, c_clicked\CR\]' || 
-q'[         from adc_bl_rules r\CR\]' || 
+q'[         from rules r\CR\]' || 
 q'[         join session_state s\CR\]' || 
 q'[           on instr(',' || r.cru_firing_items || ',', ',' || s.firing_item || ',') > 0\CR\]' || 
 q'[           or (cru_fire_on_page_load = initializing\CR\]' || 
 q'[          and initializing = C_TRUE)\CR\]' || 
-q'[        where r.crg_id = #CRG_ID#\CR\]' || 
-q'[          and (#WHERE_CLAUSE#)),\CR\]' || 
+q'[        where #WHERE_CLAUSE#),\CR\]' || 
 q'[     decision_table as(\CR\]' || 
 q'[       select cru_id, cru_name, cra_cpi_id, cra_cat_id, cra_param_1, cra_param_2, cra_param_3, cra_on_error, cra_raise_recursive, cra_sort_seq, c_true, c_false, c_clicked\CR\]' || 
 q'[         from data\CR\]' || 
@@ -313,7 +331,8 @@ q'[              adc_util.c_false c_false,\CR\]' ||
 q'[              adc_util.c_true c_clicked,\CR\]' || 
 q'[              adc_api.get_event p_event,\CR\]' || 
 q'[              adc_api.get_event_data p_event_data,\CR\]' || 
-q'[              adc_api.get_firing_item p_firing_item\CR\]' || 
+q'[              adc_api.get_firing_item p_firing_item,\CR\]' || 
+q'[              #CRG_ID# p_crg_id\CR\]' || 
 q'[         from dual),\CR\]' || 
 q'[     session_state as(\CR\]' || 
 q'[       select #EVENT_LIST#,\CR\]' || 

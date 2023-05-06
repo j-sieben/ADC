@@ -242,7 +242,7 @@ as
     l_next_entry binary_integer;
     l_response javascript_rec;
   begin
-    pit.enter_optional(
+    pit.enter_optional('add_javascript',
       p_params => msg_params(
                     msg_param('p_java_script', p_java_script),
                     msg_param('p_debug_level', p_debug_level)));
@@ -292,7 +292,7 @@ as
   as
     l_message message_type;
   begin
-    pit.enter_optional(
+    pit.enter_optional('add_comment',
       p_params => msg_params(
                     msg_param('p_message_name', p_message_name)));
                     
@@ -436,7 +436,10 @@ as
     p_crg_id in adc_rule_groups.crg_id%type)
   as
   begin
-    pit.enter_optional;
+    pit.enter_optional(
+      p_params => msg_params(
+                    msg_param('p_initialize_mode', adc_util.bool_to_flag(p_initialize_mode)),
+                    msg_param('p_crg_id', p_crg_id)));
     
     reset;
     
@@ -503,7 +506,13 @@ as
     p_firing_item in adc_util.ora_name_type)
   as
   begin
-    pit.enter_optional;
+    pit.enter_optional(
+      p_params => msg_params(
+                    msg_param('p_origin_message', p_origin_message),
+                    msg_param('p_run_count', p_run_count),
+                    msg_param('p_cru_sort_seq', p_cru_sort_seq),
+                    msg_param('p_cru_name', p_cru_name),
+                    msg_param('p_firing_item', p_firing_item)));
     
     g_param.rule_start := dbms_utility.get_time;
     g_param.cru_name := p_cru_name;
@@ -515,9 +524,9 @@ as
                        to_char(p_run_count),
                        to_char(p_cru_sort_seq), 
                        convert(p_cru_name, 'AL32UTF8'), 
-                       p_firing_item,
-                       adc_page_state.get_string(g_param.crg_id, p_firing_item)));
+                       p_firing_item));
                        
+    pit.leave_optional;
   end register_recursion_start;
 
 begin
