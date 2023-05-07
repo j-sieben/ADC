@@ -410,13 +410,13 @@ as
     -- Replace script explicitely to circumvent length limitation of CHAR_TABLE. Limit length of error messages.
     l_response := replace(l_response, '#ERROR_JSON#', get_errors_as_json(l_remaining_length));
                     
-    l_response := utl_text.bulk_replace(l_response, char_table(
-                    'ID', 'S_' || trunc(dbms_random.value(1, 100000)),
-                    'CR', adc_util.C_CR,
-                    'ITEM_JSON', l_changed_items,
-                    'FIRING_ITEMS', l_firing_items,
-                    'JS_FILE', C_JS_NAMESPACE,
-                    'DURATION', to_char(dbms_utility.get_time - g_param.request_start)));
+    l_response := replace(replace(replace(replace(replace(replace(l_response, 
+                    '#ID#', 'S_' || trunc(dbms_random.value(1, 100000))),
+                    '#CR#', adc_util.C_CR),
+                    '#ITEM_JSON#', l_changed_items),
+                    '#FIRING_ITEMS#', l_firing_items),
+                    '#JS_FILE#', C_JS_NAMESPACE),
+                    '#DURATION#', to_char(dbms_utility.get_time - g_param.request_start));
     
     reset;
     

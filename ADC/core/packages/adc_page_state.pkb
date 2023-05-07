@@ -346,11 +346,14 @@ as
     l_collection_name adc_util.ora_name_type;
     l_cpi_id adc_util.ora_name_type;
     l_cgs_row adc_rule_group_status%rowtype;
-    cursor mandatory_items_cur is
+    cursor mandatory_items_cur(
+      p_crg_id in number,
+      p_true in adc_util.flag_type)
+    is
       select cpi_id, cpi_label, cpi_mandatory_message
         from adc_page_items
        where cpi_crg_id = p_crg_id
-         and cpi_is_mandatory = adc_util.C_TRUE;
+         and cpi_is_mandatory = p_true;
   begin
     pit.enter_optional(
       p_params => msg_params(
@@ -374,7 +377,7 @@ as
       end;
       
       -- register all statically mandatory items, identifified by CPI_IS_MANDATORY
-      for item in mandatory_items_cur loop
+      for item in mandatory_items_cur(p_crg_id, adc_util.C_TRUE) loop
         apex_collection.add_member(
           p_collection_name => l_collection_name,
           p_c001 => item.cpi_id,
@@ -675,7 +678,7 @@ as
         utl_text.append(
           p_text => l_json, 
           p_chunk => replace(replace(C_PAGE_JSON_ELEMENT, 
-                      '#ID#', adc_util.harmonize_page_item_name(l_item)), 
+                      '#ID#', l_item), 
                       '#VALUE#', l_what),
           p_delimiter => ',',
           p_before => true);

@@ -78,14 +78,6 @@ begin
     p_pms_pse_id => 70,
     p_pms_pml_name => 'GERMAN');
 
-  pit_admin.merge_message(
-    p_pms_name => 'ADCA_CONFIRM_DELETE',
-    p_pms_pmg_name => 'ADCA',
-    p_pms_text => q'^Bitte bestätigen Sie, dass der Datensatz gelöscht werden soll.^',
-    p_pms_description => q'^Sicherheitsmeldung vor dem Löschen eines Datensatzes.^',
-    p_pms_pse_id => 70,
-    p_pms_pml_name => 'GERMAN');
-
   commit;
   pit_admin.create_message_package;
 end;

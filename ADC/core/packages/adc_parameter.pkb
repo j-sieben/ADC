@@ -130,12 +130,12 @@ as
     pit.enter_detailed('parse_sql',
       p_params => msg_params(msg_param('p_stmt', p_stmt)));
 
-    l_stmt := utl_text.bulk_replace(C_STMT_TMPL, char_table(
-                'STMT', p_stmt,
-                'ITEM', null,
-                'PARAM_1', null,
-                'PARAM_2', null,
-                'PARAM_3', null));
+    l_stmt := replace(replace(replace(replace(replace(C_STMT_TMPL,
+                '#STMT#', p_stmt),
+                '#ITEM#', null),
+                '#PARAM_1#', null),
+                '#PARAM_2#', null),
+                '#PARAM_3#', null);
     parse(l_stmt);
 
     pit.leave_detailed;
@@ -966,16 +966,16 @@ end;~';
        where pti_pmg_name = 'ADC'
          and rownum = 1;
 
-      p_row.capt_select_list_query := utl_text.bulk_replace(C_VIEW_STATIC_LIST_TEMPLATE, char_table(
-                                       '#VIEW_NAME#', p_row.capt_id,
-                                       '#IDX#', to_char(l_idx)));
+      p_row.capt_select_list_query := replace(replace(C_VIEW_STATIC_LIST_TEMPLATE,
+                                       '#VIEW_NAME#', p_row.capt_id),
+                                       '#IDX#', to_char(l_idx));
     end if;
 
     if p_row.capt_select_list_query is not null then
-      l_stmt := utl_text.bulk_replace(C_VIEW_STATEMENT_TEMPLATE, char_table(
-                  '#VIEW_NAME#', C_CAPT_VIEW_NAME_PREFIX || p_row.capt_id,
-                  '#QUERY#', p_row.capt_select_list_query,
-                  '#CR#', adc_util.C_CR));
+      l_stmt := replace(replace(replace(C_VIEW_STATEMENT_TEMPLATE,
+                  '#VIEW_NAME#', C_CAPT_VIEW_NAME_PREFIX || p_row.capt_id),
+                  '#QUERY#', p_row.capt_select_list_query),
+                  '#CR#', adc_util.C_CR);
     end if;
     
     pit.leave_optional;
@@ -997,11 +997,12 @@ end;~';
     pit.enter_optional;
     
     if p_row.capt_select_view_comment is not null then
-      l_stmt := l_stmt || adc_util.C_CR ||
-                utl_text.bulk_replace(C_VIEW_COMMENT_TEMPLATE, char_table(
-                  '#VIEW_NAME#', C_CAPT_VIEW_NAME_PREFIX || p_row.capt_id,
-                  '#COMMENT#', p_row.capt_select_view_comment,
-                  '#CR#', adc_util.C_CR));
+      l_stmt := l_stmt 
+             || adc_util.C_CR 
+             || replace(replace(replace(C_VIEW_COMMENT_TEMPLATE,
+                  '#VIEW_NAME#', C_CAPT_VIEW_NAME_PREFIX || p_row.capt_id),
+                  '#COMMENT#', p_row.capt_select_view_comment),
+                  '#CR#', adc_util.C_CR);
     end if;
     
     pit.leave_optional;

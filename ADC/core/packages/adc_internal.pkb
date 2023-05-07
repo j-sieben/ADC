@@ -151,19 +151,18 @@ as
     else
       l_template := trim(';' from p_row.cat_pl_sql);
     end if;
-    
-    l_code := utl_text.bulk_replace(l_template, char_table(
-                'ITEM', p_row.cra_item,
-                'SELECTOR', adc_parameter.analyze_selector_parameter(p_row.cra_item, p_row.cra_param_2),
-                'PARAM_1', adc_parameter.evaluate_parameter(p_row.cra_param_1_type, p_row.cra_param_1, g_param.crg_id, p_row.cra_item),
-                'PARAM_2', adc_parameter.evaluate_parameter(p_row.cra_param_2_type, p_row.cra_param_2, g_param.crg_id, p_row.cra_item),
-                'PARAM_3', adc_parameter.evaluate_parameter(p_row.cra_param_3_type, p_row.cra_param_3, g_param.crg_id, p_row.cra_item),
-                'CRU_SORT_SEQ', case when p_row.cru_sort_seq is not null then 'RULE_' || p_row.cru_sort_seq else 'NO_RULE_FOUND' end,
-                'CRU_NAME', p_row.cru_name,
-                'FIRING_ITEM', g_param.firing_item,
-                'ALLOW_RECURSION', adc_recursion_stack.check_recursion(p_row.cra_item, p_row.cru_fire_on_page_load),
-                'CR', adc_util.C_CR));
-                
+    -- Don't refactor to bulk_replace because of performance reasons
+    l_code := replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(l_template,
+                '#ITEM#', p_row.cra_item),
+                '#SELECTOR#', adc_parameter.analyze_selector_parameter(p_row.cra_item, p_row.cra_param_2)),
+                '#PARAM_1#', adc_parameter.evaluate_parameter(p_row.cra_param_1_type, p_row.cra_param_1, g_param.crg_id, p_row.cra_item)),
+                '#PARAM_2#', adc_parameter.evaluate_parameter(p_row.cra_param_2_type, p_row.cra_param_2, g_param.crg_id, p_row.cra_item)),
+                '#PARAM_3#', adc_parameter.evaluate_parameter(p_row.cra_param_3_type, p_row.cra_param_3, g_param.crg_id, p_row.cra_item)),
+                '#CRU_SORT_SEQ#', case when p_row.cru_sort_seq is not null then 'RULE_' || p_row.cru_sort_seq else 'NO_RULE_FOUND' end),
+                '#CRU_NAME#', p_row.cru_name),
+                '#FIRING_ITEM#', g_param.firing_item),
+                '#ALLOW_RECURSION#', adc_recursion_stack.check_recursion(p_row.cra_item, p_row.cru_fire_on_page_load)),
+                '#CR#', adc_util.C_CR);
     pit.leave_detailed(
       p_params => msg_params(msg_param('Code', l_code)));
     return l_code;
@@ -754,16 +753,15 @@ as
                     msg_param('crg_id', g_param.crg_id)));
                     
     for item in rule_group_cpi_ids(g_param.crg_id) loop
-      utl_text.append(
-        l_json,
-        utl_text.bulk_replace(C_BIND_JSON_ELEMENT, char_table(
-          'ID', item.cpi_id,
-          'EVENT', item.cpit_cet_id,
-          'STATIC_ACTION', item.static_action)),
-        adc_util.C_DELIMITER, true);
+      l_json := l_json 
+             || replace(replace(replace(C_BIND_JSON_ELEMENT, 
+                  '#ID#', item.cpi_id),
+                  '#EVENT#', item.cpit_cet_id),
+                  '#STATIC_ACTION#', item.static_action) 
+             || adc_util.C_DELIMITER;
     end loop;
     
-    l_json := replace(C_BIND_JSON_TEMPLATE, '#JSON#', l_json);
+    l_json := replace(C_BIND_JSON_TEMPLATE, '#JSON#', rtrim(l_json, adc_util.C_DELIMITER));
     
     pit.leave_optional(
       p_params => msg_params(msg_param('JSON', l_json)));
