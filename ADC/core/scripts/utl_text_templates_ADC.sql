@@ -265,7 +265,7 @@ q'[              max(decode(cap_sort_seq, 3, cap_capt_id)) cra_param_3_type\CR\]
 q'[         from adc_action_parameters\CR\]' || 
 q'[        group by cap_cat_id),\CR\]' || 
 q'[     session_state as(\CR\]' || 
-q'[       select #EVENT_LIST#,\CR\]' || 
+q'[       select /*+ no_merge */ #EVENT_LIST#,\CR\]' || 
 q'[              #COLUMN_LIST#,\CR\]' || 
 q'[              c_true, c_false, c_clicked\CR\]' || 
 q'[         from params p),\CR\]' || 
@@ -277,8 +277,8 @@ q'[         from adc_rule_groups\CR\]' ||
 q'[         join adc_rules\CR\]' || 
 q'[           on crg_id = cru_crg_id\CR\]' || 
 q'[         join adc_rule_actions\CR\]' || 
-q'[           on cru_id in cra_cru_id\CR\]' || 
-q'[          and cru_crg_id in cra_crg_id\CR\]' || 
+q'[           on cru_id = cra_cru_id\CR\]' || 
+q'[          and cru_crg_id = cra_crg_id\CR\]' || 
 q'[         join adc_page_items\CR\]' || 
 q'[           on crg_id = cpi_crg_id\CR\]' || 
 q'[          and cra_cpi_id = cpi_id\CR\]' || 

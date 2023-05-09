@@ -1671,7 +1671,7 @@ as
             where uttm_type = C_ADC
               and uttm_name in (C_UTTM_NAME, 'RULE_VIEW'))
     select utl_text.generate_text(cursor(
-             select p.template, p.condition,
+             select p.template, p.condition, crg_id,
                     -- Events
                     utl_text.generate_text(cursor(
                       select template, cet_id, lower(cet_column_name) cet_column_name

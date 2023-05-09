@@ -378,6 +378,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     props.triggeringElement.id = C_NO_TRIGGERING_ITEM;
     props.triggeringElement.event = pEvent.type;
     props.triggeringElement.data = pEvent.data;
+    props.triggeringElement.isClick = false; // reset status to known default
 
     if (typeof pEvent.target != 'undefined') {
       switch (props.triggeringElement.event) {

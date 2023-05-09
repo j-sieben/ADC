@@ -346,14 +346,11 @@ as
     l_collection_name adc_util.ora_name_type;
     l_cpi_id adc_util.ora_name_type;
     l_cgs_row adc_rule_group_status%rowtype;
-    cursor mandatory_items_cur(
-      p_crg_id in number,
-      p_true in adc_util.flag_type)
-    is
+    cursor mandatory_items_cur is
       select cpi_id, cpi_label, cpi_mandatory_message
         from adc_page_items
        where cpi_crg_id = p_crg_id
-         and cpi_is_mandatory = p_true;
+         and cpi_is_mandatory = adc_util.C_TRUE;
   begin
     pit.enter_optional(
       p_params => msg_params(
@@ -377,7 +374,7 @@ as
       end;
       
       -- register all statically mandatory items, identifified by CPI_IS_MANDATORY
-      for item in mandatory_items_cur(p_crg_id, adc_util.C_TRUE) loop
+      for item in mandatory_items_cur loop
         apex_collection.add_member(
           p_collection_name => l_collection_name,
           p_c001 => item.cpi_id,
@@ -474,12 +471,17 @@ as
       end if;
       
       g_session_values(l_value.cpi_id) := l_value;
-      
-      -- Explicitly set the value and harmonize with the session state (fi when changing a session values during rule execution)
-      convert_session_value(p_crg_id, l_value, p_throw_error);
-              
-      if p_throw_error = adc_util.C_TRUE then
-        check_mandatory(p_crg_id, l_value.cpi_id);
+      if l_value.string_value is not null then
+        -- Explicitly set the value and harmonize with the session state (fi when changing a session values during rule execution)
+        convert_session_value(p_crg_id, l_value, p_throw_error);
+                
+        if p_throw_error = adc_util.C_TRUE then
+          check_mandatory(p_crg_id, l_value.cpi_id);
+        end if;
+      else
+        l_value.number_value := null;
+        l_value.date_value := null;
+        g_session_values(l_value.cpi_id) := l_value;
       end if;
           
       set_session_value(l_value.cpi_id, g_session_values(l_value.cpi_id).string_value);
@@ -518,21 +520,19 @@ as
                     msg_param('p_crg_id', p_crg_id),
                     msg_param('p_cpi_id', p_cpi_id)));
     
-    if p_cpi_id != adc_util.C_NO_FIRING_ITEM then
-      l_cpi_id := adc_util.harmonize_page_item_name(p_cpi_id);
-      case
-        when g_session_values.exists(l_cpi_id) then
-          l_string_value := g_session_values(l_cpi_id).string_value;
-        when item_may_have_value(p_crg_id, l_cpi_id) then
-          set_value(
-            p_crg_id => p_crg_id,
-            p_cpi_id => l_cpi_id,
-            p_value => C_FROM_SESSION_STATE);
-          l_string_value := g_session_values(l_cpi_id).string_value;
-        else
-          null;
-      end case;
-    end if;
+    l_cpi_id := adc_util.harmonize_page_item_name(p_cpi_id);
+    case
+      when g_session_values.exists(l_cpi_id) then
+        l_string_value := g_session_values(l_cpi_id).string_value;
+      when item_may_have_value(p_crg_id, l_cpi_id) then
+        set_value(
+          p_crg_id => p_crg_id,
+          p_cpi_id => l_cpi_id,
+          p_value => C_FROM_SESSION_STATE);
+        l_string_value := g_session_values(l_cpi_id).string_value;
+      else
+        null;
+    end case;
     
     pit.leave_optional(
       p_params => msg_params(
@@ -678,7 +678,7 @@ as
         utl_text.append(
           p_text => l_json, 
           p_chunk => replace(replace(C_PAGE_JSON_ELEMENT, 
-                      '#ID#', l_item), 
+                      '#ID#', adc_util.harmonize_page_item_name(l_item)), 
                       '#VALUE#', l_what),
           p_delimiter => ',',
           p_before => true);
