@@ -130,6 +130,25 @@ as
   procedure process_edit_cato;
   
   
+  /** 
+    Procedure: validate_edit_csm
+      Method to validate page EDIT_CSM
+      
+      Is called to validate user data if the page is submitted. (CSM = ADC Standard Messages).
+   */
+  function validate_edit_csm
+    return boolean;
+
+
+  /** 
+    Procedure: process_edit_csm
+      Method to process page EDIT_CSM
+      
+      Is called to persist user data if the page is submitted. (CSM = ADC Standard Messages).
+   */
+  procedure process_edit_csm;
+  
+  
   /**
     Procedure: handle_capvt_changed
       Method is called if the user changes the Action Parameter Visual Type of a Action Parameter.

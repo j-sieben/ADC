@@ -171,6 +171,22 @@ as
   function get_page_items
     return varchar2;
     
+
+  /**
+    Function: get_standard_messages
+      Method to retrieve a list of standard messages used by action types.
+      
+      Action types sometimes require standard messages. To allow for internationalization as
+      well as for local adjustments, those messages are stored within the database and made available
+      using this method.
+   
+    Returns:
+      JSON object with the ID of the message as the key and the message as the value.
+      Is stored at the global props object under props.defaultMessages.<key>
+   */
+  function get_standard_messages
+    return varchar2;
+    
   
   /**
     Group: Internal processing methods

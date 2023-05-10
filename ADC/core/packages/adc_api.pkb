@@ -276,11 +276,12 @@ as
     l_error_code_map error_code_map_t;
     l_filter_items char_table;
     l_has_filter boolean;
-    l_ignore_message boolean;
+    l_allow_message boolean;
     l_message_list pit_message_table;
     l_message message_type;
     l_item utl_apex.item_rec;
     l_processed_messages char_table := char_table();
+    l_related_item adc_util.ora_name_type;
   begin
     pit.enter_optional(
       p_params => msg_params(
@@ -304,20 +305,21 @@ as
       
       for i in 1 .. l_message_list.count loop
         l_message := l_message_list(i);
-        l_ignore_message := false;
+        l_allow_message := not l_has_filter;
         
         if l_message.severity in (pit.level_fatal, pit.level_error) then
         
           if l_error_code_map.exists(l_message.error_code) then
             if l_has_filter then
-              l_ignore_message := l_error_code_map(l_message.error_code) not member of l_filter_items;
+              l_related_item := l_error_code_map(l_message.error_code);
+              l_allow_message := l_related_item member of l_filter_items or l_related_item = 'DOCUMENT';
             end if;
-            if not l_ignore_message then
+            if l_allow_message then
               utl_apex.get_page_element(l_error_code_map(l_message.error_code), l_item);
             end if;
           end if;
           
-          if l_message.error_code not member of l_processed_messages and not l_ignore_message then
+          if l_message.error_code not member of l_processed_messages and l_allow_message then
             -- Push on local message list to remove double errors
             l_processed_messages.extend;
             l_processed_messages(l_processed_messages.count) := l_message.error_code;

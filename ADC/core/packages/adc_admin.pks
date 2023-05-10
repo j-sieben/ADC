@@ -1319,6 +1319,61 @@ as
    */
   procedure validate_apex_action_item(
     p_row in adc_apex_action_items%rowtype);
+    
+
+  /** 
+    Procedure: merge_standard_message
+      Administration of ADC standard messages
+                 
+    Parameters:
+      p_csm_name - Unique name of the standard message. Must begin with CSM_
+      p_csm_message - Message to display. Max length is 200 characters
+      p_csm_desription - Optional description to explain when this message is used
+   */
+  procedure merge_standard_message(
+    p_csm_id in adc_standard_messages_v.csm_id%type,
+    p_csm_message in adc_standard_messages_v.csm_message%type,
+    p_csm_description in adc_standard_messages_v.csm_description%type default null);
+
+  /**
+    Procedure: merge_standard_message
+      Overload with a row record.
+                 
+    Parameter:
+      p_row - Row record
+   */
+  procedure merge_standard_message(
+    p_row in out nocopy adc_standard_messages_v%rowtype);
+
+  /**
+    Procedure: delete_standard_message
+      Deletes an APEX Action Item
+                 
+    Parameter:
+      p_csm_id - ID of the APEX Action Item to delete
+   */
+  procedure delete_standard_message(
+    p_csm_id in adc_standard_messages_v.csm_id%type);
+
+  /**
+    Procedure: delete_standard_message
+      Overload with a row record.
+                 
+    Parameter:
+      p_row - Row record
+   */
+  procedure delete_standard_message(
+    p_row in adc_standard_messages_v%rowtype);
+
+  /**
+    Procedure: validate_standard_message
+      Validates an APEX Action Item
+                 
+    Parameter:
+      p_row - Row record
+   */
+  procedure validate_standard_message(
+    p_row in adc_standard_messages_v%rowtype);
 
 end adc_admin;
 /

@@ -303,6 +303,9 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       renderer.hideReportFilterPanel(pRegionId, pRegionType);
     });
   }; // hideReportFilterPanel
+  
+  
+  
 
   
   /**

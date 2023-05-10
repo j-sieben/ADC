@@ -45,6 +45,7 @@ prompt &h3.Create views
 @&tool_dir.create_view adc_apex_actions_v
 @&tool_dir.create_view adc_page_item_types_v
 @&tool_dir.create_view adc_event_types_v
+@&tool_dir.create_view adc_standard_messages_v
 @&tool_dir.create_view adc_bl_bind_items
 @&tool_dir.create_view adc_bl_page_items
 @&tool_dir.create_view adc_bl_page_targets

@@ -1,11 +1,15 @@
 begin
+  /* nicht aktivieren, da dies die Tabelle ADC_PAGE_ITEMS leert und somit alle ADC-Aktionen löscht
+  pit_admin.delete_message_group(
+    p_pmg_name => 'ADC',
+    p_force => true);
+  */
 
   pit_admin.merge_message_group(
     p_pmg_name => 'ADC',
     p_pmg_description => q'^Meldungen für das ADC Plugin^',
     p_pmg_error_prefix => '',
     p_pmg_error_postfix => 'ERR');
-
 
   pit_admin.merge_message(
     p_pms_name => 'ADC_ACTION_DOES_NOT_EXIST',
@@ -64,7 +68,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_EXPECTED_FORMAT',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Erwartetes Format "#1#".^',
+    p_pms_text => q'^Erwartetes Format ~#1#~.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 40,
     p_pms_pml_name => 'GERMAN',
@@ -118,7 +122,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_INVALID_DATE',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^#SQLERRM#^',
+    p_pms_text => q'^Ungültiges Datum. Erwartetes Format: #1#^',
     p_pms_description => q'^^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
@@ -127,7 +131,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_INVALID_NUMBER',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Ungültige Zahl "#1#". Erwartetes Format: "#2#".^',
+    p_pms_text => q'^Ungültige Zahl.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
@@ -154,7 +158,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_ITEM_IS_MANDATORY_DEFAULT',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Element #LABEL# ist ein Pflichtelement. Bitte tragen Sie einen Wert ein.^',
+    p_pms_text => q'^#LABEL# darf nicht leer sein.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 70,
     p_pms_pml_name => 'GERMAN',
@@ -163,7 +167,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_ITEM_IS_MANDATORY',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^#LABEL# ist ein Pflichtelement. Bitte tragen Sie einen Wert ein.^',
+    p_pms_text => q'^#LABEL# darf nicht leer sein.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
@@ -433,7 +437,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_SESSION_STATE_SET',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Element "#1#" wurde auf den Wert "#2#" gesetzt^',
+    p_pms_text => q'^Element ~#1#~ wurde auf den Wert ~#2#~ gesetzt^',
     p_pms_description => q'^^',
     p_pms_pse_id => 50,
     p_pms_pml_name => 'GERMAN',
@@ -478,7 +482,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_UNEXPECTED_CONV_TYPE',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Unerwarteter Elementtyp "#1#" mit Formatmaske.^',
+    p_pms_text => q'^Unerwarteter Elementtyp ~#1#~ mit Formatmaske.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
@@ -746,6 +750,14 @@ begin
     p_pms_name => 'ADC_HARMONIZE_CPI_STEP_9',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Schritt 9: Initialisierungscode für schnelle Seiteninitialisierung neu erstellen und in Tabelle adc_rule_groups hinterlegen^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 50,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_CSM_WRONG_PREFIX',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Der Name einer Standardmeldung muss mit CSM_ beginnen.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 50,
     p_pms_pml_name => 'GERMAN');

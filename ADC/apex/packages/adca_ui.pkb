@@ -144,6 +144,20 @@ as
     pit.leave_detailed;
   end copy_edit_cato;
   
+  
+  procedure copy_edit_csm(
+    p_row out nocopy adc_standard_messages_v%rowtype)
+  as
+  begin
+    pit.enter_detailed('copy_edit_csm');
+  
+    p_row.csm_id := utl_apex.get_string('csm_id');
+    p_row.csm_message := utl_apex.get_string('csm_message');
+    p_row.csm_description := utl_apex.get_string('csm_description');
+  
+    pit.leave_detailed;
+  end copy_edit_csm;
+  
 
   procedure copy_edit_capt(
     p_row out nocopy adc_action_param_types_v%rowtype)
@@ -661,6 +675,56 @@ as
     
     pit.leave_mandatory;
   end process_edit_cato;
+  
+    
+  /** 
+    Function: validate_edit_csm
+      See <adca_ui.validate_edit_csm>
+   */
+  function validate_edit_csm
+    return boolean
+  as
+    l_row adc_standard_messages_v%rowtype;
+  begin
+    pit.enter_mandatory;
+  
+    copy_edit_csm(l_row);
+    
+    pit.start_message_collection;
+    adc_admin.validate_standard_message(l_row);
+    pit.stop_message_collection;
+  
+    pit.leave_mandatory;
+    return true;
+  exception
+    when msg.PIT_BULK_ERROR_ERR or msg.PIT_BULK_FATAL_ERR then
+      utl_apex.handle_bulk_errors(char_table(
+        'CSM_ID_MISSING', 'CSM_ID',
+        'CSM_MESSAGE_MISSING', 'CSM_MESSAGE',
+        msg.ADC_CSM_WRONG_PREFIX, 'CSM_ID'));
+      return true;
+  end validate_edit_csm;
+  
+    
+  /** 
+    Procedure: process_edit_csm
+      See <adca_ui.process_edit_csm>
+   */
+  procedure process_edit_csm
+  as
+    l_row adc_standard_messages_v%rowtype;
+  begin
+    pit.enter_mandatory;
+    
+    copy_edit_csm(l_row);
+    case when utl_apex.inserting or utl_apex.updating then
+      adc_admin.merge_standard_message(l_row);
+    else
+      adc_admin.delete_standard_message(l_row);
+    end case;
+    
+    pit.leave_mandatory;
+  end process_edit_csm;
   
   
   /** 

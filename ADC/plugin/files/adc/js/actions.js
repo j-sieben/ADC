@@ -45,6 +45,8 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   const C_REGION_IG = 'InteractiveGrid';
   const C_REGION_TREE = 'Tree';
   const C_REGION_TAB = 'Tab';
+  
+  const C_REGION_DATA_ITEM = 'data-item-for-region';
 
   // Command constants
   const C_COMMAND = 'COMMAND';
@@ -55,6 +57,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   const C_SELECTION_CHANGE_EVENT = 'adcselectionchange';
   const C_APEX_AFTER_REFRESH = 'apexafterrefresh';
   const C_MODAL_DIALOG_CANCEL_EVENT = 'apexaftercanceldialog';
+  const C_MODAL_DIALOG_CLOSE_EVENT = 'apexafterclosedialog';
 
   // Modal dialog constants
   const C_MODAL_DIALOG_CLASS = 'ui-dialog';
@@ -192,24 +195,80 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     Parameter:  
       pTriggeringItemId - Optional triggering element is set when multiple modal windows are used overlappingly
    */
-  actions.cancelModalDialog = function(pTriggeringItemId){
-    if (typeof pTriggeringItemId != 'undefined' && pTriggeringItemId != ""){
-      parent.$('#' + pTriggeringItemId ).trigger(C_MODAL_DIALOG_CANCEL_EVENT);
-    }
-    else {
-      if (pTriggeringItemId == ""){
-        pTriggeringItemId = parent.$(C_MODAL_DIALOG_SELECTOR).data(C_MODAL_DIALOG_CLASS).opener.attr('id');
-        parent.$(C_MODAL_DIALOG_SELECTOR).data(C_MODAL_DIALOG_CLASS).opener.trigger(C_MODAL_DIALOG_CANCEL_EVENT);
+  actions.cancelModalDialog = function(pTriggeringItemId, pCheckChanges){
+    const cancelDialog = function(pTriggeringItemId) {
+      if (typeof pTriggeringItemId != 'undefined' && pTriggeringItemId != ""){
+        parent.$('#' + pTriggeringItemId ).trigger(C_MODAL_DIALOG_CANCEL_EVENT);
       }
       else {
-        pTriggeringItemId = parent.triggeringElement.id;
-        parent.$('#' + pTriggeringItemId).trigger(C_MODAL_DIALOG_CANCEL_EVENT);
+        if (pTriggeringItemId == ""){
+          pTriggeringItemId = parent.$(C_MODAL_DIALOG_SELECTOR).data(C_MODAL_DIALOG_CLASS).opener.attr('id');
+          parent.$(C_MODAL_DIALOG_SELECTOR).data(C_MODAL_DIALOG_CLASS).opener.trigger(C_MODAL_DIALOG_CANCEL_EVENT);
+        }
+        else {
+          pTriggeringItemId = parent.triggeringElement.id;
+          parent.$('#' + pTriggeringItemId).trigger(C_MODAL_DIALOG_CANCEL_EVENT);
+        };
       };
+    
+      apex.debug.info('cancelModalDialog - triggeringElement:' + pTriggeringItemId);
+      apex.navigation.dialog.cancel(true);
     };
-  
-    apex.debug.info('cancelModalDialog - triggeringElement:' + pTriggeringItemId);
-    apex.navigation.dialog.cancel(true);
+    
+    if (pCheckChanges && adc.controller.hasUnsavedChanges()){
+        apex.message.confirm(
+          adc.controller.getStandardMessage("CSM_CANCEL_HAS_CHANGES"),
+          function( okPressed ) {
+            if( okPressed ) {
+                cancelDialog(pTriggeringItemId);
+            }
+          });
+    }
+    else{
+      cancelDialog(pTriggeringItemId);
+    };
   }; // cancelModalDialog
+
+
+  /**
+    Function: closeModalDialog
+      Method to trigger the aftercanceldialog event when exiting a modal dialog.
+
+    Parameter:  
+      pTriggeringItemId - Optional triggering element is set when multiple modal windows are used overlappingly
+   */
+  actions.closeModalDialog = function(pTriggeringItemId, pPageItems, pCheckChanges){
+    const closeDialog = function(pTriggeringItemId, pPageItems){
+      if (typeof pTriggeringItemId != "undefined" && pTriggeringItemId != ""){
+        parent.$('#' + pTriggeringItemId ).trigger(C_MODAL_DIALOG_CLOSE_EVENT);
+      }
+      else {
+        if (typeof pTriggeringItemId == "undefined" || pTriggeringItemId == ""){
+          pTriggeringItemId = parent.$(C_MODAL_DIALOG_SELECTOR).data(C_MODAL_DIALOG_CLASS).opener.attr('id');
+          parent.$(C_MODAL_DIALOG_SELECTOR).data(C_MODAL_DIALOG_CLASS).opener.trigger(C_MODAL_DIALOG_CLOSE_EVENT);
+        }
+        else {
+          pTriggeringItemId = parent.triggeringElement.id;
+          parent.$('#' + pTriggeringItemId).trigger(C_MODAL_DIALOG_CLOSE_EVENT);
+        };
+      };
+    
+      apex.debug.info('closeModalDialog - triggeringElement:' + pTriggeringItemId);
+      apex.navigation.dialog.close(true, pPageItems);
+    };
+      
+    if (pCheckChanges && !adc.controller.hasUnsavedChanges()){
+        apex.message.alert(
+          adc.controller.getStandardMessage("CSM_CLOSE_WO_CHANGES"),
+          function(pTriggeringItemId, pPageItems){
+            closeDialog(pTriggeringItemId, pPageItems)
+          });
+    }
+    else{
+      closeDialog(pTriggeringItemId, pPageItems);
+    };
+    
+  }; // closeModalDialog
 
 
   /**
@@ -324,7 +383,8 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
    */
   actions.getReportSelection = function(pReportId, pItemId, pColumn){
 
-    var persistOrReport = function(pValue){
+    let $item;
+    const persistOrReport = function(pValue){
       if(pItemId){
         apex.item(pItemId).setValue(pValue);
       }
@@ -333,6 +393,12 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
         adc.controller.setTriggeringElement(pReportId, C_SELECTION_CHANGE_EVENT, pValue);
         adc.controller.execute();
       }
+    };
+    
+    // connect target item to report to enable later reference of the selected node.
+    if (pItemId){
+      $item = $(`#${pItemId}`);
+      $item.attr(C_REGION_DATA_ITEM, pReportId);
     };
 
     adc.renderer.getReportSelection(pReportId, pColumn, getRegionType(pReportId), persistOrReport);
@@ -559,25 +625,38 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     apex.item(pItemId).enable();
     apex.item(pItemId).refresh();
   }; // refreshAndSetValue
+  
+  
+  
+  /**
+    Function: highlightReportRow
+      Method to highlight and optionally set focus to a report row.
+      
+    Paarmeters:
+      pSelector - 
 
 
   /** 
     Function: selectEntry
-      Method to select an entry in an IR, IG or TREE. So far, only Tree and Interactive Grid are implemented.
+      Method to select an entry in an CR, IR, IG or TREE. 
+      For IR and CR, a data-id attribute must be present to create a selection target.
 
     Parameters:
       pRegionId - ID of the region to select an entry in
       pEntryId - ID of the entry to select
+      pSetFocus - If truethe selected row will get focus
       pNoinform - If true the treeView#event:selectionChange event will be suppressed.
    */
-  actions.selectEntry = function(pRegionId, pEntryId, pNoinform){
+  actions.selectEntry = function(pRegionId, pEntryId, pSetFocus, pNoinform){
     let $region;
     let entry;
+    const C_CR_SELECTOR = `#report_table_${pRegionId} td[data-id="${pEntryId}"`;
     const C_IG_SELECTOR = `#${pRegionId}_ig`;
     const C_TREE_SELECTOR = `#${pRegionId}_tree`;
 
     switch(getRegionType(pRegionId)){
       case C_REGION_CR:
+        entry = $(C_CR_SELECTOR);
         break;
       case C_REGION_IG:
         $region = $(C_IG_SELECTOR);
@@ -586,7 +665,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
                 .model
                 .getRecord(pEntryId);
         if(entry){
-          $region.interactiveGrid('setSelectedRecords', entry, true, pNoinform);
+          $region.interactiveGrid('setSelectedRecords', entry, pSetFocus, pNoinform);
         }
         break;
       case C_REGION_IR:
@@ -603,7 +682,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
                 );
         $region.treeView('collapseAll');
         $region.treeView('expand', entry);
-        $region.treeView('setSelection', entry, true, pNoinform);
+        $region.treeView('setSelection', entry, pSetFocus, pNoinform);
         break;
     }
   }; // selectEntry

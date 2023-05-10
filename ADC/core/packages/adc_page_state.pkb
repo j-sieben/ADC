@@ -208,21 +208,35 @@ as
         p_params => msg_params(
                       msg_param('Result', g_session_values(p_value.cpi_id).string_value)));
       if p_throw_error = adc_util.C_TRUE then
-        pit.error(
-          p_message_name => msg.ADC_INVALID_NUMBER, 
-          p_msg_args => msg_args(
-                          g_session_values(p_value.cpi_id).string_value, 
-                          replace(lower(l_format_mask), 'fm')));
+        if l_cpi_cpit_id = C_NUMBER_ITEM then
+          pit.error(
+            p_message_name => msg.ADC_INVALID_NUMBER, 
+            p_msg_args => msg_args(
+                            replace(lower(l_format_mask), 'fm')));
+        else
+          pit.error(
+            p_message_name => msg.ADC_INVALID_DATE, 
+            p_msg_args => msg_args(
+                            replace(lower(l_format_mask), 'fm')));
+        end if;
       end if;
     when others then
       if p_throw_error = adc_util.C_TRUE then
+        pit.tweet(sqlerrm);
         case 
-        when sqlcode in (-1858, -1862) then
-          -- Number format related errors
-          pit.error(msg.ADC_INVALID_NUMBER);
-        when sqlcode between -1866 and -1800 then
-          -- Date related errors. too many to map them explicitly
-          pit.error(msg.ADC_INVALID_DATE);
+        when sqlcode in (-1858, -1862) 
+          or sqlcode between -1866 and -1800 then
+          if l_cpi_cpit_id = C_NUMBER_ITEM then
+            pit.error(
+              p_message_name => msg.ADC_INVALID_NUMBER, 
+              p_msg_args => msg_args(
+                              replace(lower(l_format_mask), 'fm')));
+          else
+            pit.error(
+              p_message_name => msg.ADC_INVALID_DATE, 
+              p_msg_args => msg_args(
+                              replace(lower(l_format_mask), 'fm')));
+          end if;
         else
           raise;
         end case;
@@ -475,10 +489,10 @@ as
         -- Explicitly set the value and harmonize with the session state (fi when changing a session values during rule execution)
         convert_session_value(p_crg_id, l_value, p_throw_error);
                 
+      else
         if p_throw_error = adc_util.C_TRUE then
           check_mandatory(p_crg_id, l_value.cpi_id);
         end if;
-      else
         l_value.number_value := null;
         l_value.date_value := null;
         g_session_values(l_value.cpi_id) := l_value;

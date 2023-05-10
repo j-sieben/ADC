@@ -96,6 +96,7 @@ as
       l_result.attribute_03 := p_plugin.attribute_01;
       l_result.attribute_04 := l_java_script;
       l_result.attribute_05 := adc_internal.get_items_to_observe;
+      l_result.attribute_06 := adc_internal.get_standard_messages;
     else
       l_result.javascript_function := C_JS_FUNCTION;      
     end if;
@@ -117,14 +118,14 @@ as
     l_result apex_plugin.t_dynamic_action_ajax_result;
     l_java_script adc_util.max_char;
   begin
-    pit.enter_mandatory;
+    
     
     if wwv_flow.g_debug then
       apex_plugin_util.debug_dynamic_action(
         p_plugin => p_plugin,
         p_dynamic_action => p_dynamic_action);
     end if;
-    
+    pit.enter_mandatory;
     -- Initialize
     if adc_internal.read_settings(
          p_firing_item => apex_application.g_x01,
@@ -136,7 +137,6 @@ as
       
       -- Return JavaScript response
       print_to_stream(l_java_script);
-    
     end if;
     
     pit.leave_mandatory;

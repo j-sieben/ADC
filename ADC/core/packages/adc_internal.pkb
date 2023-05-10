@@ -819,7 +819,38 @@ as
     pit.leave_optional(
       p_params => msg_params(msg_param('changed_value_items', l_changed_value_items)));
     return l_changed_value_items;
-  end get_page_items;
+  end get_page_items; 
+
+
+  /**
+    Function: get_page_items
+      See <ADC_INTERNAL.get_page_items>
+   */
+  function get_standard_messages
+    return varchar2
+  as
+    cursor message_cur is
+      select *
+        from adc_standard_messages_v;
+    l_standard_messages adc_util.max_char;
+  begin
+    pit.enter_optional;
+    apex_json.initialize_clob_output;
+
+    apex_json.open_object;
+    for msg in message_cur loop
+      apex_json.write(msg.csm_id, msg.csm_message);
+    end loop;
+    apex_json.close_object;
+
+    l_standard_messages := apex_json.get_clob_output;
+    apex_json.free_output;
+    
+    pit.leave_optional(
+      p_params => msg_params(
+                    msg_param('StandardMessages', l_standard_messages)));
+    return l_standard_messages;
+  end get_standard_messages;
   
   
   /**

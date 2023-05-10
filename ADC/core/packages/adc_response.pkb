@@ -398,7 +398,12 @@ as
     
     -- wrap JavaScript in <script> tag and add item value and error scripts
     -- Replace explicitely to circumvent length limitation of CHAR_TABLE
-    l_response := replace(g_js_script_frame_template, '#SCRIPT#', l_response);
+    l_response := replace(replace(replace(replace(replace(g_js_script_frame_template, 
+                    '#SCRIPT#', l_response),
+                    '#ID#', 'S_' || trunc(dbms_random.value(1, 100000))),
+                    '#CR#', adc_util.C_CR),
+                    '#JS_FILE#', C_JS_NAMESPACE),
+                    '#DURATION#', to_char(dbms_utility.get_time - g_param.request_start));
     
     -- Prepare remaining chunks and check overall length
     l_remaining_length := l_remaining_length - length(l_response);
@@ -406,17 +411,11 @@ as
     l_remaining_length := l_remaining_length - length(l_changed_items);
     l_firing_items := adc_recursion_stack.get_firing_items_as_json;
     l_remaining_length := l_remaining_length - length(l_changed_items);
-    
-    -- Replace script explicitely to circumvent length limitation of CHAR_TABLE. Limit length of error messages.
-    l_response := replace(l_response, '#ERROR_JSON#', get_errors_as_json(l_remaining_length));
                     
-    l_response := replace(replace(replace(replace(replace(replace(l_response, 
-                    '#ID#', 'S_' || trunc(dbms_random.value(1, 100000))),
-                    '#CR#', adc_util.C_CR),
+    l_response := replace(replace(replace(l_response, 
+                    '#ERROR_JSON#', get_errors_as_json(l_remaining_length)),
                     '#ITEM_JSON#', l_changed_items),
-                    '#FIRING_ITEMS#', l_firing_items),
-                    '#JS_FILE#', C_JS_NAMESPACE),
-                    '#DURATION#', to_char(dbms_utility.get_time - g_param.request_start));
+                    '#FIRING_ITEMS#', l_firing_items);
     
     reset;
     

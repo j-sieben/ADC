@@ -134,7 +134,8 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     "pageItems":[],
     "bindItems":[],
     "lastItemValues":[],
-    "additionalItems":[]
+    "additionalItems":[],
+    "standardMessages":{}
   };
 
   /**
@@ -506,6 +507,11 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
         }
       }
     }
+    else if(C_PROTECTED_EVENTS.indexOf(props.quarantineList[0]) > -1){
+      // Check whether an event is actually in the queue that does not allow for any other event to be raised
+      apex.debug.info(`Ignoring event '${e.event}', event '${props.quarantineList[0]}' is on quarantine list`);
+      isOkToRaiseEvent = false;
+    }
     return isOkToRaiseEvent;
   }; // maintainAndCheckEventLock
 
@@ -746,6 +752,18 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   ctl.setLastItemValues = function(pPageItems){
     props.lastItemValues = pPageItems;
   };
+  
+  
+  /**
+    Funcdtion: getStandardMessage
+      Method to retrieve a standard message as identified by pMessageID
+      
+    Parameters:
+      pMessageID - ID of the standard message to retrieve
+   */
+  ctl.getStandardMessage = function(pMessageID){
+    return props.standardMessages[pMessageID];
+  };
 
   
   /**
@@ -810,6 +828,10 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     if (pAction.attribute02) {
       apex.debug.info('Required pageItems: ' + pAction.attribute02);
       props.pageItems = pAction.attribute02.split(',');
+    }
+    
+    if (pAction.attribute06) {
+      props.standardMessages = JSON.parse(pAction.attribute06);
     }
 
     bindObserverItems(pAction.attribute05);

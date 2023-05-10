@@ -1711,6 +1711,7 @@ as
         if dbms_sql.is_open(l_ctx) then
           dbms_sql.close_cursor(l_ctx);
         end if;
+        pit.tweet(l_stmt);
         pit.error(msg.ADC_INVALID_SQL, msg_args(substr(sqlerrm, 12)));
     end;
     
@@ -2749,6 +2750,10 @@ as
     pit.enter_mandatory;
 
     validate_action_type(p_row);
+    
+    -- Remove existing parameter entries
+    delete from adc_action_parameters
+     where cap_cat_id = p_row.cat_id;
       
     -- maintain translatable item
     l_pti_id := 'CAT_' || p_row.cat_id;
@@ -3116,10 +3121,6 @@ as
     pit.enter_mandatory;
     
     validate_action_parameter(p_row);
-    
-    -- Remove existing parameter entries
-    delete from adc_action_parameters
-     where cap_capt_id = p_row.cap_capt_id;
                     
     -- maintain translatable item
     l_pti_id := 'CAP_' || p_row.cap_cat_id || '_PARAM_' || p_row.cap_sort_seq;
@@ -3997,6 +3998,96 @@ as
     
     pit.leave_mandatory;
   end validate_apex_action_item;
+    
+
+  /** 
+    Procedure: merge_standard_message
+      See <ADC_ADMIN.merge_standard_message>
+   */
+  procedure merge_standard_message(
+    p_csm_id in adc_standard_messages_v.csm_id%type,
+    p_csm_message in adc_standard_messages_v.csm_message%type,
+    p_csm_description in adc_standard_messages_v.csm_description%type default null)
+  as
+    l_row adc_standard_messages_v%rowtype;
+  begin
+    l_row.csm_id := p_csm_id;
+    l_row.csm_message := p_csm_message;
+    l_row.csm_description := p_csm_description;
+    
+    merge_standard_message(l_row);
+  end merge_standard_message;
+
+  /**
+    Procedure: merge_standard_message
+      See <ADC_ADMIN.merge_standard_message>
+   */
+  procedure merge_standard_message(
+    p_row in out nocopy adc_standard_messages_v%rowtype)
+  as
+  begin
+    pit.enter_mandatory;
+    
+    validate_standard_message(p_row);
+    
+    pit_admin.merge_translatable_item(
+      p_pti_id => p_row.csm_id,
+      p_pti_pml_name => null,
+      p_pti_pmg_name => C_ADC,
+      p_pti_name => p_row.csm_message,
+      p_pti_display_name => null,
+      p_pti_description => p_row.csm_description);
+      
+    pit.leave_mandatory;
+  end merge_standard_message;
+
+  /**
+    Procedure: delete_standard_message
+      See <ADC_ADMIN.delete_standard_message>
+   */
+  procedure delete_standard_message(
+    p_csm_id in adc_standard_messages_v.csm_id%type)
+  as
+    l_row adc_standard_messages_v%rowtype;
+  begin
+    l_row.csm_id := p_csm_id;
+    
+    delete_standard_message(l_row);
+  end delete_standard_message;
+
+  /**
+    Procedure: delete_standard_message
+      See <ADC_ADMIN.delete_standard_message>
+   */
+  procedure delete_standard_message(
+    p_row in adc_standard_messages_v%rowtype)
+  as
+  begin
+    pit.enter_mandatory;
+    pit_admin.delete_translatable_item(
+      p_pti_id => p_row.csm_id,
+      p_pti_pmg_name => C_ADC);
+    pit.leave_mandatory;
+  end delete_standard_message;
+
+  /**
+    Procedure: validate_standard_message
+      See <ADC_ADMIN.validate_standard_message>
+   */
+  procedure validate_standard_message(
+    p_row in adc_standard_messages_v%rowtype)
+  as
+  begin
+    pit.enter_mandatory;
+    
+    pit.assert_not_null(p_row.csm_id, p_error_code => 'CSM_ID_MISSING');
+    pit.assert_not_null(p_row.csm_message, p_error_code => 'CSM_MESSAGE_MISSING');
+    if p_row.csm_id is not null then
+      pit.assert(substr(upper(p_row.csm_id), 1, 4) = 'CSM_', msg.ADC_CSM_WRONG_PREFIX);
+    end if;
+    
+    pit.leave_mandatory;
+  end validate_standard_message;
 
 begin
   initialize;
