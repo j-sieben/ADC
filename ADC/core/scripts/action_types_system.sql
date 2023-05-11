@@ -60,6 +60,7 @@ begin
     p_capt_capvt_id => 'SELECT_LIST',
     p_capt_select_list_query => q'{select caa_name d, caa_id r, caa_crg_id crg_id\CR\}' || 
 q'{  from adc_apex_actions_v\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
@@ -73,6 +74,7 @@ q'{}',
     p_capt_capvt_id => 'SELECT_LIST',
     p_capt_select_list_query => q'{select caa_name d, caa_id r, caa_crg_id crg_id\CR\}' || 
 q'{  from adc_apex_actions_v\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
@@ -88,8 +90,10 @@ q'{}',
 q'{  from adc_event_types_v\CR\}' || 
 q'{ where cet_is_custom_event = (select adc_util.c_true from dual)\CR\}' || 
 q'{ order by cet_id\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_select_view_comment => q'{Parameterview to display all custom events\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -108,6 +112,7 @@ q'{ where cpit_cpitg_id = 'ITEM'\CR\}' ||
 q'{   and cpi_cpit_id not in ('APP_ITEM')\CR\}' || 
 q'{   and cpi_may_have_value = (select adc_util.c_true from dual)\CR\}' || 
 q'{ order by cpi_crg_id, cpi_id\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
@@ -125,6 +130,7 @@ q'{   where pti_pmg_name = 'ADC'\CR\}' ||
 q'{     and pti_id like 'ITEM_STATUS%'\CR\}' || 
 q'{}',
     p_capt_select_view_comment => q'{List of translatable items of for that parameter type\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -141,6 +147,7 @@ q'{   where pti_pmg_name = 'ADC'\CR\}' ||
 q'{     and pti_id like 'ITEM_STATUS%'\CR\}' || 
 q'{}',
     p_capt_select_view_comment => q'{List of translatable items of for that parameter type\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -157,6 +164,7 @@ q'{   where pti_pmg_name = 'ADC'\CR\}' ||
 q'{     and pti_id like 'ITEM_STATUS%'\CR\}' || 
 q'{}',
     p_capt_select_view_comment => q'{List of translatable items of for that parameter type\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -173,6 +181,7 @@ q'{   where pti_pmg_name = 'ADC'\CR\}' ||
 q'{     and pti_id like 'ITEM_STATUS%'\CR\}' || 
 q'{}',
     p_capt_select_view_comment => q'{List of translatable items of for that parameter type\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -186,8 +195,10 @@ q'{}',
     p_capt_select_list_query => q'{select case cpi_id when 'ALL' then ' Document' else cpi_id end d, cpi_id r, cpi_crg_id crg_id\CR\}' || 
 q'{  from adc_page_items\CR\}' || 
 q'{ where cpi_cpit_id in ('DATE_ITEM', 'ITEM', 'NUMBER_ITEM')\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_select_view_comment => q'{List of page items, limited to input fields, grouped by CRG_ID\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -203,8 +214,10 @@ q'{  from pit_message\CR\}' ||
 q'{  join pit_message_language_v\CR\}' || 
 q'{    on pms_pml_name = pml_name\CR\}' || 
 q'{ where pml_default_order = 10\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_select_view_comment => q'{List of PIT messages\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -220,8 +233,10 @@ q'{  from pit_message\CR\}' ||
 q'{  join pit_message_language_v\CR\}' || 
 q'{    on pms_pml_name = pml_name\CR\}' || 
 q'{ where pml_default_order = 10\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_select_view_comment => q'{List of PIT messages\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -237,8 +252,10 @@ q'{  from pit_message\CR\}' ||
 q'{  join pit_message_language_v\CR\}' || 
 q'{    on pms_pml_name = pml_name\CR\}' || 
 q'{ where pml_default_order = 10\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_select_view_comment => q'{List of PIT messages\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -255,6 +272,7 @@ q'{   where pti_pmg_name = 'ADC'\CR\}' ||
 q'{     and pti_id like 'SUBMIT_TYPE%'\CR\}' || 
 q'{}',
     p_capt_select_view_comment => q'{List of translatable items of for that parameter type\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -271,10 +289,43 @@ q'{}',
     p_capt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
+    p_capt_id => 'STRING_OR_JAVASCRIPT',
+    p_capt_name => 'Zeichenkette oder JS-Ausdruck',
+    p_capt_display_name => '',
+    p_capt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein JavaScript-Ausdruck, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
+    p_capt_capvt_id => 'TEXT',
+    p_capt_select_list_query => q'{}',
+    p_capt_select_view_comment => q'{}',
+    p_capt_sort_seq => 10,
+    p_capt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
     p_capt_id => 'JAVA_SCRIPT_FUNCTION',
     p_capt_name => 'JavaScript-Funktion',
     p_capt_display_name => '',
     p_capt_description => q'{<p>Name einer JavaScript-Funktion oder anonyme Funktionsdefinition/IIFE</p>}',
+    p_capt_capvt_id => 'TEXT',
+    p_capt_select_list_query => q'{}',
+    p_capt_select_view_comment => q'{}',
+    p_capt_sort_seq => 10,
+    p_capt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_capt_id => 'STRING',
+    p_capt_name => 'Zeichenkette',
+    p_capt_display_name => '',
+    p_capt_description => q'{<p>Einfache Zeichenkette.<br>Die Zeichenkette wird mit Hochkommata umgeben, daher ist die Eingabe dieser Zeichen nicht erforderlich.</p>}',
+    p_capt_capvt_id => 'TEXT',
+    p_capt_select_list_query => q'{}',
+    p_capt_select_view_comment => q'{}',
+    p_capt_sort_seq => 10,
+    p_capt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_capt_id => 'STRING',
+    p_capt_name => 'Zeichenkette',
+    p_capt_display_name => '',
+    p_capt_description => q'{<p>Einfache Zeichenkette.<br>Die Zeichenkette wird mit Hochkommata umgeben, daher ist die Eingabe dieser Zeichen nicht erforderlich.</p>}',
     p_capt_capvt_id => 'TEXT',
     p_capt_select_list_query => q'{}',
     p_capt_select_view_comment => q'{}',
@@ -601,22 +652,44 @@ q'{}',
     p_capt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_capt_id => 'JQUERY_SELECTOR',
-    p_capt_name => 'jQuery-Selektor',
+    p_capt_id => 'SWITCH',
+    p_capt_name => 'Schalter',
     p_capt_display_name => '',
-    p_capt_description => q'{<p>jQuery-Ausdruck, um mehrere Elemente zu bearbeiten. Wird dieser Parameter verwendet, muss als ausl&ouml;sendes Element <code>DOCUMENT</code> eingetragen werden.</p>}',
-    p_capt_capvt_id => 'TEXT',
+    p_capt_description => q'{<p>Wahrheitswert</p>}',
+    p_capt_capvt_id => 'SWITCH',
     p_capt_select_list_query => q'{}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_capt_id => 'JQUERY_SELECTOR',
-    p_capt_name => 'jQuery-Selektor',
+    p_capt_id => 'SWITCH',
+    p_capt_name => 'Schalter',
     p_capt_display_name => '',
-    p_capt_description => q'{<p>jQuery-Ausdruck, um mehrere Elemente zu bearbeiten. Wird dieser Parameter verwendet, muss als ausl&ouml;sendes Element <code>DOCUMENT</code> eingetragen werden.</p>}',
-    p_capt_capvt_id => 'TEXT',
+    p_capt_description => q'{<p>Wahrheitswert</p>}',
+    p_capt_capvt_id => 'SWITCH',
+    p_capt_select_list_query => q'{}',
+    p_capt_select_view_comment => q'{}',
+    p_capt_sort_seq => 10,
+    p_capt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_capt_id => 'SWITCH',
+    p_capt_name => 'Schalter',
+    p_capt_display_name => '',
+    p_capt_description => q'{<p>Wahrheitswert</p>}',
+    p_capt_capvt_id => 'SWITCH',
+    p_capt_select_list_query => q'{}',
+    p_capt_select_view_comment => q'{}',
+    p_capt_sort_seq => 10,
+    p_capt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_capt_id => 'SWITCH',
+    p_capt_name => 'Schalter',
+    p_capt_display_name => '',
+    p_capt_description => q'{<p>Wahrheitswert</p>}',
+    p_capt_capvt_id => 'SWITCH',
     p_capt_select_list_query => q'{}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
@@ -877,7 +950,7 @@ q'{}',
     p_caif_description => q'{Es werden nur vorhandene Seitenkommandos angezeigt}',
     p_caif_actual_page_only => adc_util.C_TRUE,
     p_caif_item_types => 'COMMAND:DOCUMENT',
-    p_caif_default => '',
+    p_caif_default => 'DOCUMENT',
     p_caif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -886,7 +959,7 @@ q'{}',
     p_caif_description => q'{Die Aktion is keinem konkreten Seitenelement zugeordnet}',
     p_caif_actual_page_only => adc_util.C_TRUE,
     p_caif_item_types => 'DOCUMENT',
-    p_caif_default => '',
+    p_caif_default => 'DOCUMENT',
     p_caif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -894,8 +967,8 @@ q'{}',
     p_caif_name => 'Seitenelemente und Formularregionen',
     p_caif_description => q'{Es werden Seitenelemente und Formularregionen angezeigt}',
     p_caif_actual_page_only => adc_util.C_TRUE,
-    p_caif_item_types => 'ITEM:FORM_REGION:DOCUMENT',
-    p_caif_default => '',
+    p_caif_item_types => 'ELEMENT:FORM_REGION:ITEM:DOCUMENT',
+    p_caif_default => 'DOCUMENT',
     p_caif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -904,7 +977,7 @@ q'{}',
     p_caif_description => q'{Alle Seitenelemente, die aktiviert und deaktiviert werden können}',
     p_caif_actual_page_only => adc_util.C_TRUE,
     p_caif_item_types => 'BUTTON:ITEM:DOCUMENT',
-    p_caif_default => '',
+    p_caif_default => 'DOCUMENT',
     p_caif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -958,7 +1031,7 @@ q'{}',
     p_caif_description => q'{Ermöglicht die Auswahl eines Seitenelements oder die Angabe eines jQuery-Selektors zur Auswahl mehrerer Seitenelemente.}',
     p_caif_actual_page_only => adc_util.C_TRUE,
     p_caif_item_types => 'ITEM:REGION:DOCUMENT',
-    p_caif_default => '',
+    p_caif_default => 'DOCUMENT',
     p_caif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -976,7 +1049,7 @@ q'{}',
     p_caif_description => q'{Alle Eingabefelder oder keine spezifische Angabe}',
     p_caif_actual_page_only => adc_util.C_TRUE,
     p_caif_item_types => 'ITEM:DOCUMENT',
-    p_caif_default => '',
+    p_caif_default => 'DOCUMENT',
     p_caif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -1002,7 +1075,7 @@ q'{}',
     p_caif_name => 'Berichte, die eine ausgewählte Zeile melden können',
     p_caif_description => q'{Berichte, die eine ausgewählte Zeile melden können}',
     p_caif_actual_page_only => adc_util.C_TRUE,
-    p_caif_item_types => 'INTERACTIVE_GRID_REGION:INTERACTIVE_REPORT_REGION:TREE_REGION',
+    p_caif_item_types => 'INTERACTIVE_GRID_REGION:INTERACTIVE_REPORT_REGION:TREE_REGION:REPORT_REGION',
     p_caif_default => '',
     p_caif_active => adc_util.C_TRUE);
 
@@ -1062,13 +1135,13 @@ q'{}',
   adc_admin.merge_action_type(
     p_cat_id => 'CANCEL_MODAL_DIALOG',
     p_cat_catg_id => 'ADC',
-    p_cat_caif_id => 'ALL',
+    p_cat_caif_id => 'DOCUMENT',
     p_cat_cato_id => 'ADC',
     p_cat_name => 'brich modalen Dialog ab',
     p_cat_display_name => q'{<p><strong>brich Dialog</strong> #ITEM|"|" |#<strong>ab.</strong></p>}',
-    p_cat_description => q'{<p>Bricht die Anzeige des modalen Dialogs ab und löst en Event <span style="font-family:'Courier New', Courier, monospace;">apexaftercanceldialog </span>aus.</p>}',
+    p_cat_description => q'{<p>Bricht die Anzeige des modalen Dialogs ab. Falls mehrere modale Fenster überlappend eingesetzt werden, muss das auslösende Element angegeben werden.</p>}',
     p_cat_pl_sql => q'{}',
-    p_cat_js => q'{de.condes.plugin.adc.actions.cancelModalDialog('#PARAM_1#');}',
+    p_cat_js => q'{de.condes.plugin.adc.actions.cancelModalDialog('#PARAM_1#', #PARAM_2#);}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_FALSE);
 
@@ -1077,9 +1150,63 @@ q'{}',
     p_cap_capt_id => 'STRING',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
-    p_cap_description => q'{<p>Element, auf das der Event <span style="font-family:'Courier New', Courier, monospace;">apexaftercanceldialog&nbsp;</span>ausgelöst werden soll. Muss nur angegeben werden, falls mehrere modale Fenster überlappend angeordnet werden, oder, wenn das auslösende Element beim Erstellen des Links zum Öffnen des modalen Fensters nicht angegeben wurde.</p>}',
+    p_cap_description => q'{<p>Optionale Angabe eines Seitenelements, dass das Ereignis apexaftercanceldialog erhalten soll. Muss nur gesetzt werden, falls mehrere modale Dialoge geöffnet oder das Element beim Aufruf nicht definiert wurde.</p>}',
     p_cap_display_name => 'auslösendes Element',
     p_cap_mandatory => adc_util.C_FALSE,
+    p_cap_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'CANCEL_MODAL_DIALOG',
+    p_cap_capt_id => 'SWITCH',
+    p_cap_sort_seq => 2,
+    p_cap_default => q'{0}',
+    p_cap_description => q'{<p>Falls gesetzt, prüft dieser Parameter, ob auf der Seite ungesicherte Änderungen vorhanden sind. Falls ja, wird ein Bestätigungsdialog gezeigt, um dennoch den Dialog zu schließen&nbsp;</p>}',
+    p_cap_display_name => 'auf Änderung prüfen',
+    p_cap_mandatory => adc_util.C_TRUE,
+    p_cap_active => adc_util.C_TRUE);
+
+
+  adc_admin.merge_action_type(
+    p_cat_id => 'CLOSE_MODAL_DIALOG',
+    p_cat_catg_id => 'ADC',
+    p_cat_caif_id => 'DOCUMENT',
+    p_cat_cato_id => 'ADC',
+    p_cat_name => 'schließe modalen Dialog',
+    p_cat_display_name => q'{<p><strong>schließe den modalen Dialog</strong></p>}',
+    p_cat_description => q'{<p>Schließt den modalen Dialog und löst das Ereignis <span style="font-family:'Courier New', Courier, monospace;">apexafterclosedialog </span>aus.</p>}',
+    p_cat_pl_sql => q'{}',
+    p_cat_js => q'{de.condes.plugin.adc.actions.closeModalDialog('#PARAM_1#', [#PARAM_2#], #PARAM_3#);}',
+    p_cat_is_editable => adc_util.C_TRUE,
+    p_cat_raise_recursive => adc_util.C_FALSE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'CLOSE_MODAL_DIALOG',
+    p_cap_capt_id => 'STRING',
+    p_cap_sort_seq => 1,
+    p_cap_default => q'{}',
+    p_cap_description => q'{<p>Element, auf das der Event <span style="font-family:'Courier New', Courier, monospace;">apexafterclosedialog&nbsp;</span>ausgelöst werden soll. Muss nur angegeben werden, falls mehrere modale Fenster überlappend angeordnet werden, oder, wenn das auslösende Element beim Erstellen des Links zum Öffnen des modalen Fensters nicht angegeben wurde.</p>}',
+    p_cap_display_name => 'auslösendes Element',
+    p_cap_mandatory => adc_util.C_FALSE,
+    p_cap_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'CLOSE_MODAL_DIALOG',
+    p_cap_capt_id => 'STRING_OR_JAVASCRIPT',
+    p_cap_sort_seq => 2,
+    p_cap_default => q'{}',
+    p_cap_description => q'{<p>Legt fest, welche Elementwerte beim Schließen des modalen Dialogs an die aufrufende Seite zurück geliefert werden. Die Elementwerte können auf der Aufrufenden Seite über <span style="font-family:'Courier New', Courier, monospace;">adc_api.get_event_data</span> ermittelt werden.</p><p>Elementnamen müssen als kommaseparierte Zeichenkette übergeben werden. Beispiel:<span style="font-family:'Courier New', Courier, monospace;"> “P5_EMP_ID”, “P5_EMP_JOB_ID”</span></p>}',
+    p_cap_display_name => 'Rückgabeelemente',
+    p_cap_mandatory => adc_util.C_FALSE,
+    p_cap_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'CLOSE_MODAL_DIALOG',
+    p_cap_capt_id => 'SWITCH',
+    p_cap_sort_seq => 3,
+    p_cap_default => q'{1}',
+    p_cap_description => q'{<p>Falls gesetzt, prüft der Aktionstyp, ob auf der Anwendungsseite Eingabefelder geändert wurden. Falls nicht, wird ein Hinweis gezeigt und die Seite ohne Speicherung geschlossen.</p>}',
+    p_cap_display_name => 'auf Änderung prüfen',
+    p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
 
@@ -1456,7 +1583,7 @@ q'{}',
     p_cat_name => 'PL/SQL-Code ausführen',
     p_cat_display_name => q'{<p>führe <strong>PL/SQL-Code</strong> “#PARAM_1#” aus</p>}',
     p_cat_description => q'{<p>Führt den als Parameter übergebenen PL/SQL-Code aus.</p>}',
-    p_cat_pl_sql => q'{adc_api.execute_plsql(q'[#PARAM_1#]s');}',
+    p_cat_pl_sql => q'{adc_api.execute_plsql('#PARAM_1#');}',
     p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_TRUE);
@@ -1520,7 +1647,7 @@ q'{}',
     p_cat_display_name => q'{<p><strong>aktualisiere Seitenelement </strong>“#ITEM#”</p>}',
     p_cat_description => q'{<p>Löst auf dem referenzierten Seitenelement einen APEX-Refresh aus.</p>}',
     p_cat_pl_sql => q'{}',
-    p_cat_js => q'{de.condes.plugin.adc.actions.refresh('#ITEM#', '#PARAM_1#');}',
+    p_cat_js => q'{de.condes.plugin.adc.actions.refresh('#ITEM#', '#PARAM_1#', #PARAM_2#);}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_TRUE);
 
@@ -1534,29 +1661,30 @@ q'{}',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'REFRESH_ITEM',
+    p_cap_capt_id => 'SWITCH',
+    p_cap_sort_seq => 2,
+    p_cap_default => q'{0}',
+    p_cap_description => q'{<p>Steuert, ob das Element den Fokus erhält</p>}',
+    p_cap_display_name => 'setze Fokus',
+    p_cap_mandatory => adc_util.C_TRUE,
+    p_cap_active => adc_util.C_TRUE);
+
 
   adc_admin.merge_action_type(
     p_cat_id => 'REGISTER_OBSERVER',
     p_cat_catg_id => 'PAGE_ITEM',
     p_cat_caif_id => 'ELEMENT_AND_FORM',
     p_cat_cato_id => 'ADC',
-    p_cat_name => 'beobachte Feld',
+    p_cat_name => 'Feld beobachten',
     p_cat_display_name => q'{<p><strong>beobachte Feld </strong>“#ITEM#”</p>}',
     p_cat_description => q'{<p>Beobachtet ein Feld, auch wenn kein Anwendungsfall es in der technischen Bedingung referenziert. So wird dessen aktueller Wert in den Session State übernommen.</p>}',
-    p_cat_pl_sql => q'{adc_api.register_observer('#ITEM#', '#PARAM_2#');}',
+    p_cat_pl_sql => q'{}',
     p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_TRUE);
 
-  adc_admin.merge_action_parameter(
-    p_cap_cat_id => 'REGISTER_OBSERVER',
-    p_cap_capt_id => 'JQUERY_SELECTOR',
-    p_cap_sort_seq => 2,
-    p_cap_default => q'{}',
-    p_cap_description => q'{}',
-    p_cap_display_name => '',
-    p_cap_mandatory => adc_util.C_FALSE,
-    p_cap_active => adc_util.C_TRUE);
 
 
   adc_admin.merge_action_type(
@@ -1567,18 +1695,18 @@ q'{}',
     p_cat_name => 'speichere aktuellen Seitenstatus',
     p_cat_display_name => q'{<p><strong>speichere</strong> den aktuellen <strong>Seitenstatus</strong></p>}',
     p_cat_description => q'{<p>Merkt sich den aktuellen Wert der zu überwachenden Eingabefelder. Dieser Aktionstyp wird benötigt, um dynamisch Änderungen an der Seite zu erkennen und eine Warnmeldung beim Verlassen oder Überschreiben der aktuell erfassten Werte zu geben.</p><p>Als Elementfokus stehen zur Verfügung:</p><ul><li>Dokument: Die zu beobachtenden Seitenelemente werden im Parameter “JSON oder jQuery-Ausdruck” näher bestimmt</li><li>Seitenelement: Nur das ausgewählte Seitenelement wird überwacht</li><li>Formularregion: Alle Seitenelemente der Formularregion werden überwacht.</li></ul>}',
-    p_cat_pl_sql => q'{adc_api.remember_page_state('#ITEM#', '#PARAM_1#');}',
+    p_cat_pl_sql => q'{adc_api.remember_page_state('#ITEM#', '#PARAM_1');}',
     p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'REMEMBER_PAGE_STATE',
-    p_cap_capt_id => 'JQUERY_SELECTOR',
+    p_cap_capt_id => 'STRING',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
-    p_cap_description => q'{<p>&nbsp;</p><p>Der Parameter erwartet einen jQuery-Ausdruck mit einem oder mehreren ID- oder Klassenselektoren.</p><p>Wird kein Ausdruck verwendet und als Seitenfokus “Dokument” angegeben, werden alle Eingabeelemente der Anwendungsseite überwacht.</p><p>Beispiele:</p><ul><li>jQuery-Klassenselektor: .adc-remember</li><li>jQuery ID-Selektor: #P1_ENAME,#P1_JOB</li></ul>}',
-    p_cap_display_name => '',
+    p_cap_description => q'{<p>&nbsp;</p><p>Der Parameter erwartet ein JSON-Array &nbsp;ohne umgebende Hochkommata oder geschweifte Klammern, oder einen jQuery-Ausdruck mit einem oder mehreren ID- oder Klassenselektoren.</p><p>Wird kein Ausdruck verwendet und als Seitenfokus “Dokument” angegeben, werden alle Eingabeelemente der Anwendungsseite überwacht.</p><p>Beispiele:</p><ul><li>JSON: ["P1_ENAME","P1_JOB"…]</li><li>jQuery-Klassenselektor: .adc-remember</li><li>jQuery ID-Selektor: #P1_ENAME,#P1_JOB</li></ul>}',
+    p_cap_display_name => 'JSON oder jQuery-Ausdruck',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
@@ -1603,11 +1731,11 @@ q'{}',
     p_cat_catg_id => 'REPORT',
     p_cat_caif_id => 'SELECTABLE_REPORT',
     p_cat_cato_id => 'ADC',
-    p_cat_name => 'Wähle Zeile in Region',
+    p_cat_name => 'wähle Zeile in Region',
     p_cat_display_name => q'{<p><strong>wähle Zeile</strong> ‘#PARAM_1#' <strong>in Bericht</strong> #ITEM#</p>}',
     p_cat_description => q'{<p>Wählt eine Zeile in einem Bericht (klassisch, Interactive Region oder Interactive Grid) oder einem Tree.</p>}',
     p_cat_pl_sql => q'{}',
-    p_cat_js => q'{de.condes.plugin.adc.actions.selectEntry('#ITEM#', '#PARAM_1#', true);}',
+    p_cat_js => q'{de.condes.plugin.adc.actions.selectEntry('#ITEM#', '#PARAM_1#', #PARAM_2#);}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
 
@@ -1619,6 +1747,16 @@ q'{}',
     p_cap_description => q'{<p>ID der Zeile, die gewählt werden soll. Kann z.B. #EVENT_DATA# sein, wenn die ID über eine Beobachtung einer Region geliefert wird.</p>}',
     p_cap_display_name => 'ID der Zeile',
     p_cap_mandatory => adc_util.C_FALSE,
+    p_cap_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'SELECT_REGION_ENTRY',
+    p_cap_capt_id => 'SWITCH',
+    p_cap_sort_seq => 2,
+    p_cap_default => q'{0}',
+    p_cap_description => q'{<p>Kontrolliert, ob die Zeile nur ausgewählt, oder zusätzlich der Fokus auf die erste Spalte gesetzt wird.</p>}',
+    p_cap_display_name => 'setze Fokus',
+    p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
 
@@ -1651,8 +1789,8 @@ q'{}',
     p_cat_catg_id => 'ADC',
     p_cat_caif_id => 'DOCUMENT',
     p_cat_cato_id => 'ADC',
-    p_cat_name => 'fordere Seitenverarbeitung an',
-    p_cat_display_name => q'{<p><strong>fordere Verarbeitung</strong> der Seite im Modus “#PARAM_1#” <strong>an.</strong> #PARAM_2| Request: ||#</p>}',
+    p_cat_name => 'Seite absenden und/oder validieren',
+    p_cat_display_name => q'{<p><strong>fordere Verarbeitung</strong> der Seite im Modus “#PARAM<i>1#” <strong>an. </strong>PARAM</i>2| Request: ||#</p>}',
     p_cat_description => q'{<p>Validiert und/oder sendet die Seite ab.</p><p>Der Modus bestimmt, welche Aktionen durchgeführt werden. Soll die Seite validiert werden, kann ein Meldungstext definiert werden, der im Fall einer nicht erfolgreichen Validierung angezeigt wird. Wird diese Meldung weggelassen, werden nur die Fehlermeldungen der Validierungslogik angezeigt.</p>}',
     p_cat_pl_sql => q'{adc_api.validate_page('#PARAM_1#');}',
     p_cat_js => q'{de.condes.plugin.adc.actions.submit('#PARAM_2#', '#PARAM_3#');}',

@@ -244,6 +244,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       case C_REGION_CR:
         $report.on(C_CLICK, C_REGION_CR_SELECTOR, function(){
           pkValue = $(this).find('td [data-id]').data('id');
+          renderer.highlightRow($(this), true);
           pCallback(pkValue);
         });
         break;
@@ -264,6 +265,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       case C_REGION_IR:
         $report.on(C_CLICK, C_REGION_IR_SELECTOR, function(){
           pkValue = $(this).find('td [data-id]').data('id');
+          renderer.highlightRow($(this), true);
           pCallback(pkValue);
         });
         break;
@@ -305,7 +307,21 @@ de.condes.plugin.adc.apex_42_20_2 = {};
   }; // hideReportFilterPanel
   
   
-  
+  /**
+    Function: highlightRow
+      Method to optically select a row in a report
+     
+    Parameters:
+      pRow - jQuery object pointing to the data row to highlight
+      pSetFocus - Flag to indicate whether the row has to be focussed
+   */
+  renderer.highlightRow = function(pRow, pSetFocus){
+    pRow.addClass("adc-selected-row").siblings().removeClass("adc-selected-row");
+    
+    if (pSetFocus){
+      pRow.find('td:first-child a').focus();
+    };
+  }; // highlightRow
 
   
   /**

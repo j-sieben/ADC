@@ -395,7 +395,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
             // In case of a radio group or a checkbox, the id has to be taken from the parent fieldset
             props.triggeringElement.id = $element.parents('.radio_group,.checkbox_group').attr('id');
           }
-          if (props.triggeringElement.id.match(/oj.*/)){
+          if (props.triggeringElement.id && props.triggeringElement.id.match(/oj.*/)){
             // item is Oracle Jet item group, traverse up
             props.triggeringElement.id = $(`#${props.triggeringElement.id}`).closest('div.apex-item-group').attr('id');
           }

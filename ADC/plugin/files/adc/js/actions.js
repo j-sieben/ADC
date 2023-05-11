@@ -625,15 +625,6 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     apex.item(pItemId).enable();
     apex.item(pItemId).refresh();
   }; // refreshAndSetValue
-  
-  
-  
-  /**
-    Function: highlightReportRow
-      Method to highlight and optionally set focus to a report row.
-      
-    Paarmeters:
-      pSelector - 
 
 
   /** 
@@ -649,26 +640,51 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
    */
   actions.selectEntry = function(pRegionId, pEntryId, pSetFocus, pNoinform){
     let $region;
+    let selector;
     let entry;
-    const C_CR_SELECTOR = `#report_table_${pRegionId} td[data-id="${pEntryId}"`;
+    const C_CR_SELECTOR = `#report_table_${pRegionId}`;
+    const C_IR_SELECTOR = `#${pRegionId}_ir`;
     const C_IG_SELECTOR = `#${pRegionId}_ig`;
     const C_TREE_SELECTOR = `#${pRegionId}_tree`;
+    const C_DATA_ID_SELECTOR = ` span[data-id="${pEntryId}"]`;
+    const C_IR_FIRST_ROW_SELECTOR = ' .a-IRR-table tbody tr:nth-child(2)';
+    const C_CR_FIRST_ROW_SELECTOR = ' > tbody > tr:nth-child(1)';
+    
+    if(typeof pEntryId == "undefined" || pEntryId == ""){ 
+      pEntryId = apex.item($(`input[${C_REGION_DATA_ITEM}=${pRegionId}]`).attr('id')).getValue();
+    };
 
     switch(getRegionType(pRegionId)){
       case C_REGION_CR:
-        entry = $(C_CR_SELECTOR);
+        if(pEntryId == ""){
+          entry = $(C_CR_SELECTOR + C_CR_FIRST_ROW_SELECTOR);
+        }
+        else {
+          entry = $(C_CR_SELECTOR + C_DATA_ID_SELECTOR).parent('td').parent('tr');
+        };
+        adc.renderer.highlightRow(entry, pSetFocus);
         break;
       case C_REGION_IG:
         $region = $(C_IG_SELECTOR);
+        if(pEntryId == ""){
+          pEntryId = $region.find('tbody tr').data('id');
+        };
         entry = $region
                 .interactiveGrid('getViews', 'grid')
                 .model
                 .getRecord(pEntryId);
         if(entry){
           $region.interactiveGrid('setSelectedRecords', entry, pSetFocus, pNoinform);
-        }
+        };
         break;
       case C_REGION_IR:
+        if(pEntryId == ""){
+          entry = $(C_IR_SELECTOR + C_IR_FIRST_ROW_SELECTOR);
+        }
+        else {
+          entry = $(C_IR_SELECTOR + C_DATA_ID_SELECTOR).parent('td').parent('tr');
+        };
+        adc.renderer.highlightRow(entry, pSetFocus);
         break;
       case C_REGION_TREE:
         $region = $(C_TREE_SELECTOR);

@@ -92,6 +92,7 @@ as
     p_row.caif_item_types := utl_apex.get_string('caif_item_types');
     p_row.caif_actual_page_only := utl_apex.get_string('caif_actual_page_only');
     p_row.caif_active := utl_apex.get_string('caif_active');
+    p_row.caif_default := utl_apex.get_string('caif_default');
   
     pit.leave_detailed;
   end copy_edit_cif;
