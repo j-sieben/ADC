@@ -947,13 +947,7 @@ end;~';
     l_idx binary_integer;
   begin
     pit.enter_optional;
-
-                               
-                                          
-           
-
     if p_row.capt_capvt_id = C_STATIC_LIST then
-
       with params as (
              select length(p_row.capt_id) p_position,
                     p_row.capt_id || '%' p_capt_id_pattern

@@ -292,39 +292,6 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       }
     });
   }; // bindEvents
-  
-
-  /**
-    Function: bindObserverItems
-      Method identifies all elements whose values must be sent to the database with any request.
-      Two possible ways exist to add an item to this observer list:
-      
-      - Initialization code of the plugin that automatically detects items that have a value and are referenced by page rules
-      - Explicit observation as requested by a ADC rule action
-      
-      The second option calls this method.
-    
-    Parameter:
-      pSelector - jQuery selector to identify the item(s) that must be observed explicitly
-   */
-  const bindObserverItems = function (pSelector) {
-    var selectorList;
-    if (pSelector) {
-      selectorList = pSelector.split(',');
-      $.each(selectorList, function (idx, element) {
-        if (this.substring(0, 1) === '.') {
-          $(element).each(function (idx, element) {
-            addPageItem($(element).attr('id'));
-          });
-        }
-        else {
-          if ($.inArray(element, props.pageItems) === -1) {
-            props.pageItems.push(element);
-          }
-        }
-      });
-    }
-  }; // bindObserverItems
 
 
   /**
@@ -545,6 +512,39 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   /* +++++ END PRIVATE  ++++++++ */
 
   /* ++++++++++ CORE FUNCTIONALITY ++++++++++ */
+  
+
+  /**
+    Function: bindObserverItems
+      Method identifies all elements whose values must be sent to the database with any request.
+      Two possible ways exist to add an item to this observer list:
+      
+      - Initialization code of the plugin that automatically detects items that have a value and are referenced by page rules
+      - Explicit observation as requested by a ADC rule action
+      
+      The second option calls this method.
+    
+    Parameter:
+      pSelector - jQuery selector to identify the item(s) that must be observed explicitly
+   */
+  ctl.bindObserverItems = function (pSelector) {
+    var selectorList;
+    if (pSelector) {
+      selectorList = pSelector.split(',');
+      $.each(selectorList, function (idx, element) {
+        if (this.substring(0, 1) === '.') {
+          $(element).each(function (idx, element) {
+            addPageItem($(element).attr('id'));
+          });
+        }
+        else {
+          if ($.inArray(element, props.pageItems) === -1) {
+            props.pageItems.push(element);
+          }
+        }
+      });
+    }
+  }; // bindObserverItems
   
   /** 
     Function: bindConfirmationHandler
@@ -834,7 +834,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       props.standardMessages = JSON.parse(pAction.attribute06);
     }
 
-    bindObserverItems(pAction.attribute05);
+    ctl.bindObserverItems(pAction.attribute05);
 
     // Prepare page for ADC usage
     bindEvents();

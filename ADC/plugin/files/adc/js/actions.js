@@ -396,9 +396,11 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     };
     
     // connect target item to report to enable later reference of the selected node.
+    // also, this items needs to be observered to harmonize its value with the page state.
     if (pItemId){
       $item = $(`#${pItemId}`);
       $item.attr(C_REGION_DATA_ITEM, pReportId);
+      adc.controller.bindObserverItems(pItemId);
     };
 
     adc.renderer.getReportSelection(pReportId, pColumn, getRegionType(pReportId), persistOrReport);
@@ -423,15 +425,16 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   /**
     Function: notify
       Method to show a notification. Delegates implementation to <adc.renderer>.
-      A notification is a message that is shown as a success message to the user.
+      A notification is a message that is shown to the user in a small dialog.
 
     Parameter:
+      pStyle - One of the predefined styles alert|warning|sucess|info|confirm
       pMessage - Message that is shown to the user. Replaces any existing messages.
       pTitle - Optional title of the dialog
-      pStyle - One of the predefined styles information|warning|sucess|error
+      pFocusItem - Item that gets focus after closing the dialog
    */
-  actions.notify = function (pMessage, pTitle, pStyle) {
-    adc.renderer.showDialog(pMessage, pTitle, pStyle, false);
+  actions.notify = function (pStyle, pMessage, pTitle, pFocusItem) {
+    adc.renderer.showDialog(pStyle, pMessage, pTitle, pFocusItem);
   }; // notify
 
 

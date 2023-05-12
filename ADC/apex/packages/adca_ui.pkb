@@ -185,7 +185,7 @@ as
   begin
     pit.enter_detailed('copy_edit_capt_static_list');
   
-    p_row.csl_capt_id := utl_apex.get_string('csl_capt_id');
+    p_row.csl_capt_id := utl_apex.get_string('capt_id');
     p_row.csl_pti_id := p_row.csl_capt_id || '_' || adc_util.clean_adc_name(utl_apex.get_string('csl_pti_id'));
     p_row.csl_name := utl_apex.get_string('csl_name');
   
@@ -899,6 +899,21 @@ as
       adc.register_error('DOCUMENT', sqlerrm, pit_util.get_call_stack);
       pit.leave_mandatory;
   end set_action_export_crg;
+  
+  
+  /** 
+    Function: process_edit_cat_exclude
+      See <adca_ui.process_edit_cat_exclude>
+   */
+  procedure process_edit_cat_exclude
+  as
+    l_exclude_list adc_util.max_char;
+  begin
+    pit.enter_mandatory;
+    
+    l_exclude_list := utl_apex.get_string('P16_ADC_ACTION_TYPES');
+    param.set_string('ADC_EXCLUDE_ACTION_TYPES', C_ADC, l_exclude_list, 'ALLE');
+  end process_edit_cat_exclude;
 
 end adca_ui;
 /

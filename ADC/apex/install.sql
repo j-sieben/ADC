@@ -17,6 +17,7 @@ prompt &h3.Create views
 @&tool_dir.create_view adca_ui_lov_action_param_visual_type
 @&tool_dir.create_view adca_ui_lov_action_type_group
 @&tool_dir.create_view adca_ui_lov_action_type_owner
+@&tool_dir.create_view adca_ui_lov_adc_action_types
 @&tool_dir.create_view adca_ui_lov_apex_action_items
 @&tool_dir.create_view adca_ui_lov_apex_action_type
 @&tool_dir.create_view adca_ui_lov_apex_action
@@ -49,6 +50,7 @@ prompt &h3.Create views
 @&tool_dir.create_view adca_ui_edit_cato
 @&tool_dir.create_view adca_ui_edit_capt
 @&tool_dir.create_view adca_ui_edit_capt_static_list
+@&tool_dir.create_view adca_ui_edit_csm
 @&tool_dir.create_view adca_ui_list_action_type
 
 prompt &h3.Create ADCA messages

@@ -403,19 +403,43 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       Shows a message on the page
 
     Parameter:
+      pStyle - One of the predefined styles information|warning|sucess|error
       pMessage - Message of the dialog
       pTitle - Optional title of the dialog
-      pStyle - One of the predefined styles information|warning|sucess|error
-      pConfirm - Flag to indicate whether this dialog is a confirmation dialog
+      pFocusItem - Flag to indicate whether this dialog is a confirmation dialog
    */
-  renderer.showDialog = function(pMessage, pTitle, pStyle, pConfirm){
+  renderer.showDialog = function(pStyle, pMessage, pTitle, pFocusItem){
+    if (pFocusItem != undefined){
+      pFocusItem  = $('.t-Body').find('input, button').not(':hidden').first().attr('id');
+    };
+    const callback = function(){
+      $(`#${pFocusItem}`).focus();
+    };
     const options = {
       "modern":true,
-      "style":pStyle,
       "title":pTitle,
-      "confirm":pConfirm
-    }
-    msg.showDialog(pMessage, options);
+      "callback":callback};
+    switch (pStyle){
+      case 'ALERT':
+        options.style = 'error';
+        msg.showDialog("" + pMessage, options);
+        break;
+      case 'SUCCESS':
+        msg.showPageSuccess(pMessage);
+        $('.t-Button--closeAlert').one('click', function(){
+          $(`#${pFocusItem}`).focus();
+        });
+        break;
+      case 'WARNING':
+        options.style = 'warning';
+        msg.showDialog("" + pMessage, options);
+        break;
+      case 'INFO':
+        options.style = 'information';
+        msg.showDialog("" + pMessage, options);
+        break;
+    };
+    
   }; // showDialog
 
   

@@ -32,164 +32,6 @@ as
     return 'SHOW_DISABLE';
   end;
   
-  static procedure assert(
-    p_condition in boolean,
-    p_message_name in varchar2 default 'PIT_ASSERT_TRUE',
-    p_page_item in varchar2 default null,
-    p_msg_args msg_args default null)
-  is
-  begin
-    pit.enter_optional;
-    pit.assert(
-      p_condition => p_condition,
-      p_message_name => p_message_name,
-      p_msg_args => p_msg_args);
-    pit.leave_optional;
-  exception
-    when others then
-      register_error(
-        p_cpi_id => p_page_item,
-        p_message_name => p_message_name,
-        p_msg_args => p_msg_args);
-      pit.leave_optional;
-  end assert;
-
-
-  static procedure assert_is_null(
-    p_condition in varchar2,
-    p_message_name in varchar2 default 'PIT_ASSERT_IS_NULL',
-    p_page_item in varchar2 default null,
-    p_msg_args msg_args default null)
-  as
-  begin
-    pit.enter_optional;
-    pit.assert_is_null(
-      p_condition => p_condition,
-      p_message_name => p_message_name,
-      p_msg_args => p_msg_args);
-    pit.leave_optional;
-  exception
-    when others then
-      register_error(
-        p_cpi_id => p_page_item,
-        p_message_name => p_message_name,
-        p_msg_args => p_msg_args);
-      pit.leave_optional;
-  end assert_is_null;
-
-
-  static procedure assert_not_null(
-    p_condition in varchar2,
-    p_message_name in varchar2 default 'PIT_ASSERT_NOT_NULL',
-    p_page_item in varchar2 default null,
-    p_msg_args msg_args default null)
-  as
-  begin
-    pit.enter_optional;
-    pit.assert_not_null(
-      p_condition => p_condition,
-      p_message_name => p_message_name,
-      p_msg_args => p_msg_args);
-    pit.leave_optional;
-  exception
-    when others then
-      register_error(
-        p_cpi_id => p_page_item,
-        p_message_name => p_message_name,
-        p_msg_args => p_msg_args);
-      pit.leave_optional;
-  end assert_not_null;
-
-
-  static procedure assert_exists(
-    p_stmt in varchar2,
-    p_message_name in varchar2 default 'PIT_ASSERT_EXISTS',
-    p_page_item in varchar2 default null,
-    p_msg_args msg_args default null)
-  is
-  begin
-    pit.enter_optional;
-    pit.assert_exists(
-      p_stmt => p_stmt,
-      p_message_name => p_message_name,
-      p_msg_args => p_msg_args);
-    pit.leave_optional;
-  exception
-    when others then
-      register_error(
-        p_cpi_id => p_page_item,
-        p_message_name => p_message_name,
-        p_msg_args => p_msg_args);
-      pit.leave_optional;
-  end assert_exists;
-
-
-  static procedure assert_not_exists(
-    p_stmt in varchar2,
-    p_message_name in varchar2 default 'PIT_ASSERT_NOT_EXISTS',
-    p_page_item in varchar2 default null,
-    p_msg_args msg_args default null)
-  is
-  begin
-    pit.enter_optional;
-    pit.assert_not_exists(
-      p_stmt => p_stmt,
-      p_message_name => p_message_name,
-      p_msg_args => p_msg_args);
-    pit.leave_optional;
-  exception
-    when others then
-      register_error(
-        p_cpi_id => p_page_item,
-        p_message_name => p_message_name,
-        p_msg_args => p_msg_args);
-      pit.leave_optional;
-  end assert_not_exists;
-
-
-  static procedure assert_datatype(
-    p_value in varchar2,
-    p_type in varchar2,
-    p_format_mask in varchar2 default null,
-    p_message_name in varchar2 default 'PIT_ASSERT_DATATYPE',
-    p_page_item in varchar2 default null,
-    p_msg_args msg_args default null,
-    p_accept_null in boolean default true)
-  as
-  begin
-    pit.enter_optional;
-    pit.assert_datatype(
-      p_value => p_value,
-      p_type => p_type,
-      p_format_mask => p_format_mask,
-      p_message_name => p_message_name,
-      p_msg_args => coalesce(p_msg_args, msg_args(p_value, p_type)),
-      p_accept_null => p_accept_null);
-    pit.leave_optional;
-  exception
-    when others then
-      register_error(
-        p_cpi_id => p_page_item,
-        p_message_name => p_message_name,
-        p_msg_args => p_msg_args);
-      pit.leave_optional;
-  end assert_datatype;
-  
-
-  static procedure handle_bulk_errors(
-    p_mapping in char_table default null,
-    p_filter_list in varchar2 default null)
-  as
-  begin
-    pit.enter_optional;
-    
-    adc_api.handle_bulk_errors(
-      p_mapping => p_mapping, 
-      p_filter_list => p_filter_list);
-    
-    pit.leave_optional;
-  end handle_bulk_errors;
-  
   static procedure add_javascript(
     p_javascript in varchar2)
   as
@@ -358,6 +200,21 @@ as
   begin
     return adc_api.get_string(p_cpi_id);
   end get_string;
+  
+
+  static procedure handle_bulk_errors(
+    p_mapping in char_table default null,
+    p_filter_list in varchar2 default null)
+  as
+  begin
+    pit.enter_optional;
+    
+    adc_api.handle_bulk_errors(
+      p_mapping => p_mapping, 
+      p_filter_list => p_filter_list);
+    
+    pit.leave_optional;
+  end handle_bulk_errors;
   
   
   static function firing_item_has_class(
@@ -801,8 +658,11 @@ as
   
   
   static procedure show_notification(
+    p_message_type in varchar2,
     p_message_name in varchar2,
-    p_msg_args in msg_args default null)
+    p_msg_args in msg_args default null,
+    p_title in varchar2 default null,
+    p_focus_item in varchar2 default null)
   as
   begin
     pit.enter_optional(
@@ -811,29 +671,13 @@ as
     
     adc_api.execute_action(
       p_cat_id => 'NOTIFY',
-      p_cpi_id => adc_util.C_NO_FIRING_ITEM,
-      p_param_1 => pit.get_message_text(p_message_name, p_msg_args));
+      p_cpi_id => p_focus_item,
+      p_param_1 => p_message_type,
+      p_param_2 => pit.get_message_text(p_message_name, p_msg_args),
+      p_param_3 => p_title);
       
     pit.leave_optional;
   end show_notification;
-  
-  
-  static procedure show_success(
-    p_message_name in varchar2,
-    p_msg_args in msg_args default null)
-  as
-  begin
-    pit.enter_optional(
-      p_params => msg_params(
-                    msg_param('p_message_name', p_message_name)));
-    
-    adc_api.execute_action(
-      p_cat_id => 'SHOW_SUCCESS',
-      p_cpi_id => adc_util.C_NO_FIRING_ITEM,
-      p_param_1 => pit.get_message_text(p_message_name, p_msg_args));
-      
-    pit.leave_optional;
-  end show_success;
 
 
   static procedure submit_page(

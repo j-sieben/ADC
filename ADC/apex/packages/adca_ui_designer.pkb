@@ -100,6 +100,8 @@ as
   C_ACTION_UPDATE constant adc_util.ora_name_type := 'update-action';
   C_EXPORT_CRG constant adc_util.ora_name_type := 'export-rule-group';
   
+  C_NOTIFICATION_SUCCESS constant adc_util.ora_name_type := 'SUCCESS';
+  
   C_DESIGNER_ACTIONS constant char_table := char_table(C_ACTION_CANCEL, C_ACTION_CREATE, C_ACTION_DELETE, C_ACTION_UPDATE, C_EXPORT_CRG);
   
   
@@ -1515,7 +1517,9 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
         end case;
         
         -- Transaction control, because the action is called via AJAX
-        adc.show_success(msg.ADCA_CHANGES_SAVED);
+        adc.show_notification(
+          p_message_type => C_NOTIFICATION_SUCCESS, 
+          p_message_name => msg.ADCA_CHANGES_SAVED);
         adc.set_item(
           p_cpi_id => C_ITEM_SELECTED_NODE,
           p_item_value => l_selected_id);
@@ -1545,7 +1549,9 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
         adc.set_item(
           p_cpi_id => C_ITEM_SELECTED_NODE,
           p_item_value => p_environment.selected_node);
-        adc.show_success(msg.ADCA_DATA_DELETED);
+        adc.show_notification(
+          p_message_type => C_NOTIFICATION_SUCCESS, 
+          p_message_name => msg.ADCA_DATA_DELETED);
         commit;
       else
         adc.register_error(
@@ -1632,6 +1638,9 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
     l_target_region adc_util.ora_name_type;
   begin
     pit.enter_optional('maintain_visual_state');
+    
+    -- Clean up any existing errors
+    --adc.clear_errors;
       
     -- React on changes of the hierarchy
     case 

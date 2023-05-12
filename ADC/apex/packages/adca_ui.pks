@@ -195,5 +195,12 @@ as
    */
   procedure set_action_export_crg;
 
+
+  /** 
+    Procedure: process_edit_cat_exclude
+      Method to maintain APEX actions for page edit_cat_exclude.
+   */
+  procedure process_edit_cat_exclude;
+
 end adca_ui;
 /
