@@ -81,6 +81,21 @@ q'{}',
     p_capt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
+    p_capt_id => 'DIALOG_TYPE',
+    p_capt_name => 'Dialogtyp',
+    p_capt_display_name => '',
+    p_capt_description => q'{<p>Legt fest, welchen Typ die Meldung besitzen soll</p>}',
+    p_capt_capvt_id => 'STATIC_LIST',
+    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 13) r, null crg_id\CR\}' || 
+q'{    from pit_translatable_item_v\CR\}' || 
+q'{   where pti_pmg_name = 'ADC'\CR\}' || 
+q'{     and pti_id like 'DIALOG_TYPE%'\CR\}' || 
+q'{}',
+    p_capt_select_view_comment => q'{}',
+    p_capt_sort_seq => 10,
+    p_capt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
     p_capt_id => 'EVENT',
     p_capt_name => 'Zusätzliche JavaScript-Events',
     p_capt_display_name => '',
@@ -410,10 +425,10 @@ q'{}',
     p_capt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_capt_id => 'PROCEDURE',
-    p_capt_name => 'PL/SQL-Prozedur',
+    p_capt_id => 'STRING',
+    p_capt_name => 'Zeichenkette',
     p_capt_display_name => '',
-    p_capt_description => q'{<p>Eine bestehende PL/SQL-Prozedur oder eine Package-Prozedur<br>Es muss kein abschliessendes Semikolon angegeben werden.</p>}',
+    p_capt_description => q'{<p>Einfache Zeichenkette.<br>Die Zeichenkette wird mit Hochkommata umgeben, daher ist die Eingabe dieser Zeichen nicht erforderlich.</p>}',
     p_capt_capvt_id => 'TEXT',
     p_capt_select_list_query => q'{}',
     p_capt_select_view_comment => q'{}',
@@ -432,10 +447,10 @@ q'{}',
     p_capt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING_OR_PIT_MESSAGE',
-    p_capt_name => 'Zeichenkette oder Meldungsname',
+    p_capt_id => 'PROCEDURE',
+    p_capt_name => 'PL/SQL-Prozedur',
     p_capt_display_name => '',
-    p_capt_description => q'{<p>Falls nicht mit Hochkommata eingeschlossen, ein PIT-Meldungsname der Form msg.NAME</p>}',
+    p_capt_description => q'{<p>Eine bestehende PL/SQL-Prozedur oder eine Package-Prozedur<br>Es muss kein abschliessendes Semikolon angegeben werden.</p>}',
     p_capt_capvt_id => 'TEXT',
     p_capt_select_list_query => q'{}',
     p_capt_select_view_comment => q'{}',
@@ -465,10 +480,10 @@ q'{}',
     p_capt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING_OR_FUNCTION',
-    p_capt_name => 'Zeichenkette oder PL/SQL-Funktion',
+    p_capt_id => 'STRING_OR_PIT_MESSAGE',
+    p_capt_name => 'Zeichenkette oder Meldungsname',
     p_capt_display_name => '',
-    p_capt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein PL/SQL-Funktionsaufruf, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
+    p_capt_description => q'{<p>Falls nicht mit Hochkommata eingeschlossen, ein PIT-Meldungsname der Form msg.NAME</p>}',
     p_capt_capvt_id => 'TEXT',
     p_capt_select_list_query => q'{}',
     p_capt_select_view_comment => q'{}',
@@ -1138,7 +1153,7 @@ q'{}',
     p_cat_caif_id => 'DOCUMENT',
     p_cat_cato_id => 'ADC',
     p_cat_name => 'brich modalen Dialog ab',
-    p_cat_display_name => q'{<p><strong>brich Dialog</strong> #ITEM|"|" |#<strong>ab.</strong></p>}',
+    p_cat_display_name => q'{<p><strong>brich Dialog</strong> <strong>ab</strong>#PARAM_1| und löse Ereignis auf "|" aus|#.</p>}',
     p_cat_description => q'{<p>Bricht die Anzeige des modalen Dialogs ab. Falls mehrere modale Fenster überlappend eingesetzt werden, muss das auslösende Element angegeben werden.</p>}',
     p_cat_pl_sql => q'{}',
     p_cat_js => q'{de.condes.plugin.adc.actions.cancelModalDialog('#PARAM_1#', #PARAM_2#);}',
@@ -1522,21 +1537,41 @@ q'{}',
     p_cat_catg_id => 'JAVA_SCRIPT',
     p_cat_caif_id => 'ALL',
     p_cat_cato_id => 'ADC',
-    p_cat_name => 'Benachrichtigung zeigen',
-    p_cat_display_name => q'{<p><strong>zeige Hinweis </strong>“#PARAM_1#”</p>}',
-    p_cat_description => q'{<p>Zeigt eine Nachricht auf der Anwendungsseite</p>}',
+    p_cat_name => 'zeige Meldung',
+    p_cat_display_name => q'{<p><strong>zeige Meldung </strong>“#PARAM_2#”, Typ #PARAM_1#</p>}',
+    p_cat_description => q'{<p>Zeigt eine Nachricht auf der Anwendungsseite. Beim Schließen des Dialoges wird der Fokus auf das Element gesetzt, das als Seitenelement ausgewählt wurde.</p>}',
     p_cat_pl_sql => q'{}',
-    p_cat_js => q'{de.condes.plugin.adc.actions.notify('#PARAM_1#');}',
+    p_cat_js => q'{de.condes.plugin.adc.actions.notify('#PARAM_1#', '#PARAM_2#', '#PARAM_3#', '#ITEM#');}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_TRUE);
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'NOTIFY',
-    p_cap_capt_id => 'STRING_OR_FUNCTION',
+    p_cap_capt_id => 'DIALOG_TYPE',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
-    p_cap_description => q'{<p>Der Meldungstext</p>}',
-    p_cap_display_name => 'Meldung',
+    p_cap_description => q'{}',
+    p_cap_display_name => '',
+    p_cap_mandatory => adc_util.C_TRUE,
+    p_cap_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'NOTIFY',
+    p_cap_capt_id => 'STRING',
+    p_cap_sort_seq => 3,
+    p_cap_default => q'{}',
+    p_cap_description => q'{<p>Titel des Dialogfensters</p>}',
+    p_cap_display_name => 'Dialogtitel',
+    p_cap_mandatory => adc_util.C_FALSE,
+    p_cap_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'NOTIFY',
+    p_cap_capt_id => 'STRING_OR_PIT_MESSAGE',
+    p_cap_sort_seq => 2,
+    p_cap_default => q'{}',
+    p_cap_description => q'{<p>Text der Meldung.</p>}',
+    p_cap_display_name => 'Meldungstext',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
@@ -1789,8 +1824,8 @@ q'{}',
     p_cat_catg_id => 'ADC',
     p_cat_caif_id => 'DOCUMENT',
     p_cat_cato_id => 'ADC',
-    p_cat_name => 'Seite absenden und/oder validieren',
-    p_cat_display_name => q'{<p><strong>fordere Verarbeitung</strong> der Seite im Modus “#PARAM<i>1#” <strong>an. </strong>PARAM</i>2| Request: ||#</p>}',
+    p_cat_name => 'fordere Verarbeitung der Seite an',
+    p_cat_display_name => q'{<p><strong>fordere Verarbeitung</strong> der Seite im Modus “#PARAM_1#” <strong>an.</strong> #PARAM_2| Request: ||#</p>}',
     p_cat_description => q'{<p>Validiert und/oder sendet die Seite ab.</p><p>Der Modus bestimmt, welche Aktionen durchgeführt werden. Soll die Seite validiert werden, kann ein Meldungstext definiert werden, der im Fall einer nicht erfolgreichen Validierung angezeigt wird. Wird diese Meldung weggelassen, werden nur die Fehlermeldungen der Validierungslogik angezeigt.</p>}',
     p_cat_pl_sql => q'{adc_api.validate_page('#PARAM_1#');}',
     p_cat_js => q'{de.condes.plugin.adc.actions.submit('#PARAM_2#', '#PARAM_3#');}',
@@ -2062,30 +2097,6 @@ q'{}',
     p_cap_default => q'{}',
     p_cap_description => q'{<p>jQuery-Selektor, der die Seitenelemente identifiziert, die ausgeblendet werden sollen.</p>}',
     p_cap_display_name => 'Auszublendende Seitenelemente',
-    p_cap_mandatory => adc_util.C_TRUE,
-    p_cap_active => adc_util.C_TRUE);
-
-
-  adc_admin.merge_action_type(
-    p_cat_id => 'SHOW_SUCCESS',
-    p_cat_catg_id => 'JAVA_SCRIPT',
-    p_cat_caif_id => 'DOCUMENT',
-    p_cat_cato_id => 'ADC',
-    p_cat_name => 'zeige Erfolgsmeldung',
-    p_cat_display_name => q'{<p><strong>zeige Erfolgsmeldung</strong> #PARAM_1#</p>}',
-    p_cat_description => q'{<p>zeigt eine Erfolgsmeldung.</p>}',
-    p_cat_pl_sql => q'{}',
-    p_cat_js => q'{de.condes.plugin.adc.actions.showSuccess('#PARAM_1#');}',
-    p_cat_is_editable => adc_util.C_TRUE,
-    p_cat_raise_recursive => adc_util.C_FALSE);
-
-  adc_admin.merge_action_parameter(
-    p_cap_cat_id => 'SHOW_SUCCESS',
-    p_cap_capt_id => 'STRING_OR_PIT_MESSAGE',
-    p_cap_sort_seq => 1,
-    p_cap_default => q'{}',
-    p_cap_description => q'{}',
-    p_cap_display_name => '',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
