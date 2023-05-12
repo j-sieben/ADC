@@ -1,3 +1,4 @@
+set define off
 
 begin
 
@@ -2647,3 +2648,5 @@ begin
   commit;
 end;
 /
+
+set define on
