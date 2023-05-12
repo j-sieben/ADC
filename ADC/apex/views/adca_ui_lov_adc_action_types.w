@@ -1,6 +1,6 @@
 create or replace force view adca_ui_lov_adc_action_types
 as 
-select cat_name d, cat_id r, case when column_value is null then 0 else 1 end cat_excluded
+select cat_name d, cat_id r, case when column_value is null then adc_util.c_false else adc_util.c_true end cat_excluded
   from adc_action_types_v
   left join table(
        utl_text.string_to_table(param.get_string('ADC_EXCLUDE_ACTION_TYPES', 'ADC'), ':'))
