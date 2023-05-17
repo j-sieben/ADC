@@ -223,67 +223,6 @@ de.condes.plugin.adc.apex_42_20_2 = {};
   
 
   /**
-    Function: getReportSelection
-     
-    Parameters:
-      pReportId - ID of the report to get the selection from. Must be a static ID
-      pItemId - Optional item to set the selected value to 
-      pColumn - optional ordinal column number to get the PK value from 
-   */
-  renderer.getReportSelection = function(pReportId, pColumn, pRegionType, pCallback){
-    const C_REGION_CR_SELECTOR = '.t-Report-report tbody tr';
-    const C_REGION_IR_SELECTOR = '.a-IRR-table tr:not(:first-child)';
-    const $report = $(`#${pReportId}`);
-    let $tree;
-    let selectedNodes;
-    let idList;
-    let pkValue;
-
-    // Examine type of report and bind click handler
-    switch(pRegionType){
-      case C_REGION_CR:
-        $report.on(C_CLICK, C_REGION_CR_SELECTOR, function(){
-          pkValue = $(this).find('td [data-id]').data('id');
-          renderer.highlightRow($(this), true);
-          pCallback(pkValue);
-        });
-        break;
-      case C_REGION_IG:
-        $report.on(C_IG_SELECTION_CHANGE, function(e, data){
-          if(data.selectedRecords.length){
-            // Try to get the primary key information from the identity column.
-            // If none exists, get it from the column index passed in
-            if(pColumn){
-              pkValue = data.selectedRecords[0][Math.max(pColumn - 1, 0)];
-            }else{
-              pkValue = data.model.getRecordId(data.selectedRecords[0]);
-            }
-            pCallback(pkValue);
-          }
-        });
-        break;
-      case C_REGION_IR:
-        $report.on(C_CLICK, C_REGION_IR_SELECTOR, function(){
-          pkValue = $(this).find('td [data-id]').data('id');
-          renderer.highlightRow($(this), true);
-          pCallback(pkValue);
-        });
-        break;
-      case C_REGION_TREE:
-        $tree = $(`#${pReportId}_tree`);
-        $tree.on(C_TREE_SELECTION_CHANGE, function(){
-          selectedNodes = $tree.treeView('getSelectedNodes');
-          idList = selectedNodes
-                   .map(function(item){return item.id;})
-                   .join(':');
-          pCallback(idList);
-        });
-        break;
-    }
-  }; // getReportSelection
-  
-
-  /**
     Function: hideReportFilterPanel
       Removes filter area from interactive report or interactive grid.
 

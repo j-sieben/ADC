@@ -30,7 +30,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     <p>To work, this plugin must only be called during page load, no administration or parameterization is required.>p>
    */
 (function (adc, $) {
-  "use strict";
+  'use strict';
 
   /**
     Group: Constants
@@ -38,6 +38,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   const C_BODY = 'body';
   const C_INPUT_SELECTOR = ':input:visible:not(button)';
   const C_DOCUMENT = 'DOCUMENT';
+  const C_DATEI_NAME = 'de.condes.plugin.adc.actions.js';
 
   // Region Type constants
   const C_REGION_CR = 'ClassicReport';
@@ -45,19 +46,27 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   const C_REGION_IG = 'InteractiveGrid';
   const C_REGION_TREE = 'Tree';
   const C_REGION_TAB = 'Tab';
-  
   const C_REGION_DATA_ITEM = 'data-item-for-region';
-
+  
+  // Selector constants
+  const C_REGION_CR_SELECTOR = '.t-Report-report tbody tr';
+  const C_REGION_IR_SELECTOR = '.a-IRR-table tr:not(:first-child)';
+  const C_REGION_IR_ROW_SELECTOR = '.t-fht-tbody .a-IRR-table tr';
+  const C_REGION_IR_FIRST_ROW_SELECTOR = `${C_REGION_IR_ROW_SELECTOR}:nth-child(2)`;
+  
   // Command constants
   const C_COMMAND = 'COMMAND';
   const C_COMMAND_NAME = 'command';
   
   // Event constants
   const C_CLICK_EVENT = 'click';
+  const C_KEYDOWN_EVENT = 'keydown';
   const C_SELECTION_CHANGE_EVENT = 'adcselectionchange';
   const C_APEX_AFTER_REFRESH = 'apexafterrefresh';
   const C_MODAL_DIALOG_CANCEL_EVENT = 'apexaftercanceldialog';
   const C_MODAL_DIALOG_CLOSE_EVENT = 'apexafterclosedialog';
+  
+  const C_TABKEY = 9;
 
   // Modal dialog constants
   const C_MODAL_DIALOG_CLASS = 'ui-dialog';
@@ -197,11 +206,11 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
    */
   actions.cancelModalDialog = function(pTriggeringItemId, pCheckChanges){
     const cancelDialog = function(pTriggeringItemId) {
-      if (typeof pTriggeringItemId != 'undefined' && pTriggeringItemId != ""){
+      if (typeof pTriggeringItemId != 'undefined' && pTriggeringItemId != ''){
         parent.$('#' + pTriggeringItemId ).trigger(C_MODAL_DIALOG_CANCEL_EVENT);
       }
       else {
-        if (pTriggeringItemId == ""){
+        if (pTriggeringItemId == ''){
           pTriggeringItemId = parent.$(C_MODAL_DIALOG_SELECTOR).data(C_MODAL_DIALOG_CLASS).opener.attr('id');
           parent.$(C_MODAL_DIALOG_SELECTOR).data(C_MODAL_DIALOG_CLASS).opener.trigger(C_MODAL_DIALOG_CANCEL_EVENT);
         }
@@ -217,7 +226,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     
     if (pCheckChanges && adc.controller.hasUnsavedChanges()){
         apex.message.confirm(
-          adc.controller.getStandardMessage("CSM_CANCEL_HAS_CHANGES"),
+          adc.controller.getStandardMessage('CSM_CANCEL_HAS_CHANGES'),
           function( okPressed ) {
             if( okPressed ) {
                 cancelDialog(pTriggeringItemId);
@@ -239,11 +248,11 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
    */
   actions.closeModalDialog = function(pTriggeringItemId, pPageItems, pCheckChanges){
     const closeDialog = function(pTriggeringItemId, pPageItems){
-      if (typeof pTriggeringItemId != "undefined" && pTriggeringItemId != ""){
+      if (typeof pTriggeringItemId != 'undefined' && pTriggeringItemId != ''){
         parent.$('#' + pTriggeringItemId ).trigger(C_MODAL_DIALOG_CLOSE_EVENT);
       }
       else {
-        if (typeof pTriggeringItemId == "undefined" || pTriggeringItemId == ""){
+        if (typeof pTriggeringItemId == 'undefined' || pTriggeringItemId == ''){
           pTriggeringItemId = parent.$(C_MODAL_DIALOG_SELECTOR).data(C_MODAL_DIALOG_CLASS).opener.attr('id');
           parent.$(C_MODAL_DIALOG_SELECTOR).data(C_MODAL_DIALOG_CLASS).opener.trigger(C_MODAL_DIALOG_CLOSE_EVENT);
         }
@@ -259,7 +268,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       
     if (pCheckChanges && !adc.controller.hasUnsavedChanges()){
         apex.message.alert(
-          adc.controller.getStandardMessage("CSM_CLOSE_WO_CHANGES"),
+          adc.controller.getStandardMessage('CSM_CLOSE_WO_CHANGES'),
           function(pTriggeringItemId, pPageItems){
             closeDialog(pTriggeringItemId, pPageItems)
           });
@@ -319,9 +328,9 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     
     if(typeof pData === 'string'){
       data = {
-        "command":pData, 
-        "additionalPageItems":[], 
-        "monitorChanges": false
+        'command':pData, 
+        'additionalPageItems':[], 
+        'monitorChanges': false
       };
     }
     else{
@@ -363,7 +372,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       To gather access to the primary key value, it is necessary to obey the following conventions:
       
       - In interactive and classic reports, a visible column must contain a html expression with a <data-id> attribute
-        containing the PK value: <&lt;span data-id="#PK_COLUMN#"&gt;#VISIBLE_COLUMN#&lt;/span&gt;>>li>
+        containing the PK value: <&lt;span data-id='#PK_COLUMN#'&gt;#VISIBLE_COLUMN#&lt;/span&gt;>>li>
       - In interactive grid, it is possible to either identify a single column of the report as the primary key column
         (ADC does not support multiple key columns yet) or by passing an ordinal number (1 based) pointing to the column
         containing the primary key. The order is defined by the order of the SQL query or the column order respectively.
@@ -374,36 +383,119 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       is provided via the event data property and can be read from PL/SQL by using <adc.get_event_data> or in JavaScript 
       with the replacement Anchor <#EVENT_DATA#> (within ADC only).
       
+      Interactive reports are extended by support for tab keys and row highlighting. Also, tab key navigation is extended 
+      to continue working when leaving the last or entering the first row.
+      
     Parameters:
       pReportId - ID of the report to observe
       pItemId - ID of the page item to save the selection to. If set, the value of the page item will be changed
                 to the ID of the selected row. If not set, the method will raise event <adcselectionchange> with the ID as data.
       pColumn - Optional ordinary number of the column containing the PK information 
                 (IG only and necessary only if no single primary key column is administered)
+      pSetFocus - Flag to indicate whether selecting a row upon initializitaion or refresh also sets the focus to the selected row.
    */
-  actions.getReportSelection = function(pReportId, pItemId, pColumn){
-
-    let $item;
-    const persistOrReport = function(pValue){
-      if(pItemId){
+  actions.getReportSelection = function(pReportId, pItemId, pColumn, pSetFocus){
+    const $report = $(`#${pReportId}`);
+    const reportType = getRegionType(pReportId);
+    let callback;
+    let pkValue;
+    
+    if(pItemId){
+      callback = function(pValue){
         apex.item(pItemId).setValue(pValue);
-      }
-      else{
-        // No item present, submit ID with event C_SELECTION_CHANGE_EVENT
+      };
+      // connect target item to report to enable later reference of the selected node.
+      // also, this items needs to be observered to harmonize its value with the page state.
+      $(`#${pItemId}`).attr(C_REGION_DATA_ITEM, pReportId);
+      adc.controller.bindObserverItems(pItemId);
+    }
+    else{
+      // No item present, submit ID with event C_SELECTION_CHANGE_EVENT
+      callback = function(pValue){
         adc.controller.setTriggeringElement(pReportId, C_SELECTION_CHANGE_EVENT, pValue);
         adc.controller.execute();
-      }
-    };
-    
-    // connect target item to report to enable later reference of the selected node.
-    // also, this items needs to be observered to harmonize its value with the page state.
-    if (pItemId){
-      $item = $(`#${pItemId}`);
-      $item.attr(C_REGION_DATA_ITEM, pReportId);
-      adc.controller.bindObserverItems(pItemId);
+      };
     };
 
-    adc.renderer.getReportSelection(pReportId, pColumn, getRegionType(pReportId), persistOrReport);
+    // Examine type of report and bind click handler
+    switch(reportType){
+      case C_REGION_CR:
+        $report.on(C_CLICK_EVENT, C_REGION_CR_SELECTOR, function(){
+          pkValue = $(this).find('td [data-id]').data('id');
+          adc.renderer.highlightRow($(this), pSetFocus);
+          callback(pkValue);
+        });
+        break;
+      case C_REGION_IG:
+        $report.on(C_IG_SELECTION_CHANGE, function(e, data){
+          if(data.selectedRecords.length){
+            // Try to get the primary key information from the identity column.
+            // If none exists, get it from the column index passed in
+            if(pColumn){
+              pkValue = data.selectedRecords[0][Math.max(pColumn - 1, 0)];
+            }else{
+              pkValue = data.model.getRecordId(data.selectedRecords[0]);
+            }
+            callback(pkValue);
+          };
+        });
+        break;
+      case C_REGION_IR:
+        $report
+          .on(C_CLICK_EVENT, C_REGION_IR_SELECTOR, function(){
+            pkValue = $(this).find('td [data-id]').data('id');
+            actions.selectEntry(pReportId, pkValue, true, false);
+            callback(pkValue);
+          })
+          .on(C_KEYDOWN_EVENT, C_REGION_IR_ROW_SELECTOR, function(e) {
+              // tab forward
+              if (e.which === C_TABKEY && e.shiftKey === false){
+                $(this).next().click();
+                if ($(this).is(':last-child')){
+                  apex.debug.info(`${C_DATEI_NAME} - tab key from last row leaves IR`);
+                } else {
+                  return false;
+                };
+             }
+              else if (e.which === C_TABKEY && e.shiftKey === true){
+                // tab backwards
+                $(this).prev().click();
+                if ($(this).is(':nth-child(2)')){
+                  apex.debug.info(`${C_DATEI_NAME} - tab key backwards from first row leaves IR`);
+                } else {
+                  return false;
+                };
+              };
+          })
+          .on(C_KEYDOWN_EVENT, '.t-fht-thead .a-IRR-table th.a-IRR-header a:last', function(e) {
+              apex.debug.info(`${C_DATEI_NAME} - tab key from last header row enters IR`);
+              if (e.which === C_TABKEY && e.shiftKey === false){
+                $(C_REGION_IR_FIRST_ROW_SELECTOR).click();
+                return false;
+              };
+          })
+          .on(C_APEX_AFTER_REFRESH, function(e){
+            apex.debug.log(`${C_DATEI_NAME} - apexafterrefresh detected`);
+            if(pItemId){
+              apex.item(pItemId).setValue();
+            };
+            actions.selectEntry(pReportId, '', pSetFocus, false);
+          });
+        break;
+      case C_REGION_TREE:
+        let $tree = $(`#${pReportId}_tree`);
+        $tree.on(C_TREE_SELECTION_CHANGE, function(){
+          let selectedNodes;
+          let idList;
+          selectedNodes = $tree.treeView('getSelectedNodes');
+          idList = selectedNodes
+                   .map(function(item){return item.id;})
+                   .join(':');
+          callback(idList);
+        });
+        break;
+    }
+    actions.selectEntry(pReportId, '', pSetFocus, true);
   }; // getReportSelection
 
   
@@ -540,7 +632,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   /** 
     Function: rememberPageItemStatus
       Method to persist the status of all page items or only the items provided as <pPageItems>.
-      This is the basis for "unsaved changes" messages in a dynamic environment.
+      This is the basis for 'unsaved changes' messages in a dynamic environment.
 
     Parameters:
       pPageItems - Array of all page item ids to capture. If empty, all page items are captured.
@@ -643,23 +735,25 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
    */
   actions.selectEntry = function(pRegionId, pEntryId, pSetFocus, pNoinform){
     let $region;
-    let selector;
     let entry;
     const C_CR_SELECTOR = `#report_table_${pRegionId}`;
     const C_IR_SELECTOR = `#${pRegionId}_ir`;
     const C_IG_SELECTOR = `#${pRegionId}_ig`;
     const C_TREE_SELECTOR = `#${pRegionId}_tree`;
-    const C_DATA_ID_SELECTOR = ` span[data-id="${pEntryId}"]`;
     const C_IR_FIRST_ROW_SELECTOR = ' .a-IRR-table tbody tr:nth-child(2)';
     const C_CR_FIRST_ROW_SELECTOR = ' > tbody > tr:nth-child(1)';
+    const $reportDataItem = $(`input[${C_REGION_DATA_ITEM}=${pRegionId}]`);
     
-    if(typeof pEntryId == "undefined" || pEntryId == ""){ 
-      pEntryId = apex.item($(`input[${C_REGION_DATA_ITEM}=${pRegionId}]`).attr('id')).getValue();
+    if(typeof pEntryId == 'undefined' || pEntryId == ''){
+      if ($reportDataItem.length > 0){
+        pEntryId = apex.item($reportDataItem.attr('id')).getValue();
+      };
     };
+    const C_DATA_ID_SELECTOR = ` span[data-id='${pEntryId}']`;
 
     switch(getRegionType(pRegionId)){
       case C_REGION_CR:
-        if(pEntryId == ""){
+        if(pEntryId == ''){
           entry = $(C_CR_SELECTOR + C_CR_FIRST_ROW_SELECTOR);
         }
         else {
@@ -669,7 +763,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
         break;
       case C_REGION_IG:
         $region = $(C_IG_SELECTOR);
-        if(pEntryId == ""){
+        if(pEntryId == ''){
           pEntryId = $region.find('tbody tr').data('id');
         };
         entry = $region
@@ -681,8 +775,12 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
         };
         break;
       case C_REGION_IR:
-        if(pEntryId == ""){
+        if(pEntryId == ''){
           entry = $(C_IR_SELECTOR + C_IR_FIRST_ROW_SELECTOR);
+          if ($reportDataItem.length > 0){
+            pEntryId = entry.find('[data-id]').data('id');
+            apex.item($reportDataItem.attr('id')).setValue(pEntryId);
+          };
         }
         else {
           entry = $(C_IR_SELECTOR + C_DATA_ID_SELECTOR).parent('td').parent('tr');
@@ -692,9 +790,9 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       case C_REGION_TREE:
         $region = $(C_TREE_SELECTOR);
         entry = $region.treeView(
-                  "find",
-                  {"depth": -1,
-                   "match": function(n){
+                  'find',
+                  {'depth': -1,
+                   'match': function(n){
                               return n.id === pEntryId;
                             }
                   }
@@ -728,24 +826,24 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     var label = $label.html();
     var shortcut = re.exec(label);
 
-    var $buttons = $(`[data-action="${pAction}"]`);
+    var $buttons = $(`[data-action='${pAction}']`);
     var accesskey = apex.actions.lookup(pAction).shortcut;
 
-    if(accesskey !== "") {
+    if(accesskey !== '') {
       accesskey = accesskey.slice(-1);
     }
     if(accesskey.length > 0){
-      re = new RegExp(accesskey, "i");
+      re = new RegExp(accesskey, 'i');
       $buttons.each(function(){
         $this = $(this);
 
         if(!$this.find(`.${C_BUTTON_LABEL_CLASS}`)[0]){
-          $this.html(`<span class="${C_BUTTON_LABEL_CLASS}">${$this.html()}>span>`);
+          $this.html(`<span class='${C_BUTTON_LABEL_CLASS}'>${$this.html()}>span>`);
         }
 
         $label.html(
             label.replace(re,
-                          `<span class="${C_SHORTCUT_CLASS}">${shortcut}>span>`));
+                          `<span class='${C_SHORTCUT_CLASS}'>${shortcut}>span>`));
 
         $this.attr('accesskey', shortcut);
         $this.attr('data-accesskey', label.search(re));
@@ -864,7 +962,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       Takes an object with page items and their actual value as stored in the session state and harmonizes them with the page.
 
     Parameter:
-      pPageItems - Array of objects of the form <{"id":"pageItemID","value":"itemValue"}>.
+      pPageItems - Array of objects of the form <{'id':'pageItemID','value':'itemValue'}>.
    */
   actions.setItemValues = function (pPageItems) {
     // Store the object for later reference by asynchronous calls
