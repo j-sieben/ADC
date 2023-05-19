@@ -38,11 +38,6 @@ as
   
 
   /* Globale Variablen */
-  g_offset binary_integer;
-  g_action_type_filename adc_util.ora_name_type;
-  g_user_action_type_filename adc_util.ora_name_type;
-  g_rule_group_filename adc_util.ora_name_type;
-  g_application_filename adc_util.ora_name_type;
   
   /**
     Group: Type definitions
@@ -893,7 +888,7 @@ as
       
       apex_zip.add_file(
         p_zipped_blob => p_zip_file,
-        p_file_name => replace(g_user_action_type_filename, '#CATO#', cato.cato_id),
+        p_file_name => replace(param.get_string('USER_ACTION_TYPE_FILENAME', C_ADC), '#CATO#', cato.cato_id),
         p_content => utl_text.clob_to_blob(l_custom_action_types));
         
       add_param_lov_statements(cato.cato_id, p_zip_file);
@@ -901,21 +896,6 @@ as
     
     pit.leave_optional;
   end add_custom_action_types;
-  
-
-  /**
-    Procedure: initialize
-      Package initialization method.
-   */
-  procedure initialize
-  as
-  begin
-    g_offset := 0;
-    g_action_type_filename := param.get_string('ACTION_TYPE_FILENAME', C_ADC);
-    g_user_action_type_filename := param.get_string('USER_ACTION_TYPE_FILENAME', C_ADC);
-    g_rule_group_filename := param.get_string('RULE_GROUP_FILENAME', C_ADC);
-    g_application_filename := param.get_string('APPLICATION_FILENAME', C_ADC);
-  end;
 
 
   /**
@@ -995,7 +975,7 @@ as
                     msg_param('p_crg_with_recursion', p_crg_with_recursion),
                     msg_param('p_crg_active', p_crg_active)));
                     
-    l_row.crg_app_id := p_crg_app_id + g_offset;
+    l_row.crg_app_id := p_crg_app_id;
     l_row.crg_page_id := p_crg_page_id;
     l_row.crg_id := p_crg_id;
     l_row.crg_with_recursion := adc_util.get_boolean(p_crg_with_recursion);
@@ -1393,7 +1373,7 @@ as
                         p_crg_id => crg.crg_id,
                         p_mode => p_mode,
                         p_install_id => l_install_id));
-          l_file_name := replace(g_rule_group_filename, '#CRG_FILE_NAME#', crg.crg_file_name);
+          l_file_name := replace(param.get_string('RULE_GROUP_FILENAME', C_ADC), '#CRG_FILE_NAME#', crg.crg_file_name);
           apex_zip.add_file(
             p_zipped_blob => l_zip_file,
             p_file_name => l_file_name,
@@ -1403,7 +1383,7 @@ as
         -- add apex application
         l_blob := utl_text.clob_to_blob(
                     export_apex_application(p_crg_app_id));        
-        l_file_name := utl_text.bulk_replace(g_application_filename, char_table(
+        l_file_name := utl_text.bulk_replace(param.get_string('APPLICATION_FILENAME', C_ADC), char_table(
                          '#ALIAS#', upper(l_app_alias),
                          '#alias#', lower(l_app_alias),
                          '#APP_ID#', p_crg_app_id));
@@ -1420,7 +1400,7 @@ as
                       p_crg_id => crg.crg_id,
                       p_mode => p_mode));
                   
-        l_file_name := replace(g_rule_group_filename, '#CRG_FILE_NAME#', crg.crg_file_name);
+        l_file_name := replace(param.get_string('RULE_GROUP_FILENAME', C_ADC), '#CRG_FILE_NAME#', crg.crg_file_name);
      
         apex_zip.add_file(
           p_zipped_blob => l_zip_file,
@@ -1462,7 +1442,7 @@ as
        and workspace = p_workspace;
 
     apex_application_install.set_workspace_id(l_ws_id);
-    apex_application_install.set_application_id(l_app_id + g_offset);
+    apex_application_install.set_application_id(l_app_id);
 
     pit.leave_mandatory;
   exception
@@ -1494,7 +1474,7 @@ as
        and workspace = p_workspace;
 
     apex_application_install.set_workspace_id(l_ws_id);
-    apex_application_install.set_application_id(p_app_id + g_offset);
+    apex_application_install.set_application_id(p_app_id);
 
     pit.leave_mandatory;
   end prepare_rule_group_import;
@@ -4089,7 +4069,5 @@ as
     pit.leave_mandatory;
   end validate_standard_message;
 
-begin
-  initialize;
 end adc_admin;
 /

@@ -1,5 +1,6 @@
 create or replace package body adc_internal 
 as
+  
   /**
     Package: ADC_INTERNAL Body
       Implementation of the core logic of the ADC functionality
@@ -84,8 +85,6 @@ as
     rule_counter binary_integer
   );
   g_param param_rec;
-  
-  C_CMD constant varchar2(100) := 'begin :x := #CMD#; end;';
     
   /**
     Group: Private Methods
@@ -602,18 +601,6 @@ as
     pit.leave_detailed;
     return l_row;
   end evaluate_action_type;
-  
-  
-  /**
-    Procedure: initialize
-      Method to initalize the package
-   */
-  procedure initialize
-  as
-  begin       
-    g_param := null;
-    g_param.rule_counter := 0;
-  end initialize;
   
 
   /**
@@ -1526,7 +1513,5 @@ as
     end if;
   end validate_page;
   
-begin
-  initialize;
 end adc_internal;
 /

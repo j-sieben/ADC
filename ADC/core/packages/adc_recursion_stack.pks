@@ -1,6 +1,6 @@
 create or replace package adc_recursion_stack
   authid definer
-  --accessible by (package adc_internal, package adc_response, package ut_adc_recursion_stack)
+  accessible by (package adc_internal, package adc_response, package ut_adc_recursion_stack)
 as
 
   /** 

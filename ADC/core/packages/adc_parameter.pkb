@@ -1091,6 +1091,8 @@ end;~';
               end if;
             when C_STRING_ON_PARAMETER then
               l_value := param.get_string(C_ADC, l_value);
+            when C_SWITCH then
+              l_value := adc_util.to_javascript_boolean(l_value);
             else
               null;
             end case;

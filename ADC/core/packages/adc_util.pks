@@ -1,6 +1,7 @@
 create or replace package adc_util
   authid definer
 as
+  pragma serially_reusable;
 
   /**
     Package: ADC_UTIL

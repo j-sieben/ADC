@@ -1,5 +1,7 @@
 create or replace package body adc_response
 as
+  pragma serially_reusable;
+
   /**
     Package: ADC_RESPONSE Body
       Implementation of the response related logic for ADC

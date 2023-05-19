@@ -32,8 +32,6 @@ as
     additional_javascript utl_apex.max_char
   );
   g_action action_rec;
-  g_default_apex_action adc_util.max_char;
-  g_confirm_apex_action adc_util.max_char;
 
   subtype template_t is utl_apex.max_sql_char;
 
@@ -111,17 +109,46 @@ as
   end append;
   
   
-  procedure initialize
+  /**
+    Function: get_default_action (result_cache)
+      Initialization method to provide the default apex action
+      
+    Returns: Default apex action
+   */
+  function get_default_action
+    return varchar2 result_cache
   as
+    l_default_action adc_util.max_char;
   begin
-    select max(decode(uttm_name, 'DEFAULT_APEX_ACTION', uttm_text)) default_apex_action,
-           max(decode(uttm_name, 'CONFIRM_APEX_ACTION', uttm_text)) confirm_apex_action
-      into g_default_apex_action, g_confirm_apex_action
+    select uttm_text
+      into l_default_action
       from utl_text_templates
      where uttm_type = adc_util.C_PARAM_GROUP
-       and uttm_name in ('DEFAULT_APEX_ACTION', 'CONFIRM_APEX_ACTION')
+       and uttm_name = 'DEFAULT_APEX_ACTION'
        and uttm_mode = 'FRAME';
-  end initialize;
+    return l_default_action;
+  end get_default_action;
+  
+  
+  /**
+    Function: get_confirm_action (result_cache)
+      Initialization method to provide the confirm apex action
+      
+    Returns: Confirm apex action
+   */
+  function get_confirm_action
+    return varchar2 result_cache
+  as
+    l_confirm_action adc_util.max_char;
+  begin
+    select uttm_text
+      into l_confirm_action
+      from utl_text_templates
+     where uttm_type = adc_util.C_PARAM_GROUP
+       and uttm_name = 'CONFIRM_APEX_ACTION'
+       and uttm_mode = 'FRAME';
+    return l_confirm_action;
+  end get_confirm_action;
 
 
   /**
@@ -217,9 +244,13 @@ as
   as
     l_actions_js adc_util.max_char;
     l_has_actions binary_integer;
+    l_default_action adc_util.max_char;
+    l_confirm_action adc_util.max_char;
   begin
     pit.enter_optional('get_crg_apex_actions');
         
+    l_default_action := get_default_action;
+    l_confirm_action := get_confirm_action;
     -- check whether APEX actions exist
     select count(*)
       into l_has_actions
@@ -271,8 +302,8 @@ as
                                -- Default is to inform ADC about invoking an APEX action on the page
                                case 
                                  when caa_action is not null then caa_action
-                                 when caa_confirm_message_name is not null then g_confirm_apex_action
-                                 else g_default_apex_action 
+                                 when caa_confirm_message_name is not null then l_confirm_action
+                                 else l_default_action
                                end caa_action
                           from adc_apex_actions_v saa
                           join adc_rule_groups cgr
@@ -482,8 +513,6 @@ as
 
     pit.leave_optional;
   end add_script;
-
-begin
-  initialize;
+  
 end adc_apex_action;
 /

@@ -35,7 +35,7 @@ as
   C_REGION_PREFIX constant adc_util.ora_name_type := replace(C_PAGE_PREFIX, 'P', 'R');
   C_BUTTON_PREFIX constant adc_util.ora_name_type := replace(C_PAGE_PREFIX, 'P', 'B');
   C_EXPORT_PAGE constant adc_util.ora_name_type := 'EXPORT_CRG';
-  C_EXPORT_PAGE_PREFIX adc_util.ora_name_type; -- not constant as this is calculated upon initialization
+  C_EXPORT_PAGE_PREFIX constant adc_util.ora_name_type := 'P8_';
   
   C_ITEM_CRG_APP_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRG_APP_ID';  
   C_ITEM_CRG_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRG_ID';
@@ -1715,16 +1715,27 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
       Initially collects the name of all ADC Desginer page items per
       form region and persists them in an internal data structure for
       convenient access when working with the page designer.
+      Not dynamic to prevent expensive SQL for each page call in connection pool
+      environment
    */
   procedure initialize
   as
-    cursor form_item_cur is
+  begin
+       
+    -- Persist list of page items per form region to define which page items to load when processing a form dynamically
+    g_form_item_list('R13_CAA_FORM') := '["P13_CAA_ACTION","P13_CAA_CAAI_LIST","P13_CAA_CAAT_ID","P13_CAA_CHOICES","P13_CAA_CONFIRM_MESSAGE_NAME","P13_CAA_CONTEXT_LABEL","P13_CAA_CRG_ID","P13_CAA_GET","P13_CAA_HREF","P13_CAA_ICON","P13_CAA_ICON_TYPE","P13_CAA_ID","P13_CAA_INITIALLY_DISABLED","P13_CAA_INITIALLY_HIDDEN","P13_CAA_ITEM_WRAP_CLASS","P13_CAA_LABEL","P13_CAA_LABEL_CLASSES","P13_CAA_LABEL_END_CLASSES","P13_CAA_LABEL_START_CLASSES","P13_CAA_NAME","P13_CAA_OFF_LABEL","P13_CAA_ON_LABEL","P13_CAA_SET","P13_CAA_SHORTCUT","P13_CAA_TITLE"]';
+    g_form_item_list('R13_CRA_FORM') := '["P13_CRA_ACTIVE","P13_CRA_CAT_ID","P13_CRA_COMMENT","P13_CRA_CPI_ID","P13_CRA_CRG_ID","P13_CRA_CRU_ID","P13_CRA_ID","P13_CRA_ON_ERROR","P13_CRA_PARAM_1","P13_CRA_PARAM_2","P13_CRA_PARAM_3","P13_CRA_PARAM_4","P13_CRA_PARAM_5","P13_CRA_PARAM_AREA_1","P13_CRA_PARAM_AREA_2","P13_CRA_PARAM_AREA_3","P13_CRA_PARAM_AREA_4","P13_CRA_PARAM_AREA_5","P13_CRA_PARAM_CB_1","P13_CRA_PARAM_CB_2","P13_CRA_PARAM_CB_3","P13_CRA_PARAM_CB_4","P13_CRA_PARAM_CB_5","P13_CRA_PARAM_LOV_1","P13_CRA_PARAM_LOV_2","P13_CRA_PARAM_LOV_3","P13_CRA_PARAM_LOV_4","P13_CRA_PARAM_LOV_5","P13_CRA_PARAM_SWITCH_1","P13_CRA_PARAM_SWITCH_2","P13_CRA_PARAM_SWITCH_3","P13_CRA_PARAM_SWITCH_4","P13_CRA_PARAM_SWITCH_5","P13_CRA_RAISE_ON_VALIDATION","P13_CRA_RAISE_RECURSIVE","P13_CRA_SORT_SEQ"]';
+    g_form_item_list('R13_CRU_FORM') := '["P13_CRU_ACTIVE","P13_CRU_CONDITION","P13_CRU_CRG_ID","P13_CRU_FIRE_ON_PAGE_LOAD","P13_CRU_ID","P13_CRU_NAME","P13_CRU_SORT_SEQ"]';
+    g_form_item_list('R13_FLS_FORM') := '["P13_DIAGRAM_CATEGORY","P13_DIAGRAM_ID","P13_DIAGRAM_NAME","P13_DIAGRAM_STATUS_ID","P13_DIAGRAM_VERSION"]';
+    
+    /*
+      to update this item list, execute this SQL and paste the result:
+      
       with params as (
-             select /*+ no_merge */
-                    utl_apex.get_application_id p_app_id,
-                    utl_apex.get_page_id p_page_id
+             select 117 p_app_id,
+                    13 p_page_id
                from dual)
-      select r.static_id form_id, '[' ||  listagg('"' || i.item_name || '"', ',') within group (order by item_name) || ']' item_list 
+      select 'g_form_item_list(''' || r.static_id || ''') := ''[' ||  listagg('"' || i.item_name || '"', ',') within group (order by item_name) || ']'';' item_list 
         from apex_application_page_items i
         join apex_application_page_regions r
           on i.data_source_region_id = r.region_id
@@ -1732,21 +1743,8 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
           on i.application_id = p_app_id
          and i.page_id = p_page_id
        group by r.static_id;
-  begin
-    -- Get the quasi constant page prefix for the export CRG page
-    select 'P' || page_id || '_'
-      into C_EXPORT_PAGE_PREFIX
-      from apex_application_pages
-     where application_id = (select utl_apex.get_application_id from dual)
-       and page_alias = C_EXPORT_PAGE;
-       
-    -- Persist list of page items per form region to define which page items to load when processing a form dynamically
-    for frm in form_item_cur loop
-      g_form_item_list(frm.form_id) := frm.item_list;
-    end loop;
-  exception
-    when NO_DATA_FOUND then
-      null;
+    */
+    
   end initialize;
 
 
