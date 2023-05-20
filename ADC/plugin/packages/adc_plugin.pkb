@@ -2,7 +2,6 @@ create or replace package body adc_plugin
 as
 
   /**  Package constants */
-  C_CS adc_util.ora_name_type; -- Semi-constant, defaults to database character set
   C_CS_ISO constant adc_util.ora_name_type := 'WE8ISO8859P1';
   C_EVENT_INITIALIZE constant adc_util.ora_name_type := 'initialize';
   C_JS_FUNCTION constant varchar2(50 byte) := 'de_condes_plugin_adc';
@@ -36,21 +35,26 @@ as
   
   
   /**
-    Procedure: initialize
-      Initialization method. Gets character set of the datatabase, if different from UTF-8
+    Function: get_database_character_set (result_cache)
+      
+    Returns: Character set of the database
    */
-  procedure initialize
+  function get_database_character_set
+    return adc_util.ora_name_type
+    result_cache
   as
+    l_cs adc_util.ora_name_type;
   begin
     select value
-      into C_CS
+      into l_cs
       from nls_database_parameters 
      where parameter='NLS_CHARACTERSET';
+    return l_cs;
   exception
     when NO_DATA_FOUND then
       -- character set is UTF8 already, no need to convert
-      null;
-  end initialize;
+      return null;
+  end get_database_character_set;
   
   
   /**
@@ -83,7 +87,7 @@ as
       -- Response is a JavaScript that is executed on the page, converted to C_CS_ISO if necessary.
       -- The respoonse gets converted to a hex representation to circumvent JSON formatting problems
       l_java_script := adc_internal.process_request;
-      if C_CS != C_CS_ISO then
+      if get_database_character_set != C_CS_ISO then
         l_java_script := convert(l_java_script, C_CS_ISO);
       end if;
       l_java_script := utl_raw.cast_to_raw(l_java_script);
@@ -143,7 +147,5 @@ as
     return l_result;
   end ajax;
   
-begin
-  initialize;
 end adc_plugin;
 /

@@ -378,13 +378,5 @@ as
   /* <adc_api.validate_page> */
   procedure validate_page;
   
-  
-  $IF adc_util.C_WITH_UNIT_TESTS $THEN
-  /**
-    Procedure: initialize
-      Published for test purposes to be able to reset the package
-   */
-  procedure initialize;
-  $END
 end adc_internal;
 /

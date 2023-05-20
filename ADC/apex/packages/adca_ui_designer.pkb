@@ -449,15 +449,13 @@ as
     end case;
 
     -- assemble
-    l_template:= replace(l_template,
-                  'CONFIRM_MESSAGE', p_row.amda_delete_confirm_message);
-    l_action := utl_text.bulk_replace(C_DATA_TEMPLATE, char_table(
-                  'COMMAND', p_action,
-                  'PAGE_ITEM_LIST', l_page_items,
-                  'TARGET_MODE', l_target_mode,
-                  'ACTION_MODE', l_action_mode,
-                  'NODE_ID', l_node_id,
-                  'MONITOR_CHANGES', l_monitor_changes));
+    l_action := replace(replace(replace(replace(replace(replace(C_DATA_TEMPLATE, 
+                  '#COMMAND#', p_action),
+                  '#PAGE_ITEM_LIST#', l_page_items),
+                  '#TARGET_MODE#', l_target_mode),
+                  '#ACTION_MODE#', l_action_mode),
+                  '#NODE_ID#', l_node_id),
+                  '#MONITOR_CHANGES#', l_monitor_changes);
     l_action := replace(replace(l_template, 
                   '#DATA#', l_action),
                   '#CONFIRM_MESSAGE#', p_row.amda_delete_confirm_message);
@@ -1224,12 +1222,12 @@ select null #PRE#CRA_ID, '#CRG_ID#' #PRE#CRA_CRG_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
     case when p_environment.action = C_ACTION_CREATE then
       -- Was called to create a new CRA, initialize default values
       l_cru_id := adc.get_number(C_ITEM_CRU_ID);
-      utl_text.bulk_replace(l_statement, char_table(
-        'PRE', C_PAGE_PREFIX,
-        'CRG_ID', p_environment.crg_id,
-        'CRU_ID', l_cru_id,
-        'NO_FIRING_ITEM', adc_util.c_no_firing_item,
-        'SORT_SEQ', get_cra_sort_seq(l_cru_id)));
+      l_statement := replace(replace(replace(replace(replace(l_statement,
+                       'PRE', C_PAGE_PREFIX),
+                       'CRG_ID', p_environment.crg_id),
+                       'CRU_ID', l_cru_id),
+                       'NO_FIRING_ITEM', adc_util.c_no_firing_item),
+                       'SORT_SEQ', get_cra_sort_seq(l_cru_id));
       adc.set_items_from_statement(
         p_cpi_id => adc_util.c_no_firing_item, 
         p_statement => l_statement);    
@@ -1312,10 +1310,10 @@ select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
 
     case when p_environment.action = C_ACTION_CREATE then
       -- Was called to create a new CRU, initialize default values
-      utl_text.bulk_replace(l_statement, char_table(
-        'PRE', C_PAGE_PREFIX,
-        'CRG_ID', p_environment.crg_id,
-        'SORT_SEQ', get_cru_sort_seq(p_environment.crg_id)));
+      l_statement := replace(replace(replace(l_statement, 
+                       'PRE', C_PAGE_PREFIX),
+                       'CRG_ID', p_environment.crg_id),
+                       'SORT_SEQ', get_cru_sort_seq(p_environment.crg_id));
       adc.set_items_from_statement(
         p_cpi_id => adc_util.c_no_firing_item, 
         p_statement => l_statement);
@@ -1689,6 +1687,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
       when C_MODE_FLS then
         show_form_fls;
       when C_MODE_CAG then
+        adc.show_hide_item('.adc-no-attributes', '.adc-hide');
         adc.set_region_content(
           p_region_id => C_REGION_HELP,
           p_html_code => pit.get_trans_item_description(C_PTI_PMG, 'CAA_HELP'));
@@ -1715,14 +1714,13 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
       Initially collects the name of all ADC Desginer page items per
       form region and persists them in an internal data structure for
       convenient access when working with the page designer.
-      Not dynamic to prevent expensive SQL for each page call in connection pool
-      environment
    */
   procedure initialize
   as
   begin
        
     -- Persist list of page items per form region to define which page items to load when processing a form dynamically
+    -- Hard coded to prevent expensive SQL for each page call in connection pool environment
     g_form_item_list('R13_CAA_FORM') := '["P13_CAA_ACTION","P13_CAA_CAAI_LIST","P13_CAA_CAAT_ID","P13_CAA_CHOICES","P13_CAA_CONFIRM_MESSAGE_NAME","P13_CAA_CONTEXT_LABEL","P13_CAA_CRG_ID","P13_CAA_GET","P13_CAA_HREF","P13_CAA_ICON","P13_CAA_ICON_TYPE","P13_CAA_ID","P13_CAA_INITIALLY_DISABLED","P13_CAA_INITIALLY_HIDDEN","P13_CAA_ITEM_WRAP_CLASS","P13_CAA_LABEL","P13_CAA_LABEL_CLASSES","P13_CAA_LABEL_END_CLASSES","P13_CAA_LABEL_START_CLASSES","P13_CAA_NAME","P13_CAA_OFF_LABEL","P13_CAA_ON_LABEL","P13_CAA_SET","P13_CAA_SHORTCUT","P13_CAA_TITLE"]';
     g_form_item_list('R13_CRA_FORM') := '["P13_CRA_ACTIVE","P13_CRA_CAT_ID","P13_CRA_COMMENT","P13_CRA_CPI_ID","P13_CRA_CRG_ID","P13_CRA_CRU_ID","P13_CRA_ID","P13_CRA_ON_ERROR","P13_CRA_PARAM_1","P13_CRA_PARAM_2","P13_CRA_PARAM_3","P13_CRA_PARAM_4","P13_CRA_PARAM_5","P13_CRA_PARAM_AREA_1","P13_CRA_PARAM_AREA_2","P13_CRA_PARAM_AREA_3","P13_CRA_PARAM_AREA_4","P13_CRA_PARAM_AREA_5","P13_CRA_PARAM_CB_1","P13_CRA_PARAM_CB_2","P13_CRA_PARAM_CB_3","P13_CRA_PARAM_CB_4","P13_CRA_PARAM_CB_5","P13_CRA_PARAM_LOV_1","P13_CRA_PARAM_LOV_2","P13_CRA_PARAM_LOV_3","P13_CRA_PARAM_LOV_4","P13_CRA_PARAM_LOV_5","P13_CRA_PARAM_SWITCH_1","P13_CRA_PARAM_SWITCH_2","P13_CRA_PARAM_SWITCH_3","P13_CRA_PARAM_SWITCH_4","P13_CRA_PARAM_SWITCH_5","P13_CRA_RAISE_ON_VALIDATION","P13_CRA_RAISE_RECURSIVE","P13_CRA_SORT_SEQ"]';
     g_form_item_list('R13_CRU_FORM') := '["P13_CRU_ACTIVE","P13_CRU_CONDITION","P13_CRU_CRG_ID","P13_CRU_FIRE_ON_PAGE_LOAD","P13_CRU_ID","P13_CRU_NAME","P13_CRU_SORT_SEQ"]';

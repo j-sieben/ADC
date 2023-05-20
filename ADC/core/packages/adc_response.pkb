@@ -220,13 +220,14 @@ as
   procedure initialize
   as
   begin
-    select max(decode(uttm_name, 'JSON_ERRORS', uttm_text)) json_errors,
-           max(decode(uttm_name, 'JS_SCRIPT_FRAME', uttm_text)) js_script_frame
-      into g_json_error_template, g_js_script_frame_template
-      from utl_text_templates
-     where uttm_type = adc_util.C_PARAM_GROUP
-       and uttm_name in('JSON_ERRORS', 'JS_SCRIPT_FRAME')
-       and uttm_mode = 'FRAME';
+    g_json_error_template := utl_text.get_text_template(
+                               p_type => adc_util.C_PARAM_GROUP,
+                               p_name => 'JSON_ERRORS',
+                               p_mode => 'FRAME');
+    g_js_script_frame_template := utl_text.get_text_template(
+                                    p_type => adc_util.C_PARAM_GROUP,
+                                    p_name => 'JS_SCRIPT_FRAME',
+                                    p_mode => 'FRAME');
   end initialize;
   
 
