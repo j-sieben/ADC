@@ -13,15 +13,15 @@ begin
     p_crg_page_id => 13);
 
   adc_admin.merge_rule_group(
-    p_crg_id => adc_admin.map_id(765),
+    p_crg_id => adc_admin.map_id(1288),
     p_crg_app_id => l_app_id,
     p_crg_page_id => 13,
     p_crg_with_recursion => adc_util.C_TRUE,
     p_crg_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(767),
-    p_cru_crg_id => adc_admin.map_id(765),
+    p_cru_id => adc_admin.map_id(1290),
+    p_cru_crg_id => adc_admin.map_id(1288),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = C_TRUE|',
     p_cru_sort_seq => 10,
@@ -29,9 +29,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(769),
-    p_cra_cru_id => adc_admin.map_id(767),
-    p_cra_crg_id => adc_admin.map_id(765),
+    p_cra_id => adc_admin.map_id(1292),
+    p_cra_cru_id => adc_admin.map_id(1290),
+    p_cra_crg_id => adc_admin.map_id(1288),
     p_cra_cpi_id => 'DOCUMENT',
     p_cra_cat_id => 'EXECUTE_JAVASCRIPT',
     p_cra_param_1 => q'|adca.hideNavigationMenu();|',
@@ -43,9 +43,9 @@ begin
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(771),
-    p_cra_cru_id => adc_admin.map_id(767),
-    p_cra_crg_id => adc_admin.map_id(765),
+    p_cra_id => adc_admin.map_id(1294),
+    p_cra_cru_id => adc_admin.map_id(1290),
+    p_cra_crg_id => adc_admin.map_id(1288),
     p_cra_cpi_id => 'R13_RULES',
     p_cra_cat_id => 'GET_REPORT_SELECTION',
     p_cra_param_1 => q'||',
@@ -57,9 +57,9 @@ begin
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(773),
-    p_cra_cru_id => adc_admin.map_id(767),
-    p_cra_crg_id => adc_admin.map_id(765),
+    p_cra_id => adc_admin.map_id(1296),
+    p_cra_cru_id => adc_admin.map_id(1290),
+    p_cra_crg_id => adc_admin.map_id(1288),
     p_cra_cpi_id => 'DOCUMENT',
     p_cra_cat_id => 'SET_VISUAL_STATE',
     p_cra_param_1 => q'|HIDE|',
@@ -71,9 +71,9 @@ begin
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(775),
-    p_cra_cru_id => adc_admin.map_id(767),
-    p_cra_crg_id => adc_admin.map_id(765),
+    p_cra_id => adc_admin.map_id(1298),
+    p_cra_cru_id => adc_admin.map_id(1290),
+    p_cra_crg_id => adc_admin.map_id(1288),
     p_cra_cpi_id => 'R13_HIERARCHY',
     p_cra_cat_id => 'GET_REPORT_SELECTION',
     p_cra_param_1 => q'||',
@@ -85,9 +85,9 @@ begin
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(837),
-    p_cra_cru_id => adc_admin.map_id(767),
-    p_cra_crg_id => adc_admin.map_id(765),
+    p_cra_id => adc_admin.map_id(1300),
+    p_cra_cru_id => adc_admin.map_id(1290),
+    p_cra_crg_id => adc_admin.map_id(1288),
     p_cra_cpi_id => 'P13_CRG_APP_ID',
     p_cra_cat_id => 'RAISE_ITEM_EVENT',
     p_cra_param_1 => q'||',
@@ -99,8 +99,8 @@ begin
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(777),
-    p_cru_crg_id => adc_admin.map_id(765),
+    p_cru_id => adc_admin.map_id(1302),
+    p_cru_crg_id => adc_admin.map_id(1288),
     p_cru_name => 'eine Anwendung oder einen Eintrag in Hierarchie oder Übersicht wählt',
     p_cru_condition => q'|selection_changed in (R13_RULES, R13_HIERARCHY) or firing_item = 'P13_CRG_APP_ID'|',
     p_cru_sort_seq => 20,
@@ -108,9 +108,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(779),
-    p_cra_cru_id => adc_admin.map_id(777),
-    p_cra_crg_id => adc_admin.map_id(765),
+    p_cra_id => adc_admin.map_id(1304),
+    p_cra_cru_id => adc_admin.map_id(1302),
+    p_cra_crg_id => adc_admin.map_id(1288),
     p_cra_cpi_id => 'DOCUMENT',
     p_cra_cat_id => 'PLSQL_CODE',
     p_cra_param_1 => q'|adca_ui_designer.handle_activity|',
@@ -122,8 +122,8 @@ begin
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(781),
-    p_cru_crg_id => adc_admin.map_id(765),
+    p_cru_id => adc_admin.map_id(1306),
+    p_cru_crg_id => adc_admin.map_id(1288),
     p_cru_name => 'den Aktionstyp ändert',
     p_cru_condition => q'|firing_item = 'P13_CRA_CAT_ID'|',
     p_cru_sort_seq => 30,
@@ -131,9 +131,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(783),
-    p_cra_cru_id => adc_admin.map_id(781),
-    p_cra_crg_id => adc_admin.map_id(765),
+    p_cra_id => adc_admin.map_id(1308),
+    p_cra_cru_id => adc_admin.map_id(1306),
+    p_cra_crg_id => adc_admin.map_id(1288),
     p_cra_cpi_id => 'P13_CRA_CAT_ID',
     p_cra_cat_id => 'PLSQL_CODE',
     p_cra_param_1 => q'|adca_ui_designer.handle_cat_changed;|',
@@ -145,8 +145,8 @@ begin
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(785),
-    p_cru_crg_id => adc_admin.map_id(765),
+    p_cru_id => adc_admin.map_id(1310),
+    p_cru_crg_id => adc_admin.map_id(1288),
     p_cru_name => 'eine dynamische Seite aktiviert oder deaktiviert',
     p_cru_condition => q'|command = 'toggle-cgr-active'|',
     p_cru_sort_seq => 40,
@@ -154,9 +154,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(787),
-    p_cra_cru_id => adc_admin.map_id(785),
-    p_cra_crg_id => adc_admin.map_id(765),
+    p_cra_id => adc_admin.map_id(1312),
+    p_cra_cru_id => adc_admin.map_id(1310),
+    p_cra_crg_id => adc_admin.map_id(1288),
     p_cra_cpi_id => 'DOCUMENT',
     p_cra_cat_id => 'PLSQL_CODE',
     p_cra_param_1 => q'|adca_ui_designer.toggle_crg_active|',
@@ -168,8 +168,8 @@ begin
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(789),
-    p_cru_crg_id => adc_admin.map_id(765),
+    p_cru_id => adc_admin.map_id(1314),
+    p_cru_crg_id => adc_admin.map_id(1288),
     p_cru_name => 'die technische Bedingung ändert',
     p_cru_condition => q'|P13_CRU_CONDITION is not null|',
     p_cru_sort_seq => 50,
@@ -177,9 +177,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(791),
-    p_cra_cru_id => adc_admin.map_id(789),
-    p_cra_crg_id => adc_admin.map_id(765),
+    p_cra_id => adc_admin.map_id(1316),
+    p_cra_cru_id => adc_admin.map_id(1314),
+    p_cra_crg_id => adc_admin.map_id(1288),
     p_cra_cpi_id => 'DOCUMENT',
     p_cra_cat_id => 'PLSQL_CODE',
     p_cra_param_1 => q'|adca_ui_designer.validate_rule_condition|',
@@ -191,8 +191,8 @@ begin
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(793),
-    p_cru_crg_id => adc_admin.map_id(765),
+    p_cru_id => adc_admin.map_id(1318),
+    p_cru_crg_id => adc_admin.map_id(1288),
     p_cru_name => 'ein Seitenkommando auslöst',
     p_cru_condition => q'|command in ('cancel-action', 'create-action', 'delete-action', 'update-action')|',
     p_cru_sort_seq => 60,
@@ -200,9 +200,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(795),
-    p_cra_cru_id => adc_admin.map_id(793),
-    p_cra_crg_id => adc_admin.map_id(765),
+    p_cra_id => adc_admin.map_id(1320),
+    p_cra_cru_id => adc_admin.map_id(1318),
+    p_cra_crg_id => adc_admin.map_id(1288),
     p_cra_cpi_id => 'P13_CRG_ID',
     p_cra_cat_id => 'PLSQL_CODE',
     p_cra_param_1 => q'|adca_ui_designer.handle_activity;|',
@@ -214,8 +214,8 @@ begin
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(797),
-    p_cru_crg_id => adc_admin.map_id(765),
+    p_cru_id => adc_admin.map_id(1322),
+    p_cru_crg_id => adc_admin.map_id(1288),
     p_cru_name => 'einen Aktionsparameter ändert',
     p_cru_condition => q'|adc.firing_item_has_class('adc-param') = C_TRUE|',
     p_cru_sort_seq => 70,
@@ -223,9 +223,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(799),
-    p_cra_cru_id => adc_admin.map_id(797),
-    p_cra_crg_id => adc_admin.map_id(765),
+    p_cra_id => adc_admin.map_id(1324),
+    p_cra_cru_id => adc_admin.map_id(1322),
+    p_cra_crg_id => adc_admin.map_id(1288),
     p_cra_cpi_id => 'DOCUMENT',
     p_cra_cat_id => 'PLSQL_CODE',
     p_cra_param_1 => q'|adca_ui_designer.check_parameter_value;|',
@@ -238,8 +238,8 @@ begin
     p_cra_active => adc_util.C_TRUE);
   
   adc_admin.merge_apex_action(    
-    p_caa_id => adc_admin.map_id(801),
-    p_caa_crg_id => adc_admin.map_id(765),
+    p_caa_id => adc_admin.map_id(1326),
+    p_caa_crg_id => adc_admin.map_id(1288),
     p_caa_caat_id => 'ACTION',
     p_caa_name => 'cancel-action',
     p_caa_confirm_message_name => '',
@@ -255,15 +255,15 @@ begin
     p_caa_action => '');
   
   adc_admin.merge_apex_action_item(
-    p_caai_caa_id => adc_admin.map_id(801),
-    p_caai_cpi_crg_id => adc_admin.map_id(765),
+    p_caai_caa_id => adc_admin.map_id(1326),
+    p_caai_cpi_crg_id => adc_admin.map_id(1288),
     p_caai_cpi_id => 'B13_CANCEL',
     p_caai_active => adc_util.C_TRUE);
 
 
   adc_admin.merge_apex_action(    
-    p_caa_id => adc_admin.map_id(803),
-    p_caa_crg_id => adc_admin.map_id(765),
+    p_caa_id => adc_admin.map_id(1328),
+    p_caa_crg_id => adc_admin.map_id(1288),
     p_caa_caat_id => 'ACTION',
     p_caa_name => 'update-action',
     p_caa_confirm_message_name => '',
@@ -279,15 +279,15 @@ begin
     p_caa_action => '');
   
   adc_admin.merge_apex_action_item(
-    p_caai_caa_id => adc_admin.map_id(803),
-    p_caai_cpi_crg_id => adc_admin.map_id(765),
+    p_caai_caa_id => adc_admin.map_id(1328),
+    p_caai_cpi_crg_id => adc_admin.map_id(1288),
     p_caai_cpi_id => 'B13_SAVE',
     p_caai_active => adc_util.C_TRUE);
 
 
   adc_admin.merge_apex_action(    
-    p_caa_id => adc_admin.map_id(805),
-    p_caa_crg_id => adc_admin.map_id(765),
+    p_caa_id => adc_admin.map_id(1330),
+    p_caa_crg_id => adc_admin.map_id(1288),
     p_caa_caat_id => 'ACTION',
     p_caa_name => 'delete-action',
     p_caa_confirm_message_name => 'msg.ADCA_CONFIRM_DELETE',
@@ -303,15 +303,15 @@ begin
     p_caa_action => '');
   
   adc_admin.merge_apex_action_item(
-    p_caai_caa_id => adc_admin.map_id(805),
-    p_caai_cpi_crg_id => adc_admin.map_id(765),
+    p_caai_caa_id => adc_admin.map_id(1330),
+    p_caai_cpi_crg_id => adc_admin.map_id(1288),
     p_caai_cpi_id => 'B13_DELETE',
     p_caai_active => adc_util.C_TRUE);
 
 
   adc_admin.merge_apex_action(    
-    p_caa_id => adc_admin.map_id(807),
-    p_caa_crg_id => adc_admin.map_id(765),
+    p_caa_id => adc_admin.map_id(1332),
+    p_caa_crg_id => adc_admin.map_id(1288),
     p_caa_caat_id => 'ACTION',
     p_caa_name => 'toggle-cgr-active',
     p_caa_confirm_message_name => '',
@@ -328,8 +328,8 @@ begin
   
 
   adc_admin.merge_apex_action(    
-    p_caa_id => adc_admin.map_id(809),
-    p_caa_crg_id => adc_admin.map_id(765),
+    p_caa_id => adc_admin.map_id(1334),
+    p_caa_crg_id => adc_admin.map_id(1288),
     p_caa_caat_id => 'ACTION',
     p_caa_name => 'create-action',
     p_caa_confirm_message_name => '',
@@ -345,15 +345,15 @@ begin
     p_caa_action => '');
   
   adc_admin.merge_apex_action_item(
-    p_caai_caa_id => adc_admin.map_id(809),
-    p_caai_cpi_crg_id => adc_admin.map_id(765),
+    p_caai_caa_id => adc_admin.map_id(1334),
+    p_caai_cpi_crg_id => adc_admin.map_id(1288),
     p_caai_cpi_id => 'B13_CREATE',
     p_caai_active => adc_util.C_TRUE);
 
 
   adc_admin.merge_apex_action(    
-    p_caa_id => adc_admin.map_id(811),
-    p_caa_crg_id => adc_admin.map_id(765),
+    p_caa_id => adc_admin.map_id(1336),
+    p_caa_crg_id => adc_admin.map_id(1288),
     p_caa_caat_id => 'ACTION',
     p_caa_name => 'export-rule-group',
     p_caa_confirm_message_name => '',
@@ -369,14 +369,14 @@ begin
     p_caa_action => '');
   
   adc_admin.merge_apex_action_item(
-    p_caai_caa_id => adc_admin.map_id(811),
-    p_caai_cpi_crg_id => adc_admin.map_id(765),
+    p_caai_caa_id => adc_admin.map_id(1336),
+    p_caai_cpi_crg_id => adc_admin.map_id(1288),
     p_caai_cpi_id => 'B13_EXPORT_CRG',
     p_caai_active => adc_util.C_TRUE);
 
 
 
-  adc_admin.propagate_rule_change(adc_admin.map_id(765));
+  adc_admin.propagate_rule_change(adc_admin.map_id(1288));
 
   commit;
 end;

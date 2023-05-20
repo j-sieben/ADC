@@ -13,15 +13,15 @@ begin
     p_crg_page_id => 8);
 
   adc_admin.merge_rule_group(
-    p_crg_id => adc_admin.map_id(109),
+    p_crg_id => adc_admin.map_id(1245),
     p_crg_app_id => l_app_id,
     p_crg_page_id => 8,
     p_crg_with_recursion => adc_util.C_TRUE,
     p_crg_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(111),
-    p_cru_crg_id => adc_admin.map_id(109),
+    p_cru_id => adc_admin.map_id(1247),
+    p_cru_crg_id => adc_admin.map_id(1245),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = C_TRUE|',
     p_cru_sort_seq => 10,
@@ -29,9 +29,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(113),
-    p_cra_cru_id => adc_admin.map_id(111),
-    p_cra_crg_id => adc_admin.map_id(109),
+    p_cra_id => adc_admin.map_id(1249),
+    p_cra_cru_id => adc_admin.map_id(1247),
+    p_cra_crg_id => adc_admin.map_id(1245),
     p_cra_cpi_id => 'P8_INCLUDE_APP',
     p_cra_cat_id => 'SET_ITEM',
     p_cra_param_1 => q'|adc_util.C_FALSE|',
@@ -43,9 +43,9 @@ begin
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(115),
-    p_cra_cru_id => adc_admin.map_id(111),
-    p_cra_crg_id => adc_admin.map_id(109),
+    p_cra_id => adc_admin.map_id(1251),
+    p_cra_cru_id => adc_admin.map_id(1247),
+    p_cra_crg_id => adc_admin.map_id(1245),
     p_cra_cpi_id => 'DOCUMENT',
     p_cra_cat_id => 'PLSQL_CODE',
     p_cra_param_1 => q'|adca_ui.set_action_export_crg;|',
@@ -57,8 +57,8 @@ begin
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
   adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(117),
-    p_cru_crg_id => adc_admin.map_id(109),
+    p_cru_id => adc_admin.map_id(1253),
+    p_cru_crg_id => adc_admin.map_id(1245),
     p_cru_name => 'eine Anwendung wählt',
     p_cru_condition => q'|firing_item = 'P8_CRG_APP_ID'|',
     p_cru_sort_seq => 20,
@@ -66,9 +66,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(119),
-    p_cra_cru_id => adc_admin.map_id(117),
-    p_cra_crg_id => adc_admin.map_id(109),
+    p_cra_id => adc_admin.map_id(1255),
+    p_cra_cru_id => adc_admin.map_id(1253),
+    p_cra_crg_id => adc_admin.map_id(1245),
     p_cra_cpi_id => 'B8_EXPORT',
     p_cra_cat_id => 'PLSQL_CODE',
     p_cra_param_1 => q'|adca_ui.set_action_export_crg;|',
@@ -81,11 +81,11 @@ begin
     p_cra_active => adc_util.C_TRUE);
   
   adc_admin.merge_apex_action(    
-    p_caa_id => adc_admin.map_id(121),
-    p_caa_crg_id => adc_admin.map_id(109),
+    p_caa_id => adc_admin.map_id(1257),
+    p_caa_crg_id => adc_admin.map_id(1245),
     p_caa_caat_id => 'ACTION',
     p_caa_name => 'export-rule-group',
-    p_caa_confirm_message_name => null,
+    p_caa_confirm_message_name => '',
     p_caa_label => 'Dynamische Seite exportieren',
     p_caa_context_label => 'Dynamische Seite exportieren',
     p_caa_icon => 'fa-download',
@@ -98,14 +98,14 @@ begin
     p_caa_action => '');
   
   adc_admin.merge_apex_action_item(
-    p_caai_caa_id => adc_admin.map_id(121),
-    p_caai_cpi_crg_id => adc_admin.map_id(109),
+    p_caai_caa_id => adc_admin.map_id(1257),
+    p_caai_cpi_crg_id => adc_admin.map_id(1245),
     p_caai_cpi_id => 'B8_EXPORT',
     p_caai_active => adc_util.C_TRUE);
 
 
 
-  adc_admin.propagate_rule_change(adc_admin.map_id(109));
+  adc_admin.propagate_rule_change(adc_admin.map_id(1245));
 
   commit;
 end;
