@@ -426,6 +426,14 @@ begin
     p_error_number => null);
 
   pit_admin.merge_message(
+    p_pms_name => 'ADC_FIRING_ITEM_POPPED',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Element #1# wurde vom Stack entfernt.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 70,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
     p_pms_name => 'ADC_RULE_VIEW_DELETED',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Regelgruppenview #1# wurde gelöscht.^',
@@ -758,6 +766,62 @@ begin
     p_pms_name => 'ADC_CSM_WRONG_PREFIX',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Der Name einer Standardmeldung muss mit CSM_ beginnen.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 50,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_ACTION_PARAM_TYPE',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Fehler beim Ausführen der Anweisung "#1#": #SQLERRM#.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 30,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_SET_SESSION_STATE',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Fehler beim Setzen des Elements #1# auf den Wert "#2#": #SQLERRM#.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 30,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_COLUMNS_FOUND',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^SQL-Anweisung ausgeführt, #1# Spalten gefunden.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 50,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_ITEM_SET_MANDATORY',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Element #1# als Pflichtfeld registriert und zu Collection hinzugefügt.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 50,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_ITEM_SET_OPTIONAL',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Element #1# als optional registriert und aus Collection entfernt.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 50,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_ITEM_UNCHANGED',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Status des Elements #1# nicht geändert.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 50,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_ITEM_IGNORED',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Das Element #1# kann keinen Wert enthalten und wurde daher ignoriert.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 50,
     p_pms_pml_name => 'GERMAN');

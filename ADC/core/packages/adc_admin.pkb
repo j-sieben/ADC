@@ -1691,7 +1691,6 @@ as
         if dbms_sql.is_open(l_ctx) then
           dbms_sql.close_cursor(l_ctx);
         end if;
-        pit.tweet(l_stmt);
         pit.error(msg.ADC_INVALID_SQL, msg_args(substr(sqlerrm, 12)));
     end;
     
@@ -2427,7 +2426,7 @@ as
         execute immediate l_stmt;
       exception
         when others then
-          pit.error(msg.PIT_PASS_MESSAGE, msg_args('Fehler bei ' || l_stmt || ': ' || sqlerrm));
+          pit.error(msg.ADC_ACTION_PARAM_TYPE, msg_args(l_stmt));
       end;
     end if;
     
@@ -2437,7 +2436,7 @@ as
         execute immediate l_stmt;
       exception
         when others then
-          pit.error(msg.PIT_PASS_MESSAGE, msg_args('Fehler bei ' || l_stmt || ': ' || sqlerrm));
+          pit.error(msg.ADC_ACTION_PARAM_TYPE, msg_args(l_stmt));
       end;
     end if;
     

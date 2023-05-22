@@ -1332,7 +1332,7 @@ as
         p_internal_error => null);
       pit.leave_mandatory;
     when others then
-      pit.handle_exception(msg.PIT_PASS_MESSAGE, msg_args('Error at ' || p_cpi_id || ' and value ' || p_value || ': ' || sqlerrm));
+      pit.handle_exception(msg.ADC_SET_SESSION_STATE, msg_args(p_cpi_id, p_value));
   end set_session_state;
 
 
@@ -1359,13 +1359,12 @@ as
     apex_json.initialize_clob_output;
     apex_json.open_array;   
     if p_cpi_id = adc_util.c_no_firing_item or p_cpi_id is null then
-      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Executing item statement'));
       -- If no element is specified, the elements are set according to the column name
       l_cur := dbms_sql.open_cursor;
       -- SQL parsen, um Spaltenbezeichner zu ermitteln
       dbms_sql.parse(l_cur, l_stmt, dbms_sql.native);
       dbms_sql.describe_columns2(l_cur, l_col_cnt, l_desc_tab);
-      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('... ' || l_col_cnt || ' column(s) found'));
+      pit.debug(msg.ADC_COLUMNS_FOUND, msg_args(to_char(l_col_cnt)));
       for i in 1 .. l_col_cnt loop
         dbms_sql.define_column(l_cur, i, l_result, 4000);
       end loop;
@@ -1375,7 +1374,6 @@ as
       -- Alle Spaltenwerte in Seitenelemente mit entsprechendem Spaltennamen kopieren
       for i in 1 .. l_col_cnt loop
         dbms_sql.column_value(l_cur, i, l_result);
-        pit.debug(msg.PIT_PASS_MESSAGE, msg_args('... ' || l_desc_tab(i).col_name || ': ' || l_result));
         -- Copy value to session status
         set_session_state(
           p_cpi_id => l_desc_tab(i).col_name,  
@@ -1400,7 +1398,7 @@ as
     when NO_DATA_FOUND then
       apex_json.free_output;
     when others then
-      adc_response.add_comment(msg.ADC_NO_DATA_FOR_ITEM, msg_args(coalesce(p_cpi_id, 'Missing Item Name')));
+      adc_response.add_comment(msg.ADC_NO_DATA_FOR_ITEM, msg_args(coalesce(p_cpi_id, substr(sqlerrm, 12))));
       set_session_state(
         p_cpi_id => p_cpi_id, 
         p_value => '');

@@ -256,7 +256,7 @@ as
     if p_all = adc_util.C_TRUE then
       g_recursion.item_stack.delete;
     else
-      pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Item ' || p_cpi_id || ' popped from stack'));
+      pit.debug(msg.ADC_FIRING_ITEM_POPPED, msg_args(p_cpi_id));
       g_recursion.item_stack.delete(p_cpi_id);
     end if;
     
