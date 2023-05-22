@@ -876,8 +876,6 @@ as
       l_js_script := adc_response.get_response;
       adc_page_state.reset;
     end if;
-    
-    g_param := null;
       
     pit.leave_mandatory(
       p_params => msg_params(msg_param('JavaScript', l_js_script)));
@@ -1402,7 +1400,7 @@ as
     when NO_DATA_FOUND then
       apex_json.free_output;
     when others then
-      adc_response.add_comment(msg.ADC_NO_DATA_FOR_ITEM, msg_args(coalesce(p_cpi_id, replace(p_statement, adc_util.C_CR))));
+      adc_response.add_comment(msg.ADC_NO_DATA_FOR_ITEM, msg_args(coalesce(p_cpi_id, 'Missing Item Name')));
       set_session_state(
         p_cpi_id => p_cpi_id, 
         p_value => '');
