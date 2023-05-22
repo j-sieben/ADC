@@ -43,8 +43,7 @@ as
   type javascript_rec is record(
     script adc_util.max_char,
     javascript_hash raw(2000),
-    debug_level binary_integer);
-  
+    debug_level binary_integer);  
   
   /**
     Type: javascript_list
@@ -92,10 +91,6 @@ as
     rule_start binary_integer);
   
   g_param param_rec;
-  
-  -- Cached templates
-  g_json_error_template adc_util.sql_char;
-  g_js_script_frame_template adc_util.sql_char;
   
   
   /**
@@ -163,12 +158,17 @@ as
     l_error_key binary_integer;
     l_error_count binary_integer;
     l_has_space boolean := true;
+    l_json_error_template adc_util.sql_char;
   begin
     pit.enter_optional('get_errors_as_json');
     
     -- Initialization
     l_error_count := g_param.error_stack.count;
     if l_error_count > 0 then
+      l_json_error_template := utl_text.get_text_template(
+                                 p_type => adc_util.C_PARAM_GROUP,
+                                 p_name => 'JSON_ERRORS',
+                                 p_mode => 'FRAME');
       l_error_key := g_param.error_stack.first;
       while l_error_key is not null loop
         l_has_space := coalesce(length(l_json), 0) + length(g_param.error_stack(l_error_key)) < p_max_length;
@@ -181,7 +181,7 @@ as
       end loop;
     end if;
     
-    l_json := replace(replace(g_json_error_template, 
+    l_json := replace(replace(l_json_error_template, 
                 '#ERROR_COUNT#', l_error_count),
                 '#JSON_ERRORS#', l_json);
                 
@@ -211,24 +211,6 @@ as
     
     pit.leave_detailed;
   end reset;
-  
-  
-  /**
-    Procedure: initialize
-      Method to initalize the package
-   */
-  procedure initialize
-  as
-  begin
-    g_json_error_template := utl_text.get_text_template(
-                               p_type => adc_util.C_PARAM_GROUP,
-                               p_name => 'JSON_ERRORS',
-                               p_mode => 'FRAME');
-    g_js_script_frame_template := utl_text.get_text_template(
-                                    p_type => adc_util.C_PARAM_GROUP,
-                                    p_name => 'JS_SCRIPT_FRAME',
-                                    p_mode => 'FRAME');
-  end initialize;
   
 
   /**
@@ -378,12 +360,18 @@ as
     l_changed_items adc_util.max_char;
     l_firing_items adc_util.max_char;
     l_max_level binary_integer;
+    l_js_script_frame_template adc_util.sql_char;
   begin
     pit.enter_optional('get_response');
                         
     -- collect javascript from stack
     if g_param.js_action_stack.count > 0 then
       l_max_level := get_max_level;
+  
+      l_js_script_frame_template := utl_text.get_text_template(
+                                      p_type => adc_util.C_PARAM_GROUP,
+                                      p_name => 'JS_SCRIPT_FRAME',
+                                      p_mode => 'FRAME');
       
       -- collect all javascript chunks
       for i in 1 .. g_param.js_action_stack.count + 1 loop
@@ -401,7 +389,7 @@ as
     
     -- wrap JavaScript in <script> tag and add item value and error scripts
     -- Replace explicitely to circumvent length limitation of CHAR_TABLE
-    l_response := replace(replace(replace(replace(replace(g_js_script_frame_template, 
+    l_response := replace(replace(replace(replace(replace(l_js_script_frame_template, 
                     '#SCRIPT#', l_response),
                     '#ID#', 'S_' || trunc(dbms_random.value(1, 100000))),
                     '#CR#', adc_util.C_CR),
@@ -532,7 +520,5 @@ as
     pit.leave_optional;
   end register_recursion_start;
 
-begin
-  initialize;
 end adc_response;
 /

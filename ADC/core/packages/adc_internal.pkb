@@ -876,6 +876,8 @@ as
       l_js_script := adc_response.get_response;
       adc_page_state.reset;
     end if;
+    
+    g_param := null;
       
     pit.leave_mandatory(
       p_params => msg_params(msg_param('JavaScript', l_js_script)));

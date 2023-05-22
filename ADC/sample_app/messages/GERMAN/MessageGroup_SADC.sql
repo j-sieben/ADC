@@ -16,6 +16,24 @@ begin
     p_pms_pmg_name => 'SADC',
     p_pms_pml_name => 'GERMAN',
     p_error_number => -20000);
+
+  pit_admin.merge_message(
+    p_pms_name => 'SADC_CHECK_SAL_RANGE',
+    p_pms_text => 'Das Gehalt muss für den Beruf #1# zwischen #2# und #3# liegen.',
+    p_pms_pse_id => pit.level_error,
+    p_pms_description => null,
+    p_pms_pmg_name => 'SADC',
+    p_pms_pml_name => 'GERMAN',
+    p_error_number => -20000);
+
+  pit_admin.merge_message(
+    p_pms_name => 'SADC_EMAIL_IN_USE',
+    p_pms_text => 'Die Email-Adresse #1# wird bereits verwendet.',
+    p_pms_pse_id => pit.level_error,
+    p_pms_description => null,
+    p_pms_pmg_name => 'SADC',
+    p_pms_pml_name => 'GERMAN',
+    p_error_number => -20000);
   
 
   pit_admin.merge_message(

@@ -100,7 +100,7 @@ begin
   param_admin.edit_parameter(
     p_par_id => 'ADC_EMBED_RULE_GROUPS',
     p_par_pgr_id => 'ADC',
-    p_par_description => 'When exporting rule groups along with the application, it is possible to integrate the rule groups as supporting objects. If FALSE, application export and rule groups are exported seperately in a ZIP file',
+    p_par_description => 'When exporting rule groups along with the application, it is possible to integrate the rule groups as supporting objects.',
     p_par_boolean_value => false
   );
   

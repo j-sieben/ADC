@@ -15,7 +15,6 @@ as
   C_CMD constant adc_util.ora_name_type := 'begin :x := to_char(#CMD#); end;';
   C_CAPT_VIEW_NAME_PREFIX constant adc_util.ora_name_type := 'ADC_PARAM_LOV_';
   C_STATIC_LIST constant adc_util.ora_name_type := 'STATIC_LIST';
-  g_special_values char_table := char_table(adc_util.C_PARAM_ITEM_VALUE, adc_util.C_PARAM_EVENT_DATA);
 
 
   C_APEX_ACTION constant adc_action_param_types.capt_id%type := 'APEX_ACTION';
@@ -1058,6 +1057,7 @@ end;~';
     return varchar2
   as
     l_value adc_util.max_char;
+    l_special_values char_table;
   begin
     pit.enter_optional(
       p_params => msg_params(
@@ -1069,8 +1069,9 @@ end;~';
     -- Initialize
     if p_param_value is not null then
       l_value := p_param_value;
+      l_special_values := char_table(adc_util.C_PARAM_ITEM_VALUE, adc_util.C_PARAM_EVENT_DATA);
 
-      if l_value member of g_special_values or instr(l_value, '#') > 0 then
+      if l_value member of l_special_values or instr(l_value, '#') > 0 then
         l_value := analyze_parameter_value(l_value, p_crg_id, p_cpi_id);
       else
         if p_capt_id is not null then

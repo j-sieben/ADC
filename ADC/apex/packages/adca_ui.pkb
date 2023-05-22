@@ -22,15 +22,6 @@ as
   
   C_VISUAL_TYPE_SELECT constant adc_util.ora_name_type := 'SELECT_LIST';
   C_VISUAL_TYPE_STATIC constant adc_util.ora_name_type := 'STATIC_LIST';
-
-  /**
-    Group: Private package variables
-   */
-  /**
-    Variables: State variables
-      g_page_values - PL/SQL table to hold key value pairs for page items (key) and their values
-  */
-  g_page_values utl_apex.page_value_t;
     
   /**
     Group: Type definitions

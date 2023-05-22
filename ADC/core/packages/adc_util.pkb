@@ -1,6 +1,5 @@
 create or replace package body adc_util
 as
-  pragma serially_reusable;
 
   /**
     Package: ADC_UTIL Body

@@ -1678,6 +1678,11 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
       case page_state.amda_actual_mode
       when C_MODE_CRG then
         show_form_crg;
+      when C_MODE_CAG then
+        adc.show_hide_item('.adc-no-attributes', '.adc-hide');
+        adc.set_region_content(
+          p_region_id => C_REGION_HELP,
+          p_html_code => pit.get_trans_item_description(C_PTI_PMG, 'CAA_HELP'));
       when C_MODE_CAA then
         show_form_caa(p_environment);
       when C_MODE_CRU then
@@ -1686,11 +1691,6 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
         show_form_cra(p_environment);
       when C_MODE_FLS then
         show_form_fls;
-      when C_MODE_CAG then
-        adc.show_hide_item('.adc-no-attributes', '.adc-hide');
-        adc.set_region_content(
-          p_region_id => C_REGION_HELP,
-          p_html_code => pit.get_trans_item_description(C_PTI_PMG, 'CAA_HELP'));
       else
         adc.show_hide_item('.adc-no-attributes', '.adc-hide');
         adc.set_region_content(C_REGION_HELP, null);

@@ -4,9 +4,6 @@ as
   /* Package constants */
   C_PMG_NAME constant adc_util.ora_name_type := 'SADC';
   
-  /* Global Variables */
-  g_page_values utl_apex.page_value_t;
-  
   
   /* Helper method to copy session state values from an APEX page 
    * %usage  Is called to copy the actual session state of an APEX page into a PL/SQL table
