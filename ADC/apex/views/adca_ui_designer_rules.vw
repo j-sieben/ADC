@@ -1,7 +1,10 @@
 create or replace editionable view adca_ui_designer_rules
 as
 with session_state as (
-       select /*+ no_merge */ utl_apex.get_number('CRG_ID') g_crg_id
+       select /*+ no_merge */ 
+              utl_apex.get_number('CRG_ID') g_crg_id,
+              adc_util.c_true c_true,
+              adc_util.c_false c_false
          from dual),
      translations as(
               select max(decode(pti_id, 'ADC_AUTO_INITIALIZE', to_char(pti_description))) auto_initialize,
@@ -28,14 +31,13 @@ with session_state as (
              'fa-play' c_initialize,
              'fa-check' c_yes,
              'fa-times' c_no,
-             adc_util.c_true c_true,
-             adc_util.c_false c_false
+             c_true,
+             c_false
         from adc_rule_groups
         join session_state s
           on crg_id = g_crg_id),
     actions as(
-      select /*+ no_merge (p) */
-             p.crg_app_id, p.crg_page_id,
+      select p.crg_app_id, p.crg_page_id,
              cru.cru_id, cru.cru_crg_id, cra_id, cru.cru_sort_seq, cra_sort_seq, 
              case 
                when cru_fire_on_page_load = c_true then c_yes 

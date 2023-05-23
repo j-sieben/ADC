@@ -1,11 +1,11 @@
 create or replace editionable view adca_ui_lov_crg_page_items
 as
 with params as(
-       select utl_apex.get_number('CRG_ID') p_crg_id,
+       select /*+ no_merge */
+              utl_apex.get_number('CRG_ID') p_crg_id,
               utl_apex.get_string('CRA_CAT_ID') p_cat_id
          from dual)
-select /*+ no_merge (p) */
-       distinct lpi.item_name d, lpi.item_id r, cpit_name grp
+select distinct lpi.item_name d, lpi.item_id r, cpit_name grp
   from adc_bl_page_items lpi
   join adc_bl_page_targets lpt
     on lpi.item_id = lpt.cpi_id

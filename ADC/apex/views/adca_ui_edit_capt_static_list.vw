@@ -1,10 +1,10 @@
 create or replace force view adca_ui_edit_capt_static_list as
 with params as (
-       select pit.get_default_language c_default_language,
+       select /*+ no_merge */
+              pit.get_default_language c_default_language,
               utl_apex.get_string('CAPT_ID') c_capt_id
          from dual)
-select /*+ no_merge (p) */
-       capt_id csl_capt_id, substr(pti_id, length(capt_id) + 2) csl_pti_id, pti_name csl_name
+select capt_id csl_capt_id, substr(pti_id, length(capt_id) + 2) csl_pti_id, pti_name csl_name
   from pit_translatable_item
   join adc_action_param_types
     on pti_id like capt_id || '%'
