@@ -320,6 +320,21 @@ as object (
     p_value_list in varchar2)
     return varchar2,
     
+  
+  /**
+    Procedure: register_additional_item
+      Register the item passed in as an additional page item, meaning that it reports
+      its value with every round trip to the server but does not implement an event
+      on this item.
+      Is used to make sure that item values are present in the page state which are
+      required for computations but which don't have rules attached to them.
+  
+    Parameter:
+      p_cpi_id - Item to be added
+   */
+  static procedure register_additional_item(
+    p_cpi_id in varchar2),
+    
     
   /** 
     Procedure: remember_page_state

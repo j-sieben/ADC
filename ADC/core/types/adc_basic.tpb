@@ -288,6 +288,21 @@ as
   end not_null;
   
   
+  static procedure register_additional_item(
+    p_cpi_id in varchar2)
+  as
+  begin
+    pit.enter_optional(
+      p_params => msg_params(
+                    msg_param('p_cpi_id', p_cpi_id)));
+    adc_api.execute_action(
+      p_cat_id => 'REGISTER_OBSERVER',
+      p_cpi_id => p_cpi_id);
+    
+    pit.leave_optional;
+  end register_additional_item;
+    
+  
   static procedure remember_page_state(
     p_cpi_id in varchar2 default null,
     p_page_items in varchar2 default null)

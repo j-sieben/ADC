@@ -2425,6 +2425,8 @@ as
       begin
         execute immediate l_stmt;
       exception
+        when dbms_sql_translator.INSUFFICIENT_PRIVILEGE then
+          null;
         when others then
           pit.error(msg.ADC_ACTION_PARAM_TYPE, msg_args(l_stmt));
       end;
