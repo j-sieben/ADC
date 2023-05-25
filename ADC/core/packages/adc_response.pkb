@@ -160,31 +160,32 @@ as
     l_has_space boolean := true;
     l_json_error_template adc_util.sql_char;
   begin
-    pit.enter_optional('get_errors_as_json');
+    pit.enter_optional('get_errors_as_json',
+      p_params => msg_params(
+                    msg_param('p_max_length', p_max_length)));
     
     -- Initialization
-    l_error_count := g_param.error_stack.count;
-    if l_error_count > 0 then
-      l_json_error_template := utl_text.get_text_template(
-                                 p_type => adc_util.C_PARAM_GROUP,
-                                 p_name => 'JSON_ERRORS',
-                                 p_mode => 'FRAME');
-      l_error_key := g_param.error_stack.first;
-      while l_error_key is not null loop
-        l_has_space := coalesce(length(l_json), 0) + length(g_param.error_stack(l_error_key)) < p_max_length;
-        if l_has_space then 
-          utl_text.append(l_json, g_param.error_stack(l_error_key), adc_util.C_DELIMITER, true);
-          l_error_key := g_param.error_stack.next(l_error_key);
-        else
-          exit;
-        end if;
-      end loop;
-    end if;
-    
+    l_error_count := g_param.error_stack.count;    
+    l_json_error_template := utl_text.get_text_template(
+                               p_type => adc_util.C_PARAM_GROUP,
+                               p_name => 'JSON_ERRORS',
+                               p_mode => 'FRAME');
+                               
+    l_error_key := g_param.error_stack.first;
+    while l_error_key is not null loop
+      l_has_space := coalesce(length(l_json), 0) + length(g_param.error_stack(l_error_key)) < coalesce(p_max_length, 30000);
+      --if l_has_space then 
+        utl_text.append(l_json, g_param.error_stack(l_error_key), adc_util.C_DELIMITER, true);
+        l_error_key := g_param.error_stack.next(l_error_key);
+      /*else
+        exit;
+      end if;*/
+    end loop;
+  
     l_json := replace(replace(l_json_error_template, 
                 '#ERROR_COUNT#', l_error_count),
                 '#JSON_ERRORS#', l_json);
-                
+        
     pit.leave_optional(msg_params(msg_param('JSON', l_json)));
     return l_json;
   end get_errors_as_json;
@@ -324,22 +325,16 @@ as
       into l_error_hash
       from dual;
       
-    if not g_param.error_stack.exists(l_error_hash) then    
-      select utl_text.generate_text(cursor(
-               select uttm_text template,
-                      case p_severity when pit.level_warn then 'warning' else 'error' end error_type,
-                      l_error.page_item_name page_item,
-                      l_error.message message,
-                      l_error.additional_info additional_info,
-                      case 
-                        when l_error.page_item_name = adc_util.C_NO_FIRING_ITEM  then C_ERR_LOCATION_PAGE
-                        else C_ERR_LOCATION_INLINE end location
-                 from utl_text_templates
-                where uttm_type = adc_util.C_PARAM_GROUP
-                  and uttm_name = 'JSON_ERRORS'
-                  and uttm_mode = 'ERROR'))
-        into l_error_json
-        from dual;
+    if not g_param.error_stack.exists(l_error_hash) then
+      l_error_json := utl_text.get_text_template(adc_util.C_PARAM_GROUP, 'JSON_ERRORS', 'ERROR');
+      l_error_json := replace(replace(replace(replace(replace(l_error_json,
+                        '#ERROR_TYPE#', case p_severity when pit.level_warn then 'warning' else 'error' end),
+                        '#PAGE_ITEM#', l_error.page_item_name),
+                        '#MESSAGE#', l_error.message),
+                        '#ADDITIONAL_INFO#', l_error.additional_info),
+                        '#LOCATION#', case 
+                                        when l_error.page_item_name = adc_util.C_NO_FIRING_ITEM  then C_ERR_LOCATION_PAGE
+                                        else C_ERR_LOCATION_INLINE end);
         
       g_param.error_stack(l_error_hash) := l_error_json;
     end if;
@@ -359,19 +354,20 @@ as
     l_remaining_length binary_integer := 30000;
     l_changed_items adc_util.max_char;
     l_firing_items adc_util.max_char;
+    l_errors adc_util.max_char;
     l_max_level binary_integer;
     l_js_script_frame_template adc_util.sql_char;
   begin
     pit.enter_optional('get_response');
+  
+    l_js_script_frame_template := utl_text.get_text_template(
+                                    p_type => adc_util.C_PARAM_GROUP,
+                                    p_name => 'JS_SCRIPT_FRAME',
+                                    p_mode => 'FRAME');
                         
     -- collect javascript from stack
     if g_param.js_action_stack.count > 0 then
       l_max_level := get_max_level;
-  
-      l_js_script_frame_template := utl_text.get_text_template(
-                                      p_type => adc_util.C_PARAM_GROUP,
-                                      p_name => 'JS_SCRIPT_FRAME',
-                                      p_mode => 'FRAME');
       
       -- collect all javascript chunks
       for i in 1 .. g_param.js_action_stack.count + 1 loop
@@ -388,7 +384,7 @@ as
     end if;
     
     -- wrap JavaScript in <script> tag and add item value and error scripts
-    -- Replace explicitely to circumvent length limitation of CHAR_TABLE
+    -- Replace explicitely to circumvent length limitation of CHAR_TABLE and to improve performance
     l_response := replace(replace(replace(replace(replace(l_js_script_frame_template, 
                     '#SCRIPT#', l_response),
                     '#ID#', 'S_' || trunc(dbms_random.value(1, 100000))),
@@ -397,14 +393,15 @@ as
                     '#DURATION#', to_char(dbms_utility.get_time - g_param.request_start));
     
     -- Prepare remaining chunks and check overall length
-    l_remaining_length := l_remaining_length - length(l_response);
+    l_remaining_length := l_remaining_length - coalesce(length(l_response), 0);
     l_changed_items := adc_page_state.get_changed_items_as_json;
-    l_remaining_length := l_remaining_length - length(l_changed_items);
+    l_remaining_length := l_remaining_length - coalesce(length(l_changed_items), 0);
     l_firing_items := adc_recursion_stack.get_firing_items_as_json;
-    l_remaining_length := l_remaining_length - length(l_changed_items);
-                    
+    l_remaining_length := l_remaining_length - coalesce(length(l_response), 0);
+    l_errors := get_errors_as_json(l_remaining_length);
+    
     l_response := replace(replace(replace(l_response, 
-                    '#ERROR_JSON#', get_errors_as_json(l_remaining_length)),
+                    '#ERROR_JSON#', l_errors),
                     '#ITEM_JSON#', l_changed_items),
                     '#FIRING_ITEMS#', l_firing_items);
     

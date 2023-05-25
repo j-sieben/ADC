@@ -107,48 +107,6 @@ as
     end if;
     pit.leave_detailed;
   end append;
-  
-  
-  /**
-    Function: get_default_action (result_cache)
-      Initialization method to provide the default apex action
-      
-    Returns: Default apex action
-   */
-  function get_default_action
-    return varchar2 result_cache
-  as
-    l_default_action adc_util.max_char;
-  begin
-    select uttm_text
-      into l_default_action
-      from utl_text_templates
-     where uttm_type = adc_util.C_PARAM_GROUP
-       and uttm_name = 'DEFAULT_APEX_ACTION'
-       and uttm_mode = 'FRAME';
-    return l_default_action;
-  end get_default_action;
-  
-  
-  /**
-    Function: get_confirm_action (result_cache)
-      Initialization method to provide the confirm apex action
-      
-    Returns: Confirm apex action
-   */
-  function get_confirm_action
-    return varchar2 result_cache
-  as
-    l_confirm_action adc_util.max_char;
-  begin
-    select uttm_text
-      into l_confirm_action
-      from utl_text_templates
-     where uttm_type = adc_util.C_PARAM_GROUP
-       and uttm_name = 'CONFIRM_APEX_ACTION'
-       and uttm_mode = 'FRAME';
-    return l_confirm_action;
-  end get_confirm_action;
 
 
   /**
@@ -243,87 +201,89 @@ as
     return varchar2
   as
     l_actions_js adc_util.max_char;
-    l_has_actions binary_integer;
     l_default_action adc_util.max_char;
     l_confirm_action adc_util.max_char;
+    l_cur sys_refcursor;
   begin
     pit.enter_optional('get_crg_apex_actions');
-        
-    l_default_action := get_default_action;
-    l_confirm_action := get_confirm_action;
+    
     -- check whether APEX actions exist
-    select count(*)
-      into l_has_actions
-      from adc_apex_actions
-     where caa_crg_id = p_crg_id
-       and rownum = 1;
-       
-    if l_has_actions = 1 then
+    open l_cur for
+      select null
+        from adc_apex_actions
+       where caa_crg_id = p_crg_id;
+    pit.assert_exists(l_cur);
                 
-      -- Generate initalization JavaScript for APEX actions based on UTL_TEXT templates of name APEX_ACTION
-      with templates as (
-             select uttm_name, uttm_mode, uttm_text, p_crg_id crg_id
-               from utl_text_templates
-              where uttm_type = adc_util.C_PARAM_GROUP
-                and uttm_name = 'APEX_ACTION')
-      select utl_text.generate_text(cursor(
-               select uttm_text template,
-                      adc_util.C_CR cr,
-                      pit.get_message_text(msg.ADC_APEX_ACTION_ORIGIN) apex_action_origin,
-                      utl_text.generate_text(cursor(
-                        select uttm_text template,
-                               cpi_id, caa_name
-                          from adc_apex_action_items
-                          join adc_apex_actions
-                            on caai_caa_id = caa_id
-                          join adc_page_items
-                            on caai_cpi_crg_id = cpi_crg_id
-                           and caai_cpi_id = cpi_id
-                          join adc_page_item_types
-                            on cpi_cpit_id = cpit_id
-                          join templates
-                            on cpit_id = uttm_mode
-                           and caai_cpi_crg_id = crg_id),
-                        p_delimiter => adc_util.C_CR
-                      ) bind_action_items,
-                      utl_text.generate_text(cursor(
-                        select uttm_text template, adc_util.C_CR || '    ' cr,
-                               caa_crg_id, caa_caat_id, caa_name, caa_icon, caa_icon_type, caa_shortcut, caa_href,
-                               apex_escape.json(caa_label) caa_label,
-                               apex_escape.json(caa_label) caa_label_key, 
-                               apex_escape.json(caa_context_label) caa_context_label, 
-                               apex_escape.json(coalesce(caa_title, caa_label)) caa_title,
-                               apex_escape.json(coalesce(caa_title, caa_label)) caa_title_key,
-                               case caa_initially_disabled when adc_util.c_true then 'true' else 'false' end caa_initially_disabled,
-                               case caa_initially_hidden when adc_util.c_true then 'true' else 'false' end caa_initially_hidden,
-                               case when caa_confirm_message_name is not null 
-                                    then apex_escape.json(pit.get_message_text(replace(caa_confirm_message_name, 'msg.'))) 
-                               end confirm_message,
-                               -- Default is to inform ADC about invoking an APEX action on the page
-                               case 
-                                 when caa_action is not null then caa_action
-                                 when caa_confirm_message_name is not null then l_confirm_action
-                                 else l_default_action
-                               end caa_action
-                          from adc_apex_actions_v saa
-                          join adc_rule_groups cgr
-                            on saa.caa_crg_id = cgr.crg_id
-                          join templates t
-                            on t.crg_id = cgr.crg_id
-                           and uttm_mode = caa_caat_id),
-                        p_delimiter => adc_util.C_DELIMITER || adc_util.C_CR || '   '
-                      ) action_list
-                 from templates
-                where uttm_mode = 'FRAME')
-             ) resultat
-        into l_actions_js
-        from dual;
-    end if;
+    l_default_action := utl_text.get_text_template(adc_util.C_PARAM_GROUP, 'DEFAULT_APEX_ACTION', 'FRAME');
+    l_confirm_action := utl_text.get_text_template(adc_util.C_PARAM_GROUP, 'CONFIRM_APEX_ACTION', 'FRAME');
+    
+    -- Generate initalization JavaScript for APEX actions based on UTL_TEXT templates of name APEX_ACTION
+    with templates as (
+           select uttm_name, uttm_mode, uttm_text, p_crg_id crg_id
+             from utl_text_templates
+            where uttm_type = adc_util.C_PARAM_GROUP
+              and uttm_name = 'APEX_ACTION')
+    select utl_text.generate_text(cursor(
+             select uttm_text template,
+                    adc_util.C_CR cr,
+                    pit.get_message_text(msg.ADC_APEX_ACTION_ORIGIN) apex_action_origin,
+                    utl_text.generate_text(cursor(
+                      select uttm_text template,
+                             cpi_id, caa_name
+                        from adc_apex_action_items
+                        join adc_apex_actions
+                          on caai_caa_id = caa_id
+                        join adc_page_items
+                          on caai_cpi_crg_id = cpi_crg_id
+                         and caai_cpi_id = cpi_id
+                        join adc_page_item_types
+                          on cpi_cpit_id = cpit_id
+                        join templates
+                          on cpit_id = uttm_mode
+                         and caai_cpi_crg_id = crg_id),
+                      p_delimiter => adc_util.C_CR
+                    ) bind_action_items,
+                    utl_text.generate_text(cursor(
+                      select uttm_text template, adc_util.C_CR || '    ' cr,
+                             caa_crg_id, caa_caat_id, caa_name, caa_icon, caa_icon_type, caa_shortcut, caa_href,
+                             apex_escape.json(caa_label) caa_label,
+                             apex_escape.json(caa_label) caa_label_key, 
+                             apex_escape.json(caa_context_label) caa_context_label, 
+                             apex_escape.json(coalesce(caa_title, caa_label)) caa_title,
+                             apex_escape.json(coalesce(caa_title, caa_label)) caa_title_key,
+                             case caa_initially_disabled when adc_util.c_true then 'true' else 'false' end caa_initially_disabled,
+                             case caa_initially_hidden when adc_util.c_true then 'true' else 'false' end caa_initially_hidden,
+                             case when caa_confirm_message_name is not null 
+                                  then apex_escape.json(pit.get_message_text(replace(caa_confirm_message_name, 'msg.'))) 
+                             end confirm_message,
+                             -- Default is to inform ADC about invoking an APEX action on the page
+                             case 
+                               when caa_action is not null then caa_action
+                               when caa_confirm_message_name is not null then l_confirm_action
+                               else l_default_action
+                             end caa_action
+                        from adc_apex_actions_v saa
+                        join adc_rule_groups cgr
+                          on saa.caa_crg_id = cgr.crg_id
+                        join templates t
+                          on t.crg_id = cgr.crg_id
+                         and uttm_mode = caa_caat_id),
+                      p_delimiter => adc_util.C_DELIMITER || adc_util.C_CR || '   '
+                    ) action_list
+               from templates
+              where uttm_mode = 'FRAME')
+           ) resultat
+      into l_actions_js
+      from dual;
 
     pit.leave_optional(
       p_params => msg_params(
                     msg_param('APEX_ACTIONS', l_actions_js)));
     return l_actions_js;
+  exception
+    when msg.PIT_ASSERT_EXISTS_ERR then
+      pit.leave_optional;
+      return null;
   end get_crg_apex_actions;
 
 

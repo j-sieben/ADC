@@ -853,28 +853,30 @@ as
     pit.enter_mandatory;
     
     if g_param.crg_is_active then
-      if g_param.firing_event = adc_util.C_INITIALIZE_EVENT then
-        -- Initialize session state with page item default values
-        process_initialization_code;
-    
-        -- Register all predefined mandatory items
-        register_mandatory(
-          p_cpi_id => adc_util.C_NO_FIRING_ITEM,
-          p_cpi_mandatory_message => null,
-          p_is_mandatory => null);
-      end if;
+      if not g_param.stop_flag = adc_util.C_TRUE then
+        if g_param.firing_event = adc_util.C_INITIALIZE_EVENT then
+          -- Initialize session state with page item default values
+          process_initialization_code;
       
-      -- get rule statement to evaluate the necessary actions
-      select crg_decision_table
-        into l_rule_stmt
-        from adc_rule_groups
-       where crg_id = g_param.crg_id;
-      -- recursively evaluate all applicable rules and execute them
-      process_rule(l_rule_stmt);
+          -- Register all predefined mandatory items
+          register_mandatory(
+            p_cpi_id => adc_util.C_NO_FIRING_ITEM,
+            p_cpi_mandatory_message => null,
+            p_is_mandatory => null);
+        end if;
+        
+        -- get rule statement to evaluate the necessary actions
+        select crg_decision_table /*+ result_cache */
+          into l_rule_stmt
+          from adc_rule_groups
+         where crg_id = g_param.crg_id;
+        -- recursively evaluate all applicable rules and execute them
+        process_rule(l_rule_stmt);
+      
+      end if;
       
       -- Collect the response and clean up
       l_js_script := adc_response.get_response;
-      adc_page_state.reset;
     end if;
       
     pit.leave_mandatory(
