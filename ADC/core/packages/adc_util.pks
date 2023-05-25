@@ -20,10 +20,10 @@ as
       max_char - Max length of a PL/SQL varchar2
       flag_type - Persistable representation of a boolean flag. May be defined upon installation of ADC.
   */
-  subtype ora_name_type is varchar2(128 byte);
+  subtype ora_name_type is &ORA_NAME_TYPE.;
   subtype sql_char is varchar2(4000 byte);
   subtype max_char is varchar2(32767 byte);
-  subtype flag_type is char(1 byte);--&FLAG_TYPE.;
+  subtype flag_type is &FLAG_TYPE.;
   subtype tiny_char is varchar2(5 byte);
    
    
