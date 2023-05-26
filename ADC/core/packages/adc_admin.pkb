@@ -396,7 +396,7 @@ as
                join table (l_additional_items)
                  on cpi_id = column_value
               where cpi_crg_id = p_crg_id
-                and cpi_is_required = (select adc_util.C_TRUE from dual)) as char_table)
+                and cpi_is_required = (select adc_util.C_FALSE from dual)) as char_table)
       into l_additional_items
       from dual;
     
@@ -407,10 +407,9 @@ as
        where cra_crg_id = p_crg_id
          and cra_cat_id = C_REGISTER_ADDITIONAL_ITEMS;
     else
-      null;
-     /* delete from adc_rule_actions
+      delete from adc_rule_actions
        where cra_crg_id = p_crg_id
-         and cra_cat_id = C_REGISTER_ADDITIONAL_ITEMS;*/
+         and cra_cat_id = C_REGISTER_ADDITIONAL_ITEMS;
     end if;
     
     pit.leave_detailed;
