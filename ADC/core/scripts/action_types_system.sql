@@ -59,9 +59,7 @@ begin
     p_capt_description => q'{<p>Existierende APEX-Aktion der Regelgruppe.</p>}',
     p_capt_capvt_id => 'SELECT_LIST',
     p_capt_select_list_query => q'{select caa_name d, caa_id r, caa_crg_id crg_id\CR\}' || 
-q'{
-  from adc_apex_actions_v
-}',
+q'{  from adc_apex_actions_v}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -73,9 +71,7 @@ q'{
     p_capt_description => q'{<p>Existierende APEX-Aktion der Regelgruppe.</p>}',
     p_capt_capvt_id => 'SELECT_LIST',
     p_capt_select_list_query => q'{select caa_name d, caa_id r, caa_crg_id crg_id\CR\}' || 
-q'{
-  from adc_apex_actions_v
-}',
+q'{  from adc_apex_actions_v}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -87,10 +83,9 @@ q'{
     p_capt_description => q'{<p>Legt fest, welchen Typ die Meldung besitzen soll</p>}',
     p_capt_capvt_id => 'STATIC_LIST',
     p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 13) r, null crg_id\CR\}' || 
-q'{    from pit_translatable_item_v\CR\}' || 
-q'{   where pti_pmg_name = 'ADC'\CR\}' || 
-q'{     and pti_id like 'DIALOG_TYPE%'\CR\}' || 
-q'{}',
+q'{  from pit_translatable_item_v\CR\}' || 
+q'{ where pti_pmg_name = 'ADC'\CR\}' || 
+q'{   and pti_id like 'DIALOG_TYPE%'}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -105,8 +100,7 @@ q'{}',
 q'{  from adc_event_types_v\CR\}' || 
 q'{ where cet_is_custom_event = (select adc_util.c_true from dual)\CR\}' || 
 q'{ order by cet_id\CR\}',
-    p_capt_select_view_comment => q'{Parameterview to display all custom events\CR\}' || 
-q'{\CR\}',
+    p_capt_select_view_comment => q'{Parameterview to display all custom events}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
 
@@ -149,9 +143,9 @@ q'{ order by cpi_crg_id, cpi_id}',
     p_capt_description => q'{<p>Option zur Anzeige eines Seitenelements auf der Seite</p>}',
     p_capt_capvt_id => 'STATIC_LIST',
     p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id\CR\}' || 
-q'{    from pit_translatable_item_v\CR\}' || 
-q'{   where pti_pmg_name = 'ADC'\CR\}' || 
-q'{     and pti_id like 'ITEM_STATUS%'}',
+q'{  from pit_translatable_item_v\CR\}' || 
+q'{ where pti_pmg_name = 'ADC'\CR\}' || 
+q'{   and pti_id like 'ITEM_STATUS%'}',
     p_capt_select_view_comment => q'{List of translatable items of for that parameter type}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -163,9 +157,9 @@ q'{     and pti_id like 'ITEM_STATUS%'}',
     p_capt_description => q'{<p>Option zur Anzeige eines Seitenelements auf der Seite</p>}',
     p_capt_capvt_id => 'STATIC_LIST',
     p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id\CR\}' || 
-q'{    from pit_translatable_item_v\CR\}' || 
-q'{   where pti_pmg_name = 'ADC'\CR\}' || 
-q'{     and pti_id like 'ITEM_STATUS%'}',
+q'{  from pit_translatable_item_v\CR\}' || 
+q'{ where pti_pmg_name = 'ADC'\CR\}' || 
+q'{   and pti_id like 'ITEM_STATUS%'}',
     p_capt_select_view_comment => q'{List of translatable items of for that parameter type}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -177,10 +171,9 @@ q'{     and pti_id like 'ITEM_STATUS%'}',
     p_capt_description => q'{<p>Option zur Anzeige eines Seitenelements auf der Seite</p>}',
     p_capt_capvt_id => 'STATIC_LIST',
     p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id\CR\}' || 
-q'{    from pit_translatable_item_v\CR\}' || 
-q'{   where pti_pmg_name = 'ADC'\CR\}' || 
-q'{     and pti_id like 'ITEM_STATUS%'\CR\}' || 
-q'{}',
+q'{  from pit_translatable_item_v\CR\}' || 
+q'{ where pti_pmg_name = 'ADC'\CR\}' || 
+q'{   and pti_id like 'ITEM_STATUS%'}',
     p_capt_select_view_comment => q'{List of translatable items of for that parameter type}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -192,9 +185,9 @@ q'{}',
     p_capt_description => q'{<p>Option zur Anzeige eines Seitenelements auf der Seite</p>}',
     p_capt_capvt_id => 'STATIC_LIST',
     p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id\CR\}' || 
-q'{    from pit_translatable_item_v\CR\}' || 
-q'{   where pti_pmg_name = 'ADC'\CR\}' || 
-q'{     and pti_id like 'ITEM_STATUS%'}',
+q'{  from pit_translatable_item_v\CR\}' || 
+q'{ where pti_pmg_name = 'ADC'\CR\}' || 
+q'{   and pti_id like 'ITEM_STATUS%'}',
     p_capt_select_view_comment => q'{List of translatable items of for that parameter type}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -264,10 +257,9 @@ q'{ where pml_default_order = 10}',
     p_capt_description => q'{<p>Typen der Seitenweiterleitung</p>}',
     p_capt_capvt_id => 'STATIC_LIST',
     p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id\CR\}' || 
-q'{    from pit_translatable_item_v\CR\}' || 
-q'{   where pti_pmg_name = 'ADC'\CR\}' || 
-q'{     and pti_id like 'SUBMIT_TYPE%'\CR\}' || 
-q'{}',
+q'{  from pit_translatable_item_v\CR\}' || 
+q'{ where pti_pmg_name = 'ADC'\CR\}' || 
+q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_capt_select_view_comment => q'{List of translatable items of for that parameter type}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);

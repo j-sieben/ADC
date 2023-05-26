@@ -1,4 +1,5 @@
-create or replace force view ADC_PARAM_LOV_INPUT_FIELDS as select cpi_id d, cpi_id r, cpi_crg_id crg_id
+create or replace force view ADC_PARAM_LOV_INPUT_FIELDS as 
+select cpi_id d, cpi_id r, cpi_crg_id crg_id
   from adc_page_items
   join adc_page_item_types
     on cpi_cpit_id = cpit_id

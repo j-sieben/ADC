@@ -972,7 +972,7 @@ end;~';
     end if;
     
     pit.leave_optional;
-    return l_stmt;
+    return replace(l_stmt, chr(10));
   end get_param_lov_query;
   
   
@@ -999,7 +999,7 @@ end;~';
     end if;
     
     pit.leave_optional;
-    return l_stmt;
+    return replace(l_stmt, chr(10));
   end get_param_lov_comment;
 
 
