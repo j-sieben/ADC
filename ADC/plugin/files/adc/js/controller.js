@@ -543,6 +543,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
           }
         }
       });
+      apex.debug.info(`Additional page items: ${pSelector}`);
     }
   }; // bindObserverItems
   

@@ -1223,11 +1223,11 @@ select null #PRE#CRA_ID, '#CRG_ID#' #PRE#CRA_CRG_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
       -- Was called to create a new CRA, initialize default values
       l_cru_id := adc.get_number(C_ITEM_CRU_ID);
       l_statement := replace(replace(replace(replace(replace(l_statement,
-                       'PRE', C_PAGE_PREFIX),
-                       'CRG_ID', p_environment.crg_id),
-                       'CRU_ID', l_cru_id),
-                       'NO_FIRING_ITEM', adc_util.c_no_firing_item),
-                       'SORT_SEQ', get_cra_sort_seq(l_cru_id));
+                       '#PRE#', C_PAGE_PREFIX),
+                       '#CRG_ID#', p_environment.crg_id),
+                       '#CRU_ID#', l_cru_id),
+                       '#NO_FIRING_ITEM#', adc_util.c_no_firing_item),
+                       '#SORT_SEQ#', get_cra_sort_seq(l_cru_id));
       adc.set_items_from_statement(
         p_cpi_id => adc_util.c_no_firing_item, 
         p_statement => l_statement);    
@@ -1311,9 +1311,9 @@ select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
     case when p_environment.action = C_ACTION_CREATE then
       -- Was called to create a new CRU, initialize default values
       l_statement := replace(replace(replace(l_statement, 
-                       'PRE', C_PAGE_PREFIX),
-                       'CRG_ID', p_environment.crg_id),
-                       'SORT_SEQ', get_cru_sort_seq(p_environment.crg_id));
+                       '#PRE#', C_PAGE_PREFIX),
+                       '#CRG_ID#', p_environment.crg_id),
+                       '#SORT_SEQ#', get_cru_sort_seq(p_environment.crg_id));
       adc.set_items_from_statement(
         p_cpi_id => adc_util.c_no_firing_item, 
         p_statement => l_statement);

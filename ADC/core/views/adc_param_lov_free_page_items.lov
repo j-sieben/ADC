@@ -1,0 +1,7 @@
+create or replace force view ADC_PARAM_LOV_FREE_PAGE_ITEMS as 
+select case cpi_id when 'ALL' then ' Document' else cpi_id end d, cpi_id r, cpi_crg_id crg_id
+  from adc_page_items
+ where cpi_cpit_id in ('DATE_ITEM', 'ITEM', 'NUMBER_ITEM')
+   and cpi_is_required = (select adc_util.C_FALSE from dual);
+
+comment on table ADC_PARAM_LOV_FREE_PAGE_ITEMS is 'List of page items, limited to non required input fields, grouped by CRG_ID';

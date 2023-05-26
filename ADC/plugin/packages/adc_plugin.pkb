@@ -99,7 +99,7 @@ as
       l_result.attribute_02 := adc_internal.get_page_items;
       l_result.attribute_03 := p_plugin.attribute_01;
       l_result.attribute_04 := l_java_script;
-      l_result.attribute_05 := adc_internal.get_items_to_observe;
+      l_result.attribute_05 := adc_internal.get_additional_items;
       l_result.attribute_06 := adc_internal.get_standard_messages;
     else
       l_result.javascript_function := C_JS_FUNCTION;      

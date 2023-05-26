@@ -143,7 +143,7 @@ as
     
 
   /**
-    Function: get_items_to_observe
+    Function: get_additional_items
       Method to retrieve a list of items that need to pass their actual value to ADC although they are not bound to an event handler.
       
       Is called during plugin initialization.
@@ -155,7 +155,7 @@ as
       Comma separated list of item selectors to register for observation or a jQuery class selector that
       is evaluated by the client side JavaScript code.
    */
-  function get_items_to_observe
+  function get_additional_items
     return varchar2;
     
 

@@ -36,6 +36,8 @@ as
   
   C_PIPE constant adc_util.tiny_char := '|';
   
+  C_REGISTER_ADDITIONAL_ITEMS constant adc_util.ora_name_type := 'REGISTER_ADDITIONAL_ITEM';
+  
 
   /* Globale Variablen */
   
@@ -366,6 +368,60 @@ as
   
   
   /**
+    Procedure: maintain_additional_items
+      Method checks additional fields against required fields. If a n additional
+      field is marked as required, it is removed from the additional fields set.
+      If the additional fields rule action has no field to add, it gets removed from the rule
+      
+    Parameters:
+      p_crg_id - Rule group ID
+   */
+  procedure maintain_additional_items(
+    p_crg_id in adc_rule_groups.crg_id%type)
+  as
+    l_additional_items char_table;
+  begin
+    pit.enter_detailed('maintain_additional_items');
+    
+    select utl_text.string_to_table(cra_param_1)
+      into l_additional_items
+      from adc_rule_actions
+     where cra_crg_id = p_crg_id
+       and cra_cat_id = C_REGISTER_ADDITIONAL_ITEMS;
+    
+    -- update list of items to only non required entries
+    select cast(multiset(
+             select cpi_id 
+               from adc_page_items
+               join table (l_additional_items)
+                 on cpi_id = column_value
+              where cpi_crg_id = p_crg_id
+                and cpi_is_required = (select adc_util.C_TRUE from dual)) as char_table)
+      into l_additional_items
+      from dual;
+    
+    -- harmonize or remove action type
+    if l_additional_items.count > 0 then
+      update adc_rule_actions
+         set cra_param_1 = utl_text.table_to_string(l_additional_items, ':')
+       where cra_crg_id = p_crg_id
+         and cra_cat_id = C_REGISTER_ADDITIONAL_ITEMS;
+    else
+      null;
+     /* delete from adc_rule_actions
+       where cra_crg_id = p_crg_id
+         and cra_cat_id = C_REGISTER_ADDITIONAL_ITEMS;*/
+    end if;
+    
+    pit.leave_detailed;
+  exception
+    when NO_DATA_FOUND then
+      -- no rule action to add additional fields, ignore
+      pit.leave_detailed;
+  end maintain_additional_items;
+  
+  
+  /**
     Procedure: remove_irrelevant_fields
       Remove any item that is 
      
@@ -380,7 +436,7 @@ as
     p_crg_id in adc_rule_groups.crg_id%type)
   as
   begin
-    pit.enter_detailed('mark_auto_validate_fields');
+    pit.enter_detailed('remove_irrelelvant_fields');
     
       delete from adc_page_items
        where cpi_crg_id = p_crg_id
@@ -504,6 +560,8 @@ as
     mark_rule_condition_items(p_crg_id, p_new_condition);
     
     mark_auto_validate_fields(p_crg_id);
+    
+    maintain_additional_items(p_crg_id);
     
     remove_irrelevant_fields(p_crg_id);
       
@@ -781,6 +839,7 @@ as
               utl_text.wrap_string(cat_pl_sql, C_WRAP_START, C_WRAP_END) cat_pl_sql,
               utl_text.wrap_string(cat_js, C_WRAP_START, C_WRAP_END) cat_js,
               adc_util.to_bool(cat_is_editable) cat_is_editable,
+              adc_util.to_bool(cat_active) cat_active,
               adc_util.to_bool(cat_raise_recursive) cat_raise_recursive,
               -- rule action_params
               utl_text.generate_text(cursor(

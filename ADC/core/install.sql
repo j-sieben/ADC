@@ -54,6 +54,7 @@ prompt &h3.Create views
 prompt &h3.Create parameter lov views
 @&tool_dir.create_lov_view adc_param_lov_apex_action
 @&tool_dir.create_lov_view adc_param_lov_event
+@&tool_dir.create_lov_view adc_param_lov_free_page_items
 @&tool_dir.create_lov_view adc_param_lov_input_fields
 @&tool_dir.create_lov_view adc_param_lov_item_status
 @&tool_dir.create_lov_view adc_param_lov_page_item

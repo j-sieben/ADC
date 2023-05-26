@@ -884,6 +884,7 @@ q'[    p_cat_description => #CAT_DESCRIPTION#,\CR\]' ||
 q'[    p_cat_pl_sql => #CAT_PL_SQL#,\CR\]' || 
 q'[    p_cat_js => #CAT_JS#,\CR\]' || 
 q'[    p_cat_is_editable => #CAT_IS_EDITABLE#,\CR\]' || 
+q'[    p_cat_active => #CAT_ACTIVE#,\CR\]' || 
 q'[    p_cat_raise_recursive => #CAT_RAISE_RECURSIVE#);\CR\]' || 
 q'[\CR\]' || 
 q'[#RULE_ACTION_PARAMS#\CR\]' || 

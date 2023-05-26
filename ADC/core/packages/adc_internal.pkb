@@ -757,36 +757,30 @@ as
   
   
   /**
-    Function: get_items_to_observe
-      See <ADC_INTERNAL.get_items_to_observe>
+    Function: get_additional_items
+      See <ADC_INTERNAL.get_additional_items>
    */
-  function get_items_to_observe
+  function get_additional_items
     return varchar2
   as
-    C_REGISTER_OBSERVER constant adc_action_types.cat_id%type := 'REGISTER_OBSERVER';
-    l_observable_objects varchar2(2000);
+    C_REGISTER_ADDITIONAL_ITEMS constant adc_action_types.cat_id%type := 'REGISTER_ADDITIONAL_ITEM';
+    l_additional_items adc_util.sql_char;
   begin
     pit.enter_optional;
     
-    select listagg(distinct 
-             case when cpi_id = adc_util.C_NO_FIRING_ITEM
-                  then to_char(cra_param_2) 
-                  else cpi_id end, adc_util.C_DELIMITER) within group (order by cpi_id)
-      into l_observable_objects
-      from adc_page_items
-      join adc_rule_actions
-        on cpi_id = cra_cpi_id
-       and cpi_crg_id = cra_crg_id
-     where cra_cat_id = C_REGISTER_OBSERVER
-       and cpi_crg_id = g_param.crg_id;
+    select replace(cra_param_1, ':', ',')
+      into l_additional_items
+      from adc_rule_actions
+     where cra_cat_id = C_REGISTER_ADDITIONAL_ITEMS
+       and cra_crg_id = g_param.crg_id;
        
-    pit.leave_optional(p_params => msg_params(msg_param('Observable objects', l_observable_objects)));
-    return l_observable_objects;
+    pit.leave_optional(p_params => msg_params(msg_param('Additional items', l_additional_items)));
+    return l_additional_items;
   exception
     when NO_DATA_FOUND then
-      pit.leave_optional(p_params => msg_params(msg_param('Observable objects', 'None')));
+      pit.leave_optional(p_params => msg_params(msg_param('Additional items', 'None')));
       return null;
-  end get_items_to_observe;    
+  end get_additional_items;    
 
 
   /**
