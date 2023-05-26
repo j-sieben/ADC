@@ -934,7 +934,7 @@ end;~';
                                              
     return varchar2
   as
-    C_VIEW_STATEMENT_TEMPLATE constant adc_util.max_char := q'^create or replace force view #VIEW_NAME# as #QUERY##CR#^';
+    C_VIEW_STATEMENT_TEMPLATE constant adc_util.max_char := q'^create or replace force view #VIEW_NAME# as #CR##QUERY#;^';
     C_VIEW_STATIC_LIST_TEMPLATE constant adc_util.max_char := q'^
   select pti_name d, substr(pti_id, #IDX#) r, null crg_id
     from pit_translatable_item_v

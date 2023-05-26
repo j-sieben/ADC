@@ -775,20 +775,15 @@ as
                    utl_text.wrap_string(capt_select_list_query, C_WRAP_START, C_WRAP_END) capt_select_list_query,
                    utl_text.wrap_string(capt_select_view_comment, C_WRAP_START, C_WRAP_END) capt_select_view_comment,
                    capt_display_name, capt_sort_seq
-              from adc_action_param_types_v
-              join adc_action_parameters
-                on capt_id = cap_capt_id
-              join adc_action_types
-                on cap_cat_id = cat_id
-             where cat_cato_id = p_cato_id
-                   -- if CATO_ID is not C_ADC, exclude all parameter types already exported by C_ADC
-               and (capt_id not in (
-                      select cap_capt_id
-                        from adc_action_parameters
-                        join adc_action_types
-                          on cap_cat_id = cat_id
-                       where cat_cato_id = C_ADC)
-                or p_cato_id = C_ADC)
+             from adc_action_param_types_v
+             where exists(
+                     select null
+                       from adc_action_parameters
+                       join adc_action_types
+                         on capt_id = cap_capt_id
+                      where cap_cat_id = cat_id
+                        and (cat_cato_id = p_cato_id or p_cato_id is null)
+                        and cap_sort_seq = 1)
            ), adc_util.C_CR)
       into l_action_param_types
       from utl_text_templates
@@ -894,6 +889,7 @@ as
                   join adc_action_types
                     on cap_cat_id = cat_id
                  where cat_cato_id = p_cato_id
+                   and cap_sort_seq = 1
                    and (capt_capvt_id = C_STATIC_LIST
                     or capt_select_list_query is not null)) loop
       l_export_script := adc_parameter.get_param_lov_query(cpt);
@@ -2478,7 +2474,7 @@ as
           values(s.capt_id, s.capt_pti_id, s.capt_pmg_name, s.capt_capvt_id, s.capt_sort_seq, s.capt_active);
     
     -- Create generic View statement for static lists (they reference transalatable items)
-    l_stmt := adc_parameter.get_param_lov_query(p_row);
+    l_stmt := rtrim(adc_parameter.get_param_lov_query(p_row), ';');
     if l_stmt is not null then
       begin
         execute immediate l_stmt;

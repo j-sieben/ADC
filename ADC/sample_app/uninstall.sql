@@ -12,16 +12,17 @@ declare
   cursor delete_object_cur is
           select object_name name, object_type type
             from user_objects
-           where object_name in (
+           where (object_name in (
                  '', -- Typen
-                 'SADC_UI', '', -- Packages
+                 '', '', -- Packages
                  'SADC_LOV_DEPARTMENT', 'SADC_LOV_JOB', 'SADCA_UI_ADACT', 'SADCA_UI_ADPTI', 'EMP_DETAILS_VW', 
                  'SADCA_UI_ADSTA', 'SADCA_UI_EDEMP', 'SADCA_UI_HOME', 'SADCA_UI_ADREP', 'SADCA_UI_DOC', 'SADCA_UI_MENU_CAT', 'SADCA_UI_TUTORIAL', 
                  'EMP_DETAILS_VIEW', -- Views
-                 'JOB_HISTORY', 'EMPLOYEES', 'JOBS', 'DEPARTMENTS', 'LOCATIONS', 'REGIONS', 'COUNTRIES',   -- Tabellen
+                 '', 'HR_EMPLOYEES', 'HR_JOBS', 'HR_DEPARTMENTS', 'HR_LOCATIONS', 'HR_REGIONS', 'HR_COUNTRIES',   -- Tabellen
                  '',  -- Synonyme
-                 'LOCATIONS_SEQ', 'DEPARTMENTS_SEQ', 'EMPLOYEES_SEQ' -- Sequenzen
+                 'HR_LOCATIONS_SEQ', 'HR_DEPARTMENTS_SEQ', 'HR_EMPLOYEES_SEQ' -- Sequenzen
                  )
+              or object_name like 'SADC_UI%')
              and object_type not like '%BODY'
            order by object_type, object_name;
 begin
@@ -45,8 +46,8 @@ begin
 end;
 /
 
-
-prompt &h3.Removing ADC groups
+whenever sqlerror continue
+prompt &h3.Removing ADC groups *** IGNORE POSSIBLE EXCEPTIONS FROM HERE
 declare
   cursor adc_cur is
     select crg_id
@@ -85,3 +86,5 @@ exception
     dbms_output.put_line('&s1.Application ' || c_app_alias || ' does not exist');
 end;
  /
+whenever sqlerror exit
+prompt *** IGNORE POSSIBLE EXCEPTIONS UNTIL HERE

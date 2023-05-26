@@ -204,7 +204,8 @@ q'[</script>]',
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'APEX_ACTION_TYPE',
-    p_uttm_text => q'[  adc_admin.merge_apex_action_type(\CR\]' || 
+    p_uttm_text => q'[\CR\]' || 
+q'[  adc_admin.merge_apex_action_type(\CR\]' || 
 q'[    p_caat_id => '#CAAT_ID#',\CR\]' || 
 q'[    p_caat_name => '#CAAT_NAME#',\CR\]' || 
 q'[    p_caat_description => #CAAT_DESCRIPTION#,\CR\]' || 
@@ -218,7 +219,8 @@ q'[]',
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'PAGE_ITEM_TYPE_GROUP',
-    p_uttm_text => q'[  adc_admin.merge_page_item_type_group(\CR\]' || 
+    p_uttm_text => q'[\CR\]' || 
+q'[  adc_admin.merge_page_item_type_group(\CR\]' || 
 q'[    p_cpitg_id => '#CPITG_ID#',\CR\]' || 
 q'[    p_cpitg_has_value => #CPITG_HAS_VALUE#,\CR\]' || 
 q'[    p_cpitg_include_in_view => #CPITG_INCLUDE_IN_VIEW#);\CR\]' || 
@@ -231,11 +233,12 @@ q'[]',
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'PAGE_ITEM_TYPE',
-    p_uttm_text => q'[  adc_admin.merge_page_item_type(\CR\]' || 
+    p_uttm_text => q'[\CR\]' || 
+q'[  adc_admin.merge_page_item_type(\CR\]' || 
 q'[    p_cpit_id => '#CPIT_ID#',\CR\]' || 
 q'[    p_cpit_name => '#CPIT_NAME#',\CR\]' || 
 q'[    p_cpit_cpitg_id => '#CPIT_CPITG_ID#',\CR\]' || 
-q'[    p_cpit_cet_id => '#CPIT_CET_ID#',\CR\]' || 
+q'[    p_cpit_cet_id => '#CPIT_CET_ID|||#',\CR\]' || 
 q'[    p_cpit_col_template => #CPIT_COL_TEMPLATE#,\CR\]' || 
 q'[    p_cpit_init_template => #CPIT_INIT_TEMPLATE#);\CR\]' || 
 q'[]',
@@ -672,35 +675,25 @@ q'[]',
     p_uttm_text => q'[set define off\CR\]' || 
 q'[\CR\]' || 
 q'[begin\CR\]' || 
-q'[  -- ACTION_PARAM_VISUAL_TYPES\CR\]' || 
-q'[#ACTION_PARAM_VISUAL_TYPES#\CR\]' || 
+q'[  -- ACTION_PARAM_VISUAL_TYPES#ACTION_PARAM_VISUAL_TYPES#\CR\]' || 
 q'[\CR\]' || 
-q'[  -- ACTION_PARAM_TYPES\CR\]' || 
-q'[#ACTION_PARAM_TYPES#\CR\]' || 
+q'[  -- ACTION_PARAM_TYPES#ACTION_PARAM_TYPES#\CR\]' || 
 q'[\CR\]' || 
-q'[  -- PAGE_ITEM_TYPE_GROUPS\CR\]' || 
-q'[#PAGE_ITEM_TYPE_GROUPS#\CR\]' || 
+q'[  -- PAGE_ITEM_TYPE_GROUPS#PAGE_ITEM_TYPE_GROUPS#\CR\]' || 
 q'[\CR\]' || 
-q'[  -- EVENT_TYPES\CR\]' || 
-q'[#EVENT_TYPES#\CR\]' || 
+q'[  -- EVENT_TYPES#EVENT_TYPES#\CR\]' || 
 q'[\CR\]' || 
-q'[  -- PAGE_ITEM_TYPES\CR\]' || 
-q'[#PAGE_ITEM_TYPES#\CR\]' || 
+q'[  -- PAGE_ITEM_TYPES#PAGE_ITEM_TYPES#\CR\]' || 
 q'[\CR\]' || 
-q'[  -- ACTION_ITEM_FOCUS\CR\]' || 
-q'[#ACTION_ITEM_FOCUS#\CR\]' || 
+q'[  -- ACTION_ITEM_FOCUS#ACTION_ITEM_FOCUS#\CR\]' || 
 q'[\CR\]' || 
-q'[  -- ACTION_TYPE_GROUPS\CR\]' || 
-q'[#ACTION_TYPE_GROUPS#\CR\]' || 
+q'[  -- ACTION_TYPE_GROUPS#ACTION_TYPE_GROUPS#\CR\]' || 
 q'[\CR\]' || 
-q'[  -- ACTION_TYPE_OWNERS\CR\]' || 
-q'[#ACTION_TYPE_OWNERS#\CR\]' || 
+q'[  -- ACTION_TYPE_OWNERS#ACTION_TYPE_OWNERS#\CR\]' || 
 q'[\CR\]' || 
-q'[  -- ACTION TYPES\CR\]' || 
-q'[#ACTION_TYPES#\CR\]' || 
+q'[  -- ACTION TYPES#ACTION_TYPES#\CR\]' || 
 q'[\CR\]' || 
-q'[  -- APEX_ACTION TYPES\CR\]' || 
-q'[#APEX_ACTION_TYPES#\CR\]' || 
+q'[  -- APEX_ACTION TYPES#APEX_ACTION_TYPES#\CR\]' || 
 q'[  commit;\CR\]' || 
 q'[end;\CR\]' || 
 q'[/\CR\]' || 
@@ -718,11 +711,9 @@ q'[]',
     p_uttm_text => q'[set define off\CR\]' || 
 q'[\CR\]' || 
 q'[begin\CR\]' || 
-q'[  -- ACTION_PARAM_TYPES\CR\]' || 
-q'[#ACTION_PARAM_TYPES#\CR\]' || 
+q'[  -- ACTION_PARAM_TYPES#ACTION_PARAM_TYPES#\CR\]' || 
 q'[\CR\]' || 
-q'[  -- ACTION TYPES\CR\]' || 
-q'[#ACTION_TYPES#\CR\]' || 
+q'[  -- ACTION TYPES#ACTION_TYPES#\CR\]' || 
 q'[\CR\]' || 
 q'[  commit;\CR\]' || 
 q'[end;\CR\]' || 
@@ -738,14 +729,14 @@ q'[]',
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'PARAM_VISUAL_TYPE',
-    p_uttm_text => q'[  adc_admin.merge_action_param_visual_type(\CR\]' || 
+    p_uttm_text => q'[\CR\]' || 
+q'[  adc_admin.merge_action_param_visual_type(\CR\]' || 
 q'[    p_capvt_id => '#CAPVT_ID#',\CR\]' || 
 q'[    p_capvt_name => '#CAPVT_NAME#',\CR\]' || 
 q'[    p_capvt_display_name => '#CAPVT_DISPLAY_NAME#',\CR\]' || 
 q'[    p_capvt_description => #CAPVT_DESCRIPTION#,\CR\]' || 
 q'[    p_capvt_param_item_extension => '#CAPVT_PARAM_ITEM_EXTENSION#',\CR\]' || 
-q'[    p_capvt_active => #CAPVT_ACTIVE#);\CR\]' || 
-q'[]',
+q'[    p_capvt_active => #CAPVT_ACTIVE#);]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
@@ -754,7 +745,8 @@ q'[]',
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'PARAM_TYPE',
-    p_uttm_text => q'[  adc_admin.merge_action_param_type(\CR\]' || 
+    p_uttm_text => q'[\CR\]' || 
+q'[  adc_admin.merge_action_param_type(\CR\]' || 
 q'[    p_capt_id => '#CAPT_ID#',\CR\]' || 
 q'[    p_capt_name => '#CAPT_NAME#',\CR\]' || 
 q'[    p_capt_display_name => '#CAPT_DISPLAY_NAME#',\CR\]' || 
@@ -763,8 +755,7 @@ q'[    p_capt_capvt_id => '#CAPT_CAPVT_ID#',\CR\]' ||
 q'[    p_capt_select_list_query => #CAPT_SELECT_LIST_QUERY#,\CR\]' || 
 q'[    p_capt_select_view_comment => #CAPT_SELECT_VIEW_COMMENT#,\CR\]' || 
 q'[    p_capt_sort_seq => #CAPT_SORT_SEQ#,\CR\]' || 
-q'[    p_capt_active => #CAPT_ACTIVE#);\CR\]' || 
-q'[]',
+q'[    p_capt_active => #CAPT_ACTIVE#);]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
@@ -773,15 +764,15 @@ q'[]',
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ITEM_FOCUS',
-    p_uttm_text => q'[  adc_admin.merge_action_item_focus(\CR\]' || 
+    p_uttm_text => q'[\CR\]' || 
+q'[  adc_admin.merge_action_item_focus(\CR\]' || 
 q'[    p_caif_id => '#CAIF_ID#',\CR\]' || 
 q'[    p_caif_name => '#CAIF_NAME#',\CR\]' || 
 q'[    p_caif_description => #CAIF_DESCRIPTION#,\CR\]' || 
 q'[    p_caif_actual_page_only => #CAIF_ACTUAL_PAGE_ONLY#,\CR\]' || 
 q'[    p_caif_item_types => '#CAIF_ITEM_TYPES#',\CR\]' || 
 q'[    p_caif_default => '#CAIF_DEFAULT#',\CR\]' || 
-q'[    p_caif_active => #CAIF_ACTIVE#);\CR\]' || 
-q'[]',
+q'[    p_caif_active => #CAIF_ACTIVE#);]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
@@ -790,7 +781,8 @@ q'[]',
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ACTION_PARAMS',
-    p_uttm_text => q'[  adc_admin.merge_action_parameter(\CR\]' || 
+    p_uttm_text => q'[\CR\]' || 
+q'[  adc_admin.merge_action_parameter(\CR\]' || 
 q'[    p_cap_cat_id => '#CAP_CAT_ID#',\CR\]' || 
 q'[    p_cap_capt_id => '#CAP_capt_ID#',\CR\]' || 
 q'[    p_cap_sort_seq => #CAP_SORT_SEQ#,\CR\]' || 
@@ -798,8 +790,7 @@ q'[    p_cap_default => #CAP_DEFAULT#,\CR\]' ||
 q'[    p_cap_description => #CAP_DESCRIPTION#,\CR\]' || 
 q'[    p_cap_display_name => '#CAP_DISPLAY_NAME#',\CR\]' || 
 q'[    p_cap_mandatory => #CAP_MANDATORY#,\CR\]' || 
-q'[    p_cap_active => #CAP_ACTIVE#);\CR\]' || 
-q'[]',
+q'[    p_cap_active => #CAP_ACTIVE#);]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
@@ -808,12 +799,12 @@ q'[]',
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ACTION_TYPE_GROUP',
-    p_uttm_text => q'[  adc_admin.merge_action_type_group(\CR\]' || 
+    p_uttm_text => q'[\CR\]' || 
+q'[  adc_admin.merge_action_type_group(\CR\]' || 
 q'[    p_catg_id => '#CATG_ID#',\CR\]' || 
 q'[    p_catg_name => '#CATG_NAME#',\CR\]' || 
 q'[    p_catg_description => #CATG_DESCRIPTION#,\CR\]' || 
-q'[    p_catg_active => #CATG_ACTIVE#);\CR\]' || 
-q'[]',
+q'[    p_catg_active => #CATG_ACTIVE#);]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
@@ -822,11 +813,11 @@ q'[]',
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ACTION_TYPE_OWNER',
-    p_uttm_text => q'[  adc_admin.merge_action_type_owner(\CR\]' || 
+    p_uttm_text => q'[\CR\]' || 
+q'[  adc_admin.merge_action_type_owner(\CR\]' || 
 q'[    p_cato_id => '#CATO_ID#',\CR\]' || 
 q'[    p_cato_description => #CATO_DESCRIPTION#,\CR\]' || 
-q'[    p_cato_active => #CATO_ACTIVE#);\CR\]' || 
-q'[]',
+q'[    p_cato_active => #CATO_ACTIVE#);]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
@@ -873,7 +864,8 @@ q'[ where #ATTRIBUTE_04# = (select v('#ATTRIBUTE_03#') from dual)]',
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ACTION_TYPE',
-    p_uttm_text => q'[  adc_admin.merge_action_type(\CR\]' || 
+    p_uttm_text => q'[\CR\]' || 
+q'[  adc_admin.merge_action_type(\CR\]' || 
 q'[    p_cat_id => '#CAT_ID#',\CR\]' || 
 q'[    p_cat_catg_id => '#CAT_CATG_ID#',\CR\]' || 
 q'[    p_cat_caif_id => '#CAT_CAIF_ID#',\CR\]' || 
@@ -886,9 +878,7 @@ q'[    p_cat_js => #CAT_JS#,\CR\]' ||
 q'[    p_cat_is_editable => #CAT_IS_EDITABLE#,\CR\]' || 
 q'[    p_cat_active => #CAT_ACTIVE#,\CR\]' || 
 q'[    p_cat_raise_recursive => #CAT_RAISE_RECURSIVE#);\CR\]' || 
-q'[\CR\]' || 
-q'[#RULE_ACTION_PARAMS#\CR\]' || 
-q'[]',
+q'[#RULE_ACTION_PARAMS|||#\CR\]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
@@ -990,9 +980,7 @@ q'[    p_sequence => #CRG_SORT_SEQ#,\CR\]' ||
 q'[    p_script_type => 'INSTALL',\CR\]' || 
 q'[    p_script_clob => wwv_flow_string.join(wwv_flow_t_varchar2(#CRG_SCRIPT#))\CR\]' || 
 q'[  );\CR\]' || 
-q'[end;\CR\]' || 
-q'[/\CR\]' || 
-q'[]',
+q'[end;\CR\]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
@@ -1007,9 +995,7 @@ q'[wwv_flow_api.create_install(\CR\]' ||
 q'[ p_id=>wwv_flow_api.id(#CRG_INSTALL_ID#)\CR\]' || 
 q'[);\CR\]' || 
 q'[end;\CR\]' || 
-q'[/\CR\]' || 
-q'[\CR\]' || 
-q'[]',
+q'[/\CR\]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
@@ -1036,12 +1022,12 @@ q'[]',
     p_uttm_name => 'EXPORT_ACTION_TYPE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'EVENT_TYPE',
-    p_uttm_text => q'[  adc_admin.merge_event_type(\CR\]' || 
+    p_uttm_text => q'[\CR\]' || 
+q'[  adc_admin.merge_event_type(\CR\]' || 
 q'[    p_cet_id => '#CET_ID#',\CR\]' || 
 q'[    p_cet_name => '#CET_NAME#',\CR\]' || 
 q'[    p_cet_column_name => '#CET_COLUMN_NAME#',\CR\]' || 
-q'[    p_cet_is_custom_event => #CET_IS_CUSTOM_EVENT#);\CR\]' || 
-q'[]',
+q'[    p_cet_is_custom_event => #CET_IS_CUSTOM_EVENT#);\CR\]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );

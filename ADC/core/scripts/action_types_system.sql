@@ -50,20 +50,7 @@ begin
     p_capvt_param_item_extension => 'AREA_',
     p_capvt_active => adc_util.C_TRUE);
 
-
   -- ACTION_PARAM_TYPES
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'APEX_ACTION',
-    p_capt_name => 'APEX-Aktion',
-    p_capt_display_name => 'CAPT_DISPLAY_NAME',
-    p_capt_description => q'{<p>Existierende APEX-Aktion der Regelgruppe.</p>}',
-    p_capt_capvt_id => 'SELECT_LIST',
-    p_capt_select_list_query => q'{select caa_name d, caa_id r, caa_crg_id crg_id\CR\}' || 
-q'{  from adc_apex_actions_v}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
   adc_admin.merge_action_param_type(
     p_capt_id => 'APEX_ACTION',
     p_capt_name => 'APEX-Aktion',
@@ -82,10 +69,7 @@ q'{  from adc_apex_actions_v}',
     p_capt_display_name => 'CAPT_DISPLAY_NAME',
     p_capt_description => q'{<p>Legt fest, welchen Typ die Meldung besitzen soll</p>}',
     p_capt_capvt_id => 'STATIC_LIST',
-    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 13) r, null crg_id\CR\}' || 
-q'{  from pit_translatable_item_v\CR\}' || 
-q'{ where pti_pmg_name = 'ADC'\CR\}' || 
-q'{   and pti_id like 'DIALOG_TYPE%'}',
+    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 13) r, null crg_id    from pit_translatable_item_v   where pti_pmg_name = 'ADC'     and pti_id like 'DIALOG_TYPE%'}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -99,8 +83,12 @@ q'{   and pti_id like 'DIALOG_TYPE%'}',
     p_capt_select_list_query => q'{select cet_name d, cet_id r, null crg_id\CR\}' || 
 q'{  from adc_event_types_v\CR\}' || 
 q'{ where cet_is_custom_event = (select adc_util.c_true from dual)\CR\}' || 
-q'{ order by cet_id\CR\}',
-    p_capt_select_view_comment => q'{Parameterview to display all custom events}',
+q'{ order by cet_id\CR\}' || 
+q'{}',
+    p_capt_select_view_comment => q'{Parameterview to display all custom events\CR\}' || 
+q'{\CR\}' || 
+q'{\CR\}' || 
+q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
 
@@ -114,7 +102,10 @@ q'{ order by cet_id\CR\}',
 q'{  from adc_page_items\CR\}' || 
 q'{ where cpi_cpit_id in ('DATE_ITEM', 'ITEM', 'NUMBER_ITEM')\CR\}' || 
 q'{   and cpi_is_required = (select adc_util.C_FALSE from dual)}',
-    p_capt_select_view_comment => q'{List of non required page items, limited to input fields, grouped by CRG_ID}',
+    p_capt_select_view_comment => q'{List of non required page items, limited to input fields, grouped by CRG_ID\CR\}' || 
+q'{\CR\}' || 
+q'{\CR\}' || 
+q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
 
@@ -142,52 +133,7 @@ q'{ order by cpi_crg_id, cpi_id}',
     p_capt_display_name => 'CAPT_DISPLAY_NAME',
     p_capt_description => q'{<p>Option zur Anzeige eines Seitenelements auf der Seite</p>}',
     p_capt_capvt_id => 'STATIC_LIST',
-    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id\CR\}' || 
-q'{  from pit_translatable_item_v\CR\}' || 
-q'{ where pti_pmg_name = 'ADC'\CR\}' || 
-q'{   and pti_id like 'ITEM_STATUS%'}',
-    p_capt_select_view_comment => q'{List of translatable items of for that parameter type}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'ITEM_STATUS',
-    p_capt_name => 'Anzeigestatus',
-    p_capt_display_name => 'CAPT_DISPLAY_NAME',
-    p_capt_description => q'{<p>Option zur Anzeige eines Seitenelements auf der Seite</p>}',
-    p_capt_capvt_id => 'STATIC_LIST',
-    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id\CR\}' || 
-q'{  from pit_translatable_item_v\CR\}' || 
-q'{ where pti_pmg_name = 'ADC'\CR\}' || 
-q'{   and pti_id like 'ITEM_STATUS%'}',
-    p_capt_select_view_comment => q'{List of translatable items of for that parameter type}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'ITEM_STATUS',
-    p_capt_name => 'Anzeigestatus',
-    p_capt_display_name => 'CAPT_DISPLAY_NAME',
-    p_capt_description => q'{<p>Option zur Anzeige eines Seitenelements auf der Seite</p>}',
-    p_capt_capvt_id => 'STATIC_LIST',
-    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id\CR\}' || 
-q'{  from pit_translatable_item_v\CR\}' || 
-q'{ where pti_pmg_name = 'ADC'\CR\}' || 
-q'{   and pti_id like 'ITEM_STATUS%'}',
-    p_capt_select_view_comment => q'{List of translatable items of for that parameter type}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'ITEM_STATUS',
-    p_capt_name => 'Anzeigestatus',
-    p_capt_display_name => 'CAPT_DISPLAY_NAME',
-    p_capt_description => q'{<p>Option zur Anzeige eines Seitenelements auf der Seite</p>}',
-    p_capt_capvt_id => 'STATIC_LIST',
-    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id\CR\}' || 
-q'{  from pit_translatable_item_v\CR\}' || 
-q'{ where pti_pmg_name = 'ADC'\CR\}' || 
-q'{   and pti_id like 'ITEM_STATUS%'}',
+    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id    from pit_translatable_item_v   where pti_pmg_name = 'ADC'     and pti_id like 'ITEM_STATUS%'}',
     p_capt_select_view_comment => q'{List of translatable items of for that parameter type}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -206,60 +152,12 @@ q'{ where cpi_cpit_id in ('DATE_ITEM', 'ITEM', 'NUMBER_ITEM')}',
     p_capt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_capt_id => 'PIT_MESSAGE',
-    p_capt_name => 'Name der Meldung',
-    p_capt_display_name => 'CAPT_DISPLAY_NAME',
-    p_capt_description => q'{<p>Bezeichner einer PIT-Meldung in der Form msg.NAME oder 'NAME', muss eine existierende Meldung sein.</p>}',
-    p_capt_capvt_id => 'SELECT_LIST',
-    p_capt_select_list_query => q'{select pms_name d, 'msg.' || pms_name r, null crg_id\CR\}' || 
-q'{  from pit_message\CR\}' || 
-q'{  join pit_message_language_v\CR\}' || 
-q'{    on pms_pml_name = pml_name\CR\}' || 
-q'{ where pml_default_order = 10}',
-    p_capt_select_view_comment => q'{List of PIT messages}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'PIT_MESSAGE',
-    p_capt_name => 'Name der Meldung',
-    p_capt_display_name => 'CAPT_DISPLAY_NAME',
-    p_capt_description => q'{<p>Bezeichner einer PIT-Meldung in der Form msg.NAME oder 'NAME', muss eine existierende Meldung sein.</p>}',
-    p_capt_capvt_id => 'SELECT_LIST',
-    p_capt_select_list_query => q'{select pms_name d, 'msg.' || pms_name r, null crg_id\CR\}' || 
-q'{  from pit_message\CR\}' || 
-q'{  join pit_message_language_v\CR\}' || 
-q'{    on pms_pml_name = pml_name\CR\}' || 
-q'{ where pml_default_order = 10}',
-    p_capt_select_view_comment => q'{List of PIT messages}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'PIT_MESSAGE',
-    p_capt_name => 'Name der Meldung',
-    p_capt_display_name => 'CAPT_DISPLAY_NAME',
-    p_capt_description => q'{<p>Bezeichner einer PIT-Meldung in der Form msg.NAME oder 'NAME', muss eine existierende Meldung sein.</p>}',
-    p_capt_capvt_id => 'SELECT_LIST',
-    p_capt_select_list_query => q'{select pms_name d, 'msg.' || pms_name r, null crg_id\CR\}' || 
-q'{  from pit_message\CR\}' || 
-q'{  join pit_message_language_v\CR\}' || 
-q'{    on pms_pml_name = pml_name\CR\}' || 
-q'{ where pml_default_order = 10}',
-    p_capt_select_view_comment => q'{List of PIT messages}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
     p_capt_id => 'SUBMIT_TYPE',
     p_capt_name => 'Submit und/oder Validierung',
     p_capt_display_name => 'CAPT_DISPLAY_NAME',
     p_capt_description => q'{<p>Typen der Seitenweiterleitung</p>}',
     p_capt_capvt_id => 'STATIC_LIST',
-    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id\CR\}' || 
-q'{  from pit_translatable_item_v\CR\}' || 
-q'{ where pti_pmg_name = 'ADC'\CR\}' || 
-q'{   and pti_id like 'SUBMIT_TYPE%'}',
+    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id    from pit_translatable_item_v   where pti_pmg_name = 'ADC'     and pti_id like 'SUBMIT_TYPE%'}',
     p_capt_select_view_comment => q'{List of translatable items of for that parameter type}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -267,7 +165,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_action_param_type(
     p_capt_id => 'FUNCTION',
     p_capt_name => 'PL/SQL-Funktion',
-    p_capt_display_name => '',
+    p_capt_display_name => 'CAPT_DISPLAY_NAME',
     p_capt_description => q'{<p>Eine bestehende PL/SQL-Funktion oder eine Package-Funktion<br>Es muss kein abschliessendes Semikolon angegeben werden.</p>}',
     p_capt_capvt_id => 'TEXT',
     p_capt_select_list_query => q'{}',
@@ -276,130 +174,9 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_capt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING_OR_JAVASCRIPT',
-    p_capt_name => 'Zeichenkette oder JS-Ausdruck',
-    p_capt_display_name => '',
-    p_capt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein JavaScript-Ausdruck, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'JAVA_SCRIPT_FUNCTION',
-    p_capt_name => 'JavaScript-Funktion',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Name einer JavaScript-Funktion oder anonyme Funktionsdefinition/IIFE</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
     p_capt_id => 'STRING',
     p_capt_name => 'Zeichenkette',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Einfache Zeichenkette.<br>Die Zeichenkette wird mit Hochkommata umgeben, daher ist die Eingabe dieser Zeichen nicht erforderlich.</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING',
-    p_capt_name => 'Zeichenkette',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Einfache Zeichenkette.<br>Die Zeichenkette wird mit Hochkommata umgeben, daher ist die Eingabe dieser Zeichen nicht erforderlich.</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING',
-    p_capt_name => 'Zeichenkette',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Einfache Zeichenkette.<br>Die Zeichenkette wird mit Hochkommata umgeben, daher ist die Eingabe dieser Zeichen nicht erforderlich.</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING',
-    p_capt_name => 'Zeichenkette',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Einfache Zeichenkette.<br>Die Zeichenkette wird mit Hochkommata umgeben, daher ist die Eingabe dieser Zeichen nicht erforderlich.</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING',
-    p_capt_name => 'Zeichenkette',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Einfache Zeichenkette.<br>Die Zeichenkette wird mit Hochkommata umgeben, daher ist die Eingabe dieser Zeichen nicht erforderlich.</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING',
-    p_capt_name => 'Zeichenkette',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Einfache Zeichenkette.<br>Die Zeichenkette wird mit Hochkommata umgeben, daher ist die Eingabe dieser Zeichen nicht erforderlich.</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING',
-    p_capt_name => 'Zeichenkette',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Einfache Zeichenkette.<br>Die Zeichenkette wird mit Hochkommata umgeben, daher ist die Eingabe dieser Zeichen nicht erforderlich.</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING',
-    p_capt_name => 'Zeichenkette',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Einfache Zeichenkette.<br>Die Zeichenkette wird mit Hochkommata umgeben, daher ist die Eingabe dieser Zeichen nicht erforderlich.</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING',
-    p_capt_name => 'Zeichenkette',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Einfache Zeichenkette.<br>Die Zeichenkette wird mit Hochkommata umgeben, daher ist die Eingabe dieser Zeichen nicht erforderlich.</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING',
-    p_capt_name => 'Zeichenkette',
-    p_capt_display_name => '',
+    p_capt_display_name => 'CAPT_DISPLAY_NAME',
     p_capt_description => q'{<p>Einfache Zeichenkette.<br>Die Zeichenkette wird mit Hochkommata umgeben, daher ist die Eingabe dieser Zeichen nicht erforderlich.</p>}',
     p_capt_capvt_id => 'TEXT',
     p_capt_select_list_query => q'{}',
@@ -410,18 +187,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_action_param_type(
     p_capt_id => 'PROCEDURE',
     p_capt_name => 'PL/SQL-Prozedur',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Eine bestehende PL/SQL-Prozedur oder eine Package-Prozedur<br>Es muss kein abschliessendes Semikolon angegeben werden.</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'PROCEDURE',
-    p_capt_name => 'PL/SQL-Prozedur',
-    p_capt_display_name => '',
+    p_capt_display_name => 'CAPT_DISPLAY_NAME',
     p_capt_description => q'{<p>Eine bestehende PL/SQL-Prozedur oder eine Package-Prozedur<br>Es muss kein abschliessendes Semikolon angegeben werden.</p>}',
     p_capt_capvt_id => 'TEXT',
     p_capt_select_list_query => q'{}',
@@ -432,40 +198,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_action_param_type(
     p_capt_id => 'STRING_OR_PIT_MESSAGE',
     p_capt_name => 'Zeichenkette oder Meldungsname',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Falls nicht mit Hochkommata eingeschlossen, ein PIT-Meldungsname der Form msg.NAME</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING_OR_PIT_MESSAGE',
-    p_capt_name => 'Zeichenkette oder Meldungsname',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Falls nicht mit Hochkommata eingeschlossen, ein PIT-Meldungsname der Form msg.NAME</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING_OR_PIT_MESSAGE',
-    p_capt_name => 'Zeichenkette oder Meldungsname',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Falls nicht mit Hochkommata eingeschlossen, ein PIT-Meldungsname der Form msg.NAME</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING_OR_PIT_MESSAGE',
-    p_capt_name => 'Zeichenkette oder Meldungsname',
-    p_capt_display_name => '',
+    p_capt_display_name => 'CAPT_DISPLAY_NAME',
     p_capt_description => q'{<p>Falls nicht mit Hochkommata eingeschlossen, ein PIT-Meldungsname der Form msg.NAME</p>}',
     p_capt_capvt_id => 'TEXT',
     p_capt_select_list_query => q'{}',
@@ -476,62 +209,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_action_param_type(
     p_capt_id => 'STRING_OR_FUNCTION',
     p_capt_name => 'Zeichenkette oder PL/SQL-Funktion',
-    p_capt_display_name => '',
-    p_capt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein PL/SQL-Funktionsaufruf, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING_OR_FUNCTION',
-    p_capt_name => 'Zeichenkette oder PL/SQL-Funktion',
-    p_capt_display_name => '',
-    p_capt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein PL/SQL-Funktionsaufruf, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING_OR_FUNCTION',
-    p_capt_name => 'Zeichenkette oder PL/SQL-Funktion',
-    p_capt_display_name => '',
-    p_capt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein PL/SQL-Funktionsaufruf, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING_OR_FUNCTION',
-    p_capt_name => 'Zeichenkette oder PL/SQL-Funktion',
-    p_capt_display_name => '',
-    p_capt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein PL/SQL-Funktionsaufruf, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING_OR_FUNCTION',
-    p_capt_name => 'Zeichenkette oder PL/SQL-Funktion',
-    p_capt_display_name => '',
-    p_capt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein PL/SQL-Funktionsaufruf, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING_OR_FUNCTION',
-    p_capt_name => 'Zeichenkette oder PL/SQL-Funktion',
-    p_capt_display_name => '',
+    p_capt_display_name => 'CAPT_DISPLAY_NAME',
     p_capt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein PL/SQL-Funktionsaufruf, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
     p_capt_capvt_id => 'TEXT',
     p_capt_select_list_query => q'{}',
@@ -542,7 +220,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_action_param_type(
     p_capt_id => 'SQL_STATEMENT',
     p_capt_name => 'SQL-Anweisung',
-    p_capt_display_name => '',
+    p_capt_display_name => 'CAPT_DISPLAY_NAME',
     p_capt_description => q'{<p>Ausführbare SELECT-Anweisung, die Eingabe erfolgt, wie im SQL-Developer &uuml;blich, es ist keine Angabe eines Semikolons erforderlich.</p>}',
     p_capt_capvt_id => 'TEXT_AREA',
     p_capt_select_list_query => q'{}',
@@ -553,7 +231,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_action_param_type(
     p_capt_id => 'JAVA_SCRIPT',
     p_capt_name => 'JavaScript-Ausdruck',
-    p_capt_display_name => '',
+    p_capt_display_name => 'CAPT_DISPLAY_NAME',
     p_capt_description => q'{<p>Ausführbarer JavaScript-Ausdruck, keine Funktionsdefinition</p>}',
     p_capt_capvt_id => 'TEXT',
     p_capt_select_list_query => q'{}',
@@ -564,164 +242,35 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
   adc_admin.merge_action_param_type(
     p_capt_id => 'JQUERY_SELECTOR',
     p_capt_name => 'jQuery-Selektor',
-    p_capt_display_name => '',
+    p_capt_display_name => 'CAPT_DISPLAY_NAME',
     p_capt_description => q'{<p>jQuery-Ausdruck, um mehrere Elemente zu bearbeiten. Wird dieser Parameter verwendet, muss als ausl&ouml;sendes Element <code>DOCUMENT</code> eingetragen werden.</p>}',
     p_capt_capvt_id => 'TEXT',
     p_capt_select_list_query => q'{}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'JQUERY_SELECTOR',
-    p_capt_name => 'jQuery-Selektor',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>jQuery-Ausdruck, um mehrere Elemente zu bearbeiten. Wird dieser Parameter verwendet, muss als ausl&ouml;sendes Element <code>DOCUMENT</code> eingetragen werden.</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'JQUERY_SELECTOR',
-    p_capt_name => 'jQuery-Selektor',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>jQuery-Ausdruck, um mehrere Elemente zu bearbeiten. Wird dieser Parameter verwendet, muss als ausl&ouml;sendes Element <code>DOCUMENT</code> eingetragen werden.</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'JQUERY_SELECTOR',
-    p_capt_name => 'jQuery-Selektor',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>jQuery-Ausdruck, um mehrere Elemente zu bearbeiten. Wird dieser Parameter verwendet, muss als ausl&ouml;sendes Element <code>DOCUMENT</code> eingetragen werden.</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'JQUERY_SELECTOR',
-    p_capt_name => 'jQuery-Selektor',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>jQuery-Ausdruck, um mehrere Elemente zu bearbeiten. Wird dieser Parameter verwendet, muss als ausl&ouml;sendes Element <code>DOCUMENT</code> eingetragen werden.</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'JQUERY_SELECTOR',
-    p_capt_name => 'jQuery-Selektor',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>jQuery-Ausdruck, um mehrere Elemente zu bearbeiten. Wird dieser Parameter verwendet, muss als ausl&ouml;sendes Element <code>DOCUMENT</code> eingetragen werden.</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'JQUERY_SELECTOR',
-    p_capt_name => 'jQuery-Selektor',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>jQuery-Ausdruck, um mehrere Elemente zu bearbeiten. Wird dieser Parameter verwendet, muss als ausl&ouml;sendes Element <code>DOCUMENT</code> eingetragen werden.</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'JQUERY_SELECTOR',
-    p_capt_name => 'jQuery-Selektor',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>jQuery-Ausdruck, um mehrere Elemente zu bearbeiten. Wird dieser Parameter verwendet, muss als ausl&ouml;sendes Element <code>DOCUMENT</code> eingetragen werden.</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'SWITCH',
-    p_capt_name => 'Schalter',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Wahrheitswert</p>}',
-    p_capt_capvt_id => 'SWITCH',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'SWITCH',
-    p_capt_name => 'Schalter',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Wahrheitswert</p>}',
-    p_capt_capvt_id => 'SWITCH',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'SWITCH',
-    p_capt_name => 'Schalter',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Wahrheitswert</p>}',
-    p_capt_capvt_id => 'SWITCH',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'SWITCH',
-    p_capt_name => 'Schalter',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Wahrheitswert</p>}',
-    p_capt_capvt_id => 'SWITCH',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'SWITCH',
-    p_capt_name => 'Schalter',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Wahrheitswert</p>}',
-    p_capt_capvt_id => 'SWITCH',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
 
   -- PAGE_ITEM_TYPE_GROUPS
   adc_admin.merge_page_item_type_group(
     p_cpitg_id => 'BUTTON',
     p_cpitg_has_value => adc_util.C_FALSE,
     p_cpitg_include_in_view => adc_util.C_FALSE);
+
   adc_admin.merge_page_item_type_group(
     p_cpitg_id => 'EVENT',
     p_cpitg_has_value => adc_util.C_FALSE,
     p_cpitg_include_in_view => adc_util.C_TRUE);
+
   adc_admin.merge_page_item_type_group(
     p_cpitg_id => 'FRAMEWORK',
     p_cpitg_has_value => adc_util.C_FALSE,
     p_cpitg_include_in_view => adc_util.C_FALSE);
+
   adc_admin.merge_page_item_type_group(
     p_cpitg_id => 'ITEM',
     p_cpitg_has_value => adc_util.C_TRUE,
     p_cpitg_include_in_view => adc_util.C_FALSE);
+
   adc_admin.merge_page_item_type_group(
     p_cpitg_id => 'REGION',
     p_cpitg_has_value => adc_util.C_FALSE,
@@ -734,52 +283,60 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cet_name => 'Auswahl geändert',
     p_cet_column_name => 'SELECTION_CHANGED',
     p_cet_is_custom_event => adc_util.C_TRUE);
+    
   adc_admin.merge_event_type(
     p_cet_id => 'apexaftercanceldialog',
     p_cet_name => 'Dialog abgebrochen',
     p_cet_column_name => 'DIALOG_CANCELLED',
     p_cet_is_custom_event => adc_util.C_TRUE);
+    
   adc_admin.merge_event_type(
     p_cet_id => 'apexafterclosedialog',
     p_cet_name => 'Dialog geschlossen',
     p_cet_column_name => 'DIALOG_CLOSED',
     p_cet_is_custom_event => adc_util.C_TRUE);
+    
   adc_admin.merge_event_type(
     p_cet_id => 'apexafterrefresh',
     p_cet_name => 'Refresh abgeschlossen',
     p_cet_column_name => 'AFTER_REFRESH',
     p_cet_is_custom_event => adc_util.C_TRUE);
+    
   adc_admin.merge_event_type(
     p_cet_id => 'change',
     p_cet_name => 'Ändern',
     p_cet_column_name => 'CHANGE',
     p_cet_is_custom_event => adc_util.C_FALSE);
+    
   adc_admin.merge_event_type(
     p_cet_id => 'click',
     p_cet_name => 'Klick',
     p_cet_column_name => 'CLICK',
     p_cet_is_custom_event => adc_util.C_FALSE);
+    
   adc_admin.merge_event_type(
     p_cet_id => 'command',
     p_cet_name => 'Seitenkommando',
     p_cet_column_name => 'COMMAND',
     p_cet_is_custom_event => adc_util.C_FALSE);
+    
   adc_admin.merge_event_type(
     p_cet_id => 'dblclick',
     p_cet_name => 'Doppelklick',
     p_cet_column_name => 'DOUBLE_CLICK',
     p_cet_is_custom_event => adc_util.C_TRUE);
+    
   adc_admin.merge_event_type(
     p_cet_id => 'enter',
     p_cet_name => 'Eingabetaste',
     p_cet_column_name => 'ENTER',
     p_cet_is_custom_event => adc_util.C_TRUE);
+    
   adc_admin.merge_event_type(
     p_cet_id => 'initialize',
     p_cet_name => 'Initialisierung',
     p_cet_column_name => 'INITIALIZING',
     p_cet_is_custom_event => adc_util.C_FALSE);
-
 
   -- PAGE_ITEM_TYPES
   adc_admin.merge_page_item_type(
@@ -789,6 +346,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cpit_cet_id => '',
     p_cpit_col_template => q'{}',
     p_cpit_init_template => q'{}');
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'APP_ITEM',
     p_cpit_name => 'Anwendungselement',
@@ -796,6 +354,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cpit_cet_id => 'change',
     p_cpit_col_template => q'{adc_api.get_string('#ITEM#') #ITEM#}',
     p_cpit_init_template => q'{itm.#ITEM#}');
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'BUTTON',
     p_cpit_name => 'Schaltfläche',
@@ -803,6 +362,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cpit_cet_id => 'click',
     p_cpit_col_template => q'{case p_firing_item when '#ITEM#' then c_true else c_false end #ITEM#}',
     p_cpit_init_template => q'{}');
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'DATE_ITEM',
     p_cpit_name => 'Element (Datum)',
@@ -810,6 +370,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cpit_cet_id => 'change',
     p_cpit_col_template => q'{adc_api.get_date('#ITEM#', '#CONVERSION#', c_false) #ITEM#}',
     p_cpit_init_template => q'{to_char(to_date(itm.#ITEM#), '#CONVERSION#')}');
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'DOCUMENT',
     p_cpit_name => 'Dokument',
@@ -817,6 +378,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cpit_cet_id => '',
     p_cpit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cpit_init_template => q'{}');
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'DOCUMENT_MODAL',
     p_cpit_name => 'Modaler Dialog',
@@ -824,6 +386,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cpit_cet_id => '',
     p_cpit_col_template => q'{}',
     p_cpit_init_template => q'{}');
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'EVENT',
     p_cpit_name => 'Ereignis',
@@ -831,6 +394,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cpit_cet_id => '',
     p_cpit_col_template => q'{}',
     p_cpit_init_template => q'{}');
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'FIRING_ITEM',
     p_cpit_name => 'Firing Item',
@@ -838,6 +402,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cpit_cet_id => '',
     p_cpit_col_template => q'{p_firing_item firing_item}',
     p_cpit_init_template => q'{}');
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'FORM_REGION',
     p_cpit_name => 'Formularregion',
@@ -845,6 +410,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cpit_cet_id => '',
     p_cpit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cpit_init_template => q'{}');
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'INTERACTIVE_GRID_REGION',
     p_cpit_name => 'Interaktives Grid',
@@ -852,6 +418,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cpit_cet_id => '',
     p_cpit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cpit_init_template => q'{}');
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'INTERACTIVE_REPORT_REGION',
     p_cpit_name => 'Interaktiver Bericht',
@@ -859,6 +426,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cpit_cet_id => '',
     p_cpit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cpit_init_template => q'{}');
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'ITEM',
     p_cpit_name => 'Element',
@@ -866,6 +434,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cpit_cet_id => 'change',
     p_cpit_col_template => q'{adc_api.get_string('#ITEM#') #ITEM#}',
     p_cpit_init_template => q'{itm.#ITEM#}');
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'NUMBER_ITEM',
     p_cpit_name => 'Element (Zahl)',
@@ -873,6 +442,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cpit_cet_id => 'change',
     p_cpit_col_template => q'{adc_api.get_number('#ITEM#', '#CONVERSION#', c_false) #ITEM#}',
     p_cpit_init_template => q'{to_char(itm.#ITEM#, '#CONVERSION#')}');
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'REGION',
     p_cpit_name => 'Region',
@@ -880,6 +450,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cpit_cet_id => '',
     p_cpit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cpit_init_template => q'{}');
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'REPORT_REGION',
     p_cpit_name => 'Klassischer Bericht',
@@ -887,6 +458,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cpit_cet_id => '',
     p_cpit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cpit_init_template => q'{}');
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'ROWID_ITEM',
     p_cpit_name => 'Zeilen-ID (RowID)',
@@ -894,6 +466,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cpit_cet_id => 'change',
     p_cpit_col_template => q'{adc_api.get_string('#ITEM#') #ITEM#}',
     p_cpit_init_template => q'{to_char(itm.#ITEM#, '#CONVERSION#')}');
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'TREE_REGION',
     p_cpit_name => 'Hierarchie',
@@ -910,7 +483,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_caif_description => q'{Alle Seitenelemente der Anwendung}',
     p_caif_actual_page_only => adc_util.C_FALSE,
     p_caif_item_types => 'ITEM:REGION:DOCUMENT:BUTTON',
-    p_caif_default => '',
+    p_caif_default => 'CAIF_DEFAULT',
     p_caif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -955,7 +528,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_caif_description => q'{Alle Seitenelemente, die einen Fokus erhalten können}',
     p_caif_actual_page_only => adc_util.C_TRUE,
     p_caif_item_types => 'BUTTON:ITEM',
-    p_caif_default => '',
+    p_caif_default => 'CAIF_DEFAULT',
     p_caif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -964,7 +537,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_caif_description => q'{Region, die als Formular genutzt wird (kein Interactive Grid)}',
     p_caif_actual_page_only => adc_util.C_TRUE,
     p_caif_item_types => 'FORM_REGION',
-    p_caif_default => '',
+    p_caif_default => 'CAIF_DEFAULT',
     p_caif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -973,7 +546,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_caif_description => q'{Die Anwendungsseite wird als modaler Dialog angezeigt}',
     p_caif_actual_page_only => adc_util.C_TRUE,
     p_caif_item_types => 'DOCUMENT_MODAL',
-    p_caif_default => '',
+    p_caif_default => 'CAIF_DEFAULT',
     p_caif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -982,7 +555,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_caif_description => q'{Alle Seitenelemente der aktuellen Anwendungsseite}',
     p_caif_actual_page_only => adc_util.C_TRUE,
     p_caif_item_types => 'BUTTON:REGION:ITEM',
-    p_caif_default => '',
+    p_caif_default => 'CAIF_DEFAULT',
     p_caif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -991,7 +564,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_caif_description => q'{Alle Schaltflächen der aktuellen Anwendungsseite}',
     p_caif_actual_page_only => adc_util.C_TRUE,
     p_caif_item_types => 'BUTTON',
-    p_caif_default => '',
+    p_caif_default => 'CAIF_DEFAULT',
     p_caif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -1009,7 +582,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_caif_description => q'{<p>Alle Anwendungs- und Seitenelemente der aktuellen Anwendungsseite</p>}',
     p_caif_actual_page_only => adc_util.C_TRUE,
     p_caif_item_types => 'ITEM',
-    p_caif_default => '',
+    p_caif_default => 'CAIF_DEFAULT',
     p_caif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -1027,7 +600,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_caif_description => q'{Alle Regionen der aktuellen Anwendungsseite}',
     p_caif_actual_page_only => adc_util.C_TRUE,
     p_caif_item_types => 'REGION',
-    p_caif_default => '',
+    p_caif_default => 'CAIF_DEFAULT',
     p_caif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -1036,7 +609,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_caif_description => q'{Alle Seitenelemente, die aktualisiert werden können}',
     p_caif_actual_page_only => adc_util.C_TRUE,
     p_caif_item_types => 'INTERACTIVE_GRID_REGION:INTERACTIVE_REPORT_REGION:TREE_REGION:ITEM',
-    p_caif_default => '',
+    p_caif_default => 'CAIF_DEFAULT',
     p_caif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -1045,9 +618,8 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_caif_description => q'{Berichte, die eine ausgewählte Zeile melden können}',
     p_caif_actual_page_only => adc_util.C_TRUE,
     p_caif_item_types => 'INTERACTIVE_GRID_REGION:INTERACTIVE_REPORT_REGION:TREE_REGION:REPORT_REGION',
-    p_caif_default => '',
+    p_caif_default => 'CAIF_DEFAULT',
     p_caif_active => adc_util.C_TRUE);
-
 
   -- ACTION_TYPE_GROUPS
   adc_admin.merge_action_type_group(
@@ -1092,13 +664,11 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_catg_description => q'{Aktionen für Berichte (klassisch und interaktiv)}',
     p_catg_active => adc_util.C_TRUE);
 
-
   -- ACTION_TYPE_OWNERS
   adc_admin.merge_action_type_owner(
     p_cato_id => 'ADC',
     p_cato_description => q'{Predefined action types, delivered with ADC}',
     p_cato_active => adc_util.C_TRUE);
-
 
   -- ACTION TYPES
   adc_admin.merge_action_type(
@@ -1134,7 +704,8 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_display_name => 'auf Änderung prüfen',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'CLOSE_MODAL_DIALOG',
     p_cat_catg_id => 'ADC',
@@ -1178,7 +749,8 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_display_name => 'auf Änderung prüfen',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'CONFIRM_CLICK',
     p_cat_catg_id => 'BUTTON',
@@ -1199,7 +771,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 3,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Optionale Angabe eines Seitenkommandos. Falls ein Eintrag gewählt wird, wird nach positiver Bestätigung dieses Kommando ausgeführt.</p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
@@ -1222,7 +794,8 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_display_name => 'Bestätigungsabfrage',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'DYNAMIC_JAVASCRIPT',
     p_cat_catg_id => 'JAVA_SCRIPT',
@@ -1243,10 +816,11 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>PL/SQL-Funktion, die eine JavaScript-Anweisung ausgibt.<br>Ohne "javascript:" verwenden, nur den JavaScript-Code ausgeben</p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'EXECUTE_COMMAND',
     p_cat_catg_id => 'ADC',
@@ -1267,10 +841,11 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Liste der Seitenkommandos, die für diese Seite definiert sind.&nbsp;</p><p>Sie können eigene Seitenkommandos im Reiter “Seitenkommandos” im ADC-Designer anlegen und anschließend hier verwenden.</p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'EXECUTE_JAVASCRIPT',
     p_cat_catg_id => 'JAVA_SCRIPT',
@@ -1291,10 +866,11 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>JavaScript-Code, der ausgeführt werden soll. Bitte verwenden Sie doppelte Anführungszeichen, um Probleme bei der Übermittlung des Codes zu vermeiden. Es sollten keine komplexen Ausdrücke, sondern bevorzugt Funktionsnamen mit Parametern ausgeführt werden.</p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'GET_REPORT_SELECTION',
     p_cat_catg_id => 'REPORT',
@@ -1315,7 +891,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Name des Seitenelements, in das die Auswahl des IG gespeichert werden soll. Falls dieser Parameter nicht gesetzt wird, wird das Ereignis SELECTION_CHANGED ausgelöst und der Primärschlüsselwert als EVENT_DATA-Inhalt an ADC zurückgegeben.</p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
@@ -1328,7 +904,8 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_display_name => 'Ordinalzahl der Wertespalte',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'HIDE_IR_REPORT_FILTER',
     p_cat_catg_id => 'REPORT',
@@ -1357,7 +934,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
-
+    
 
   adc_admin.merge_action_type(
     p_cat_id => 'IS_MANDATORY',
@@ -1379,7 +956,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 3,
     p_cap_default => q'{SHOW_ENABLE}',
     p_cap_description => q'{<p>Legt optional den Anzeigestatus fest. Falls das Element zum Pflichtfeld gemacht wird, ist dieser Parameter wirkungslos, das Element wird in jedem Fall angezeigt. Wird das Element optional, kann hier festgelegt werden, ob das Element aktiv, deaktiv oder ausgeblendet werden soll.</p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
@@ -1389,7 +966,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
@@ -1399,10 +976,11 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Fehlermeldung kann optional übergeben werden, ansonsten wird eine Standardmeldung verwendet.</p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'IS_OPTIONAL',
     p_cat_catg_id => 'PAGE_ITEM',
@@ -1423,7 +1001,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 3,
     p_cap_default => q'{A_SHOW_ENABLE}',
     p_cap_description => q'{<p>Kontrolliert den Anzeigestatus des Elements. Wird ein Feld optional geschaltet, kann es auch ausgeblendet oder deaktiviert werden.</p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
@@ -1433,10 +1011,11 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'MONITOR_EVENT',
     p_cat_catg_id => 'JAVA_SCRIPT',
@@ -1457,7 +1036,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 1,
     p_cap_default => q'{apexafterclosedialog}',
     p_cap_description => q'{<p>Liste der hinterlegten JavaScript-Events, die durch ADC zusätzlich überwacht werden können.</p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
@@ -1467,10 +1046,11 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'NOOP',
     p_cat_catg_id => 'ADC',
@@ -1484,7 +1064,6 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
-
 
   adc_admin.merge_action_type(
     p_cat_id => 'NOTIFY',
@@ -1506,7 +1085,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
@@ -1529,7 +1108,8 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_display_name => 'Meldungstext',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'NOT_NULL',
     p_cat_catg_id => 'ITEM',
@@ -1560,10 +1140,11 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Meldungsname, der ausgegeben werden soll, falls die Prüfung misslingt. Muss ein PIT-Meldungsname sein, in der Form <span style="font-family:'Courier New', Courier, monospace;">MSG.[Meldungsname]</span></p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'PLSQL_CODE',
     p_cat_catg_id => 'ADC',
@@ -1584,10 +1165,11 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>PL/SQL-Code, der ausgeführt werden soll.</p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'RAISE_ITEM_EVENT',
     p_cat_catg_id => 'PAGE_ITEM',
@@ -1601,7 +1183,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
-
+    
 
   adc_admin.merge_action_type(
     p_cat_id => 'REFRESH_AND_SET_VALUE',
@@ -1623,10 +1205,11 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Wert, der gesetzt werden soll.</p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'REFRESH_ITEM',
     p_cat_catg_id => 'ITEM',
@@ -1661,7 +1244,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
     
-
+    
   adc_admin.merge_action_type(
     p_cat_id => 'REGISTER_ADDITIONAL_ITEM',
     p_cat_catg_id => 'PAGE_ITEM',
@@ -1682,10 +1265,25 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Liste der Seitenelemente, deren aktuelle Werte zusätzlich zu den ohnehin beobachteten Element an die Datenbank gemeldet werden sollen.}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
+  adc_admin.merge_action_type(
+    p_cat_id => 'REGISTER_OBSERVER',
+    p_cat_catg_id => 'PAGE_ITEM',
+    p_cat_caif_id => 'PAGE_ITEM',
+    p_cat_cato_id => 'ADC',
+    p_cat_name => 'Feld beobachten',
+    p_cat_display_name => q'{<p><strong>beobachte Feld </strong>“#ITEM#”</p>}',
+    p_cat_description => q'{<p>Beobachtet ein Feld, auch wenn kein Anwendungsfall es in der technischen Bedingung referenziert. So wird dessen aktueller Wert in den Session State übernommen.</p>}',
+    p_cat_pl_sql => q'{adc_api.register_observer('#ITEM#');}',
+    p_cat_js => q'{}',
+    p_cat_is_editable => adc_util.C_FALSE,
+    p_cat_active => adc_util.C_TRUE,
+    p_cat_raise_recursive => adc_util.C_TRUE);
+    
 
   adc_admin.merge_action_type(
     p_cat_id => 'REMEMBER_PAGE_STATE',
@@ -1710,7 +1308,8 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_display_name => 'JSON oder jQuery-Ausdruck',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'REMOVE_ALL_ERRORS',
     p_cat_catg_id => 'JAVA_SCRIPT',
@@ -1724,7 +1323,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_FALSE);
-
+    
 
   adc_admin.merge_action_type(
     p_cat_id => 'SELECT_REGION_ENTRY',
@@ -1759,7 +1358,8 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_display_name => 'setze Fokus',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'SELECT_TAB',
     p_cat_catg_id => 'ADC',
@@ -1783,7 +1383,8 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_display_name => 'ID der Tabulator-Region',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'SEND_VALIDATE_PAGE',
     p_cat_catg_id => 'ADC',
@@ -1804,7 +1405,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 3,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Referenziert eine Meldung, falls die Validierung fehl schlug.</p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
@@ -1824,10 +1425,11 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 1,
     p_cap_default => q'{VALIDATE_AND_SUBMIT}',
     p_cap_description => q'{<p>Legt den Modus der Übermittlung fest. Es kann eine Kombination aus Validieren und Absenden gewählt werden.</p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'SET_ELEMENT_FROM_STMT',
     p_cat_catg_id => 'PAGE_ITEM',
@@ -1848,10 +1450,11 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>SQL-Anweisung, die einen oder mehrere Werte zurückgibt<br>Die Spaltenbezeichner müssen Elementnamen entsprechen, die Abfrageergebnisse werden in den zugehoerigen Seitenelementen gesetzt</p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'SET_FOCUS',
     p_cat_catg_id => 'ITEM',
@@ -1865,7 +1468,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
-
+    
 
   adc_admin.merge_action_type(
     p_cat_id => 'SET_ITEM',
@@ -1887,7 +1490,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 3,
     p_cap_default => q'{A_SHOW_ENABLE}',
     p_cap_description => q'{<p>Kontrolliert, wie das Seitenelement dargestellt werden soll.</p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
@@ -1897,7 +1500,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
@@ -1907,10 +1510,11 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Der Elementwert.</p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'SET_ITEM_LABEL',
     p_cat_catg_id => 'PAGE_ITEM',
@@ -1924,7 +1528,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_FALSE);
-
+    
 
   adc_admin.merge_action_type(
     p_cat_id => 'SET_MODAL_DIALOG_TITLE',
@@ -1949,7 +1553,8 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_display_name => 'Tiel',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'SET_REGION_CONTENT',
     p_cat_catg_id => 'ITEM',
@@ -1973,7 +1578,8 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_display_name => 'HTML-Code',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'SET_VISUAL_STATE',
     p_cat_catg_id => 'ITEM',
@@ -1994,7 +1600,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 1,
     p_cap_default => q'{A_SHOW_ENABLE}',
     p_cap_description => q'{<p>Legt den Anzeigestatus des Seitenelements fest.</p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
@@ -2004,10 +1610,11 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'SHOW_ERROR',
     p_cat_catg_id => 'JAVA_SCRIPT',
@@ -2031,7 +1638,8 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_display_name => 'Fehlermeldung',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'SHOW_HIDE_ITEMS',
     p_cat_catg_id => 'ITEM',
@@ -2065,7 +1673,8 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_display_name => 'Auszublendende Seitenelemente',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'SHOW_SUCCESS',
     p_cat_catg_id => 'JAVA_SCRIPT',
@@ -2086,10 +1695,11 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'STOP_RULE',
     p_cat_catg_id => 'ADC',
@@ -2103,7 +1713,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
-
+    
 
   adc_admin.merge_action_type(
     p_cat_id => 'VALIDATE_ITEMS',
@@ -2125,7 +1735,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Kontrollkästchenliste aller Eingabefelder der aktuellen Seite. Erlaubt Mehrfachauswahl von Eingabeelementen.</p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
@@ -2138,7 +1748,8 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_display_name => 'Validierungsmethode',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'WARN_BEFORE_CLICK',
     p_cat_catg_id => 'BUTTON',
@@ -2162,7 +1773,8 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_display_name => 'Warnhinweis',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
-
+    
+    
   adc_admin.merge_action_type(
     p_cat_id => 'XOR',
     p_cat_catg_id => 'ITEM',
@@ -2193,7 +1805,7 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Meldungsname, der ausgegeben werden soll, falls die Prüfung misslingt. Muss ein PIT-Meldungsname sein, in der Form <span style="font-family:'Courier New', Courier, monospace;">MSG.[Meldungsname]</span></p>}',
-    p_cap_display_name => '',
+    p_cap_display_name => 'CAP_DISPLAY_NAME',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
@@ -2207,8 +1819,6 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
-
-
   -- APEX_ACTION TYPES
   adc_admin.merge_apex_action_type(
     p_caat_id => 'ACTION',
@@ -2216,11 +1826,13 @@ q'{   and pti_id like 'SUBMIT_TYPE%'}',
     p_caat_description => q'{JavaScript oder PL/SQL-Befehl, alternativ Verweis}',
     p_caat_active  => adc_util.C_TRUE);
 
+
   adc_admin.merge_apex_action_type(
     p_caat_id => 'RADIO_GROUP',
     p_caat_name => 'Optionsgruppe',
     p_caat_description => q'{Auswahlliste, Optionsfelder}',
     p_caat_active  => adc_util.C_FALSE);
+
 
   adc_admin.merge_apex_action_type(
     p_caat_id => 'TOGGLE',

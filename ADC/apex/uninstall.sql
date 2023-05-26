@@ -19,6 +19,7 @@ declare
                  'ADCA_UI_DESIGNER_RULE_ACTION', 'ADCA_UI_DESIGNER_RULE_GROUP', 'ADCA_UI_DESIGNER_TREE', 
                  'ADCA_UI_EDIT_CAIF', 'ADCA_UI_EDIT_CAPT', 'ADCA_UI_EDIT_CAPT_STATIC_LIST', 'ADCA_UI_EDIT_CAT', 
                  'ADCA_UI_EDIT_CATG', 'ADCA_UI_EDIT_CPIT', 'ADCA_UI_LIST_ACTION_TYPE', 'ADCA_UI_LOV_ACTION_ITEM_FOCUS', 
+                 'ADCA_UI_EDIT_CATO', 'ADCA_UI_EDIT_CSM', 'ADCA_UI_LOV_ACTION_TYPE_OWNER', 'ADCA_UI_LOV_ADC_ACTION_TYPES', 
                  'ADCA_UI_LOV_ACTION_PARAM_TYPE', 'ADCA_UI_LOV_ACTION_PARAM_VISUAL_TYPE', 'ADCA_UI_LOV_ACTION_TYPE_GROUP', 
                  'ADCA_UI_LOV_APEX_ACTION_ITEMS', 'ADCA_UI_LOV_APEX_ACTION_TYPE', 'ADCA_UI_LOV_APPLICATIONS', 
                  'ADCA_UI_LOV_APP_PAGES', 'ADCA_UI_LOV_CRG_APPLICATIONS', 'ADCA_UI_LOV_CRG_APP_PAGES', 
@@ -91,7 +92,7 @@ prompt &h3.Checking whether app exists.
 declare
   l_app_id number;
   l_ws number;
-  c_app_alias constant varchar2(30 byte) := 'ADC';  
+  c_app_alias constant varchar2(30 byte) := 'ADCA';  
 begin
   if c_app_alias is not null then
     select application_id, workspace_id

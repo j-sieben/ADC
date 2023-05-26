@@ -12,12 +12,13 @@ declare
   cursor delete_object_cur is
           select object_name name, object_type type
             from user_objects
-           where object_name in (
+           where (object_name in (
                  'ADC_BASIC', 'ADC', -- Typen
                  'ADC_ADMIN', 'ADC_INTERNAL', 'ADC_UTIL', 'ADC_VALIDATION', 'ADC_API', 'ADC_APEX_ACTION', 'ADC_UT', 
                  'ADC_RECURSION_STACK', 'ADC_PAGE_STATE', -- Packages
                  'ADC_RULE_GROUP_STATUS', 'ADC_BL_PAGE_ITEMS', 'ADC_BL_PAGE_TARGETS', 'ADC_BL_RULES', 'ADC_BL_CAT_HELP', 'ADC_ACTION_PARAM_VISUAL_TYPES_V', 
                  'ADC_ACTION_ITEM_FOCUS_V', 'ADC_ACTION_PARAM_TYPES_V', 'ADC_ACTION_PARAMETERS_V', 'ADC_ACTION_TYPES_V', 'ADC_ACTION_TYPE_GROUPS_V', 
+                 'ADC_BL_BIND_ITEMS', 'ADC_EVENT_TYPES_V', 'ADC_STANDARD_MESSAGES_V', 
                  'ADC_APEX_ACTION_TYPES_V', 'ADC_PARAM_LOV_ITEM_STATUS', 'ADC_APEX_ACTIONS_V', 'ADC_PAGE_ITEM_TYPES_V', 'ADC_ACTION_PARAM_VISUAL_TYPES_V',
                  'ADC_PARAM_LOV_APEX_ACTION', 'ADC_PARAM_LOV_PAGE_ITEM', 'ADC_PARAM_LOV_PIT_MESSAGE', 'ADC_PARAM_LOV_SEQUENCE', 'ADC_PARAM_LOV_SUBMIT_TYPE', 'ADC_ACTION_TYPE_OWNERS_V', -- Views
                  'ADC_ACTION_ITEM_FOCUS', 'ADC_ACTION_PARAMETERS', 'ADC_ACTION_PARAM_TYPES', 'ADC_ACTION_TYPES', 'ADC_ACTION_PARAM_VISUAL_TYPES',
@@ -26,6 +27,7 @@ declare
                  '',  -- Synonyme
                  'ADC_SEQ' -- Sequenzen
                  )
+              or object_name like 'ADC_PARAM_LOV%')
              and object_type not like '%BODY'
            order by object_type, object_name;
 begin
