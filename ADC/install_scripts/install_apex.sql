@@ -4,7 +4,7 @@
 
 define tool_dir=tools/
 
-@&tool_dir.init_apex.sql &1. &2. ADC
+@&tool_dir.init_apex.sql &1. &2. ADCA
 
 prompt
 prompt &section.
