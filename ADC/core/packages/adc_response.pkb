@@ -467,7 +467,7 @@ as
     end loop;
     
     case 
-      when p_rule_found then
+      when not p_rule_found then
         -- No rule found, notify if set to verbose
         add_comment(msg.ADC_NO_RULE_FOUND);
       when not l_javascript_exists then

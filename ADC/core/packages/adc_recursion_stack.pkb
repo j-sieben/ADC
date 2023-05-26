@@ -336,7 +336,7 @@ as
     pit.leave_optional(
       p_params => msg_params(
                     msg_param('Level', l_stack_entry.recursive_level)));
-    return l_stack_entry.recursive_level;
+    return coalesce(l_stack_entry.recursive_level + 1, 1);
   end get_level;
   
   
