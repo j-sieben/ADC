@@ -1420,7 +1420,7 @@ q'{}',
     p_cat_display_name => q'{<p><strong>mache </strong>#PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“^ITEM^#” <strong>optional</strong></p>}',
     p_cat_description => q'{<p>Macht ein Seitenelement zu einem optionalen Element und setzt Pflichtfeld-Validierung aus.</p>}',
     p_cat_pl_sql => q'{adc_api.register_mandatory('#ITEM#', adc_util.C_FALSE, null, '#PARAM_2#');}',
-    p_cat_js => q'{de.condes.plugin.adc.actions.setMandatory('#SELECTOR#',false);}',
+    p_cat_js => q'{de.condes.plugin.adc.actions.setMandatory('#SELECTOR#', false);}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
@@ -1668,21 +1668,6 @@ q'{}',
     p_cap_display_name => 'setze Fokus',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_type(
-    p_cat_id => 'REGISTER_OBSERVER',
-    p_cat_catg_id => 'PAGE_ITEM',
-    p_cat_caif_id => 'ELEMENT_AND_FORM',
-    p_cat_cato_id => 'ADC',
-    p_cat_name => 'Feld beobachten',
-    p_cat_display_name => q'{<p><strong>beobachte Feld </strong>“#ITEM#”</p>}',
-    p_cat_description => q'{<p>Beobachtet ein Feld, auch wenn kein Anwendungsfall es in der technischen Bedingung referenziert. So wird dessen aktueller Wert in den Session State übernommen. DEPRECATED, Bitte verwenden Sie "melde Feldwert"</p>}',
-    p_cat_pl_sql => q'{}',
-    p_cat_js => q'{}',
-    p_cat_is_editable => adc_util.C_FALSE,
-    p_cat_active => adc_util.C_FALSE,
-    p_cat_raise_recursive => adc_util.C_TRUE);
-    
     
 
   adc_admin.merge_action_type(
