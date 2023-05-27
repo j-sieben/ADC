@@ -882,7 +882,7 @@ as
       adc_apex_action.set_disabled(true);
     end if;
     
-    adc.add_javascript(adc_apex_action.get_action_script);
+    adc_apex_action.register_action_script;
 
     pit.leave_mandatory;
   exception

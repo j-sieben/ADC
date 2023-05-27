@@ -997,7 +997,7 @@ as
         adc_apex_action.set_label(null);
       end if;
       adc_apex_action.set_disabled(true);
-      adc.add_javascript(adc_apex_action.get_action_script);
+      adc_apex_action.register_action_script;
     end loop;
     
     pit.leave_detailed;

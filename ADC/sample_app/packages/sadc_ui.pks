@@ -153,11 +153,11 @@ as
   
   
   /**
-    Procedure: valdyn_validate
-      Method validates page VALDYN
+    Procedure: edemp_validate
+      Method validates page EDEMP
    */
-  procedure valdyn_validate(
-    p_filter in varchar2 default null);
+  procedure edemp_validate(
+    p_filter_item in varchar2 default null);
     
 end sadc_ui;
 /
