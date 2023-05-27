@@ -23,10 +23,10 @@
  <div class="CBody"><p>Method to retrieve a select statement that reads values for a given Action Parameter of type SELECT_LIST</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">p_capt_id<div class="CDLParameterType"><span class="SHKeyword">in</span> adc_action_param_types.capt_id<span class="SHKeyword">%type</span></div></td><td class="CDLDefinition"><p>Type of the Action Parameter</p></td></tr><tr><td class="CDLEntry">p_crg_id<div class="CDLParameterType"><span class="SHKeyword">in</span> adc_rule_groups.crg_id<span class="SHKeyword">%type</span></div></td><td class="CDLDefinition"><p>ID of the rule group. Is used to filter the LOV statement</p></td></tr></table><div class="CHeading">Returns</div><p>Select statement to be executed by the ADC_UI to retrieve values for an Action Parameter# of type SELECT_LIST</p></div>
 </div>
 
-<a name="ADCA_UI_DESIGNER.handle_activity"></a><a name="Topic98"></a><div class="CTopic TFunction LSQL">
+<a name="ADCA_UI_DESIGNER.handle_activity"></a><a name="Topic440"></a><div class="CTopic TFunction LSQL">
  <div class="CTitle">handle_activity</div>
- <div id="NDPrototype98" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> handle_activity</div></div>
- <div class="CBody"><p>Handles selection changes in the hierarchy tree to control the visual appearance of the page.</p><p>Is used to deduct the cgr from the selected entry in the designer tree.&nbsp; It then sets the value and refreshes the rule group report if the value has changed.&nbsp; Plus, it analyzes which level has been selected and calls the respective SHOW_FORM method</p></div>
+ <div id="NDPrototype440" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">procedure</span> handle_activity</div></div>
+ <div class="CBody"><p>Handles selection changes in the hierarchy tree to control the visual appearance of the page.</p><p>Is used to deduct the Rule Group ID (CRG) from the selected entry in the designer tree.&nbsp; It then sets the value and refreshes the rule group report if the value has changed.&nbsp; Plus, it analyzes which level has been selected and calls the respective SHOW_FORM method</p></div>
 </div>
 
 <a name="ADCA_UI_DESIGNER.handle_cat_changed"></a><a name="Topic99"></a><div class="CTopic TFunction LSQL">
@@ -53,10 +53,10 @@
  <div class="CBody"><p>Checks a manually entered parameter value against its parameter type</p><p>Is used to check whether an entered parameter value makes sense.</p></div>
 </div>
 
-<a name="ADCA_UI_DESIGNER.support_flows"></a><a name="Topic103"></a><div class="CTopic TFunction LSQL last">
+<a name="ADCA_UI_DESIGNER.support_flows"></a><a name="Topic454"></a><div class="CTopic TFunction LSQL last">
  <div class="CTitle">support_flows</div>
- <div id="NDPrototype103" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> support_flows</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.flag_type" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,598);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_util.flag_type</a></div></div>
- <div class="CBody"><p>Method checks whether flows has to be supported by the designer</p><div class="CHeading">Returns</div><p>C_TRUE, if flows is installed and C_FALSE otherwise.</p></div>
+ <div id="NDPrototype454" class="NDPrototype"><div class="PSection PPlainSection"><span class="SHKeyword">function</span> support_flows</div><div class="PSection PPlainSection"><span class="SHKeyword">return</span> <a href="../../../index.html#File:core/packages/adc_util.pks:ADC_UTIL.flag_type" target="_top" onmouseover="NDContentPage.OnLinkMouseOver(event,598);" onmouseout="NDContentPage.OnLinkMouseOut(event);" >adc_util.flag_type</a></div></div>
+ <div class="CBody"><p>Method checks whether flows has to be supported by the designer</p><div class="CHeading">Returns</div><p>C_TRUE, if Flows for APEX is installed and C_FALSE otherwise.</p></div>
 </div>
 
 </body></html>
