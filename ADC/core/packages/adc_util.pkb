@@ -24,7 +24,7 @@ as
     return varchar2
   as
   begin
-    return chr(13);
+    return chr(13) || chr(10);
   end c_cr;
   
   

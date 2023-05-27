@@ -5,18 +5,18 @@ with params as(
               utl_apex.get_page_prefix p_page_prefix
          from dual),
      data as(
-select *
-  from adc_action_types_v
-  join params
-    on cat_active = c_active
-  left join adc_action_parameters_v
-    on cat_id = cap_cat_id
-   and c_active = cap_active
-  left join adc_action_param_types_v
-    on cap_capt_id = capt_id
-   and c_active = capt_active
-  left join adc_action_param_visual_types_v
-    on capt_capvt_id = capvt_id)
+       select *
+         from adc_action_types_v
+         join params
+           on cat_active = c_active
+         left join adc_action_parameters_v
+           on cat_id = cap_cat_id
+          and c_active = cap_active
+         left join adc_action_param_types_v
+           on cap_capt_id = capt_id
+          and c_active = capt_active
+         left join adc_action_param_visual_types_v
+           on capt_capvt_id = capvt_id)
 select cat_id, null cra_id, cat_caif_id, 
        capt_id, capt_capvt_id, cap_sort_seq, cap_mandatory, 
        cap_default cap_value,

@@ -39,7 +39,7 @@ begin
     p_capvt_name => 'Textfeld',
     p_capvt_display_name => '',
     p_capvt_description => q'{Wird für kürzere Freitexte verwendet.}',
-    p_capvt_param_item_extension => 'CAPVT_',
+    p_capvt_param_item_extension => '',
     p_capvt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_visual_type(

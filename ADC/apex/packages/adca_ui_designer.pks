@@ -56,7 +56,7 @@ as
     Procedure: handle_activity
       Handles selection changes in the hierarchy tree to control the visual appearance of the page.
       
-      Is used to deduct the cgr from the selected entry in the designer tree.
+      Is used to deduct the Rule Group ID (CRG) from the selected entry in the designer tree.
       It then sets the value and refreshes the rule group report if the value has changed.
       Plus, it analyzes which level has been selected and calls the respective SHOW_FORM method
    */
@@ -102,7 +102,7 @@ as
       Method checks whether flows has to be supported by the designer
       
     Returns:
-      C_TRUE, if flows is installed and C_FALSE otherwise.
+      C_TRUE, if Flows for APEX is installed and C_FALSE otherwise.
    */
   function support_flows
     return adc_util.flag_type;
