@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("enq",["Function"],[["enquote",,[["ADCA_UI_DESIGNER Body",,,,0,"File:apex/packages/adca_ui_designer.pkb:ADCA_UI_DESIGNER_Body.enquote","SQLClass:ADCA_UI_DESIGNER_Body:enquote"]]]]);

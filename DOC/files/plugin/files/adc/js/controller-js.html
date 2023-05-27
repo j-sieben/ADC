@@ -50,12 +50,6 @@
  <div class="CBody"><p>Binds all events that are requested by the plugin via &lt;props.bindItems&gt;.</p><p>Upon initialization, all relevant page items are collected along with the required events.&nbsp; This method then binds all items with the respective event.</p></div>
 </div>
 
-<a name="bindObserverItems"></a><a name="Topic934"></a><div class="CTopic TFunction LJavaScript">
- <div class="CTitle">bindObserverItems</div>
- <div id="NDPrototype934" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">const</span> bindObserverItems = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pSelector</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>Method identifies all elements whose values must be sent to the database with any request.&nbsp; Two possible ways exist to add an item to this observer list:</p><ul><li><p>Initialization code of the plugin that automatically detects items that have a value and are referenced by page rules</p></li><li><p>Explicit observation as requested by a ADC rule action</p></li></ul><p>The second option calls this method.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pSelector</td><td class="CDLDefinition"><p>jQuery selector to identify the item(s) that must be observed explicitly</p></td></tr></table></div>
-</div>
-
 <a name="addPageItem"></a><a name="Topic935"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">addPageItem</div>
  <div id="NDPrototype935" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">const</span> addPageItem = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pItemId</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
@@ -90,6 +84,12 @@
  <div class="CTitle">addButtonHandler</div>
  <div id="NDPrototype940" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters"><span class="SHKeyword">const</span> addButtonHandler = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pTarget,</td></tr><tr><td class="PName first last">pMessage,</td></tr><tr><td class="PName first last">pDialogTitle,</td></tr><tr><td class="PName first last">pCallback</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Binds a confirmation or unsavedConfirmation callback to a button</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pTarget</td><td class="CDLDefinition"><p>jQuery item representing the page item to bind to</p></td></tr><tr><td class="CDLEntry">pMessage</td><td class="CDLDefinition"><p>Message to show within the confirmation</p></td></tr><tr><td class="CDLEntry">pDialogTitle</td><td class="CDLDefinition"><p>Title of the dialog</p></td></tr></table></div>
+</div>
+
+<a name="bindObserverItems"></a><a name="Topic214"></a><div class="CTopic TFunction LJavaScript">
+ <div class="CTitle">bindObserverItems</div>
+ <div id="NDPrototype214" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">ctl.bindObserverItems = <span class="SHKeyword">function</span> (</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pSelector</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Method identifies all elements whose values must be sent to the database with any request.&nbsp; Two possible ways exist to add an item to this observer list:</p><ul><li><p>Initialization code of the plugin that automatically detects items that have a value and are referenced by page rules</p></li><li><p>Explicit observation as requested by a ADC rule action</p></li></ul><p>The second option calls this method.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pSelector</td><td class="CDLDefinition"><p>jQuery selector to identify the item(s) that must be observed explicitly</p></td></tr></table></div>
 </div>
 
 <a name="bindConfirmationHandler"></a><a name="Topic941"></a><div class="CTopic TFunction LJavaScript">

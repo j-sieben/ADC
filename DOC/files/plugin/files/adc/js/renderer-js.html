@@ -53,22 +53,22 @@
  <div class="CBody"><p>Enables a page item. Handles activation of</p><ul><li><p>page items with values to allow to include them in a submit</p></li><li><p>select lists</p></li><li><p>buttons</p></li></ul><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pItemId</td><td class="CDLDefinition"><p>ID of the page item to disable</p></td></tr></table></div>
 </div>
 
-<a name="getReportSelection"></a><a name="Topic915"></a><div class="CTopic TFunction LJavaScript">
- <div class="CTitle">getReportSelection</div>
- <div id="NDPrototype915" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">renderer.getReportSelection = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pReportId,</td></tr><tr><td class="PName first last">pColumn,</td></tr><tr><td class="PName first last">pRegionType,</td></tr><tr><td class="PName first last">pCallback</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pReportId</td><td class="CDLDefinition"><p>ID of the report to get the selection from. Must be a static ID</p></td></tr><tr><td class="CDLEntry">pItemId</td><td class="CDLDefinition"><p>Optional item to set the selected value to</p></td></tr><tr><td class="CDLEntry">pColumn</td><td class="CDLDefinition"><p>optional ordinal column number to get the PK value from</p></td></tr></table></div>
-</div>
-
 <a name="hideReportFilterPanel"></a><a name="Topic916"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">hideReportFilterPanel</div>
  <div id="NDPrototype916" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">renderer.hideReportFilterPanel = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pRegionId,</td></tr><tr><td class="PName first last">pRegionType</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
  <div class="CBody"><p>Removes filter area from interactive report or interactive grid.</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pRegionId</td><td class="CDLDefinition"><p>Static id of the interactive report or grid</p></td></tr><tr><td class="CDLEntry">pRegionType</td><td class="CDLDefinition"><p>Type of the report</p></td></tr></table></div>
 </div>
 
-<a name="maintainErrorsAndWarnings"></a><a name="Topic917"></a><div class="CTopic TFunction LJavaScript">
- <div class="CTitle">maintainErrorsAndWarnings</div>
- <div id="NDPrototype917" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">renderer.maintainErrorsAndWarnings = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pErrorList</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>Maintains the error list on the page.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pErrorList</td><td class="CDLDefinition"><p>List of errors, instance of &lt;errorList&gt;</p></td></tr></table></div>
+<a name="highlightRow"></a><a name="Topic211"></a><div class="CTopic TFunction LJavaScript">
+ <div class="CTitle">highlightRow</div>
+ <div id="NDPrototype211" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">renderer.highlightRow = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pRow,</td></tr><tr><td class="PName first last">pSetFocus</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Method to optically select a row in a report</p><div class="CHeading">Parameters</div><table class="CDefinitionList"><tr><td class="CDLEntry">pRow</td><td class="CDLDefinition"><p>jQuery object pointing to the data row to highlight</p></td></tr><tr><td class="CDLEntry">pSetFocus</td><td class="CDLDefinition"><p>Flag to indicate whether the row has to be focussed</p></td></tr></table></div>
+</div>
+
+<a name="showErrors"></a><a name="Topic212"></a><div class="CTopic TFunction LJavaScript">
+ <div class="CTitle">showErrors</div>
+ <div id="NDPrototype212" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">renderer.showErrors = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pErrors</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Maintains the error list on the page.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pErrors</td><td class="CDLDefinition"><p>Array of errors, instances of &lt;error&gt;</p></td></tr></table></div>
 </div>
 
 <a name="setItemLabel"></a><a name="Topic918"></a><div class="CTopic TFunction LJavaScript">
@@ -89,10 +89,10 @@
  <div class="CBody"><p>Sets the title of a modal dialog window.</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pItemLabel</td><td class="CDLDefinition"><p>New item label</p></td></tr></table></div>
 </div>
 
-<a name="showDialog"></a><a name="Topic921"></a><div class="CTopic TFunction LJavaScript">
+<a name="showDialog"></a><a name="Topic213"></a><div class="CTopic TFunction LJavaScript">
  <div class="CTitle">showDialog</div>
- <div id="NDPrototype921" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">renderer.showDialog = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pMessage,</td></tr><tr><td class="PName first last">pTitle,</td></tr><tr><td class="PName first last">pStyle,</td></tr><tr><td class="PName first last">pConfirm</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
- <div class="CBody"><p>Shows a message on the page</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pMessage</td><td class="CDLDefinition"><p>Message of the dialog</p></td></tr><tr><td class="CDLEntry">pTitle</td><td class="CDLDefinition"><p>Optional title of the dialog</p></td></tr><tr><td class="CDLEntry">pStyle</td><td class="CDLDefinition"><p>One of the predefined styles information|warning|sucess|error</p></td></tr><tr><td class="CDLEntry">pConfirm</td><td class="CDLDefinition"><p>Flag to indicate whether this dialog is a confirmation dialog</p></td></tr></table></div>
+ <div id="NDPrototype213" class="NDPrototype WideForm"><div class="PSection PParameterSection CStyle"><table><tr><td class="PBeforeParameters">renderer.showDialog = <span class="SHKeyword">function</span>(</td><td class="PParametersParentCell"><table class="PParameters"><tr><td class="PName first last">pStyle,</td></tr><tr><td class="PName first last">pMessage,</td></tr><tr><td class="PName first last">pTitle,</td></tr><tr><td class="PName first last">pFocusItem</td></tr></table></td><td class="PAfterParameters">)</td></tr></table></div></div>
+ <div class="CBody"><p>Shows a message on the page</p><div class="CHeading">Parameter</div><table class="CDefinitionList"><tr><td class="CDLEntry">pStyle</td><td class="CDLDefinition"><p>One of the predefined styles information|warning|sucess|error</p></td></tr><tr><td class="CDLEntry">pMessage</td><td class="CDLDefinition"><p>Message of the dialog</p></td></tr><tr><td class="CDLEntry">pTitle</td><td class="CDLDefinition"><p>Optional title of the dialog</p></td></tr><tr><td class="CDLEntry">pFocusItem</td><td class="CDLDefinition"><p>Flag to indicate whether this dialog is a confirmation dialog</p></td></tr></table></div>
 </div>
 
 <a name="showSuccess"></a><a name="Topic922"></a><div class="CTopic TFunction LJavaScript">

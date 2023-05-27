@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("ref",["Function"],[["refresh",,[[,,,,0,"File:plugin/files/adc/js/actions.js:refresh"]]],["refresh_item",,[[,,,,0,"File:core/types/adc_basic.tps:refresh_item"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("ref",["Function"],[["refresh",,[[,,,,0,"File:plugin/files/adc/js/actions.js:refresh"]]],["refresh_item",,[[,,,,0,"File:core/types/adc_basic.tps:refresh_item"]]],["refreshAndSetValue",,[[,,,,0,"File:plugin/files/adc/js/actions.js:refreshAndSetValue"]]]]);

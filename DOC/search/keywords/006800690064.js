@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("hid",["Function"],[["hideReportFilterPanel",,[[,,,,0,"File:plugin/files/adc/js/actions.js:hideReportFilterPanel"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("hid",["Function"],[["hideMessage",,[[,,,,0,"File:plugin/files/adc/js/actions.js:hideMessage"]]],["hideReportFilterPanel",,[[,,,,0,"File:plugin/files/adc/js/actions.js:hideReportFilterPanel"]]]]);

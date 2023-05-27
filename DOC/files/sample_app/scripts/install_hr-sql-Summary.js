@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("File:sample_app/scripts/install_hr.sql","install_hr.sql");NDSummary.OnSummaryLoaded("File:sample_app/scripts/install_hr.sql",[["SQL","SQL"]],[["Functions","Function"],["Groups","Group"]],[[1,0,1,"Functions","Functions"],[2,0,0,"validate_employee","validate_employee"]]);

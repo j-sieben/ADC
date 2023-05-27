@@ -1,1 +1,0 @@
-﻿NDSearch.OnPrefixDataLoaded("str",["Function"],[["string_to_table",,[["UTL_TEXT_ADMIN",,,,0,"File:sample_app/scripts/environment.sql:UTL_TEXT_ADMIN.string_to_table","SQLClass:UTL_TEXT_ADMIN:string_to_table"]]]]);

@@ -1,1 +1,0 @@
-﻿NDSearch.OnPrefixDataLoaded("g_p",["Variable"],[["g_page_values",,[["ADCA_UI Body",,,,0,"File:apex/packages/adca_ui.pkb:ADCA_UI_Body.g_page_values","SQLClass:ADCA_UI_Body:g_page_values"]]]]);
