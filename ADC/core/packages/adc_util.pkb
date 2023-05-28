@@ -148,6 +148,29 @@ as
 
   
   /**
+    Function: bulk_replace
+      See <ADC_UTIL.bulk_replace>
+   */
+  function bulk_replace(
+    p_text in varchar2,
+    p_string_table in string_table)
+    return varchar2
+  as
+    l_text max_char;
+  begin
+    l_text := p_text;
+    if p_text is not null and p_string_table is not null then
+      for i in 1 .. p_string_table.count loop
+        if mod(i, 2) = 1 then
+          l_text := replace(l_text, p_string_table(i), p_string_table(i + 1));
+        end if;
+      end loop;
+    end if;
+    return l_text;
+  end bulk_replace;
+
+  
+  /**
     Function: clean_adc_name
       See <ADC_UTIL.clean_adc_name>
    */

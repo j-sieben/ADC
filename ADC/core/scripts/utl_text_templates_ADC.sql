@@ -174,9 +174,12 @@ q'[}]',
     p_uttm_mode => 'FRAME',
     p_uttm_text => q'[<script id="#ID#">\CR\]' || 
 q'[  /** Total duration: #DURATION#hsec*/\CR\]' || 
+q'[  (function(#JS_SHORTCUT#, #AA_SHORTCUT#){\CR\]' || 
+q'[    let action;\CR\]' || 
 q'[  #JS_FILE#.setItemValues(#ITEM_JSON#);\CR\]' || 
 q'[  #JS_FILE#.setErrors(#ERROR_JSON#);\CR\]' || 
 q'[#SCRIPT#\CR\]' || 
+q'[  }(#JS_NAMESPACE#, #AA_NAMESPACE#));\CR\]' || 
 q'[</script>]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
@@ -1004,7 +1007,7 @@ q'[/\CR\]',
     p_uttm_name => 'DEFAULT_APEX_ACTION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
-    p_uttm_text => q'[function(){de.condes.plugin.adc.actions.executeCommand('#CAA_NAME#');}]',
+    p_uttm_text => q'[function(){a.executeCommand('#CAA_NAME#');}]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
@@ -1013,7 +1016,7 @@ q'[/\CR\]',
     p_uttm_name => 'CONFIRM_APEX_ACTION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
-    p_uttm_text => q'[function(){de.condes.plugin.adc.actions.confirmCommand('#CONFIRM_MESSAGE#', '#CAA_NAME#');}]',
+    p_uttm_text => q'[function(){a.confirmCommand('#CONFIRM_MESSAGE#', '#CAA_NAME#');}]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );

@@ -688,7 +688,7 @@ as
     if g_session_values.count > 0 then
       l_item := g_session_values.first;
       while l_item is not null loop
-        l_what := trim('''' from apex_escape.js_literal(g_session_values(l_item).string_value)); --htf.escape_sc(g_session_values(l_item).string_value);
+        l_what := trim('''' from apex_escape.js_literal(g_session_values(l_item).string_value));
         utl_text.append(
           p_text => l_json, 
           p_chunk => replace(replace(C_PAGE_JSON_ELEMENT, 

@@ -91,6 +91,18 @@ as
     p_message_name in varchar2,
     p_msg_args in msg_args default null);
     
+  
+  /** 
+    Procedure: add_additional_items
+      Adds a list of page items for which the actual value is reported by ADC.
+      This is used to provide page state values of non required page items.
+      
+    Parameters:
+      p_items - List of page items in JSON format
+   */
+  procedure add_additional_items(
+    p_items in varchar2);
+    
     
   /** 
     Function: get_response

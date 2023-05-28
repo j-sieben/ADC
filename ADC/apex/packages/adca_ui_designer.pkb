@@ -451,7 +451,7 @@ as
     -- assemble
     l_action := replace(replace(replace(replace(replace(replace(C_DATA_TEMPLATE, 
                   '#COMMAND#', p_action),
-                  '#PAGE_ITEM_LIST#', l_page_items),
+                  '#PAGE_ITEM_LIST#', '""'),--l_page_items),
                   '#TARGET_MODE#', l_target_mode),
                   '#ACTION_MODE#', l_action_mode),
                   '#NODE_ID#', l_node_id),

@@ -25,6 +25,7 @@ as
   subtype max_char is varchar2(32767 byte);
   subtype flag_type is &FLAG_TYPE.;
   subtype tiny_char is varchar2(5 byte);
+  type string_table is table of max_char;
    
    
   /**
@@ -191,6 +192,24 @@ as
    */
   function to_javascript_boolean(
     p_flag in adc_util.flag_type)
+    return varchar2;
+    
+    
+  /**
+    Function: bulk_replace
+      Minimalistic bulk replace-Method. Replaces odd entries as anchors in 
+      p_string with their following even entries of p_string_table
+      
+    Parameter:
+      p_text - Text with the replacement anchors
+      p_string_table - Table of varchar2 snippets.
+    
+    Returns:
+      Replaced text
+   */
+  function bulk_replace(
+    p_text in varchar2,
+    p_string_table in string_table)
     return varchar2;
     
 

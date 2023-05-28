@@ -20,6 +20,9 @@ as
       C_JS_COMMENT_STRING - Comment string to comment unneeded or double JavaScript snippets
    */    
   C_JS_NAMESPACE constant adc_util.ora_name_type := 'de.condes.plugin.adc.actions';
+  C_JS_SHORTCUT constant adc_util.ora_name_type := 'a';
+  C_APEX_ACTION_NAMESPACE constant adc_util.ora_name_type := 'apex.actions';
+  C_APEX_ACTION_SHORTCUT constant adc_util.ora_name_type := 'aa';
   C_JS_COMMENT_STRING constant adc_util.sql_char := '// ';
   C_COMMENT_OUT constant varchar2(20) := C_JS_COMMENT_STRING || '(double)';
   C_ERR_LOCATION_PAGE constant adc_util.ora_name_type := '"page"';
@@ -238,7 +241,10 @@ as
       
       l_next_entry := g_param.js_action_stack.count + 1;
       
-      select replace(p_java_script, 'JS_FILE', C_JS_NAMESPACE) p_java_script, standard_hash(p_java_script), p_debug_level
+      select replace(replace(replace(p_java_script, 
+               '#JS_FILE#', C_JS_SHORTCUT),
+               C_JS_NAMESPACE, C_JS_SHORTCUT),
+               C_APEX_ACTION_NAMESPACE, C_APEX_ACTION_SHORTCUT)p_java_script, standard_hash(p_java_script), p_debug_level
         into l_response
         from dual;
         
@@ -266,6 +272,23 @@ as
   
     pit.leave_optional;
   end add_javascript;
+  
+  
+  /** 
+    Procedure: add_additional_items
+      See <adc_response.add_additional_items>
+   */
+  procedure add_additional_items(
+    p_items in varchar2)
+  as  
+    C_ADDITIONAL_ITEMS constant adc_util.max_char := '#JS_FILE#.registerPageItemsOnce(#ITEMS#);';
+    l_items adc_util.max_char;
+  begin
+    pit.enter_optional;
+    l_items := replace(replace(p_items, ' '), chr(10));
+    add_javascript(replace(C_ADDITIONAL_ITEMS, '#ITEMS#', l_items));
+    pit.leave_optional;
+  end add_additional_items;
   
   
   /** 
@@ -320,6 +343,9 @@ as
       when others then
         l_error.message := pit.get_trans_item_name(adc_util.C_PARAM_GROUP, 'INVALID_ERROR_MESSAGE');
     end;
+    l_error.display_location := case when l_error.page_item_name = adc_util.C_NO_FIRING_ITEM 
+                                  then C_ERR_LOCATION_PAGE
+                                  else C_ERR_LOCATION_INLINE end;
     
     select ora_hash(l_error.message || l_error.page_item_name, C_MAX_INTEGER)
       into l_error_hash
@@ -327,14 +353,12 @@ as
       
     if not g_param.error_stack.exists(l_error_hash) then
       l_error_json := utl_text.get_text_template(adc_util.C_PARAM_GROUP, 'JSON_ERRORS', 'ERROR');
-      l_error_json := replace(replace(replace(replace(replace(l_error_json,
-                        '#ERROR_TYPE#', case p_severity when pit.level_warn then 'warning' else 'error' end),
-                        '#PAGE_ITEM#', l_error.page_item_name),
-                        '#MESSAGE#', l_error.message),
-                        '#ADDITIONAL_INFO#', l_error.additional_info),
-                        '#LOCATION#', case 
-                                        when l_error.page_item_name = adc_util.C_NO_FIRING_ITEM  then C_ERR_LOCATION_PAGE
-                                        else C_ERR_LOCATION_INLINE end);
+      l_error_json := adc_util.bulk_replace(l_error_json, adc_util.string_table(
+                        '#ERROR_TYPE#', case p_severity when pit.level_warn then 'warning' else 'error' end,
+                        '#PAGE_ITEM#', l_error.page_item_name,
+                        '#MESSAGE#', l_error.message,
+                        '#ADDITIONAL_INFO#', l_error.additional_info,
+                        '#LOCATION#', l_error.display_location));
         
       g_param.error_stack(l_error_hash) := l_error_json;
     end if;
@@ -385,12 +409,16 @@ as
     
     -- wrap JavaScript in <script> tag and add item value and error scripts
     -- Replace explicitely to circumvent length limitation of CHAR_TABLE and to improve performance
-    l_response := replace(replace(replace(replace(replace(l_js_script_frame_template, 
-                    '#SCRIPT#', l_response),
-                    '#ID#', 'S_' || trunc(dbms_random.value(1, 100000))),
-                    '#CR#', adc_util.C_CR),
-                    '#JS_FILE#', C_JS_NAMESPACE),
-                    '#DURATION#', to_char(dbms_utility.get_time - g_param.request_start));
+    l_response := adc_util.bulk_replace(l_js_script_frame_template, adc_util.string_table(
+                    '#SCRIPT#', l_response,
+                    '#JS_FILE#', C_JS_SHORTCUT,
+                    '#JS_SHORTCUT#', C_JS_SHORTCUT,
+                    '#JS_NAMESPACE#', C_JS_NAMESPACE,
+                    '#AA_SHORTCUT#', C_APEX_ACTION_SHORTCUT,
+                    '#AA_NAMESPACE#', C_APEX_ACTION_NAMESPACE,
+                    '#ID#', 'S_' || trunc(dbms_random.value(1, 100000)),
+                    '#CR#', adc_util.C_CR,
+                    '#DURATION#', to_char(dbms_utility.get_time - g_param.request_start)));
     
     -- Prepare remaining chunks and check overall length
     l_remaining_length := l_remaining_length - coalesce(length(l_response), 0);
@@ -400,10 +428,10 @@ as
     l_remaining_length := l_remaining_length - coalesce(length(l_response), 0);
     l_errors := get_errors_as_json(l_remaining_length);
     
-    l_response := replace(replace(replace(l_response, 
-                    '#ERROR_JSON#', l_errors),
-                    '#ITEM_JSON#', l_changed_items),
-                    '#FIRING_ITEMS#', l_firing_items);
+    l_response := adc_util.bulk_replace(l_response, adc_util.string_table(
+                    '#ERROR_JSON#', l_errors,
+                    '#ITEM_JSON#', l_changed_items,
+                    '#FIRING_ITEMS#', l_firing_items));
     
     reset;
     

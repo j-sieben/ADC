@@ -55,21 +55,21 @@ as
       C_HIDE_TEMPLATE - Template to hide an APEX Action
       C_JAVA_SCRIPT_TAG - javascript prefix
    */
-  C_INIT_TEMPLATE constant template_t := q'^var action = apex.actions.lookup('#NAME#');^';
+  C_INIT_TEMPLATE constant template_t := q'^action = apex.actions.lookup('#NAME#');^';
 
-  C_UPDATE_TEMPLATE constant template_t := q'^apex.actions.update('#NAME#');^';
-  C_EXECUTE_IMMEDIATE constant template_t := q'^apex.actions.invoke('#NAME#');^';
+  C_UPDATE_TEMPLATE constant template_t := q'^    apex.actions.update('#NAME#');^';
+  C_EXECUTE_IMMEDIATE constant template_t := q'^    apex.actions.invoke('#NAME#');^';
 
-  C_HREF_TEMPLATE constant template_t := q'^action.href="#JS##HREF#"; action.action='';^';
-  C_ACTION_TEMPLATE constant template_t := q'^action.action = function(){#ACTION#}; action.href='';^';
-  C_LABEL_TEMPLATE constant template_t := q'^action.label = #LABEL#;^';
-  C_LABEL_KEY_TEMPLATE constant template_t := q'^action.labelKey = #LABEL_KEY#;^';
-  C_TITLE_TEMPLATE constant template_t := q'^action.title = #TITLE#;^';
-  C_TITLE_KEY_TEMPLATE constant template_t := q'^action.titleKey = #TITLE_KEY#;^';
-  C_DISABLE_TEMPLATE constant template_t := q'^action.disabled = true;^';
-  C_ENABLE_TEMPLATE constant template_t := q'^action.disabled = false;^';
-  C_SHOW_TEMPLATE constant template_t := q'^action.hide = false;^';
-  C_HIDE_TEMPLATE constant template_t := q'^action.hide = true;^';
+  C_HREF_TEMPLATE constant template_t := q'^    action.href="#JS##HREF#"; action.action='';^';
+  C_ACTION_TEMPLATE constant template_t := q'^    action.action = function(){#ACTION#}; action.href='';^';
+  C_LABEL_TEMPLATE constant template_t := q'^    action.label = #LABEL#;^';
+  C_LABEL_KEY_TEMPLATE constant template_t := q'^    action.labelKey = #LABEL_KEY#;^';
+  C_TITLE_TEMPLATE constant template_t := q'^    action.title = #TITLE#;^';
+  C_TITLE_KEY_TEMPLATE constant template_t := q'^    action.titleKey = #TITLE_KEY#;^';
+  C_DISABLE_TEMPLATE constant template_t := q'^    action.disabled = true;^';
+  C_ENABLE_TEMPLATE constant template_t := q'^    action.disabled = false;^';
+  C_SHOW_TEMPLATE constant template_t := q'^    action.hide = false;^';
+  C_HIDE_TEMPLATE constant template_t := q'^    action.hide = true;^';
 
   C_JAVA_SCRIPT_TAG constant adc_util.ora_name_type := 'javascript:';
 

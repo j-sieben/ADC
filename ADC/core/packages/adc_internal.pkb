@@ -151,17 +151,17 @@ as
       l_template := trim(';' from p_row.cat_pl_sql);
     end if;
     -- Don't refactor to bulk_replace because of performance reasons
-    l_code := replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(l_template,
-                '#ITEM#', p_row.cra_item),
-                '#SELECTOR#', adc_parameter.analyze_selector_parameter(p_row.cra_item, p_row.cra_param_2)),
-                '#PARAM_1#', adc_parameter.evaluate_parameter(p_row.cra_param_1_type, p_row.cra_param_1, g_param.crg_id, p_row.cra_item)),
-                '#PARAM_2#', adc_parameter.evaluate_parameter(p_row.cra_param_2_type, p_row.cra_param_2, g_param.crg_id, p_row.cra_item)),
-                '#PARAM_3#', adc_parameter.evaluate_parameter(p_row.cra_param_3_type, p_row.cra_param_3, g_param.crg_id, p_row.cra_item)),
-                '#CRU_SORT_SEQ#', case when p_row.cru_sort_seq is not null then 'RULE_' || p_row.cru_sort_seq else 'NO_RULE_FOUND' end),
-                '#CRU_NAME#', p_row.cru_name),
-                '#FIRING_ITEM#', g_param.firing_item),
-                '#ALLOW_RECURSION#', adc_recursion_stack.check_recursion(p_row.cra_item, p_row.cru_fire_on_page_load)),
-                '#CR#', adc_util.C_CR);
+    l_code := adc_util.bulk_replace(l_template, adc_util.string_table(
+                '#ITEM#', p_row.cra_item,
+                '#SELECTOR#', adc_parameter.analyze_selector_parameter(p_row.cra_item, p_row.cra_param_2),
+                '#PARAM_1#', adc_parameter.evaluate_parameter(p_row.cra_param_1_type, p_row.cra_param_1, g_param.crg_id, p_row.cra_item),
+                '#PARAM_2#', adc_parameter.evaluate_parameter(p_row.cra_param_2_type, p_row.cra_param_2, g_param.crg_id, p_row.cra_item),
+                '#PARAM_3#', adc_parameter.evaluate_parameter(p_row.cra_param_3_type, p_row.cra_param_3, g_param.crg_id, p_row.cra_item),
+                '#CRU_SORT_SEQ#', case when p_row.cru_sort_seq is not null then 'RULE_' || p_row.cru_sort_seq else 'NO_RULE_FOUND' end,
+                '#CRU_NAME#', p_row.cru_name,
+                '#FIRING_ITEM#', g_param.firing_item,
+                '#ALLOW_RECURSION#', adc_recursion_stack.check_recursion(p_row.cra_item, p_row.cru_fire_on_page_load),
+                '#CR#', adc_util.C_CR));
     pit.leave_detailed(
       p_params => msg_params(msg_param('Code', l_code)));
     return l_code;
@@ -741,10 +741,10 @@ as
                     
     for item in rule_group_cpi_ids(g_param.crg_id) loop
       l_json := l_json 
-             || replace(replace(replace(C_BIND_JSON_ELEMENT, 
-                  '#ID#', item.cpi_id),
-                  '#EVENT#', item.cpit_cet_id),
-                  '#STATIC_ACTION#', item.static_action) 
+             || adc_util.bulk_replace(C_BIND_JSON_ELEMENT, adc_util.string_table(
+                  '#ID#', item.cpi_id,
+                  '#EVENT#', item.cpit_cet_id,
+                  '#STATIC_ACTION#', item.static_action)) 
              || adc_util.C_DELIMITER;
     end loop;
     
@@ -1341,8 +1341,7 @@ as
     p_statement in varchar2,
     p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE)
   as
-    c_stmt constant varchar2(200) := 'select * from (#STMT#) where rownum = 1';
-    C_ADDITIONAL_ITEMS constant adc_util.max_char := 'de.condes.plugin.adc.controller.setAdditionalItems(#ITEMS#);';                                    
+    c_stmt constant varchar2(200) := 'select * from (#STMT#) where rownum = 1';                                  
     l_stmt adc_util.max_char;
     l_result varchar2(4000);
     l_cur integer;
@@ -1388,7 +1387,7 @@ as
         apex_json.write(p_cpi_id);
     end if;
     apex_json.close_array;
-    add_javascript(replace(C_ADDITIONAL_ITEMS, '#ITEMS#', apex_json.get_clob_output));
+    adc_response.add_additional_items(apex_json.get_clob_output);
     apex_json.free_output;
   exception
     when NO_DATA_FOUND then
