@@ -13,7 +13,7 @@ create table adc_action_parameters(
   constraint r_cap_capt_id foreign key(cap_capt_id)
     references adc_action_param_types(capt_id) on delete cascade,
   constraint r_cap_pti_id foreign key(cap_pti_id, cap_pmg_name)
-    references &UTIL_OWNER..pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
+    references &UTIL_OWNER..pit_translatable_item(pti_uid, pti_upmg),
   constraint c_cap_sort_seq check(cap_sort_seq in (1, 2, 3)),
   constraint c_cap_pmg_name check(cap_pmg_name = 'ADC'),
   constraint c_cap_mandatory check(cap_mandatory in (&C_FALSE., &C_TRUE.)),

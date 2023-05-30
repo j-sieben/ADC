@@ -8,7 +8,7 @@ create table adc_page_item_types(
   cpit_init_template varchar2(100 char),
   constraint p_cpit_id primary key (cpit_id),
   constraint r_cpit_pti_id foreign key(cpit_pti_id, cpit_pmg_name)
-    references &UTIL_OWNER..pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
+    references &UTIL_OWNER..pit_translatable_item(pti_uid, pti_upmg),
   constraint r_cpit_cpitg_id foreign key(cpit_cpitg_id)
     references adc_page_item_type_groups(cpitg_id),
   constraint r_cpit_cet_id foreign key(cpit_cet_id)

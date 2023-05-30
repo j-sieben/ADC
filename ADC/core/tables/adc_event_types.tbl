@@ -7,7 +7,7 @@ create table adc_event_types(
   cet_is_custom_event &FLAG_TYPE. default on null &C_FALSE. constraint c_cet_is_custom_event_nn not null,
   constraint p_cet_id primary key (cet_id),
   constraint r_cet_pti_id foreign key(cet_pti_id, cet_pmg_name)
-    references &UTIL_OWNER..pit_translatable_item(pti_uid, pti_upmg) on delete cascade,
+    references &UTIL_OWNER..pit_translatable_item(pti_uid, pti_upmg),
   constraint r_cet_cpitg_id foreign key(cet_cpitg_id)
     references adc_page_item_type_groups(cpitg_id),
   constraint c_cet_is_custom_event check (cet_is_custom_event in (&C_TRUE., &C_FALSE.)),
