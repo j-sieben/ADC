@@ -1263,20 +1263,6 @@ q'{}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
-  adc_admin.merge_action_type(
-    p_cat_id => 'REGISTER_OBSERVER',
-    p_cat_catg_id => 'PAGE_ITEM',
-    p_cat_caif_id => 'PAGE_ITEM',
-    p_cat_cato_id => 'ADC',
-    p_cat_name => 'Feld beobachten',
-    p_cat_display_name => q'{<p><strong>beobachte Feld </strong>“#ITEM#”</p>}',
-    p_cat_description => q'{<p>Beobachtet ein Feld, auch wenn kein Anwendungsfall es in der technischen Bedingung referenziert. So wird dessen aktueller Wert in den Session State übernommen.</p>}',
-    p_cat_pl_sql => q'{adc_api.register_observer('#ITEM#');}',
-    p_cat_js => q'{}',
-    p_cat_is_editable => adc_util.C_FALSE,
-    p_cat_active => adc_util.C_TRUE,
-    p_cat_raise_recursive => adc_util.C_TRUE);
-
 
   adc_admin.merge_action_type(
     p_cat_id => 'REMEMBER_PAGE_STATE',
