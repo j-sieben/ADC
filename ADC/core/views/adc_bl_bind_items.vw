@@ -1,4 +1,4 @@
-create or replace view adc_bl_bind_items as
+create or replace force view adc_bl_bind_items as
 select crg_id, cpi_id, cpit_cet_id, cpit_has_value, to_char(null) static_action
   from adc_page_items    
   join adc_page_item_types_v
