@@ -68,10 +68,10 @@ as
   procedure add_translation(
     p_table_shortcut in adc_util.ora_name_type,
     p_item_id in adc_util.ora_name_type,
-    p_pml_name in pit_translatable_item.pti_pml_name%type,
-    p_name in pit_translatable_item.pti_name%type,
-    p_display_name in pit_translatable_item.pti_display_name%type,
-    p_description in pit_translatable_item.pti_description%type);
+    p_pml_name in adc_util.ora_name_type,
+    p_name in pit_translatable_item_v.pti_name%type,
+    p_display_name in pit_translatable_item_v.pti_display_name%type,
+    p_description in pit_translatable_item_v.pti_description%type);
     
   
   -- Group: Rule Group Methods
