@@ -58,7 +58,9 @@ begin
     p_capt_description => q'{<p>Existierende APEX-Aktion der Regelgruppe.</p>}',
     p_capt_capvt_id => 'SELECT_LIST',
     p_capt_select_list_query => q'{select caa_name d, caa_id r, caa_crg_id crg_id\CR\}' || 
-q'{  from adc_apex_actions_v}',
+q'{  from adc_apex_actions_v\CR\}' || 
+q'{\CR\}' || 
+q'{}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -69,7 +71,11 @@ q'{  from adc_apex_actions_v}',
     p_capt_display_name => '',
     p_capt_description => q'{<p>Legt fest, welchen Typ die Meldung besitzen soll</p>}',
     p_capt_capvt_id => 'STATIC_LIST',
-    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 13) r, null crg_id    from pit_translatable_item_v   where pti_pmg_name = 'ADC'     and pti_id like 'DIALOG_TYPE%'}',
+    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 13) r, null crg_id\CR\}' || 
+q'{    from pit_translatable_item_v\CR\}' || 
+q'{   where pti_pmg_name = 'ADC'\CR\}' || 
+q'{     and pti_id like 'DIALOG_TYPE%'\CR\}' || 
+q'{}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -84,25 +90,10 @@ q'{  from adc_apex_actions_v}',
 q'{  from adc_event_types_v\CR\}' || 
 q'{ where cet_is_custom_event = (select adc_util.c_true from dual)\CR\}' || 
 q'{ order by cet_id\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_select_view_comment => q'{Parameterview to display all custom events\CR\}' || 
 q'{\CR\}' || 
-q'{\CR\}' || 
-q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'FREE_PAGE_ITEMS',
-    p_capt_name => 'Seitenelemente',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Seitenelemente der aktuellen Seite, die aktuell nicht durch Anwendungsfälle beobachtet werden</p>}',
-    p_capt_capvt_id => 'CONTROL_LIST',
-    p_capt_select_list_query => q'{select case cpi_id when 'ALL' then ' Document' else cpi_id end d, cpi_id r, cpi_crg_id crg_id\CR\}' || 
-q'{  from adc_page_items\CR\}' || 
-q'{ where cpi_cpit_id in ('DATE_ITEM', 'ITEM', 'NUMBER_ITEM')\CR\}' || 
-q'{   and cpi_is_required = (select adc_util.C_FALSE from dual)}',
-    p_capt_select_view_comment => q'{List of non required page items, limited to input fields, grouped by CRG_ID\CR\}' || 
 q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -120,7 +111,9 @@ q'{    on cpi_cpit_id = cpit_id\CR\}' ||
 q'{ where cpit_cpitg_id = 'ITEM'\CR\}' || 
 q'{   and cpi_cpit_id not in ('APP_ITEM')\CR\}' || 
 q'{   and cpi_may_have_value = (select adc_util.c_true from dual)\CR\}' || 
-q'{ order by cpi_crg_id, cpi_id}',
+q'{ order by cpi_crg_id, cpi_id\CR\}' || 
+q'{\CR\}' || 
+q'{}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -131,9 +124,12 @@ q'{ order by cpi_crg_id, cpi_id}',
     p_capt_display_name => '',
     p_capt_description => q'{<p>Option zur Anzeige eines Seitenelements auf der Seite</p>}',
     p_capt_capvt_id => 'STATIC_LIST',
-    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id    from pit_translatable_item_v   where pti_pmg_name = 'ADC'     and pti_id like 'ITEM_STATUS%'}',
+    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id\CR\}' || 
+q'{    from pit_translatable_item_v\CR\}' || 
+q'{   where pti_pmg_name = 'ADC'\CR\}' || 
+q'{     and pti_id like 'ITEM_STATUS%'\CR\}' || 
+q'{}',
     p_capt_select_view_comment => q'{List of translatable items of for that parameter type\CR\}' || 
-q'{\CR\}' || 
 q'{\CR\}' || 
 q'{}',
     p_capt_sort_seq => 10,
@@ -147,9 +143,29 @@ q'{}',
     p_capt_capvt_id => 'SELECT_LIST',
     p_capt_select_list_query => q'{select case cpi_id when 'ALL' then ' Document' else cpi_id end d, cpi_id r, cpi_crg_id crg_id\CR\}' || 
 q'{  from adc_page_items\CR\}' || 
-q'{ where cpi_cpit_id in ('DATE_ITEM', 'ITEM', 'NUMBER_ITEM')}',
+q'{ where cpi_cpit_id in ('DATE_ITEM', 'ITEM', 'NUMBER_ITEM')\CR\}' || 
+q'{\CR\}' || 
+q'{}',
     p_capt_select_view_comment => q'{List of page items, limited to input fields, grouped by CRG_ID\CR\}' || 
 q'{\CR\}' || 
+q'{}',
+    p_capt_sort_seq => 10,
+    p_capt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_capt_id => 'PIT_MESSAGE',
+    p_capt_name => 'Name der Meldung',
+    p_capt_display_name => '',
+    p_capt_description => q'{<p>Bezeichner einer PIT-Meldung in der Form msg.NAME oder 'NAME', muss eine existierende Meldung sein.</p>}',
+    p_capt_capvt_id => 'SELECT_LIST',
+    p_capt_select_list_query => q'{select pms_name d, 'msg.' || pms_name r, null crg_id\CR\}' || 
+q'{  from pit_message_v\CR\}' || 
+q'{  join pit_message_language_v\CR\}' || 
+q'{    on pms_pml_name = pml_name\CR\}' || 
+q'{ where pml_default_order = 10\CR\}' || 
+q'{\CR\}' || 
+q'{}',
+    p_capt_select_view_comment => q'{List of PIT messages\CR\}' || 
 q'{\CR\}' || 
 q'{}',
     p_capt_sort_seq => 10,
@@ -161,9 +177,12 @@ q'{}',
     p_capt_display_name => '',
     p_capt_description => q'{<p>Typen der Seitenweiterleitung</p>}',
     p_capt_capvt_id => 'STATIC_LIST',
-    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id    from pit_translatable_item_v   where pti_pmg_name = 'ADC'     and pti_id like 'SUBMIT_TYPE%'}',
+    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id\CR\}' || 
+q'{    from pit_translatable_item_v\CR\}' || 
+q'{   where pti_pmg_name = 'ADC'\CR\}' || 
+q'{     and pti_id like 'SUBMIT_TYPE%'\CR\}' || 
+q'{}',
     p_capt_select_view_comment => q'{List of translatable items of for that parameter type\CR\}' || 
-q'{\CR\}' || 
 q'{\CR\}' || 
 q'{}',
     p_capt_sort_seq => 10,
@@ -174,6 +193,28 @@ q'{}',
     p_capt_name => 'PL/SQL-Funktion',
     p_capt_display_name => '',
     p_capt_description => q'{<p>Eine bestehende PL/SQL-Funktion oder eine Package-Funktion<br>Es muss kein abschliessendes Semikolon angegeben werden.</p>}',
+    p_capt_capvt_id => 'TEXT',
+    p_capt_select_list_query => q'{}',
+    p_capt_select_view_comment => q'{}',
+    p_capt_sort_seq => 10,
+    p_capt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_capt_id => 'STRING_OR_JAVASCRIPT',
+    p_capt_name => 'Zeichenkette oder JS-Ausdruck',
+    p_capt_display_name => '',
+    p_capt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein JavaScript-Ausdruck, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
+    p_capt_capvt_id => 'TEXT',
+    p_capt_select_list_query => q'{}',
+    p_capt_select_view_comment => q'{}',
+    p_capt_sort_seq => 10,
+    p_capt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_capt_id => 'JAVA_SCRIPT_FUNCTION',
+    p_capt_name => 'JavaScript-Funktion',
+    p_capt_display_name => '',
+    p_capt_description => q'{<p>Name einer JavaScript-Funktion oder anonyme Funktionsdefinition/IIFE</p>}',
     p_capt_capvt_id => 'TEXT',
     p_capt_select_list_query => q'{}',
     p_capt_select_view_comment => q'{}',
@@ -252,6 +293,17 @@ q'{}',
     p_capt_display_name => '',
     p_capt_description => q'{<p>jQuery-Ausdruck, um mehrere Elemente zu bearbeiten. Wird dieser Parameter verwendet, muss als ausl&ouml;sendes Element <code>DOCUMENT</code> eingetragen werden.</p>}',
     p_capt_capvt_id => 'TEXT',
+    p_capt_select_list_query => q'{}',
+    p_capt_select_view_comment => q'{}',
+    p_capt_sort_seq => 10,
+    p_capt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_capt_id => 'SWITCH',
+    p_capt_name => 'Schalter',
+    p_capt_display_name => '',
+    p_capt_description => q'{<p>Wahrheitswert</p>}',
+    p_capt_capvt_id => 'SWITCH',
     p_capt_select_list_query => q'{}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
