@@ -1,4 +1,4 @@
-create or replace editionable view adca_ui_lov_applications
+create or replace force view adca_ui_lov_applications
 as 
 with params as(
        select utl_apex.get_application_id(utl_apex.c_true) app_id,

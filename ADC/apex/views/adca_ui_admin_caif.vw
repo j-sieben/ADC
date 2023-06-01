@@ -1,4 +1,4 @@
-create or replace editionable view adca_ui_admin_caif
+create or replace force view adca_ui_admin_caif
 as 
 select caif_id, caif_name, caif_description, a.d caif_actual_page_only, b.d caif_active
   from adc_action_item_focus_v

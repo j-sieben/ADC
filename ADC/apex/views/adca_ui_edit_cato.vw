@@ -1,4 +1,4 @@
-create or replace editionable view adca_ui_edit_cato
+create or replace force view adca_ui_edit_cato
 as 
 select cato_id, cato_description, cato_active,
        case cato_id

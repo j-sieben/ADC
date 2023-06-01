@@ -1,4 +1,4 @@
-create or replace editionable view adca_ui_lov_app_pages
+create or replace force view adca_ui_lov_app_pages
 as 
 select page_name || ' (' || page_id || ')' d,
        page_id r,

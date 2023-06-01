@@ -1,4 +1,4 @@
-create or replace editionable view adca_ui_lov_export_types
+create or replace force view adca_ui_lov_export_types
 as 
 select pti_name d, substr(pti_id, 16) r,
        case substr(pti_id, 16)

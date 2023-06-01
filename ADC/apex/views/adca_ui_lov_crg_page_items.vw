@@ -1,4 +1,4 @@
-create or replace editionable view adca_ui_lov_crg_page_items
+create or replace force view adca_ui_lov_crg_page_items
 as
 with params as(
        select /*+ no_merge */

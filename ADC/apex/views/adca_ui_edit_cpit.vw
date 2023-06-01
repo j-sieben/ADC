@@ -1,4 +1,4 @@
-create or replace editionable view adca_ui_edit_cpit
+create or replace force view adca_ui_edit_cpit
 as 
 with cpit_references as (
        select cpi_cpit_id, count(*) ref_amount

@@ -1,4 +1,4 @@
-create or replace editionable view adca_ui_designer_rules
+create or replace force view adca_ui_designer_rules
 as
 with session_state as (
        select /*+ no_merge */ 

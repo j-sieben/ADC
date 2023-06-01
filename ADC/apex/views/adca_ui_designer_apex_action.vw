@@ -1,4 +1,4 @@
-create or replace editionable view adca_ui_designer_apex_action
+create or replace force view adca_ui_designer_apex_action
 as
 select caa_id, caa_crg_id, caa_caat_id, caa_name, caa_label, caa_context_label, caa_confirm_message_name,
        caa_icon, caa_icon_type, caa_title, caa_shortcut, caa_initially_disabled, caa_initially_hidden,

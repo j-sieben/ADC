@@ -1,4 +1,4 @@
-create or replace editionable view adca_bl_cat_help
+create or replace force view adca_bl_cat_help
 as 
   with params as(
        select uttm_mode, uttm_text template

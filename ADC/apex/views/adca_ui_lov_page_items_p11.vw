@@ -1,4 +1,4 @@
-create or replace editionable view adca_ui_lov_page_items_p11
+create or replace force view adca_ui_lov_page_items_p11
 as
 with params as (
        select v('P11_CRA_CRG_ID') p_crg_id,

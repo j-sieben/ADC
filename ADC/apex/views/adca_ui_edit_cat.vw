@@ -1,4 +1,4 @@
-create or replace editionable view adca_ui_edit_cat
+create or replace force view adca_ui_edit_cat
 as 
 select cat_id, cat_catg_id, cat_caif_id, cat_name, cat_display_name, cat_description, cat_pl_sql, cat_js, cat_is_editable, cat_cato_id, cat_raise_recursive, cat_active,
        cap_capt_id_1, cap_display_name_1, cap_description_1, cap_default_1, cap_mandatory_1, cap_active_1,

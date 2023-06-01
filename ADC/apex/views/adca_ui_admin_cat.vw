@@ -1,4 +1,4 @@
-create or replace editionable view adca_ui_admin_cat
+create or replace force view adca_ui_admin_cat
 as 
 with params as (
        select  /*+ NO_MERGE */ utl_apex.current_user_in_group('ADC_ADMIN') is_adc_admin,

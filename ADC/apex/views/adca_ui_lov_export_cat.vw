@@ -1,4 +1,4 @@
-create or replace editionable view adca_ui_lov_export_cat
+create or replace force view adca_ui_lov_export_cat
 as
 select pti_name d, pti_id r
   from pit_translatable_item_v

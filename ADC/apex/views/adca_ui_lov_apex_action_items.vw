@@ -1,4 +1,4 @@
-create or replace editionable view adca_ui_lov_apex_action_items
+create or replace force view adca_ui_lov_apex_action_items
 as 
 select cpi_id || ' (' || cpi_label || ')' d, cpi_id r, crg_id, cpi_caat_id
   from adc_page_items spi

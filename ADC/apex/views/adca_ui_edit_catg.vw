@@ -1,4 +1,4 @@
-create or replace editionable view adca_ui_edit_catg
+create or replace force view adca_ui_edit_catg
 as 
 select catg_id, catg_name, catg_description, catg_active,
        case

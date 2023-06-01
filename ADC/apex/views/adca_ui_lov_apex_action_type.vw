@@ -1,4 +1,4 @@
-create or replace editionable view adca_ui_lov_apex_action_type
+create or replace force view adca_ui_lov_apex_action_type
 as 
 select caat_name d, caat_id r
   from adc_apex_action_types_v

@@ -1,4 +1,4 @@
-create or replace editionable view adca_ui_edit_caif
+create or replace force view adca_ui_edit_caif
 as 
 with caif_references as (
        select cat_caif_id, count(*) ref_amount
