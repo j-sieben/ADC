@@ -774,8 +774,8 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   ctl.execute = function(){
 
     if(maintainAndCheckEventLock()){
-      if(props.triggeringElement.data && props.triggeringElement.data.additionalPageItems){
-        props.pageItems = new Set([...props.pageItems, ...props.triggeringElement.data.additionalPageItems]);
+      if(props.triggeringElement.data && props.additionalItems){
+        props.pageItems = new Set([...props.pageItems, ...props.additionalItems]);
         props.pageItems = Array.from(props.pageItems);
       }
       
@@ -799,8 +799,6 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
           }
         }
       );
-      // reset additional one time page items
-      props.additionalItems = [];
     }
   }; // execute
 

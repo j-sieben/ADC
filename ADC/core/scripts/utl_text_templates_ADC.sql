@@ -714,6 +714,8 @@ q'[]',
     p_uttm_text => q'[set define off\CR\]' || 
 q'[\CR\]' || 
 q'[begin\CR\]' || 
+q'[  -- ACTION_TYPE_OWNERS#ACTION_TYPE_OWNERS#\CR\]' || 
+q'[\CR\]' || 
 q'[  -- ACTION_PARAM_TYPES#ACTION_PARAM_TYPES#\CR\]' || 
 q'[\CR\]' || 
 q'[  -- ACTION TYPES#ACTION_TYPES#\CR\]' || 

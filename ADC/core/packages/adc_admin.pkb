@@ -797,6 +797,45 @@ as
   
   
   /**
+    Function: get_action_param_owners
+      Method to retrieve all action parameter type scripts for the given action type owner.
+      
+      If the requested owner is different from the default owner C_ADC then only those
+      parameter types are returned which are not already defined within the core delivery.
+      
+    Parameter:
+      p_cato_id - Owner of the action parameter types
+      
+    Returns:
+      Install script with all API calls for the action parameter types for the requested owner
+   */
+  function get_action_param_owners(
+    p_cato_id in adc_action_type_owners.cato_id%type)
+    return clob
+  as
+    l_action_param_owners clob;
+  begin
+    pit.enter_optional('get_action_param_owners',
+      p_params => msg_params(
+                    msg_param('p_cato_id', p_cato_id)));
+                    
+    select utl_text.generate_text(cursor(
+            select uttm_text template,
+                   cato_id, adc_util.to_bool(cato_active) cato_active,
+                   utl_text.wrap_string(cato_description, C_WRAP_START, C_WRAP_END) cato_description
+             from adc_action_type_owners_v))
+      into l_action_param_owners
+      from utl_text_templates
+     where uttm_type = C_ADC
+       and uttm_name = C_UTTM_NAME
+       and uttm_mode = 'ACTION_TYPE_OWNER';
+       
+    pit.leave_optional;
+    return l_action_param_owners;
+  end get_action_param_owners;
+  
+  
+  /**
     Function: get_action_types
       Method to retrieve all action type scripts for the given action type owner.
       
@@ -879,7 +918,7 @@ as
   as
     l_export_script clob;
   begin
-    pit.enter_optional('add_custom_action_types');
+    pit.enter_optional('add_param_lov_statements');
     
     -- Finally, add all create view statements for LOV-based parameter types
     for cpt in (select v.*
@@ -921,18 +960,34 @@ as
        where cato_id != C_ADC;
     l_action_param_types clob;
     l_action_types clob;
+    l_action_type_owners clob;
     l_custom_action_types clob;
   begin
     pit.enter_optional('add_custom_action_types');
     
     for cato in custom_actions_cur loop
       l_action_param_types := get_action_param_types(cato.cato_id);
-      l_action_types := get_action_types(cato.cato_id);
+      l_action_types := get_action_types(cato.cato_id);      
+  
+      select utl_text.generate_text(cursor(
+              select uttm_text template,
+                     cato_id, 
+                     adc_util.to_bool(cato_active) cato_active,
+                     utl_text.wrap_string(cato_description, C_WRAP_START, C_WRAP_END) cato_description
+                from adc_action_type_owners_v
+               where cato_id != C_ADC
+             ), adc_util.C_CR)
+        into l_action_type_owners
+        from utl_text_templates
+       where uttm_type = C_ADC
+         and uttm_name = C_UTTM_NAME
+         and uttm_mode = 'ACTION_TYPE_OWNER';
       
       select utl_text.generate_text(cursor(
                select uttm_text template, 
                       l_action_param_types action_param_types,
-                      l_action_types action_types
+                      l_action_types action_types,
+                      l_action_type_owners action_type_owners
                  from utl_text_templates
                 where uttm_type = C_ADC
                   and uttm_name = C_UTTM_NAME
