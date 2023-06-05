@@ -28,7 +28,7 @@ select upper('&1.') apex_ws,
        coalesce((select application_id from apex_applications where alias = '&3.'), &2.) app_id,
        pit.get_default_language default_language,
        case 
-         when utl_apex.get_apex_version >= 22.2 then 'apex_22_2'
+         when utl_apex.get_apex_version >= 23.1 then 'apex_23_1'
          when utl_apex.get_apex_version >= 20.2 then 'apex_20_2'
        end apex_path
   from dual;
