@@ -638,31 +638,20 @@ as object (
     Parameter:
       p_submit_type - Optional flag to indicate whether all validations should be performed. Defaults to VALIDATE_AND_SUBMIT.
                       Allowed values are taken from ADC_PARAM_LOV_SUBMIT_TYPE
+      p_request - Optional request that is passed when the page is submitted
+      p_msg_name - Optional name of a PIT message that is used if the validation fails
    */
   static procedure submit_page(
-    p_submit_type in varchar2 default 'VALIDATE_AND_SUBMIT'),
+    p_submit_type in varchar2 default 'VALIDATE_AND_SUBMIT',
+    p_request in varchar2 default 'SAVE',
+    p_msg_name in varchar2 default null),
 
 
   /** 
     Procedure: stop_rule
       Method to stop further execution of the active rule. Is used to stop the execution of an ADC rule if an error occured.
    */
-  static procedure stop_rule,
-
-
-  /**
-    Procedure: validate_page
-      static procedure for preparing the submit of the page.
-      This procedure should be used only when ADC fully manages a page.
-      
-      The following checks are performed:
-      
-      Mandatory items - all page elements set to MANDATORY are checked against the session state.
-      Invalid format - Date and number fields are checked for proper datatype
-      Validation actions - If a rule action is marked as a validation, this action gets executed by this method as well, 
-      
-      If any error occurs, that will prevent the page from submitting.
-   */
-  static procedure validate_page
+  static procedure stop_rule
+  
 ) not instantiable not final;
 /

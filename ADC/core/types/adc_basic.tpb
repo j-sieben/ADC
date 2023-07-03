@@ -699,14 +699,16 @@ as
 
 
   static procedure submit_page(
-    p_submit_type in varchar2 default 'VALIDATE_AND_SUBMIT')
+    p_submit_type in varchar2 default 'VALIDATE_AND_SUBMIT',
+    p_request in varchar2 default 'SAVE',
+    p_msg_name in varchar2 default null)
   as
   begin
     pit.enter_optional(
       p_params => msg_params(
                     msg_param('p_submit_type', p_submit_type)));
     
-    adc_api.validate_page(p_submit_type);
+    adc_api.validate_page(p_submit_type p_request, p_msg_name);
 
     pit.leave_optional;
   end submit_page;
@@ -721,17 +723,6 @@ as
 
     pit.leave_optional;
   end stop_rule;
-  
-  
-  static procedure validate_page
-  as
-  begin
-    pit.enter_optional;
-
-    adc_api.validate_page('VALIDATE');
-
-    pit.leave_optional;
-  end validate_page;  
   
 end;
 /

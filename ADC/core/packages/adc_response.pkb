@@ -19,8 +19,10 @@ as
       C_JS_COMMENT_STRING - Comment string to comment unneeded or double JavaScript snippets
    */    
   C_JS_NAMESPACE constant adc_util.ora_name_type := 'de.condes.plugin.adc.actions';
+  C_JS_PLACEHOLDER constant adc_util.ora_name_type := 'ADC_PLUGIN';
   C_JS_SHORTCUT constant adc_util.ora_name_type := 'a';
   C_APEX_ACTION_NAMESPACE constant adc_util.ora_name_type := 'apex.actions';
+  C_APEX_ACTION_PLACEHOLDER constant adc_util.ora_name_type := 'APEX_ACTION';
   C_APEX_ACTION_SHORTCUT constant adc_util.ora_name_type := 'aa';
   C_JS_COMMENT_STRING constant adc_util.sql_char := '// ';
   C_COMMENT_OUT constant varchar2(20) := C_JS_COMMENT_STRING || '(double)';
@@ -235,13 +237,17 @@ as
       pit.assert(p_debug_level in (adc_util.C_JS_CODE, adc_util.C_JS_RULE_ORIGIN, adc_util.C_JS_DEBUG, adc_util.C_JS_COMMENT, adc_util.C_JS_DETAIL), msg.ADC_INVALID_DEBUG_LEVEL);
       
       l_next_entry := g_param.js_action_stack.count + 1;
-      
-      select replace(replace(replace(p_java_script, 
-               '#JS_FILE#', C_JS_SHORTCUT),
-               C_JS_NAMESPACE, C_JS_SHORTCUT),
-               C_APEX_ACTION_NAMESPACE, C_APEX_ACTION_SHORTCUT)p_java_script, standard_hash(p_java_script), p_debug_level
+        
+      select p_java_script, standard_hash(p_java_script), p_debug_level
         into l_response
         from dual;
+      
+      l_response.script := adc_util.bulk_replace(p_java_script, adc_util.string_table(
+                             '#JS_FILE#', C_JS_SHORTCUT,
+                             C_JS_NAMESPACE, C_JS_SHORTCUT,
+                             C_APEX_ACTION_NAMESPACE, C_APEX_ACTION_SHORTCUT,
+                             C_JS_PLACEHOLDER, C_JS_NAMESPACE,
+                             C_APEX_ACTION_PLACEHOLDER, C_APEX_ACTION_NAMESPACE)); 
         
       if p_debug_level not in (adc_util.C_JS_CODE, adc_util.C_JS_RULE_ORIGIN) then
         l_response.script := C_JS_COMMENT_STRING || ltrim(l_response.script, C_JS_COMMENT_STRING);

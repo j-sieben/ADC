@@ -236,6 +236,27 @@ as
 
   
   /**
+    Function: get_standard_message
+      See <ADC_UTIL.get_standard_message>
+   */
+  function get_standard_message(
+    p_msg_name in varchar2)
+    return varchar2
+  as
+    l_message adc_standard_messages_v.csm_message%type;
+  begin
+    select csm_message
+      into l_message
+      from adc_standard_messages_v
+     where csm_id = p_msg_name;
+    return l_message;
+  exception
+    when NO_DATA_FOUND then
+      return null;
+  end get_standard_message;
+
+  
+  /**
     Function: close_cursor
       See <ADC_UTIL.close_cursor>
    */

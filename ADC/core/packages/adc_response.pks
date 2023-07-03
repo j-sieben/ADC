@@ -1,5 +1,6 @@
 create or replace package adc_response
   authid definer
+  accessible by (package adc_internal)
 as
 
   /**

@@ -681,14 +681,14 @@ as
 
 
   procedure validate_page(
-    p_submit_type in varchar2)
+    p_submit_type in varchar2,
+    p_request in varchar2 default 'SAVE',
+    p_msg_name in varchar2 default null)
   as
   begin
     pit.enter_mandatory;
     
-    if instr(p_submit_type, 'VALIDATE' ) > 0 then
-      adc_internal.validate_page;
-    end if;
+    adc_internal.validate_page(p_submit_type, p_request, p_msg_name);
     
     pit.leave_mandatory;
   end validate_page;

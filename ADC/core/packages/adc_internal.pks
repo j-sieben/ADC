@@ -385,7 +385,10 @@ as
 
 
   /* <adc_api.validate_page> */
-  procedure validate_page;
+  procedure validate_page(
+    p_submit_type in varchar2,
+    p_request in varchar2,
+    p_msg_name in varchar2);
   
 end adc_internal;
 /

@@ -597,10 +597,13 @@ as
     Parameter:
       p_submit_type - Indicates the type of submission. Is used to decide whether a validation is
                       requested or not. One of the submission types of ADC_PARAM_LOV_SUBMIT_TYPE.
+      p_request - Optional request value that is sent if the page is submitted
+      p_msg_name - Optional name of a PIT-message that is shown if the validation fails.
    */
   procedure validate_page(
-    p_submit_type in varchar2);
-  
+    p_submit_type in varchar2,
+    p_request in varchar2 default 'SAVE',
+    p_msg_name in varchar2 default null);  
   
 end adc_api;
 /

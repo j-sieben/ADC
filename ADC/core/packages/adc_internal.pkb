@@ -1470,7 +1470,10 @@ as
     Procedure: validate_page
       See <ADC_API.validate_page>
    */
-  procedure validate_page
+  procedure validate_page(
+    p_submit_type in varchar2,
+    p_request in varchar2,
+    p_msg_name in varchar2)
   as
     cursor mandatory_item_cur is
       select cgs_cpi_id, cgs_cpi_mandatory_message
@@ -1491,60 +1494,77 @@ as
     l_exception message_type;
     l_stmt adc_util.sql_char;
     l_result boolean;
+    l_java_script adc_util.sql_char;
+    l_error_message adc_util.max_char;
+    
+    C_SUBMIT_TEMPLATE adc_util.sql_char := q'{de.condes.plugin.adc.actions.submit('#REQUEST#', '#MESSAGE#');[}';
   begin
     -- Tracing done in ADC_API
-    
-    -- Check all mandatory fields (elements may not have triggered a CHANGE event)
-    for itm in mandatory_item_cur loop
-      begin
-        adc_recursion_stack.register_touched_item(itm.cgs_cpi_id);
-        adc_page_state.check_mandatory(
-          p_crg_id => g_param.crg_id,
-          p_cpi_id => itm.cgs_cpi_id);
-      exception
-        when msg.ADC_ITEM_IS_MANDATORY_ERR then
-          l_exception := pit.get_active_message;
-          register_error(
-            p_cpi_id => itm.cgs_cpi_id, 
-            p_error_msg => l_exception.message_text,
-            p_internal_error => null);
-      end;
-    end loop;
-
-    -- Check all number or date fields
-    for itm in special_value_cur loop
-      begin
-        adc_page_state.set_value(
-          p_crg_id => g_param.crg_id,
-          p_cpi_id => itm.cpi_id,
-          p_value => adc_page_state.C_FROM_SESSION_STATE,
-          p_throw_error => adc_util.C_TRUE);
-
-      exception
-        when others then
-          -- conversion could not be applied. Raise exception and stop rule
-          register_error(
+    if instr(p_submit_type, 'VALIDATE' ) > 0 then
+        
+      -- Check all mandatory fields (elements may not have triggered a CHANGE event)
+      for itm in mandatory_item_cur loop
+        begin
+          adc_recursion_stack.register_touched_item(itm.cgs_cpi_id);
+          adc_page_state.check_mandatory(
+            p_crg_id => g_param.crg_id,
+            p_cpi_id => itm.cgs_cpi_id);
+        exception
+          when msg.ADC_ITEM_IS_MANDATORY_ERR then
+            l_exception := pit.get_active_message;
+            register_error(
+              p_cpi_id => itm.cgs_cpi_id, 
+              p_error_msg => l_exception.message_text,
+              p_internal_error => null);
+        end;
+      end loop;
+  
+      -- Check all number or date fields
+      for itm in special_value_cur loop
+        begin
+          adc_page_state.set_value(
+            p_crg_id => g_param.crg_id, 
             p_cpi_id => itm.cpi_id,
-            p_error_msg => pit.get_active_message_text,
-            p_internal_error => null);
-      end;
-    end loop;
-
-    -- Check all validations of the current ADC group
-    for sra in validation_action_cur loop
-      execute_action(
-        p_cat_id => sra.cra_cat_id,
-        p_cpi_Id => sra.cra_cpi_id,
-        p_param_1 => sra.cra_param_1,
-        p_param_2 => sra.cra_param_2,
-        p_param_3 => sra.cra_param_3,
-        p_allow_recursion => adc_util.C_FALSE);
-      adc_recursion_stack.register_touched_item(sra.cra_cpi_id);
-    end loop;
-    
-    if g_param.has_errors then
-      g_param.stop_flag := adc_util.C_TRUE;
+            p_value => adc_page_state.C_FROM_SESSION_STATE,
+            p_throw_error => adc_util.C_TRUE);
+  
+        exception
+          when others then        
+            -- conversion could not be applied. Raise exception and stop rule
+            register_error(
+              p_cpi_id => itm.cpi_id,
+              p_error_msg => pit.get_active_message_text,
+              p_internal_error => null);
+        end;
+      end loop;
+  
+      -- Check all validations of the current ADC group
+      for sra in validation_action_cur loop
+        execute_action(
+          p_cat_id => sra.cra_cat_id,
+          p_cpi_Id => sra.cra_cpi_id,
+          p_param_1 => sra.cra_param_1,
+          p_param_2 => sra.cra_param_2,
+          p_param_3 => sra.cra_param_3,
+          p_allow_recursion => adc_util.C_FALSE);
+        adc_recursion_stack.register_touched_item(sra.cra_cpi_id);
+      end loop;
+      if g_param.has_errors then
+        if p_msg_name is not null then
+          l_error_message := pit.get_message_text(p_msg_name);
+        else
+          l_error_message := adc_util.get_standard_message('CSM_PAGE_HAS_ERROR');
+        end if;
+      end if;
     end if;
+    
+    if instr(p_submit_type, 'SUBMIT' ) > 0 then
+      l_java_script:= adc_util.bulk_replace(C_SUBMIT_TEMPLATE, adc_util.string_table(
+                        '#REQUEST#', p_request,
+                        '#MESSAGE#', l_error_message));
+      adc_response.add_javascript(l_java_script);
+    end if;
+    
   end validate_page;
   
 end adc_internal;

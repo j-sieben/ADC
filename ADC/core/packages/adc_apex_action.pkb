@@ -72,6 +72,12 @@ as
   C_HIDE_TEMPLATE constant template_t := q'^    action.hide = true;^';
 
   C_JAVA_SCRIPT_TAG constant adc_util.ora_name_type := 'javascript:';
+  -- The following constants are used to prevent ADC_RESPONSE from escaping these namespace objects
+  -- with local IIFE parameters which would make them unusable.
+  C_JS_NAMESPACE constant adc_util.ora_name_type := 'de.condes.plugin.adc.actions';
+  C_JS_PLACEHOLDER constant adc_util.ora_name_type := 'ADC_PLUGIN';
+  C_APEX_ACTION_NAMESPACE constant adc_util.ora_name_type := 'apex.actions';
+  C_APEX_ACTION_PLACEHOLDER constant adc_util.ora_name_type := 'APEX_ACTION';
 
   /**
     Group: Private Methods
@@ -276,6 +282,7 @@ as
     p_href in adc_apex_actions_v.caa_href%type)
   is
     l_js_flag varchar2(30);
+    l_href adc_util.max_char;
   begin
     pit.enter_optional(
       p_params => msg_params(
@@ -284,7 +291,11 @@ as
     if not regexp_like(p_href, '^http|^f?p') then
       l_js_flag := 'Javascript:';
     end if;
-    append(replace(replace(C_HREF_TEMPLATE, '#HREF#', p_href), '#JS#', l_js_flag));
+    append(adc_util.bulk_replace(C_HREF_TEMPLATE, adc_util.string_table(
+             '#HREF#', p_href, 
+             '#JS#', l_js_flag,
+             C_JS_NAMESPACE, C_JS_PLACEHOLDER,
+             C_APEX_ACTION_NAMESPACE, C_APEX_ACTION_PLACEHOLDER)));
 
     pit.leave_optional;
   end set_href;
@@ -302,7 +313,11 @@ as
       p_params => msg_params(
                     msg_param('p_action', p_action)));
 
-      append(replace(replace(C_ACTION_TEMPLATE, '#ACTION#', p_action), C_JAVA_SCRIPT_TAG));
+    append(adc_util.bulk_replace(C_ACTION_TEMPLATE, adc_util.string_table(
+             '#ACTION#', p_action, 
+             C_JAVA_SCRIPT_TAG, null,
+             C_JS_NAMESPACE, C_JS_PLACEHOLDER,
+             C_APEX_ACTION_NAMESPACE, C_APEX_ACTION_PLACEHOLDER)));
 
     pit.leave_optional;
   end set_action;

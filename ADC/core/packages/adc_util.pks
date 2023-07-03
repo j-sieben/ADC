@@ -264,6 +264,21 @@ as
     p_msg_args in msg_args default null,
     p_pmg_name in varchar2 default C_ADC)
     return varchar2;
+    
+    
+  /**
+    Function: get_standard_message
+      Method to retrieve a standard message
+      
+    Parameter:
+      p_msg_name - Name of the message to retrieve
+      
+    Returns:
+      Translated standard message
+   */
+  function get_standard_message(
+    p_msg_name in varchar2)
+    return varchar2;
   
   
   /**
