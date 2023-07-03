@@ -30,7 +30,7 @@ select crg_id cpi_crg_id,
            or instr(upper(item_label_template), 'REQUIRED') > 0 
          then adc_util.C_TRUE 
          else adc_util.C_FALSE end cpi_is_required,
-       case when display_as_code in ('NATIVE_HIDDEN', 'NATIVE_DISPLAY_ONLY') then adc_util.C_FALSE else adc_util.C_TRUE end cpi_may_have_value,
+       case when display_as_code in ('NATIVE_DISPLAY_ONLY') then adc_util.C_FALSE else adc_util.C_TRUE end cpi_may_have_value,
        aar.static_id cpi_form_region_id
   from apex_application_page_items aai
   join adc_rule_groups crg

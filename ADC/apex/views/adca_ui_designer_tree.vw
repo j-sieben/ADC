@@ -66,7 +66,7 @@ with page_state as(
         where pti_pmg_name = 'ADC'
           and pti_id = 'FLG'
           and C_SUPPORT_FLOWS = C_TRUE)
- select case when connect_by_isleaf = 1 then 0 when level = 1 then 1 else -1 end as status,
+ select /*+ result_cache */ case when connect_by_isleaf = 1 then 0 when level = 1 then 1 else -1 end as status,
         level lvl,
         node_name as title,
         node_icon as icon,

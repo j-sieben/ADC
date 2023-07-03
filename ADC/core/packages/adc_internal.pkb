@@ -780,7 +780,23 @@ as
     when NO_DATA_FOUND then
       pit.leave_optional(p_params => msg_params(msg_param('Additional items', 'None')));
       return null;
-  end get_additional_items;    
+  end get_additional_items;   
+  
+  
+  /**
+    Function: get_apex_actions
+      See <ADC_INTERNAL.get_apex_actions>
+   */
+  function get_apex_actions
+    return varchar2
+  as
+    l_actions adc_util.max_char;
+  begin
+    pit.enter_optional;
+    l_actions := adc_apex_action.get_crg_apex_actions(g_param.crg_id);
+    pit.leave_optional;
+    return l_actions;
+  end get_apex_actions;
 
 
   /**

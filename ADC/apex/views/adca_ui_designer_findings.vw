@@ -51,7 +51,7 @@ with params as (
           and column_value = item_id
         where cru_firing_items not in ('COMMAND', 'DOCUMENT')
           and item_id is null)
-select replace(link_template, '#NODE_ID#', node) link, case severity when 1 then warn_icon else danger_icon end icon, f.message.message_text message, f.message.message_description title,
+select /* result_cache */replace(link_template, '#NODE_ID#', node) link, case severity when 1 then warn_icon else danger_icon end icon, f.message.message_text message, f.message.message_description title,
        case max(severity) over () when 1 then warn_icon else danger_icon end region_icon
   from findings f
   join params p

@@ -392,20 +392,23 @@ as
   static procedure select_region_entry(
     p_region_id in varchar2,
     p_entry_id in varchar2,
-    p_notify in varchar2 default 1)
+    p_set_focus in varchar2,
+    p_no_event in varchar2)
   as
   begin
     pit.enter_optional(
       p_params => msg_params(
                     msg_param('p_region_id', p_region_id),
                     msg_param('p_entry_id', p_entry_id),
-                    msg_param('p_notify', p_notify)));
+                    msg_param('p_set_focus', p_set_focus),
+                    msg_param('p_no_event', p_no_event)));
                     
     adc_api.execute_action(
       p_cat_id => 'SELECT_REGION_ENTRY',
       p_cpi_id => p_region_id,
       p_param_1 => p_entry_id,
-      p_param_2 => p_notify);
+      p_param_2 => p_set_focus,
+      p_param_3 => p_no_event);
 
     pit.leave_optional;
   end select_region_entry;

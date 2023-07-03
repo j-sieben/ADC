@@ -6,6 +6,7 @@ prompt &h3.Create tables
 @&tool_dir.create_table adca_lu_designer_modes
 @&tool_dir.create_table adca_lu_designer_actions
 @&tool_dir.create_table adca_map_designer_actions
+@&tool_dir.create_table adca_map_form_items
 
 prompt &h3.Create views
 @&tool_dir.create_view adca_bl_cat_help

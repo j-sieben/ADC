@@ -5,11 +5,15 @@ as
   C_PMG_NAME constant adc_util.ora_name_type := 'SADC';
 
 
-  /* Helper method to copy session state values from an APEX page
-   * %usage  Is called to copy the actual session state of an APEX page into a PL/SQL table
+  /**
+    Procedure: copy_*app_alias*
+      Helper method to copy session state values from the respective APEX page identified by APEX_ALIAS
+      
+    Parameter:
+      p_row - Rowtype of the respective underlying view
    */
   procedure copy_edpti(
-    p_row in out nocopy pit_translatable_item%rowtype)
+    p_row in out nocopy pit_translatable_item_v%rowtype)
   as
   begin
     pit.enter_detailed('copy_edpti');
@@ -278,7 +282,7 @@ as
   function validate_edpti
   return boolean
   as
-    l_row pit_translatable_item%rowtype;
+    l_row pit_translatable_item_v%rowtype;
   begin
     pit.enter_mandatory;
 
@@ -299,7 +303,7 @@ as
 
   procedure process_edpti
   as
-    l_row pit_translatable_item%rowtype;
+    l_row pit_translatable_item_v%rowtype;
   begin
     pit.enter_mandatory;
 

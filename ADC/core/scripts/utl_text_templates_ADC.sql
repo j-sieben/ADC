@@ -78,7 +78,7 @@ q'[]',
     p_uttm_name => 'APEX_ACTION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ACTION',
-    p_uttm_text => q'[{"name":"#CAA_NAME#"#CAA_LABEL|, "label":"|"|##CAA_LABEL_KEY|, "labelKey":"|"|##CAA_CONTEXT_LABEL|, "contextLabel":"|"|##CAA_ICON|, "icon":"|"|##CAA_ICON_TYPE|, "iconType":"|"|##CAA_INITIALLY_DISABLED|, "disabled":||##CAA_INITIALLY_HIDDEN|, "hide":||##CAA_TITLE|, "title":"|"|##CAA_SHORTCUT|, "shortcut":"|"|##CAA_HREF|, "href":"|"|##CAA_ACTION|, "action":||#}]',
+    p_uttm_text => q'[{"name":"#CAA_NAME#"#BIND_ITEMS|, "bind":[|]|##CAA_LABEL|, "label":"|"|##CAA_LABEL_KEY|, "labelKey":"|"|##CAA_CONTEXT_LABEL|, "contextLabel":"|"|##CAA_ICON|, "icon":"|"|##CAA_ICON_TYPE|, "iconType":"|"|##CAA_INITIALLY_DISABLED|, "disabled":||##CAA_INITIALLY_HIDDEN|, "hide":||##CAA_TITLE|, "title":"|"|##CAA_SHORTCUT|, "shortcut":"|"|##CAA_HREF|, "href":"|"|##CAA_ACTION|, "action":||#}]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );

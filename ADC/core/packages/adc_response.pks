@@ -1,7 +1,6 @@
 create or replace package adc_response
   authid definer
 as
-  pragma serially_reusable;
 
   /**
     Package: ADC_RESPONSE

@@ -1,6 +1,5 @@
 create or replace package body adc_response
 as
-  pragma serially_reusable;
 
   /**
     Package: ADC_RESPONSE Body
@@ -177,12 +176,8 @@ as
     l_error_key := g_param.error_stack.first;
     while l_error_key is not null loop
       l_has_space := coalesce(length(l_json), 0) + length(g_param.error_stack(l_error_key)) < coalesce(p_max_length, 30000);
-      --if l_has_space then 
-        utl_text.append(l_json, g_param.error_stack(l_error_key), adc_util.C_DELIMITER, true);
-        l_error_key := g_param.error_stack.next(l_error_key);
-      /*else
-        exit;
-      end if;*/
+      utl_text.append(l_json, g_param.error_stack(l_error_key), adc_util.C_DELIMITER, true);
+      l_error_key := g_param.error_stack.next(l_error_key);
     end loop;
   
     l_json := replace(replace(l_json_error_template, 
@@ -460,10 +455,6 @@ as
     
     g_param.crg_id := p_crg_id;
     g_param.request_start := dbms_utility.get_time;
-    
-    if p_initialize_mode then
-      add_javascript(adc_apex_action.get_crg_apex_actions(g_param.crg_id));
-    end if;
     
     pit.leave_optional;
   end initialize_response;

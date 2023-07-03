@@ -103,7 +103,7 @@ with session_state as (
                left join adc_action_types_v cat
                  on cra_cat_id = cat_id) cra
           on cru_id = cra_cru_id)
-select app.application_name || ' (' || app.application_id || ')' application_name, pag.page_name || ' (' || pag.page_id || ')' page_name,
+select /*+ result_cache */app.application_name || ' (' || app.application_id || ')' application_name, pag.page_name || ' (' || pag.page_id || ')' page_name,
       'CRU_' || cru_id cru_id, cru_crg_id, cru_name, cru_condition, cru_firing_items, cru_sort_seq, cru_fire_on_page_load, cru_fire_on_page_load_title, cru_active,
       ul_open || li_open || listagg(cra_name , li_close || li_open)
         within group (order by cra_sort_seq) || li_close || ul_close cru_action

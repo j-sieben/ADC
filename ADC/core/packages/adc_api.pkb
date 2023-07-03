@@ -324,7 +324,7 @@ as
             l_processed_messages.extend;
             l_processed_messages(l_processed_messages.count) := l_message.error_code;
             
-            adc_api.register_error(
+            register_error(
               p_cpi_id => coalesce(l_item.item_name, adc_util.C_NO_FIRING_ITEM),
               p_error_msg => replace(l_message.message_text, '#LABEL#', l_item.item_label),
               p_internal_error => l_message.message_description);

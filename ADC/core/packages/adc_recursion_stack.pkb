@@ -273,20 +273,19 @@ as
     p_cru_fire_on_page_load in adc_rules.cru_fire_on_page_load%type)
     return adc_util.flag_type
   as
-    sResult adc_util.flag_type;
+    l_result adc_util.flag_type;
   begin
     pit.enter_detailed('check_recursion',
       p_params => msg_params(
                     msg_param('p_cra_cpi_id', p_cra_cpi_id),
                     msg_param('p_cru_fire_on_page_load', p_cru_fire_on_page_load)));
     
-    case when p_cra_cpi_id = adc_util.C_NO_FIRING_ITEM and p_cru_fire_on_page_load = adc_util.C_TRUE
-      then sResult := adc_util.C_FALSE;
-      else sResult := adc_util.C_TRUE;
-    end case;
+    l_result := adc_util.bool_to_flag(
+                  p_cra_cpi_id = adc_util.C_NO_FIRING_ITEM and
+                  p_cru_fire_on_page_load = adc_util.C_TRUE);
     
-    pit.leave_detailed(msg_params(msg_param('Result', sResult)));
-    return sResult;
+    pit.leave_detailed(msg_params(msg_param('Result', l_result)));
+    return l_result;
   end check_recursion;
   
   

@@ -425,12 +425,14 @@ as object (
     Parameters:
       p_region_id - ID of the region you want to set a selectable at
       p_entry_id - ID of the entry to select
-      p_notify - Optional flag to indicate whether selecting an entry should raise the onselectionchange event (C_TRUE) or not (C_FALSE)
+      p_set_focus - Flag to indicate whether selecting an entry should also set the focus to the first column (C_TRUE) or not (C_FALSE).
+      p_no_event - Flag to indicate whether selecting an entry should suppress the onselectionchange event (C_TRUE) or not (C_FALSE)
    */
   static procedure select_region_entry(
     p_region_id in varchar2,
     p_entry_id in varchar2,
-    p_notify in varchar2 default 1),
+    p_set_focus in varchar2,
+    p_no_event in varchar2),
 
 
   /** 

@@ -1,0 +1,39 @@
+create table adca_map_form_items(
+  amfi_id varchar2(128 byte) constraint c_amfi_id_nn not null,
+  amfi_create_stmt varchar2(4000 byte) constraint c_amfi_create_stmt_nn not null,
+  amfi_edit_stmt varchar2(4000 byte) constraint c_amfi_edit_stmt_nn not null,
+  constraint p_amfi_id primary key (amfi_id)
+);
+
+comment on table adca_map_form_items is 'Table to store the item list and the initialization code of the ADC Designer for performance optimization';
+comment on column adca_map_form_items.amfi_id is 'Primary key, ID of the form region';
+comment on column adca_map_form_items.amfi_item_list is 'List of page items as a string list, ready to be inserted into a JavaScript expression';
+comment on column adca_map_form_items.amfi_create_stmt is 'Statement to populate a given form region for a new entry';
+comment on column adca_map_form_items.amfi_edit_stmt is 'Statement to populate a given form region for an existing entry';
+
+merge into adca_map_form_items t
+using (select 'R13_CRU_FORM' amfi_id, 
+              q'^select null p13_cru_id, '#CRG_ID#' p13_cru_crg_id, '#SORT_SEQ#' p13_cru_sort_seq, null p13_cru_name, null p13_cru_condition, adc_util.c_true p13_cru_active, adc_util.c_false p13_cru_fire_on_page_load from dual^' amfi_create_stmt,
+              q'^ with session_state as ( select /*+ no_merge */ adc_api.get_number('P13_CRU_ID') CRU_ID from dual) select CRU_ID P13_CRU_ID, CRU_CRG_ID P13_CRU_CRG_ID, CRU_SORT_SEQ P13_CRU_SORT_SEQ, CRU_NAME P13_CRU_NAME, CRU_CONDITION P13_CRU_CONDITION, CRU_FIRE_ON_PAGE_LOAD P13_CRU_FIRE_ON_PAGE_LOAD, CRU_ACTIVE P13_CRU_ACTIVE from ADCA_UI_DESIGNER_RULE natural join session_state^' amfi_edit_stmt
+         from dual union all
+       select 'R13_CRA_FORM' amfi_id, 
+              q'^select null p13_cra_id, '#CRG_ID#' p13_cra_crg_id, '#CRU_ID#' p13_cra_cru_id, '#NO_FIRING_ITEM#' p13_cra_cpi_id, null p13_cra_cat_id, adc_util.c_false p13_cra_on_error, null p13_cra_param_1, null p13_cra_param_2, null p13_cra_param_3, null p13_cra_comment, adc_util.c_true p13_cra_raise_recursive, adc_util.c_false p13_cra_raise_on_validation, #sort_seq# p13_cra_sort_seq, adc_util.c_true p13_cra_active from dual^' amfi_create_stmt,
+              q'^ with session_state as ( select /*+ no_merge */ adc_api.get_number('P13_CRA_ID') CRA_ID from dual) select CRA_SORT_SEQ P13_CRA_SORT_SEQ, CRA_COMMENT P13_CRA_COMMENT, CRA_PARAM_3 P13_CRA_PARAM_3, CRA_ON_ERROR P13_CRA_ON_ERROR, CRA_PARAM_1 P13_CRA_PARAM_1, CRA_PARAM_2 P13_CRA_PARAM_2, CRA_ID P13_CRA_ID, CRA_RAISE_ON_VALIDATION P13_CRA_RAISE_ON_VALIDATION, CRA_CAT_ID P13_CRA_CAT_ID, CRA_CRG_ID P13_CRA_CRG_ID, CRA_CPI_ID P13_CRA_CPI_ID, CRA_ACTIVE P13_CRA_ACTIVE, CRA_CRU_ID P13_CRA_CRU_ID, CRA_RAISE_RECURSIVE P13_CRA_RAISE_RECURSIVE, CRA_PARAM_LOV_1 P13_CRA_PARAM_LOV_1, CRA_PARAM_LOV_1 P13_CRA_PARAM_CB_1, CRA_PARAM_AREA_1 P13_CRA_PARAM_AREA_1, CRA_PARAM_SWITCH_1 P13_CRA_PARAM_SWITCH_1, CRA_PARAM_LOV_2 P13_CRA_PARAM_LOV_2, CRA_PARAM_LOV_2 P13_CRA_PARAM_CB_2, CRA_PARAM_AREA_2 P13_CRA_PARAM_AREA_2, CRA_PARAM_SWITCH_2 P13_CRA_PARAM_SWITCH_2, CRA_PARAM_LOV_3 P13_CRA_PARAM_LOV_3, CRA_PARAM_LOV_3 P13_CRA_PARAM_CB_3, CRA_PARAM_AREA_3 P13_CRA_PARAM_AREA_3, CRA_PARAM_SWITCH_3 P13_CRA_PARAM_SWITCH_3 from ADCA_UI_DESIGNER_RULE_ACTION natural join session_state^' amfi_edit_stmt
+         from dual 
+        union all
+       select 'R13_CAA_FORM' amfi_id,
+              q'^select null p13_caa_id, '#CRG_ID#' p13_caa_crg_id, 'ACTION' p13_caa_caat_id, null p13_caa_name, null p13_caa_label, null p13_caa_context_label, null p13_caa_icon, 'fa' p13_caa_icon_type, null p13_caa_shortcut, adc_util.C_FALSE p13_caa_initially_disabled, adc_util.C_FALSE p13_caa_initially_hidden, null p13_caa_href, null p13_caa_action, null p13_caa_on_label, null p13_caa_off_label, null p13_caa_get, null p13_caa_set, null p13_caa_choices,  null p13_caa_label_classes, null p13_caa_label_start_classes, null p13_caa_label_end_classes, null p13_caa_item_wrap_class, null p13_caa_caai_list from dual^' amfi_create_stmt,
+              q'^ with session_state as(select /*+ no_merge */ adc_api.get_number('P13_CAA_ID') CAA_ID from dual) select CAA_ID P13_CAA_ID, CAA_CRG_ID P13_CAA_CRG_ID, CAA_CAAT_ID P13_CAA_CAAT_ID, CAA_NAME P13_CAA_NAME, CAA_INITIALLY_DISABLED P13_CAA_INITIALLY_DISABLED, CAA_LABEL P13_CAA_LABEL, CAA_INITIALLY_HIDDEN P13_CAA_INITIALLY_HIDDEN, CAA_CONTEXT_LABEL P13_CAA_CONTEXT_LABEL, CAA_HREF P13_CAA_HREF, CAA_CONFIRM_MESSAGE_NAME P13_CAA_CONFIRM_MESSAGE_NAME, CAA_ACTION P13_CAA_ACTION, CAA_ICON_TYPE P13_CAA_ICON_TYPE, CAA_ON_LABEL P13_CAA_ON_LABEL, CAA_ICON P13_CAA_ICON, CAA_OFF_LABEL P13_CAA_OFF_LABEL, CAA_TITLE P13_CAA_TITLE, CAA_GET P13_CAA_GET, CAA_SHORTCUT P13_CAA_SHORTCUT, CAA_SET P13_CAA_SET, CAA_CHOICES P13_CAA_CHOICES, CAA_CAAI_LIST P13_CAA_CAAI_LIST, CAA_LABEL_CLASSES P13_CAA_LABEL_CLASSES, CAA_LABEL_START_CLASSES P13_CAA_LABEL_START_CLASSES, CAA_LABEL_END_CLASSES P13_CAA_LABEL_END_CLASSES, CAA_ITEM_WRAP_CLASS P13_CAA_ITEM_WRAP_CLASS from ADCA_UI_DESIGNER_APEX_ACTION natural join session_state^' amfi_edit_stmt
+         from dual union all
+       select 'R13_FLS_FORM' amfi_id,
+              q'^select null p13_DIAGRAM_ID, null p13_DIAGRAM_NAME, '0' p13_DIAGRAM_VERSION, 'draft' p13_DIAGRAM_STATUS_ID from dual^' amfi_create_stmt,
+              q'^ with session_state as ( select /*+ no_merge */ adc_api.get_number('P13_DIAGRAM_ID') DIAGRAM_ID from dual) select DIAGRAM_ID P13_DIAGRAM_ID, DIAGRAM_NAME P13_DIAGRAM_NAME, DIAGRAM_VERSION P13_DIAGRAM_VERSION, DIAGRAM_STATUS_ID P13_DIAGRAM_STATUS_ID, DIAGRAM_CATEGORY P13_DIAGRAM_CATEGORY from ADCA_UI_DESIGNER_FLOWS natural join session_state^' amfi_edit_stmt
+         from dual) s
+   on (t.amfi_id = s.amfi_id)
+ when matched then update set
+      t.amfi_create_stmt = s.amfi_create_stmt,
+      t.amfi_edit_stmt = s.amfi_edit_stmt
+ when not matched then insert (amfi_id, amfi_create_stmt, amfi_edit_stmt)
+      values (s.amfi_id, s.amfi_create_stmt, s.amfi_edit_stmt);
+      
+commit;

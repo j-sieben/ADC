@@ -158,6 +158,15 @@ as
   function get_additional_items
     return varchar2;
     
+    
+  /**
+    Function: get_apex_actions
+      Method to retrieve a JSON object with all apex actions of a page during initialization of the page.
+      Is included as an attribute in the plugin render process and maintained by the controller.
+   */
+  function get_apex_actions
+    return varchar2;
+    
 
   /**
     Function: get_page_items

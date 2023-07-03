@@ -1492,7 +1492,7 @@ as
         -- add apex application
         l_blob := utl_text.clob_to_blob(
                     export_apex_application(p_crg_app_id));        
-        l_file_name := utl_text.bulk_replace(param.get_string('APPLICATION_FILENAME', C_ADC), char_table(
+        l_file_name := adc_util.bulk_replace(param.get_string('APPLICATION_FILENAME', C_ADC), adc_util.string_table(
                          '#ALIAS#', upper(l_app_alias),
                          '#alias#', lower(l_app_alias),
                          '#APP_ID#', p_crg_app_id));
