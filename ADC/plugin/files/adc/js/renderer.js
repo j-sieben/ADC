@@ -455,7 +455,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       pMessage - Alert message warning the user if submit couldn't be executed due to errors on page
    */
   renderer.submitPage = function(pRequest, pMessage){
-    if ($(C_APEX_ERROR_CLASS_SEL).length == 0) {
+    if ($(C_APEX_ERROR_CLASS_SEL).length == 0 && pMessage.length == 0) {
       apex.page.submit({
         "request" : pRequest,
         "showWait" : true

@@ -169,14 +169,16 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pButtonId - ID of the button to bind the event to
       pMessage - Confirmation message
       pDialogTitle - Title of the confirmation dialog box
+      pApexAction - Name of the apex action to execute if the dialog is confirmed
    * @memberof de.condes.plugin.adc
    * @public
    */
   actions.bindConfirmation = function (pButtonId, pMessage, pDialogTitle, pApexAction) {
     var $button = $(`#${pButtonId}`);
+    const dialogTitle = pDialogTitle ? pDialogTitle : adc.controller.getStandardMessage('CSM_DIALOG_CONFIRM_TITLE');
     
     if ($button.length > 0) {
-        adc.controller.bindConfirmationHandler($button, pMessage, pDialogTitle, pApexAction);
+        adc.controller.bindConfirmationHandler($button, pMessage, dialogTitle, pApexAction);
     }
   }; // bindConfirmation
 
@@ -522,13 +524,29 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       A notification is a message that is shown to the user in a small dialog.
 
     Parameter:
-      pStyle - One of the predefined styles alert|warning|sucess|info|confirm
+      pStyle - One of the predefined styles INFO|WARNING|SUCCES
       pMessage - Message that is shown to the user. Replaces any existing messages.
       pTitle - Optional title of the dialog
       pFocusItem - Item that gets focus after closing the dialog
    */
   actions.notify = function (pStyle, pMessage, pTitle, pFocusItem) {
-    adc.renderer.showDialog(pStyle, pMessage, pTitle, pFocusItem);
+    let title;
+    if (pTitle){
+      title = pTitle;
+    }
+    else{
+      // Only INFO or WARNING messages are shown in a dialog, adjust title settings.
+      switch(pStyle){
+        case 'INFO':
+          title = adc.controller.getStandardMessage('CSM_DIALOG_INFO_TITLE');
+          break;
+        case 'WARNING':
+          title = adc.controller.getStandardMessage('CSM_DIALOG_WARNING_TITLE');
+          break;
+      }
+    }
+    
+    adc.renderer.showDialog(pStyle, pMessage, title, pFocusItem);
   }; // notify
 
 
@@ -540,7 +558,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
    */
   actions.clearErrors = function () {
     adc.renderer.showErrors([]);
-  }; // confirm
+  }; // clearErrors
 
 
   /**
