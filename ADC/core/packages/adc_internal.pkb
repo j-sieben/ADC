@@ -1477,6 +1477,12 @@ as
         from adc_rule_group_status
        where cgs_crg_id = g_param.crg_id;
 
+    cursor special_value_cur is
+      select cpi_cpit_id, cpi_id, cpi_conversion
+        from adc_page_items
+       where cpi_cpit_id in ('NUMBER_ITEM', 'DATE_ITEM')
+         and cpi_crg_id = g_param.crg_id;
+
     cursor validation_action_cur is
       select cra_cat_id, cra_cpi_id, cra_param_1, cra_param_2, cra_param_3
         from adc_rule_actions
@@ -1501,6 +1507,25 @@ as
           register_error(
             p_cpi_id => itm.cgs_cpi_id, 
             p_error_msg => l_exception.message_text,
+            p_internal_error => null);
+      end;
+    end loop;
+
+    -- Check all number or date fields
+    for itm in special_value_cur loop
+      begin
+        adc_page_state.set_value(
+          p_crg_id => g_param.crg_id,
+          p_cpi_id => itm.cpi_id,
+          p_value => adc_page_state.C_FROM_SESSION_STATE,
+          p_throw_error => adc_util.C_TRUE);
+
+      exception
+        when others then
+          -- conversion could not be applied. Raise exception and stop rule
+          register_error(
+            p_cpi_id => itm.cpi_id,
+            p_error_msg => pit.get_active_message_text,
             p_internal_error => null);
       end;
     end loop;

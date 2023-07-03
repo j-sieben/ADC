@@ -348,7 +348,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       pFocusItem - Flag to indicate whether this dialog is a confirmation dialog
    */
   renderer.showDialog = function(pStyle, pMessage, pTitle, pFocusItem){
-    if (pFocusItem != undefined){
+    if (pFocusItem === undefined){
       pFocusItem  = $('.t-Body').find('input, button').not(':hidden').first().attr('id');
     };
     const callback = function(){

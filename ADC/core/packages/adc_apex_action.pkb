@@ -252,7 +252,8 @@ as
                join templates t
                  on t.crg_id = crg.crg_id
                 and uttm_mode = caa_caat_id),
-                p_delimiter => ',') || ']' resultat
+                p_delimiter => ',',
+                p_enable_second_level => adc_util.C_TRUE) || ']' resultat
        into l_actions_js
        from dual;
 
