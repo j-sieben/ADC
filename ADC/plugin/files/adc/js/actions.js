@@ -67,6 +67,11 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   const C_APEX_AFTER_REFRESH = 'apexafterrefresh';
   const C_MODAL_DIALOG_CANCEL_EVENT = 'apexaftercanceldialog';
   const C_MODAL_DIALOG_CLOSE_EVENT = 'apexafterclosedialog';
+
+  // Display state constants
+  const C_STATE_HIDE = 'HIDE';
+  const C_STATE_SHOW_DISABLE = 'SHOW_DISABLE';
+  const C_STATE_SHOW_ENABLE = 'SHOW_ENABLE';
   
   const C_TABKEY = 9;
 
@@ -884,22 +889,19 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   actions.setDisplayState = function (pSelector, pVisibleState, pLabel) {
     forEach(pSelector, function () {
       var pItemId = $(this).attr('id');
-      const C_HIDE = 'HIDE';
-      const C_SHOW_DISABLE = 'SHOW_DISABLE';
-      const C_SHOW_ENABLE = 'SHOW_ENABLE';
       
       switch(pVisibleState){
-        case C_HIDE:
+        case C_STATE_HIDE:
           apex.item(pItemId).hide();
           break;
-        case C_SHOW_DISABLE:
+        case C_STATE_SHOW_DISABLE:
           apex.item(pItemId).show();
           adc.renderer.disableElement(pItemId);
           // Beside disabling the item, all events from the queue must be removed
           // to assure that a disabled button can not raise a click event
           $(C_BODY).clearQueue();
           break;
-        case C_SHOW_ENABLE:
+        case C_STATE_SHOW_ENABLE:
           apex.item(pItemId).show();
           adc.renderer.enableElement(pItemId);
           break;
@@ -1011,15 +1013,23 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     Parameters:
       pSelector - jQuery selector of the items that should be set to mandatory
       pIsMandatory - Flag to indicate whether the items are mandatory (TRUE) or  not (FALSE)
+      pVisualState - Optional visual state. Applies only for optional items. Mandatory items
+                     are always set to show/enable to allow to work with them.
    */
-  actions.setMandatory = function (pSelector, pIsMandatory) {
+  actions.setMandatory = function (pSelector, pIsMandatory, pVisualState) {
     forEach(pSelector, function () {
       var pItemId = $(this).attr('id').replace('_CONTAINER', '');
+      let visualState;
       if (pIsMandatory) {
-        adc.controller.pushPageItem(pItemId)
+        adc.controller.pushPageItem(pItemId);
+        visualState = C_STATE_SHOW_ENABLE;
+      }
+      else{
+        visualState = pVisualState;
       }
       adc.renderer.enableElement(pItemId);
       adc.renderer.setItemMandatory(pItemId, pIsMandatory);
+      actions.setDisplayState(pItemId, visualState);
     });
   }; // setMandatory
 

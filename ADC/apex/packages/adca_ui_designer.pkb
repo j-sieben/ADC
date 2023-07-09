@@ -786,8 +786,6 @@ as
            p_msg_text => replace(l_mandatory_message, '#LABEL#', param.capt_name));
       else
         adc.set_optional(
-          p_cpi_id => param.cap_page_item);
-        adc.set_visual_state(
           p_cpi_id => param.cap_page_item,
           p_visual_state => adc.C_SHOW_ENABLE);   
       end if;
@@ -1601,7 +1599,7 @@ as
     pit.enter_optional('maintain_visual_state');
     
     -- Clean up any existing errors
-    --adc.clear_errors;
+    --adc.remove_all_errors;
       
     -- React on changes of the hierarchy
     case 

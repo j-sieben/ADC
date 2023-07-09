@@ -568,10 +568,12 @@ as object (
     Parameters:
       p_cpi_id - Optional element ID to be set (defaults to 'DOCUMENT', if <p_jquery_selector> is set)
       p_jquery_selector - Optional jQuery expression to edit multiple elements. (Defaults to NULL, if <p_cpi_id> is set)
+      p_visual_state - One of the visual state constants <C_SHOW_ENABLE>, <SHOW_DISABLE>, <HIDE>
    */
   static procedure set_optional(
     p_cpi_id in varchar2 default 'DOCUMENT',
-    p_jquery_selector in varchar2 default null),
+    p_jquery_selector in varchar2 default null,
+    p_visual_state in varchar2),
   
   
   /** 
