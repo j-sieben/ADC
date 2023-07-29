@@ -60,6 +60,7 @@ prompt &h3.Create parameter lov views
 @&tool_dir.create_lov_view adc_param_lov_page_item
 @&tool_dir.create_lov_view adc_param_lov_pit_message
 @&tool_dir.create_lov_view adc_param_lov_sequence
+@&tool_dir.create_lov_view adc_param_lov_string_on_parameter
 @&tool_dir.create_lov_view adc_param_lov_submit_type
 
 prompt &h2.Merge default data
