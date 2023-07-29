@@ -400,10 +400,10 @@ as
           and coalesce(g_param.js_action_stack(i).debug_level, adc_util.C_JS_CODE) <= l_max_level
           and not(g_param.js_action_stack(i).debug_level = adc_util.C_JS_DEBUG 
           and not(pit.check_log_level_greater_equal(pit.LEVEL_DEBUG)))
+          and coalesce(length(l_response), 0) + length(g_param.js_action_stack(i).script) < adc_util.C_MAX_LENGTH
+          and length(replace(replace(g_param.js_action_stack(i).script, ' '), adc_util.C_CR)) > 0
         then
-          if coalesce(length(l_response), 0) + length(g_param.js_action_stack(i).script) < adc_util.C_MAX_LENGTH then
-            utl_text.append(l_response, g_param.js_action_stack(i).script || adc_util.C_CR);
-          end if;
+          utl_text.append(l_response, replace(g_param.js_action_stack(i).script, adc_util.C_CR) || adc_util.C_CR);
         end if;
       end loop;
     end if;
@@ -462,6 +462,10 @@ as
     g_param.crg_id := p_crg_id;
     g_param.request_start := dbms_utility.get_time;
     
+    if p_initialize_mode then
+      add_javascript(adc_apex_action.get_crg_apex_actions(g_param.crg_id));
+    end if;
+    
     pit.leave_optional;
   end initialize_response;
   
@@ -480,10 +484,11 @@ as
                     msg_param('p_rule_found', adc_util.bool_to_flag(p_rule_found))));
   
     -- Add time measurement and collected notification messages to origin comments
-    for i in 1 .. g_param.js_action_stack.count loop
+    for i in reverse 1 .. g_param.js_action_stack.count loop
       case when g_param.js_action_stack(i).debug_level = adc_util.C_JS_RULE_ORIGIN then
-        g_param.js_action_stack(i).script := adc_util.C_CR 
+        g_param.js_action_stack(i).script := '#CR#' 
                                           || replace(g_param.js_action_stack(i).script, '#TIME#', coalesce(dbms_utility.get_time - g_param.rule_start, 0));
+        exit;
       when g_param.js_action_stack(i).debug_level = adc_util.C_JS_CODE then
         l_javascript_exists := true;
       else
@@ -512,6 +517,7 @@ as
    */
   procedure register_recursion_start(
     p_origin_message in adc_util.ora_name_type,
+    p_recursive_depth in binary_integer,
     p_run_count in binary_integer,
     p_cru_sort_seq in adc_rules.cru_sort_seq%type,
     p_cru_name in adc_rules.cru_name%type,

@@ -1,6 +1,6 @@
 create or replace package adc_response
   authid definer
-  accessible by (package adc_internal)
+  accessible by (package adc_internal, package adc_recursion_stack)
 as
 
   /**
@@ -158,6 +158,7 @@ as
   
     Parameters:
       p_origin_message - Dependent on the environment, different origins are possible. This parameter contains the message to use
+      p_recursive_depth - external counter of the recursive depth
       p_run_count - Counter that indicates how often the decision table was queried. 
                     ADC suppresses repeated execution of a rule, so if this number is relatively high, this may be an indicator
                     for unnecessary rules or badly written technical conditions.
@@ -167,6 +168,7 @@ as
    */
   procedure register_recursion_start(
     p_origin_message in adc_util.ora_name_type,
+    p_recursive_depth in binary_integer,
     p_run_count in binary_integer,
     p_cru_sort_seq in adc_rules.cru_sort_seq%type,
     p_cru_name in adc_rules.cru_name%type,
