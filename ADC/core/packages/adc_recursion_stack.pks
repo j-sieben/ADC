@@ -50,10 +50,12 @@ as
     Parameters:
       p_crg_id - ID of the rule group. Is used to check whether recursion is allowed for this rule group
       p_cpi_id - ID of the page item to push. May also be <adc_util.C_NO_FIRING_ITEM>
+      p_event - Event that caused the plugin to react. Defaults to initialize
    */
   procedure reset(
     p_crg_id in adc_rule_groups.crg_id%type,
-    p_cpi_id in adc_page_items.cpi_id%type);
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_event in adc_event_types.cet_id%type default 'initialize');
     
   
   /** 
@@ -75,6 +77,7 @@ as
       p_force - Flag to indicate whether this item should be pushed anyway to the recursive stack.
                 Set to C_TRUE on page initialization to assure that all firing items are on the
                 recursive stack.
+      p_recursive_depth - External recursion counter
    */
   procedure push_firing_item(
     p_crg_id in adc_rule_groups.crg_id%type,
@@ -82,7 +85,8 @@ as
     p_event in adc_page_item_types.cpit_cet_id%type,
     p_event_data in adc_util.max_char default null,
     p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE,
-    p_force in adc_util.flag_type default adc_util.C_FALSE);
+    p_force in adc_util.flag_type default adc_util.C_FALSE,
+    p_recursive_depth in binary_integer default null);
     
     
   /**
@@ -132,7 +136,8 @@ as
    */
   function check_recursion(
     p_cra_cpi_id in adc_rule_actions.cra_cpi_id%type,
-    p_cru_fire_on_page_load in adc_rules.cru_fire_on_page_load%type)
+    p_cru_fire_on_page_load in adc_rules.cru_fire_on_page_load%type,
+    p_cra_raise_recursive in adc_rule_actions.cra_raise_recursive%type)
     return adc_util.flag_type;
   
   
@@ -156,7 +161,7 @@ as
       Method to retrieve the actual recursion level for notification purposes.
    */
   function get_level
-    return pls_integer;
+    return binary_integer;
     
     
   /** 
