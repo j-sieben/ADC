@@ -79,7 +79,7 @@ as
                   uttm_name, uttm_mode, p_crg_id g_crg_id,
                   adc_util.C_TRUE c_true,
                   adc_util.C_CR cr
-             from utl_text_templates
+             from utl_text_templates_v
             where uttm_type = C_ADC
               and uttm_name = C_UTTM_NAME)
     select utl_text.generate_text(cursor(
@@ -120,7 +120,18 @@ as
                            and cru_active = c_true
                          where uttm_mode = 'WHERE_CLAUSE'
                          order by cru_id), CR || '           or '),
-                      to_clob('null is null')) where_clause
+                      to_clob('null is null')) where_clause,
+                    utl_text.generate_text(cursor(
+                      select template, 'EVENT' cpi_id from params where uttm_mode = 'ACTUAL_STATUS' union all
+                      select template, 'FIRING_ITEM' cpi_id from params where uttm_mode = 'ACTUAL_STATUS' union all
+                      select template, cpi_id
+                        from adc_page_items
+                        join params p
+                          on cpi_crg_id = g_crg_id
+                         and cpi_may_have_value = c_true
+                         and cpi_is_required = c_true
+                       where uttm_mode = 'ACTUAL_STATUS'
+                       order by cpi_id), ',' || CR, 16) actual_status
                from dual)) resultat
       into l_stmt
       from params p
@@ -170,7 +181,7 @@ as
              join adc_rule_groups crg
                on app.application_id = crg.crg_app_id
               and app.page_id = crg.crg_page_id
-            cross join utl_text_templates uttm
+            cross join utl_text_templates_v uttm
             where app.process_type_code = 'DML_FETCH_ROW'
               and uttm_type = C_ADC
               and uttm_name like 'INITIALIZE%'
@@ -691,7 +702,7 @@ as
       
       select replace(uttm_text, '#CRG_INSTALL_ID#', p_install_id)
         into l_prefix
-        from utl_text_templates
+        from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = 'EXPORT_RULE_GROUP'
          and uttm_mode = 'DEFAULT_APP_PREFIX';
@@ -732,7 +743,7 @@ as
   as
     l_cur sys_refcursor;
   begin
-    pit.enter_optional(
+    pit.enter_optional('validate_export_rule_groups',
       p_params => msg_params(
                     msg_param('p_crg_app_id', p_crg_app_id)));
     pit.assert_not_null(p_crg_app_id, p_error_code => 'APP_ID_MISSING');
@@ -786,7 +797,7 @@ as
                         and cap_sort_seq = 1)
            ), adc_util.C_CR)
       into l_action_param_types
-      from utl_text_templates
+      from utl_text_templates_v
      where uttm_type = C_ADC
        and uttm_name = C_UTTM_NAME
        and uttm_mode = 'PARAM_TYPE';
@@ -825,7 +836,7 @@ as
                    utl_text.wrap_string(cato_description, C_WRAP_START, C_WRAP_END) cato_description
              from adc_action_type_owners_v))
       into l_action_param_owners
-      from utl_text_templates
+      from utl_text_templates_v
      where uttm_type = C_ADC
        and uttm_name = C_UTTM_NAME
        and uttm_mode = 'ACTION_TYPE_OWNER';
@@ -862,7 +873,7 @@ as
     open l_cur for         
        with params as (
               select uttm_mode, uttm_text template, null p_cat_is_editable
-                from utl_text_templates
+                from utl_text_templates_v
                where uttm_type = C_ADC
                  and uttm_name = C_UTTM_NAME)
        select template,
@@ -978,7 +989,7 @@ as
                where cato_id != C_ADC
              ), adc_util.C_CR)
         into l_action_type_owners
-        from utl_text_templates
+        from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = 'ACTION_TYPE_OWNER';
@@ -988,7 +999,7 @@ as
                       l_action_param_types action_param_types,
                       l_action_types action_types,
                       l_action_type_owners action_type_owners
-                 from utl_text_templates
+                 from utl_text_templates_v
                 where uttm_type = C_ADC
                   and uttm_name = C_UTTM_NAME
                   and uttm_mode = 'CUSTOM_FRAME'))
@@ -1247,7 +1258,7 @@ as
            select uttm_mode, uttm_text template,
                   crg_id, crg_app_id
              from adc_rule_groups
-            cross join utl_text_templates
+            cross join utl_text_templates_v
             where uttm_type = C_ADC
               and uttm_name = C_UTTM_NAME
               and crg_id = p_crg_id
@@ -1324,7 +1335,7 @@ as
                   adc_util.to_bool(crg_active) crg_active,
                   adc_util.to_bool(crg_with_recursion) crg_with_recursion,
                   p_install_id crg_install_id
-             from utl_text_templates
+             from utl_text_templates_v
             cross join adc_rule_groups
             where uttm_type = C_ADC
               and uttm_name = C_UTTM_NAME
@@ -1393,7 +1404,7 @@ as
                   and crg_page_id = page_id
                 where crg_id = p_crg_id)) frame
         into l_stmt_frame
-        from utl_text_templates
+        from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = 'DEFAULT_APP_FRAME';
@@ -1756,7 +1767,7 @@ as
                   p_row.cru_condition condition,
                   adc_util.c_true c_true,
                   adc_util.C_CR cr
-             from utl_text_templates
+             from utl_text_templates_v
             where uttm_type = C_ADC
               and uttm_name in (C_UTTM_NAME, 'RULE_VIEW'))
     select utl_text.generate_text(cursor(
@@ -1835,7 +1846,8 @@ as
   as
     l_crg_id adc_rule_groups.crg_id%type;
   begin
-    pit.enter_optional(p_params => msg_params(msg_param('p_cru_id', p_cru_id)));
+    pit.enter_optional('resequence_rule',
+      p_params => msg_params(msg_param('p_cru_id', p_cru_id)));
     
     begin
       select cru_crg_id
@@ -2105,7 +2117,7 @@ as
   procedure merge_action_type_group(
     p_row in out nocopy adc_action_type_groups_v%rowtype)
   as
-    l_pti_id pit_translatable_item.pti_id%type;
+    l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
     
@@ -2226,7 +2238,7 @@ as
   procedure merge_action_type_owner(
     p_row in out nocopy adc_action_type_owners_v%rowtype)
   as
-    l_pti_id pit_translatable_item.pti_id%type;
+    l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
     
@@ -2348,7 +2360,7 @@ as
   procedure merge_action_param_visual_type(
     p_row in out nocopy adc_action_param_visual_types_v%rowtype)
   as
-    l_pti_id pit_translatable_item.pti_id%type;
+    l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
     
@@ -2494,7 +2506,7 @@ as
     p_row in out nocopy adc_action_param_types_v%rowtype)
   as
     l_stmt adc_util.max_char;
-    l_pti_id pit_translatable_item.pti_id%type;
+    l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
     
@@ -2681,7 +2693,7 @@ as
   procedure merge_action_item_focus(
     p_row in out nocopy adc_action_item_focus_v%rowtype)
   as
-    l_pti_id pit_translatable_item.pti_id%type;
+    l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
     
@@ -2835,7 +2847,7 @@ as
   procedure merge_action_type(
     p_row in adc_action_types_v%rowtype)
   as
-    l_pti_id pit_translatable_item.pti_id%type;
+    l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
 
@@ -3007,7 +3019,7 @@ as
                 from adc_action_param_visual_types_v
              ), adc_util.C_CR)
         into l_action_param_visual_types
-        from utl_text_templates
+        from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = 'PARAM_VISUAL_TYPE';
@@ -3022,7 +3034,7 @@ as
                 from adc_page_item_type_groups
             ))
         into l_page_item_type_groups
-        from utl_text_templates
+        from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = 'PAGE_ITEM_TYPE_GROUP';
@@ -3034,7 +3046,7 @@ as
                 from adc_event_types_v
             ))
         into l_event_types
-        from utl_text_templates
+        from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = 'EVENT_TYPE';
@@ -3050,7 +3062,7 @@ as
                 from adc_page_item_types_v
             ))
         into l_page_item_types
-        from utl_text_templates
+        from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = 'PAGE_ITEM_TYPE';
@@ -3063,7 +3075,7 @@ as
                 from adc_action_item_focus_v
              ), adc_util.C_CR)
         into l_action_item_focus
-        from utl_text_templates
+        from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = 'ITEM_FOCUS';
@@ -3075,7 +3087,7 @@ as
                 from adc_action_type_groups_v
              ), adc_util.C_CR)
         into l_action_type_groups
-        from utl_text_templates
+        from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = 'ACTION_TYPE_GROUP';
@@ -3089,7 +3101,7 @@ as
                where cato_id = C_ADC
              ), adc_util.C_CR)
         into l_action_type_owners
-        from utl_text_templates
+        from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = 'ACTION_TYPE_OWNER';
@@ -3101,7 +3113,7 @@ as
                 from adc_apex_action_types_v
              ), adc_util.C_CR)
         into l_apex_action_types
-        from utl_text_templates
+        from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = 'APEX_ACTION_TYPE';
@@ -3124,7 +3136,7 @@ as
                  from dual
              ), adc_util.C_CR) resultat
         into l_export_script
-        from utl_text_templates
+        from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = C_FRAME;
@@ -3206,7 +3218,7 @@ as
   procedure merge_action_parameter(
     p_row in out nocopy adc_action_parameters_v%rowtype)
   as
-    l_pti_id pit_translatable_item.pti_id%type;
+    l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
     
@@ -3433,7 +3445,7 @@ as
   procedure merge_event_type(
     p_row in out nocopy adc_event_types_v%rowtype)
   as
-    l_pti_id pit_translatable_item.pti_id%type;
+    l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
     
@@ -3525,7 +3537,7 @@ as
   procedure merge_page_item_type(
     p_row in out nocopy adc_page_item_types_v%rowtype)
   as
-    l_pti_id pit_translatable_item.pti_id%type;
+    l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
     
@@ -3638,7 +3650,7 @@ as
   procedure merge_apex_action_type(
     p_row in out nocopy adc_apex_action_types_v%rowtype)
   as
-    l_pti_id pit_translatable_item.pti_id%type;
+    l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
     
@@ -3825,7 +3837,7 @@ as
     p_row in out nocopy adc_apex_actions_v%rowtype,
     p_caa_caai_list in char_table default null)
   as
-    l_pti_id pit_translatable_item.pti_id%type;
+    l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
 
