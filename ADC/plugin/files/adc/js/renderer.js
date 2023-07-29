@@ -162,14 +162,12 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       // the selection list does not become active and another value can be selected via keyboard
       $itemLabel.addClass(C_ADC_DISABLED);
     }
-
-    // if the page element is a CKEDITOR, readonly can be done savely with the built in APEX method
-    if ($item.parent('div').find('div.ck').length){
+    // if the page item is a CKEDITOR, the built in APEX method can savely be used
+    else if ($item.parent('div').find('div.ck').length){
       apex.item(pItemId).disable();
     }
-
     // if the page element is a date field, then also deactivate the button for the date selection
-    if ($item.hasClass("hasDatepicker") || $item.hasClass("color_picker") || $item.hasClass("popup_lov")) {
+    else if ($item.hasClass("hasDatepicker") || $item.hasClass("color_picker") || $item.hasClass("popup_lov")) {
       $item.parent().find("button").prop(C_DISABLED_PROP, true);
     }
   }; // disableElement
@@ -463,7 +461,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
     if ($(C_APEX_ERROR_CLASS_SEL).length == 0 && pMessage.length == 0) {
       apex.page.submit({
         "request" : pRequest,
-        "showWait" : true
+        "showWait" : false
       });
     }
     else{
