@@ -425,14 +425,12 @@ as object (
     Parameters:
       p_region_id - ID of the region you want to set a selectable at
       p_entry_id - ID of the entry to select
-      p_set_focus - Flag to indicate whether selecting an entry should also set the focus to the first column (C_TRUE) or not (C_FALSE).
-      p_no_event - Flag to indicate whether selecting an entry should suppress the onselectionchange event (C_TRUE) or not (C_FALSE)
+      p_notify - Optional flag to indicate whether selecting an entry should raise the onselectionchange event (C_TRUE) or not (C_FALSE)
    */
   static procedure select_region_entry(
     p_region_id in varchar2,
     p_entry_id in varchar2,
-    p_set_focus in varchar2,
-    p_no_event in varchar2),
+    p_notify in varchar2 default 1),
 
 
   /** 
@@ -568,12 +566,10 @@ as object (
     Parameters:
       p_cpi_id - Optional element ID to be set (defaults to 'DOCUMENT', if <p_jquery_selector> is set)
       p_jquery_selector - Optional jQuery expression to edit multiple elements. (Defaults to NULL, if <p_cpi_id> is set)
-      p_visual_state - One of the visual state constants <C_SHOW_ENABLE>, <SHOW_DISABLE>, <HIDE>
    */
   static procedure set_optional(
     p_cpi_id in varchar2 default 'DOCUMENT',
-    p_jquery_selector in varchar2 default null,
-    p_visual_state in varchar2),
+    p_jquery_selector in varchar2 default null),
   
   
   /** 
@@ -650,10 +646,21 @@ as object (
 
 
   /** 
+    Procedure: stop
+      Method to stop further execution of the active rule and report an internal and official message.
+   */
+  static procedure stop(
+    p_cpi_id in varchar2 default 'DOCUMENT',
+    p_display_message_name in varchar2 default 'PIT_SQL_ERROR',
+    p_display_msg_args in msg_args default null,
+    p_affected_id in varchar2 default null,
+    p_affected_ids in msg_params default null),
+
+
+  /** 
     Procedure: stop_rule
       Method to stop further execution of the active rule. Is used to stop the execution of an ADC rule if an error occured.
    */
   static procedure stop_rule
-  
 ) not instantiable not final;
 /

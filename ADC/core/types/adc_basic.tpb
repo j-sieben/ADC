@@ -392,23 +392,20 @@ as
   static procedure select_region_entry(
     p_region_id in varchar2,
     p_entry_id in varchar2,
-    p_set_focus in varchar2,
-    p_no_event in varchar2)
+    p_notify in varchar2 default 1)
   as
   begin
     pit.enter_optional(
       p_params => msg_params(
                     msg_param('p_region_id', p_region_id),
                     msg_param('p_entry_id', p_entry_id),
-                    msg_param('p_set_focus', p_set_focus),
-                    msg_param('p_no_event', p_no_event)));
+                    msg_param('p_notify', p_notify)));
                     
     adc_api.execute_action(
       p_cat_id => 'SELECT_REGION_ENTRY',
       p_cpi_id => p_region_id,
       p_param_1 => p_entry_id,
-      p_param_2 => p_set_focus,
-      p_param_3 => p_no_event);
+      p_param_2 => p_notify);
 
     pit.leave_optional;
   end select_region_entry;
@@ -598,21 +595,18 @@ as
   
   static procedure set_optional(
     p_cpi_id in varchar2 default 'DOCUMENT',
-    p_jquery_selector in varchar2 default null,
-    p_visual_state in varchar2)
+    p_jquery_selector in varchar2 default null)
   as
   begin
     pit.enter_optional(
       p_params => msg_params(
                     msg_param('p_cpi_id', p_cpi_id),
-                    msg_param('p_jquery_selector', p_jquery_selector),
-                    msg_param('p_visual_state', p_visual_state)));
+                    msg_param('p_jquery_selector', p_jquery_selector)));
     
     adc_api.execute_action(
       p_cat_id => 'IS_OPTIONAL',
       p_cpi_id => p_cpi_id,
-      p_param_2 => p_jquery_selector,
-      p_param_3 => p_visual_state);
+      p_param_2 => p_jquery_selector);
       
     pit.leave_optional;
   end set_optional;
@@ -715,6 +709,25 @@ as
 
     pit.leave_optional;
   end submit_page;
+  
+  
+  static procedure stop(
+    p_cpi_id in varchar2 default 'DOCUMENT',
+    p_display_message_name in varchar2 default 'PIT_SQL_ERROR',
+    p_display_msg_args in msg_args default null,
+    p_affected_id in varchar2 default null,
+    p_affected_ids in msg_params default null)
+  as
+  begin
+    pit.enter_optional;
+    adc_api.stop(
+      p_cpi_id => p_cpi_id,
+      p_display_message_name => p_display_message_name,
+      p_display_msg_args => p_display_msg_args,
+      p_affected_id => p_affected_id,
+      p_affected_ids => p_affected_ids);
+    pit.leave_optional;
+  end stop;
   
 
   static procedure stop_rule
