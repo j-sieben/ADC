@@ -163,8 +163,13 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       $itemLabel.addClass(C_ADC_DISABLED);
     }
 
+    // if the page element is a CKEDITOR, readonly can be done savely with the built in APEX method
+    if ($item.parent('div').find('div.ck').length){
+      apex.item(pItemId).disable();
+    }
+
     // if the page element is a date field, then also deactivate the button for the date selection
-    else if ($item.hasClass("hasDatepicker") || $item.hasClass("color_picker") || $item.hasClass("popup_lov")) {
+    if ($item.hasClass("hasDatepicker") || $item.hasClass("color_picker") || $item.hasClass("popup_lov")) {
       $item.parent().find("button").prop(C_DISABLED_PROP, true);
     }
   }; // disableElement
