@@ -59,7 +59,6 @@ begin
     p_capt_capvt_id => 'SELECT_LIST',
     p_capt_select_list_query => q'{select caa_name d, caa_id r, caa_crg_id crg_id\CR\}' || 
 q'{  from adc_apex_actions_v\CR\}' || 
-q'{\CR\}' || 
 q'{}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
@@ -94,7 +93,23 @@ q'{\CR\}' ||
 q'{}',
     p_capt_select_view_comment => q'{Parameterview to display all custom events\CR\}' || 
 q'{\CR\}' || 
+q'{\CR\}' || 
+q'{\CR\}' || 
 q'{}',
+    p_capt_sort_seq => 10,
+    p_capt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
+    p_capt_id => 'FREE_PAGE_ITEMS',
+    p_capt_name => 'Seitenelemente',
+    p_capt_display_name => '',
+    p_capt_description => q'{<p>Seitenelemente der aktuellen Seite, die aktuell nicht durch Anwendungsfälle beobachtet werden</p>}',
+    p_capt_capvt_id => 'CONTROL_LIST',
+    p_capt_select_list_query => q'{select case cpi_id when 'ALL' then ' Document' else cpi_id end d, cpi_id r, cpi_crg_id crg_id\CR\}' || 
+q'{  from adc_page_items\CR\}' || 
+q'{ where cpi_cpit_id in ('DATE_ITEM', 'ITEM', 'NUMBER_ITEM')\CR\}' || 
+q'{   and cpi_is_required = (select adc_util.C_FALSE from dual)}',
+    p_capt_select_view_comment => q'{List of page items, limited to non required input fields, grouped by CRG_ID}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
 
@@ -112,7 +127,6 @@ q'{ where cpit_cpitg_id = 'ITEM'\CR\}' ||
 q'{   and cpi_cpit_id not in ('APP_ITEM')\CR\}' || 
 q'{   and cpi_may_have_value = (select adc_util.c_true from dual)\CR\}' || 
 q'{ order by cpi_crg_id, cpi_id\CR\}' || 
-q'{\CR\}' || 
 q'{}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
@@ -131,6 +145,8 @@ q'{     and pti_id like 'ITEM_STATUS%'\CR\}' ||
 q'{}',
     p_capt_select_view_comment => q'{List of translatable items of for that parameter type\CR\}' || 
 q'{\CR\}' || 
+q'{\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -144,28 +160,10 @@ q'{}',
     p_capt_select_list_query => q'{select case cpi_id when 'ALL' then ' Document' else cpi_id end d, cpi_id r, cpi_crg_id crg_id\CR\}' || 
 q'{  from adc_page_items\CR\}' || 
 q'{ where cpi_cpit_id in ('DATE_ITEM', 'ITEM', 'NUMBER_ITEM')\CR\}' || 
-q'{\CR\}' || 
 q'{}',
     p_capt_select_view_comment => q'{List of page items, limited to input fields, grouped by CRG_ID\CR\}' || 
 q'{\CR\}' || 
-q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'PIT_MESSAGE',
-    p_capt_name => 'Name der Meldung',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Bezeichner einer PIT-Meldung in der Form msg.NAME oder 'NAME', muss eine existierende Meldung sein.</p>}',
-    p_capt_capvt_id => 'SELECT_LIST',
-    p_capt_select_list_query => q'{select pms_name d, 'msg.' || pms_name r, null crg_id\CR\}' || 
-q'{  from pit_message_v\CR\}' || 
-q'{  join pit_message_language_v\CR\}' || 
-q'{    on pms_pml_name = pml_name\CR\}' || 
-q'{ where pml_default_order = 10\CR\}' || 
 q'{\CR\}' || 
-q'{}',
-    p_capt_select_view_comment => q'{List of PIT messages\CR\}' || 
 q'{\CR\}' || 
 q'{}',
     p_capt_sort_seq => 10,
@@ -184,6 +182,8 @@ q'{     and pti_id like 'SUBMIT_TYPE%'\CR\}' ||
 q'{}',
     p_capt_select_view_comment => q'{List of translatable items of for that parameter type\CR\}' || 
 q'{\CR\}' || 
+q'{\CR\}' || 
+q'{\CR\}' || 
 q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -193,28 +193,6 @@ q'{}',
     p_capt_name => 'PL/SQL-Funktion',
     p_capt_display_name => '',
     p_capt_description => q'{<p>Eine bestehende PL/SQL-Funktion oder eine Package-Funktion<br>Es muss kein abschliessendes Semikolon angegeben werden.</p>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING_OR_JAVASCRIPT',
-    p_capt_name => 'Zeichenkette oder JS-Ausdruck',
-    p_capt_display_name => '',
-    p_capt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein JavaScript-Ausdruck, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
-    p_capt_capvt_id => 'TEXT',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'JAVA_SCRIPT_FUNCTION',
-    p_capt_name => 'JavaScript-Funktion',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Name einer JavaScript-Funktion oder anonyme Funktionsdefinition/IIFE</p>}',
     p_capt_capvt_id => 'TEXT',
     p_capt_select_list_query => q'{}',
     p_capt_select_view_comment => q'{}',
@@ -315,20 +293,24 @@ q'{}',
     p_cpitg_has_value => adc_util.C_FALSE,
     p_cpitg_include_in_view => adc_util.C_FALSE);
 
+
   adc_admin.merge_page_item_type_group(
     p_cpitg_id => 'EVENT',
     p_cpitg_has_value => adc_util.C_FALSE,
     p_cpitg_include_in_view => adc_util.C_TRUE);
+
 
   adc_admin.merge_page_item_type_group(
     p_cpitg_id => 'FRAMEWORK',
     p_cpitg_has_value => adc_util.C_FALSE,
     p_cpitg_include_in_view => adc_util.C_FALSE);
 
+
   adc_admin.merge_page_item_type_group(
     p_cpitg_id => 'ITEM',
     p_cpitg_has_value => adc_util.C_TRUE,
     p_cpitg_include_in_view => adc_util.C_FALSE);
+
 
   adc_admin.merge_page_item_type_group(
     p_cpitg_id => 'REGION',
@@ -343,11 +325,13 @@ q'{}',
     p_cet_column_name => 'SELECTION_CHANGED',
     p_cet_is_custom_event => adc_util.C_TRUE);
 
+
   adc_admin.merge_event_type(
     p_cet_id => 'apexaftercanceldialog',
     p_cet_name => 'Dialog abgebrochen',
     p_cet_column_name => 'DIALOG_CANCELLED',
     p_cet_is_custom_event => adc_util.C_TRUE);
+
 
   adc_admin.merge_event_type(
     p_cet_id => 'apexafterclosedialog',
@@ -355,11 +339,13 @@ q'{}',
     p_cet_column_name => 'DIALOG_CLOSED',
     p_cet_is_custom_event => adc_util.C_TRUE);
 
+
   adc_admin.merge_event_type(
     p_cet_id => 'apexafterrefresh',
     p_cet_name => 'Refresh abgeschlossen',
     p_cet_column_name => 'AFTER_REFRESH',
     p_cet_is_custom_event => adc_util.C_TRUE);
+
 
   adc_admin.merge_event_type(
     p_cet_id => 'change',
@@ -367,11 +353,13 @@ q'{}',
     p_cet_column_name => 'CHANGE',
     p_cet_is_custom_event => adc_util.C_FALSE);
 
+
   adc_admin.merge_event_type(
     p_cet_id => 'click',
     p_cet_name => 'Klick',
     p_cet_column_name => 'CLICK',
-    p_cet_is_custom_event => adc_util.C_FALSE);
+    p_cet_is_custom_event => adc_util.C_TRUE);
+
 
   adc_admin.merge_event_type(
     p_cet_id => 'command',
@@ -379,17 +367,20 @@ q'{}',
     p_cet_column_name => 'COMMAND',
     p_cet_is_custom_event => adc_util.C_FALSE);
 
+
   adc_admin.merge_event_type(
     p_cet_id => 'dblclick',
     p_cet_name => 'Doppelklick',
     p_cet_column_name => 'DOUBLE_CLICK',
     p_cet_is_custom_event => adc_util.C_TRUE);
 
+
   adc_admin.merge_event_type(
     p_cet_id => 'enter',
     p_cet_name => 'Eingabetaste',
     p_cet_column_name => 'ENTER',
     p_cet_is_custom_event => adc_util.C_TRUE);
+
 
   adc_admin.merge_event_type(
     p_cet_id => 'initialize',
@@ -407,6 +398,7 @@ q'{}',
     p_cpit_col_template => q'{}',
     p_cpit_init_template => q'{}');
 
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'APP_ITEM',
     p_cpit_name => 'Anwendungselement',
@@ -415,13 +407,15 @@ q'{}',
     p_cpit_col_template => q'{adc_api.get_string('#ITEM#') #ITEM#}',
     p_cpit_init_template => q'{itm.#ITEM#}');
 
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'BUTTON',
     p_cpit_name => 'Schaltfläche',
     p_cpit_cpitg_id => 'BUTTON',
     p_cpit_cet_id => 'click',
-    p_cpit_col_template => q'{case p_firing_item when '#ITEM#' then c_true else c_false end #ITEM#}',
+    p_cpit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cpit_init_template => q'{}');
+
 
   adc_admin.merge_page_item_type(
     p_cpit_id => 'DATE_ITEM',
@@ -431,6 +425,7 @@ q'{}',
     p_cpit_col_template => q'{adc_api.get_date('#ITEM#', '#CONVERSION#', c_false) #ITEM#}',
     p_cpit_init_template => q'{to_char(to_date(itm.#ITEM#), '#CONVERSION#')}');
 
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'DOCUMENT',
     p_cpit_name => 'Dokument',
@@ -438,6 +433,7 @@ q'{}',
     p_cpit_cet_id => '',
     p_cpit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cpit_init_template => q'{}');
+
 
   adc_admin.merge_page_item_type(
     p_cpit_id => 'DOCUMENT_MODAL',
@@ -447,6 +443,7 @@ q'{}',
     p_cpit_col_template => q'{}',
     p_cpit_init_template => q'{}');
 
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'EVENT',
     p_cpit_name => 'Ereignis',
@@ -454,6 +451,7 @@ q'{}',
     p_cpit_cet_id => '',
     p_cpit_col_template => q'{}',
     p_cpit_init_template => q'{}');
+
 
   adc_admin.merge_page_item_type(
     p_cpit_id => 'FIRING_ITEM',
@@ -463,6 +461,7 @@ q'{}',
     p_cpit_col_template => q'{p_firing_item firing_item}',
     p_cpit_init_template => q'{}');
 
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'FORM_REGION',
     p_cpit_name => 'Formularregion',
@@ -470,6 +469,7 @@ q'{}',
     p_cpit_cet_id => '',
     p_cpit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cpit_init_template => q'{}');
+
 
   adc_admin.merge_page_item_type(
     p_cpit_id => 'INTERACTIVE_GRID_REGION',
@@ -479,6 +479,7 @@ q'{}',
     p_cpit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cpit_init_template => q'{}');
 
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'INTERACTIVE_REPORT_REGION',
     p_cpit_name => 'Interaktiver Bericht',
@@ -486,6 +487,7 @@ q'{}',
     p_cpit_cet_id => '',
     p_cpit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cpit_init_template => q'{}');
+
 
   adc_admin.merge_page_item_type(
     p_cpit_id => 'ITEM',
@@ -495,6 +497,7 @@ q'{}',
     p_cpit_col_template => q'{adc_api.get_string('#ITEM#') #ITEM#}',
     p_cpit_init_template => q'{itm.#ITEM#}');
 
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'NUMBER_ITEM',
     p_cpit_name => 'Element (Zahl)',
@@ -502,6 +505,7 @@ q'{}',
     p_cpit_cet_id => 'change',
     p_cpit_col_template => q'{adc_api.get_number('#ITEM#', '#CONVERSION#', c_false) #ITEM#}',
     p_cpit_init_template => q'{to_char(itm.#ITEM#, '#CONVERSION#')}');
+
 
   adc_admin.merge_page_item_type(
     p_cpit_id => 'REGION',
@@ -511,6 +515,7 @@ q'{}',
     p_cpit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cpit_init_template => q'{}');
 
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'REPORT_REGION',
     p_cpit_name => 'Klassischer Bericht',
@@ -519,6 +524,7 @@ q'{}',
     p_cpit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cpit_init_template => q'{}');
 
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'ROWID_ITEM',
     p_cpit_name => 'Zeilen-ID (RowID)',
@@ -526,6 +532,7 @@ q'{}',
     p_cpit_cet_id => 'change',
     p_cpit_col_template => q'{adc_api.get_string('#ITEM#') #ITEM#}',
     p_cpit_init_template => q'{to_char(itm.#ITEM#, '#CONVERSION#')}');
+
 
   adc_admin.merge_page_item_type(
     p_cpit_id => 'TREE_REGION',
@@ -587,7 +594,7 @@ q'{}',
     p_caif_name => 'Seitenelemente, die einen Focus erhalten können',
     p_caif_description => q'{Alle Seitenelemente, die einen Fokus erhalten können}',
     p_caif_actual_page_only => adc_util.C_TRUE,
-    p_caif_item_types => 'BUTTON:ITEM',
+    p_caif_item_types => 'BUTTON:ITEM:INTERACTIVE_REPORT_REGION:INTERACTIVE_GRID_REGION:REPORT_REGION:TREE_REGION',
     p_caif_default => 'CAIF_DEFAULT',
     p_caif_active => adc_util.C_TRUE);
 
@@ -765,6 +772,7 @@ q'{}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'CLOSE_MODAL_DIALOG',
     p_cat_catg_id => 'ADC',
@@ -808,6 +816,7 @@ q'{}',
     p_cap_display_name => 'auf Änderung prüfen',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
+
 
   adc_admin.merge_action_type(
     p_cat_id => 'CONFIRM_CLICK',
@@ -853,6 +862,7 @@ q'{}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'DYNAMIC_JAVASCRIPT',
     p_cat_catg_id => 'JAVA_SCRIPT',
@@ -876,6 +886,7 @@ q'{}',
     p_cap_display_name => '',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
+
 
   adc_admin.merge_action_type(
     p_cat_id => 'EXECUTE_COMMAND',
@@ -901,6 +912,7 @@ q'{}',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'EXECUTE_JAVASCRIPT',
     p_cat_catg_id => 'JAVA_SCRIPT',
@@ -924,6 +936,7 @@ q'{}',
     p_cap_display_name => '',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
+
 
   adc_admin.merge_action_type(
     p_cat_id => 'GET_REPORT_SELECTION',
@@ -959,6 +972,7 @@ q'{}',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'HIDE_IR_REPORT_FILTER',
     p_cat_catg_id => 'REPORT',
@@ -972,6 +986,7 @@ q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_FALSE);
+
 
 
   adc_admin.merge_action_type(
@@ -989,6 +1004,7 @@ q'{}',
     p_cat_raise_recursive => adc_util.C_TRUE);
 
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'IS_MANDATORY',
     p_cat_catg_id => 'PAGE_ITEM',
@@ -1002,16 +1018,6 @@ q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
-
-  adc_admin.merge_action_parameter(
-    p_cap_cat_id => 'IS_MANDATORY',
-    p_cap_capt_id => 'ITEM_STATUS',
-    p_cap_sort_seq => 3,
-    p_cap_default => q'{SHOW_ENABLE}',
-    p_cap_description => q'{<p>Legt optional den Anzeigestatus fest. Falls das Element zum Pflichtfeld gemacht wird, ist dieser Parameter wirkungslos, das Element wird in jedem Fall angezeigt. Wird das Element optional, kann hier festgelegt werden, ob das Element aktiv, deaktiv oder ausgeblendet werden soll.</p>}',
-    p_cap_display_name => '',
-    p_cap_mandatory => adc_util.C_TRUE,
-    p_cap_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'IS_MANDATORY',
@@ -1033,6 +1039,7 @@ q'{}',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'IS_OPTIONAL',
     p_cat_catg_id => 'PAGE_ITEM',
@@ -1042,7 +1049,7 @@ q'{}',
     p_cat_display_name => q'{<p><strong>mache </strong>#PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“^ITEM^#” <strong>optional</strong></p>}',
     p_cat_description => q'{<p>Macht ein Seitenelement zu einem optionalen Element und setzt Pflichtfeld-Validierung aus.</p>}',
     p_cat_pl_sql => q'{adc_api.register_mandatory('#ITEM#', adc_util.C_FALSE, null, '#PARAM_2#');}',
-    p_cat_js => q'{de.condes.plugin.adc.actions.setMandatory('#SELECTOR#', false);}',
+    p_cat_js => q'{de.condes.plugin.adc.actions.setMandatory('#SELECTOR#', false, '#PARAM_3#');}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
@@ -1066,6 +1073,7 @@ q'{}',
     p_cap_display_name => '',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
+
 
   adc_admin.merge_action_type(
     p_cat_id => 'MONITOR_EVENT',
@@ -1101,6 +1109,7 @@ q'{}',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'NOOP',
     p_cat_catg_id => 'ADC',
@@ -1114,6 +1123,7 @@ q'{}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
+
 
 
   adc_admin.merge_action_type(
@@ -1160,6 +1170,7 @@ q'{}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'NOT_NULL',
     p_cat_catg_id => 'ITEM',
@@ -1194,6 +1205,7 @@ q'{}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'PLSQL_CODE',
     p_cat_catg_id => 'ADC',
@@ -1218,6 +1230,7 @@ q'{}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'RAISE_ITEM_EVENT',
     p_cat_catg_id => 'PAGE_ITEM',
@@ -1231,6 +1244,7 @@ q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
+
 
 
   adc_admin.merge_action_type(
@@ -1256,6 +1270,7 @@ q'{}',
     p_cap_display_name => '',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
+
 
   adc_admin.merge_action_type(
     p_cat_id => 'REFRESH_ITEM',
@@ -1291,6 +1306,7 @@ q'{}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'REGISTER_ADDITIONAL_ITEM',
     p_cat_catg_id => 'PAGE_ITEM',
@@ -1310,7 +1326,7 @@ q'{}',
     p_cap_capt_id => 'FREE_PAGE_ITEMS',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
-    p_cap_description => q'{<p>Liste der Seitenelemente, deren aktuelle Werte zusätzlich zu den ohnehin beobachteten Element an die Datenbank gemeldet werden sollen.</p>}',
+    p_cap_description => q'{<p>Liste der Seitenelemente, deren aktuelle Werte zusätzlich zu den ohnehin beobachteten Element an die Datenbank gemeldet werden sollen.</p><p>Wird ein Seitenelement, das hier angewäühlt wurde, durch einen neuen Anwendungsfall verpflichtend, entfernt ADC dieses Element aus der Liste der zu meldenden Elemente. Ist kein Element mehr vorhanden, wird diese Aktion gelöscht.</p>}',
     p_cap_display_name => '',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
@@ -1340,6 +1356,7 @@ q'{}',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'REMOVE_ALL_ERRORS',
     p_cat_catg_id => 'JAVA_SCRIPT',
@@ -1353,6 +1370,7 @@ q'{}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_FALSE);
+
 
 
   adc_admin.merge_action_type(
@@ -1389,6 +1407,7 @@ q'{}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'SELECT_TAB',
     p_cat_catg_id => 'ADC',
@@ -1413,6 +1432,7 @@ q'{}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'SEND_VALIDATE_PAGE',
     p_cat_catg_id => 'ADC',
@@ -1421,8 +1441,8 @@ q'{}',
     p_cat_name => 'fordere Verarbeitung der Seite an',
     p_cat_display_name => q'{<p><strong>fordere Verarbeitung</strong> der Seite im Modus “#PARAM_1#” <strong>an.</strong> #PARAM_2| Request: ||#</p>}',
     p_cat_description => q'{<p>Validiert und/oder sendet die Seite ab.</p><p>Der Modus bestimmt, welche Aktionen durchgeführt werden. Soll die Seite validiert werden, kann ein Meldungstext definiert werden, der im Fall einer nicht erfolgreichen Validierung angezeigt wird. Wird diese Meldung weggelassen, werden nur die Fehlermeldungen der Validierungslogik angezeigt.</p>}',
-    p_cat_pl_sql => q'{adc_api.validate_page('#PARAM_1#');}',
-    p_cat_js => q'{de.condes.plugin.adc.actions.submit('#PARAM_2#', '#PARAM_3#');}',
+    p_cat_pl_sql => q'{adc_api.validate_page('#PARAM_1#', '#PARAM_2#', '#PARAM_3#');}',
+    p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
@@ -1457,15 +1477,16 @@ q'{}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'SET_ELEMENT_FROM_STMT',
     p_cat_catg_id => 'PAGE_ITEM',
     p_cat_caif_id => 'PAGE_ITEM_OR_DOCUMENT',
     p_cat_cato_id => 'ADC',
     p_cat_name => 'Elementwert mit SQL-Anweisung setzen',
-    p_cat_display_name => q'{<p><strong>setze Feldwert </strong>aus SQL-Anweisung</p>}',
-    p_cat_description => q'{<p>Setzt einen Elementwert basierend auf einer SQL-Anweisung, die einen einzelnen Wert zurückgibt…</p>}',
-    p_cat_pl_sql => q'{adc_api.set_value_from_statement('#ITEM#',q'|#PARAM_1#|');}',
+    p_cat_display_name => q'{<p><strong>setze Feldwert</strong>#ITEM| von Element ||<strong>e</strong># aus SQL-Anweisung</p>}',
+    p_cat_description => q'{<p>Setzt einen Elementwert basierend auf einer SQL-Anweisung, die einen einzelnen Wert zurückgibt, der eine Reihe von Elementen, falls als Element DOKUMENT gewählt wird. In diesem Fall müssen die Spaltenbezeichner der SQL-Abfrage den Namen der Elemente entsprechen, deren Werte gesetzt werden sollen.</p>}',
+    p_cat_pl_sql => q'{adc_api.set_value_from_statement('#ITEM#', q'|#PARAM_1#|', '#ALLOW_RECURSION#');}',
     p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
@@ -1476,10 +1497,11 @@ q'{}',
     p_cap_capt_id => 'SQL_STATEMENT',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
-    p_cap_description => q'{<p>SQL-Anweisung, die einen oder mehrere Werte zurückgibt<br>Die Spaltenbezeichner müssen Elementnamen entsprechen, die Abfrageergebnisse werden in den zugehoerigen Seitenelementen gesetzt</p>}',
+    p_cap_description => q'{<p>SQL-Anweisung, die einen oder mehrere Werte zurückgibt.</p><p>Wird ein konkretes Element gesetzt, ist der Spaltenbezeichner egal, der erste Spaltenwert wird für das angegebene Element verwendet.</p><p>Wird kein Element angegeben, müssen die Spaltenbezeichner Elementnamen entsprechen, die Abfrageergebnisse werden in den zugehörigen Seitenelementen gesetzt.</p>}',
     p_cap_display_name => '',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
+
 
   adc_admin.merge_action_type(
     p_cat_id => 'SET_FOCUS',
@@ -1490,10 +1512,11 @@ q'{}',
     p_cat_display_name => q'{<p><strong>setze Fokus</strong> in Feld “#ITEM#”</p>}',
     p_cat_description => q'{<p>Fokus in Eingabefeld der Seite setzen</p>}',
     p_cat_pl_sql => q'{}',
-    p_cat_js => q'{$('##ITEM#').focus();}',
+    p_cat_js => q'{de.condes.plugin.adc.actions.setFocus('#ITEM#');}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
+
 
 
   adc_admin.merge_action_type(
@@ -1540,6 +1563,7 @@ q'{}',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'SET_ITEM_LABEL',
     p_cat_catg_id => 'PAGE_ITEM',
@@ -1553,6 +1577,7 @@ q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_FALSE);
+
 
 
   adc_admin.merge_action_type(
@@ -1579,6 +1604,7 @@ q'{}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'SET_REGION_CONTENT',
     p_cat_catg_id => 'ITEM',
@@ -1602,6 +1628,7 @@ q'{}',
     p_cap_display_name => 'HTML-Code',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
+
 
   adc_admin.merge_action_type(
     p_cat_id => 'SET_VISUAL_STATE',
@@ -1637,12 +1664,13 @@ q'{}',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'SHOW_ERROR',
     p_cat_catg_id => 'JAVA_SCRIPT',
     p_cat_caif_id => 'PAGE_ITEM_OR_DOCUMENT',
     p_cat_cato_id => 'ADC',
-    p_cat_name => 'Fehler anzeigen',
+    p_cat_name => 'zeige Fehler',
     p_cat_display_name => q'{<p><strong>zeige Fehler </strong>“#PARAM_1#”</p>}',
     p_cat_description => q'{<p>Zeigt die als Parameter übergebene Fehlermeldung auf der Seite.</p>}',
     p_cat_pl_sql => q'{adc_api.register_error('#ITEM#', '#PARAM_1#','');}',
@@ -1660,6 +1688,7 @@ q'{}',
     p_cap_display_name => 'Fehlermeldung',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
+
 
   adc_admin.merge_action_type(
     p_cat_id => 'SHOW_HIDE_ITEMS',
@@ -1695,29 +1724,6 @@ q'{}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
-  adc_admin.merge_action_type(
-    p_cat_id => 'SHOW_SUCCESS',
-    p_cat_catg_id => 'JAVA_SCRIPT',
-    p_cat_caif_id => 'DOCUMENT',
-    p_cat_cato_id => 'ADC',
-    p_cat_name => 'zeige Erfolgsmeldung',
-    p_cat_display_name => q'{<p><strong>zeige Erfolgsmeldung</strong> #PARAM_1#</p>}',
-    p_cat_description => q'{<p>zeigt eine Erfolgsmeldung.</p><p>DEPRECATED: Stattdessen &nbsp;“zeige Meldung” verwenden und Typ “Erfolgsmeldung” wählen.</p>}',
-    p_cat_pl_sql => q'{}',
-    p_cat_js => q'{de.condes.plugin.adc.actions.showSuccess('#PARAM_1#');}',
-    p_cat_is_editable => adc_util.C_TRUE,
-    p_cat_active => adc_util.C_TRUE,
-    p_cat_raise_recursive => adc_util.C_FALSE);
-
-  adc_admin.merge_action_parameter(
-    p_cap_cat_id => 'SHOW_SUCCESS',
-    p_cap_capt_id => 'STRING_OR_PIT_MESSAGE',
-    p_cap_sort_seq => 1,
-    p_cap_default => q'{}',
-    p_cap_description => q'{}',
-    p_cap_display_name => '',
-    p_cap_mandatory => adc_util.C_TRUE,
-    p_cap_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_type(
     p_cat_id => 'STOP_RULE',
@@ -1732,6 +1738,7 @@ q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
+
 
 
   adc_admin.merge_action_type(
@@ -1768,6 +1775,7 @@ q'{}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'WARN_BEFORE_CLICK',
     p_cat_catg_id => 'BUTTON',
@@ -1791,6 +1799,7 @@ q'{}',
     p_cap_display_name => 'Warnhinweis',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
+
 
   adc_admin.merge_action_type(
     p_cat_id => 'XOR',
