@@ -1,3 +1,5 @@
 create or replace force view ADC_PARAM_LOV_APEX_ACTION as 
 select caa_name d, caa_id r, caa_crg_id crg_id
   from adc_apex_actions_v;
+  
+comment on table adc_param_lov_apex_action is 'List of page commands, groupt by CRG_ID';

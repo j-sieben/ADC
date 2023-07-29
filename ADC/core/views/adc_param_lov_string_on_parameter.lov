@@ -1,0 +1,10 @@
+create or replace force view ADC_PARAM_LOV_STRING_ON_PARAMETER as
+select pti_name d, par_id r, null crg_id
+  from parameter_v
+  join pit_translatable_item_v
+    on par_id = pti_id
+   and par_pgr_id = pti_pmg_name
+ where par_pgr_id = 'ADC'
+   and par_id like 'ADC_SHOW_MESSAGE%';
+
+comment on table ADC_PARAM_LOV_STRING_ON_PARAMETER is 'String, based on a parameter value';
