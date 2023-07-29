@@ -402,7 +402,7 @@ as
                   utl_apex.get_application_id g_app_id,
                   utl_apex.get_page_id g_page_id,
                   p_static_id g_static_id
-             from utl_text_templates
+             from utl_text_templates_v
             where uttm_type = 'ADC'
               and uttm_name = 'INITIALIZE_FORM')
     select utl_text.generate_text(cursor(
@@ -639,7 +639,8 @@ as
 
   procedure set_value_from_statement(
     p_cpi_id in adc_page_items.cpi_id%type,
-    p_statement in varchar2)
+    p_statement in varchar2,
+    p_allow_recursion in adc_util.flag_type default adc_util.C_FALSE)
   as
   begin
     pit.enter_mandatory(
@@ -650,7 +651,7 @@ as
     adc_internal.set_value_from_statement(
       p_cpi_id => p_cpi_id,
       p_statement => p_statement,
-      p_allow_recursion => adc_util.C_FALSE);
+      p_allow_recursion => p_allow_recursion);
 
     pit.leave_mandatory;
   end set_value_from_statement;
@@ -667,6 +668,34 @@ as
 
     pit.leave_mandatory;
   end set_value_from_cursor;
+
+
+  procedure stop(
+    p_cpi_id in varchar2 default adc_util.C_NO_FIRING_ITEM,
+    p_display_message_name in varchar2 default msg.PIT_SQL_ERROR,
+    p_display_msg_args in msg_args default null,
+    p_affected_id in varchar2 default null,
+    p_affected_ids in msg_params default null)
+  as
+  begin
+    -- Log
+    if pit.get_active_message is not null then
+      -- Named exception raised, just pass it on
+      pit.handle_exception;
+    else
+      -- Unhandled exception, map to a generic error
+      pit.handle_exception(
+        p_message_name => msg.PIT_SQL_ERROR,
+        p_msg_args => msg_args(substr(sqlerrm, 12)),
+        p_affected_id => p_affected_id,
+        p_affected_ids => p_affected_ids);
+    end if;
+    -- Regardless of logging, show display message and stop execution
+    adc_internal.register_error(
+      p_cpi_id => p_cpi_id,
+      p_message_name => p_display_message_name,
+      p_msg_args => p_display_msg_args);
+  end stop;
   
   
   procedure stop_rule

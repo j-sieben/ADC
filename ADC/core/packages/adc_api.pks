@@ -545,10 +545,13 @@ as
     Parameters:
       p_cpi_id - ID of the page item
       p_statement - SELECT statement to retrieve the new page item value or values
+      p_allow_recursion - Flag to indicate whether changing the item value is allowed 
+                          to raise recursive rule execution. Defaults to adc_util.C_FALSE
    */
   procedure set_value_from_statement(
     p_cpi_id in adc_page_items.cpi_id%type,
-    p_statement in varchar2);
+    p_statement in varchar2,
+    p_allow_recursion in adc_util.flag_type default adc_util.C_FALSE);
 
 
   /** 
@@ -564,6 +567,25 @@ as
    */
   procedure set_value_from_cursor(
     p_cursor in out nocopy sys_refcursor);
+    
+    
+  /** 
+    Procedure: stop
+      Shows a friendly error message on the UI and registers the real error in PIT
+      
+    Parameters:
+      p_cpi_id - ID of the page item
+      p_display_message_name - Name of the message that is used to show an error message in APEX
+      p_display_msg_args - Optional parameters for the display message
+      p_affected_id - ID of the element in use
+      p_affected_ids - List of IDs of the elements in use
+   */
+  procedure stop(
+    p_cpi_id in varchar2 default adc_util.C_NO_FIRING_ITEM,
+    p_display_message_name in varchar2 default msg.PIT_SQL_ERROR,
+    p_display_msg_args in msg_args default null,
+    p_affected_id in varchar2 default null,
+    p_affected_ids in msg_params default null);
     
     
   /** 
@@ -603,7 +625,8 @@ as
   procedure validate_page(
     p_submit_type in varchar2,
     p_request in varchar2 default 'SAVE',
-    p_msg_name in varchar2 default null);  
+    p_msg_name in varchar2 default null);
+  
   
 end adc_api;
 /
