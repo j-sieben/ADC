@@ -78,7 +78,7 @@ q'[]',
     p_uttm_name => 'APEX_ACTION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ACTION',
-    p_uttm_text => q'[{"name":"#CAA_NAME#"#BIND_ITEMS|, "bind":[|]|##CAA_LABEL|, "label":"|"|##CAA_LABEL_KEY|, "labelKey":"|"|##CAA_CONTEXT_LABEL|, "contextLabel":"|"|##CAA_ICON|, "icon":"|"|##CAA_ICON_TYPE|, "iconType":"|"|##CAA_INITIALLY_DISABLED|, "disabled":||##CAA_INITIALLY_HIDDEN|, "hide":||##CAA_TITLE|, "title":"|"|##CAA_SHORTCUT|, "shortcut":"|"|##CAA_HREF|, "href":"|"|##CAA_ACTION|, "action":||#}]',
+    p_uttm_text => q'[{"name":"#CAA_NAME#"#CAA_LABEL|, "label":"|"|##CAA_LABEL_KEY|, "labelKey":"|"|##CAA_CONTEXT_LABEL|, "contextLabel":"|"|##CAA_ICON|, "icon":"|"|##CAA_ICON_TYPE|, "iconType":"|"|##CAA_INITIALLY_DISABLED|, "disabled":||##CAA_INITIALLY_HIDDEN|, "hide":||##CAA_TITLE|, "title":"|"|##CAA_SHORTCUT|, "shortcut":"|"|##CAA_HREF|, "href":"|"|##CAA_ACTION|, "action":||#}]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
@@ -270,7 +270,9 @@ q'[              max(decode(cap_sort_seq, 3, cap_capt_id)) cra_param_3_type\CR\]
 q'[         from adc_action_parameters\CR\]' || 
 q'[        group by cap_cat_id),\CR\]' || 
 q'[     session_state as(\CR\]' || 
-q'[       select /*+ no_merge */ #EVENT_LIST#,\CR\]' || 
+q'[       select /*+ no_merge */\CR\]' || 
+q'[              p_event event,\CR\]' || 
+q'[              #EVENT_LIST#,\CR\]' || 
 q'[              #COLUMN_LIST#,\CR\]' || 
 q'[              c_true, c_false\CR\]' || 
 q'[         from params p),\CR\]' || 
@@ -296,7 +298,9 @@ q'[     data as (\CR\]' ||
 q'[       select r.cru_id, r.cru_name, r.cru_firing_items, r.cru_fire_on_page_load,\CR\]' || 
 q'[              r.cra_cpi_id, r.cra_cat_id, r.cra_sort_seq, r.cra_param_1, r.cra_param_2, r.cra_param_3, r.cra_on_error, r.cra_raise_recursive,\CR\]' || 
 q'[              rank() over (order by r.cru_sort_seq) rang, s.initializing initializing,\CR\]' || 
-q'[              firing_item, c_true, c_false\CR\]' || 
+q'[              firing_item, c_true, c_false,\CR\]' || 
+q'[              msg_params(\CR\]' || 
+q'[                #ACTUAL_STATUS#) actual_status\CR\]' || 
 q'[         from rules r\CR\]' || 
 q'[         join session_state s\CR\]' || 
 q'[           on instr(',' || r.cru_firing_items || ',', ',' || s.firing_item || ',') > 0\CR\]' || 
@@ -304,16 +308,17 @@ q'[           or (cru_fire_on_page_load = initializing\CR\]' ||
 q'[          and initializing = C_TRUE)\CR\]' || 
 q'[        where #WHERE_CLAUSE#),\CR\]' || 
 q'[     decision_table as(\CR\]' || 
-q'[       select cru_id, cru_name, cra_cpi_id, cra_cat_id, cra_param_1, cra_param_2, cra_param_3, cra_on_error, cra_raise_recursive, cra_sort_seq, c_true, c_false\CR\]' || 
+q'[       select cru_id, cru_name, cra_cpi_id, cra_cat_id, cra_param_1, cra_param_2, cra_param_3, cra_on_error, cra_raise_recursive, cra_sort_seq, c_true, c_false, actual_status\CR\]' || 
 q'[         from data\CR\]' || 
 q'[        where rang = 1\CR\]' || 
 q'[           or (cru_fire_on_page_load = initializing\CR\]' || 
 q'[          and initializing = C_TRUE))\CR\]' || 
 q'[select cru.cru_id, cru.cru_sort_seq, cru.cru_name, cru.cru_firing_items, cru_fire_on_page_load,\CR\]' || 
 q'[       cra_cpi_id cra_item, cat_pl_sql, cat_js, cra_sort_seq, cra_on_error,\CR\]' || 
-q'[       cra_param_1, cra_param_1_type, cra_param_2, cra_param_2_type, cra_param_3, cra_param_3_type,\CR\]' || 
+q'[       cra_param_1, cra_param_1_type, cra_param_2, cra_param_2_type, cra_param_3, cra_param_3_type, cra_raise_recursive, \CR\]' || 
 q'[       max(cra_on_error) over (partition by cru_sort_seq) cru_has_error_handler,\CR\]' || 
-q'[       case cra_sort_seq when 10 then c_true else c_false end is_first_row\CR\]' || 
+q'[       case cra_sort_seq when 10 then c_true else c_false end is_first_row,\CR\]' || 
+q'[       actual_status\CR\]' || 
 q'[  from decision_table crg\CR\]' || 
 q'[  join adc_rules cru\CR\]' || 
 q'[    on crg.cru_id = cru.cru_id\CR\]' || 
@@ -435,9 +440,9 @@ q'[    p_cra_active => #CRA_ACTIVE#);]',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'APEX_ACTION_ACTION',
     p_uttm_text => q'[\CR\]' || 
-q'[  adc_admin.merge_apex_action(    \CR\]' || 
+q'[  adc_admin.merge_apex_action(\CR\]' || 
 q'[    p_caa_id => adc_admin.map_id(#CAA_ID#),\CR\]' || 
-q'[    p_caa_crg_id => adc_admin.map_id(#CRG_ID#),\CR\]' || 
+q'[    p_caa_crg_id => adc_admin.map_id(#CAA_CRG_ID#),\CR\]' || 
 q'[    p_caa_caat_id => '#CAA_CAAT_ID#',\CR\]' || 
 q'[    p_caa_name => '#CAA_NAME#',\CR\]' || 
 q'[    p_caa_confirm_message_name => '#CAA_CONFIRM_MESSAGE_NAME#',\CR\]' || 
@@ -620,6 +625,15 @@ q'[]',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'WHERE_CLAUSE',
     p_uttm_text => q'[(r.cru_id = #CRU_ID# and (#CRU_CONDITION#))]',
+    p_uttm_log_text => q'[]',
+    p_uttm_log_severity => 70
+  );
+
+  utl_text_admin.merge_template(
+    p_uttm_name => 'RULE_VIEW',
+    p_uttm_type => 'ADC',
+    p_uttm_mode => 'ACTUAL_STATUS',
+    p_uttm_text => q'[msg_param('#CPI_ID#', #CPI_ID#)]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
