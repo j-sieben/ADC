@@ -101,7 +101,6 @@ as
       l_result.attribute_04 := l_java_script;
       l_result.attribute_05 := adc_internal.get_additional_items;
       l_result.attribute_06 := adc_internal.get_standard_messages;
-      l_result.attribute_07 := adc_internal.get_apex_actions;
     else
       l_result.javascript_function := C_JS_FUNCTION;      
     end if;
