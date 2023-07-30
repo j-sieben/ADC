@@ -46,8 +46,9 @@ begin
 end;
 /
 
+prompt &h3.Removing ADC groups 
 whenever sqlerror continue
-prompt &h3.Removing ADC groups *** IGNORE POSSIBLE EXCEPTIONS FROM HERE
+prompt *** IGNORE POSSIBLE EXCEPTIONS FROM HERE
 declare
   cursor adc_cur is
     select crg_id
