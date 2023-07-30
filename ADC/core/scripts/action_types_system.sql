@@ -276,17 +276,6 @@ q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
 
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'SWITCH',
-    p_capt_name => 'Schalter',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Wahrheitswert</p>}',
-    p_capt_capvt_id => 'SWITCH',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
   -- PAGE_ITEM_TYPE_GROUPS
   adc_admin.merge_page_item_type_group(
     p_cpitg_id => 'BUTTON',
