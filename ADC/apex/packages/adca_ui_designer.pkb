@@ -143,7 +143,10 @@ as
     firing_item adc_util.ora_name_type,
     app_changed boolean := false,
     crg_changed boolean := false,
-    cru_changed boolean := false);
+    cru_changed boolean := false,
+    cru_row adc_rules%rowtype,
+    cra_row adc_rule_actions%rowtype,
+    caa_row adc_apex_actions_v%rowtype);
     
     
   /**
@@ -163,6 +166,17 @@ as
 
 
   /**
+    Group: Private package variables
+   */
+  /**
+    Variables: State variables
+      g_form_item_list - PL/SQL table to hold a list of page items per supported form type (CRA, CRU, CAA etc.)
+   */
+
+  g_form_item_list form_item_list_tab;
+
+
+  /**
     Group: Copy Session State methods
    */
   /** 
@@ -179,37 +193,39 @@ as
       mandatory identification with a static ID so that the method can uniquely identify the region.
    */
   procedure copy_apex_action(
-    p_row in out nocopy adc_apex_actions_v%rowtype,
+    p_environment in out nocopy environment_rec,
     p_caai_list out nocopy char_table)
   as
   begin
     pit.enter_detailed('copy_apex_action');
     
-    p_row.caa_id := utl_apex.get_number('caa_id');
-    p_row.caa_crg_id := utl_apex.get_number('caa_crg_id');
-    p_row.caa_caat_id := utl_apex.get_string('caa_caat_id');
-    p_row.caa_name := utl_apex.get_string('caa_name');
-    p_row.caa_confirm_message_name := utl_apex.get_string('caa_confirm_message_name');
-    p_row.caa_label := utl_apex.get_string('caa_label');
-    p_row.caa_context_label := utl_apex.get_string('caa_context_label');
-    p_row.caa_icon := utl_apex.get_string('caa_icon');
-    p_row.caa_icon_type := utl_apex.get_string('caa_icon_type');
-    p_row.caa_title := utl_apex.get_string('caa_title');
-    p_row.caa_shortcut := utl_apex.get_string('caa_shortcut');
-    p_row.caa_initially_disabled := utl_apex.get_string('caa_initially_disabled');
-    p_row.caa_initially_hidden := utl_apex.get_string('caa_initially_hidden');
-    p_row.caa_href := utl_apex.get_string('caa_href');
-    p_row.caa_action := utl_apex.get_string('caa_action');
-    p_row.caa_on_label := utl_apex.get_string('caa_on_label');
-    p_row.caa_off_label := utl_apex.get_string('caa_off_label');
-    p_row.caa_get := utl_apex.get_string('caa_get');
-    p_row.caa_set := utl_apex.get_string('caa_set');
-    p_row.caa_choices := utl_apex.get_string('caa_choices');
-    p_row.caa_label_classes := utl_apex.get_string('caa_label_classes');
-    p_row.caa_label_start_classes := utl_apex.get_string('caa_label_start_classes');
-    p_row.caa_label_end_classes := utl_apex.get_string('caa_label_end_classes');
-    p_row.caa_item_wrap_class := utl_apex.get_string('caa_item_wrap_class');
-
+    if p_environment.caa_row.caa_id is null then
+      p_environment.caa_row.caa_id := utl_apex.get_number('caa_id');
+      p_environment.caa_row.caa_crg_id := utl_apex.get_number('caa_crg_id');
+      p_environment.caa_row.caa_caat_id := utl_apex.get_string('caa_caat_id');
+      p_environment.caa_row.caa_name := utl_apex.get_string('caa_name');
+      p_environment.caa_row.caa_confirm_message_name := utl_apex.get_string('caa_confirm_message_name');
+      p_environment.caa_row.caa_label := utl_apex.get_string('caa_label');
+      p_environment.caa_row.caa_context_label := utl_apex.get_string('caa_context_label');
+      p_environment.caa_row.caa_icon := utl_apex.get_string('caa_icon');
+      p_environment.caa_row.caa_icon_type := utl_apex.get_string('caa_icon_type');
+      p_environment.caa_row.caa_title := utl_apex.get_string('caa_title');
+      p_environment.caa_row.caa_shortcut := utl_apex.get_string('caa_shortcut');
+      p_environment.caa_row.caa_initially_disabled := utl_apex.get_string('caa_initially_disabled');
+      p_environment.caa_row.caa_initially_hidden := utl_apex.get_string('caa_initially_hidden');
+      p_environment.caa_row.caa_href := utl_apex.get_string('caa_href');
+      p_environment.caa_row.caa_action := utl_apex.get_string('caa_action');
+      p_environment.caa_row.caa_on_label := utl_apex.get_string('caa_on_label');
+      p_environment.caa_row.caa_off_label := utl_apex.get_string('caa_off_label');
+      p_environment.caa_row.caa_get := utl_apex.get_string('caa_get');
+      p_environment.caa_row.caa_set := utl_apex.get_string('caa_set');
+      p_environment.caa_row.caa_choices := utl_apex.get_string('caa_choices');
+      p_environment.caa_row.caa_label_classes := utl_apex.get_string('caa_label_classes');
+      p_environment.caa_row.caa_label_start_classes := utl_apex.get_string('caa_label_start_classes');
+      p_environment.caa_row.caa_label_end_classes := utl_apex.get_string('caa_label_end_classes');
+      p_environment.caa_row.caa_item_wrap_class := utl_apex.get_string('caa_item_wrap_class');
+    end if;
+  
     utl_text.string_to_table(utl_apex.get_string('caa_caai_list'), p_caai_list);
 
     pit.leave_detailed;
@@ -217,71 +233,73 @@ as
   
   
   procedure copy_rule(
-    p_row in out nocopy adc_rules%rowtype,
-    p_crg_id adc_rule_groups.crg_id%type)
+    p_environment in out nocopy environment_rec)
   as
   begin
     pit.enter_detailed('copy_rule');
-
-    p_row.cru_id := utl_apex.get_number('cru_id');
-    p_row.cru_crg_id := coalesce(utl_apex.get_number('cru_crg_id'), p_crg_id);
-    p_row.cru_sort_seq := utl_apex.get_number('cru_sort_seq');
-    p_row.cru_name := utl_apex.get_string('cru_name');
-    p_row.cru_condition := utl_apex.get_string('cru_condition');
-    p_row.cru_fire_on_page_load := utl_apex.get_string('cru_fire_on_page_load');
-    p_row.cru_active := utl_apex.get_string('cru_active');
+    
+    if p_environment.cru_row.cru_id is null then
+      p_environment.cru_row.cru_id := adc.get_number('cru_id');
+      p_environment.cru_row.cru_crg_id := coalesce(adc.get_number('cru_crg_id'), p_environment.crg_id);
+      p_environment.cru_row.cru_sort_seq := adc.get_number('cru_sort_seq');
+      p_environment.cru_row.cru_name := adc.get_string('cru_name');
+      p_environment.cru_row.cru_condition := adc.get_string('cru_condition');
+      p_environment.cru_row.cru_fire_on_page_load := coalesce(adc.get_string('cru_fire_on_page_load'), adc_util.C_FALSE);
+      p_environment.cru_row.cru_active := coalesce(adc.get_string('cru_active'), adc_util.C_TRUE);
+    end if;
 
     pit.leave_detailed;
   end copy_rule;
 
 
   procedure copy_rule_action(
-    p_row in out nocopy adc_rule_actions%rowtype,
-    p_cra_crg_id adc_rule_actions.cra_crg_id%type)
+    p_environment in out nocopy environment_rec)
   as
     l_param_name_1 adc_util.ora_name_type;
     l_param_name_2 adc_util.ora_name_type;
     l_param_name_3 adc_util.ora_name_type;
   begin
     pit.enter_detailed('copy_rule_action');
-
-    p_row.cra_id := utl_apex.get_number('cra_id');
-    p_row.cra_crg_id := coalesce(utl_apex.get_number('cra_crg_id'), p_cra_crg_id);
-    p_row.cra_cru_id := utl_apex.get_number('cra_cru_id');
-    p_row.cra_sort_seq := utl_apex.get_number('cra_sort_seq');
-    p_row.cra_cpi_id := utl_apex.get_string('cra_cpi_id');
-    p_row.cra_cat_id := utl_apex.get_string('cra_cat_id');
-    p_row.cra_active := utl_apex.get_string('cra_active');
-    p_row.cra_on_error := utl_apex.get_string('cra_on_error');
-    p_row.cra_raise_recursive := utl_apex.get_string('cra_raise_recursive');
-    p_row.cra_raise_on_validation := utl_apex.get_string('cra_raise_on_validation');
-    p_row.cra_comment := utl_apex.get_string('cra_comment');
-
-    -- Get the required parameter field
-    begin
-      with data as (
-           select cap_cat_id, cap_sort_seq, 
-                  'CRA_PARAM_' || capvt_param_item_extension || cap_sort_seq item_name
-             from adc_action_parameters
-             join adc_action_param_types
-               on cap_capt_id = capt_id
-             join adc_action_param_visual_types
-               on capt_capvt_id = capvt_id)
-      select max(decode(cap_sort_seq, 1, item_name)) item_name_1,
-             max(decode(cap_sort_seq, 2, item_name)) item_name_2,
-             max(decode(cap_sort_seq, 3, item_name)) item_name_3
-        into l_param_name_1, l_param_name_2, l_param_name_3
-        from data
-       where cap_cat_id = p_row.cra_cat_id
-       group by cap_cat_id;
-    exception
-      when no_data_found then
-        null; -- No parameter for action type, ignore
-    end;
-
-    p_row.cra_param_1 := case when l_param_name_1 is not null then utl_apex.get_string(l_param_name_1) end;
-    p_row.cra_param_2 := case when l_param_name_2 is not null then utl_apex.get_string(l_param_name_2) end;
-    p_row.cra_param_3 := case when l_param_name_3 is not null then utl_apex.get_string(l_param_name_3) end;    
+    
+    if p_environment.cra_row.cra_id is null then
+      p_environment.cra_row.cra_id := utl_apex.get_number('cra_id');
+      p_environment.cra_row.cra_crg_id := coalesce(utl_apex.get_number('cra_crg_id'), p_environment.crg_id);
+      p_environment.cra_row.cra_cru_id := utl_apex.get_number('cra_cru_id');
+      p_environment.cra_row.cra_sort_seq := utl_apex.get_number('cra_sort_seq');
+      p_environment.cra_row.cra_cpi_id := utl_apex.get_string('cra_cpi_id');
+      p_environment.cra_row.cra_cat_id := utl_apex.get_string('cra_cat_id');
+      p_environment.cra_row.cra_active := utl_apex.get_string('cra_active');
+      p_environment.cra_row.cra_on_error := utl_apex.get_string('cra_on_error');
+      p_environment.cra_row.cra_raise_recursive := utl_apex.get_string('cra_raise_recursive');
+      p_environment.cra_row.cra_raise_on_validation := utl_apex.get_string('cra_raise_on_validation');
+      p_environment.cra_row.cra_comment := utl_apex.get_string('cra_comment');
+  
+      -- Get the required parameter field
+      begin
+        with data as (
+             select cap_cat_id, cap_sort_seq, 
+                    'CRA_PARAM_' || capvt_param_item_extension || cap_sort_seq item_name
+               from adc_action_parameters
+               join adc_action_param_types
+                 on cap_capt_id = capt_id
+               join adc_action_param_visual_types
+                 on capt_capvt_id = capvt_id)
+        select max(decode(cap_sort_seq, 1, item_name)) item_name_1,
+               max(decode(cap_sort_seq, 2, item_name)) item_name_2,
+               max(decode(cap_sort_seq, 3, item_name)) item_name_3
+          into l_param_name_1, l_param_name_2, l_param_name_3
+          from data
+         where cap_cat_id = p_environment.cra_row.cra_cat_id
+         group by cap_cat_id;
+      exception
+        when no_data_found then
+          null; -- No parameter for action type, ignore
+      end;
+  
+      p_environment.cra_row.cra_param_1 := case when l_param_name_1 is not null then utl_apex.get_string(l_param_name_1) end;
+      p_environment.cra_row.cra_param_2 := case when l_param_name_2 is not null then utl_apex.get_string(l_param_name_2) end;
+      p_environment.cra_row.cra_param_3 := case when l_param_name_3 is not null then utl_apex.get_string(l_param_name_3) end;    
+    end if;
 
     pit.leave_detailed;
   end copy_rule_action;
@@ -292,7 +310,7 @@ as
     p_row in out nocopy fls_diagrams_v%rowtype)
   as
   begin
-    pit.enter_detailed('copy_rule');
+    pit.enter_detailed('copy_flow');
 
     p_row.diagram_id := utl_apex.get_number('diagram_id');
     p_row.diagram_name := utl_apex.get_string('diagram_name');
@@ -325,6 +343,36 @@ as
   begin
     return dbms_assert.enquote_literal(p_string);
   end enquote;
+  
+  
+  /**
+    Function: get_form_items
+      Method to retrieve a list of items for a given form
+      
+    Parameter:
+      p_form_id - ID of the form for which to get the item list for.
+  
+    Returns:
+      List of items for the requested form, empty array string if the form does not exist
+   */
+  function get_form_items(
+    p_form_id in adca_bl_designer_actions.amda_form_id%type)
+    return varchar2
+  as
+    l_item_list adc_util.sql_char;
+  begin
+    pit.enter_detailed('get_form_items',
+      p_params => msg_params(msg_param('p_form_id', p_form_id)));
+      
+    if g_form_item_list.exists(p_form_id) then 
+      l_item_list := g_form_item_list(p_form_id);
+    else
+        l_item_list := '[]';
+    end if;
+    
+    pit.leave_detailed;
+    return l_item_list;
+  end get_form_items;
   
   
   /**
@@ -370,6 +418,7 @@ as
     l_target_mode adc_util.ora_name_type;
     l_action_mode adc_util.ora_name_type;
     l_node_id adc_util.ora_name_type;
+    l_page_items adc_util.max_char := '[]';
     l_monitor_changes adc_util.ora_name_type;
     l_template adc_util.max_char;
   begin
@@ -385,9 +434,11 @@ as
     case p_action
       when C_ACTION_CREATE then
         l_monitor_changes := 'true';
+        l_page_items := get_form_items(p_row.amda_form_id);
         l_target_mode := p_row.amda_create_target_mode;
         l_node_id := null;
       when C_ACTION_UPDATE then
+        l_page_items := get_form_items(p_row.amda_form_id);
         l_target_mode := p_row.amda_update_target_mode;
         l_node_id := p_row.amda_update_value;
       when C_ACTION_DELETE then
@@ -405,16 +456,16 @@ as
     end case;
 
     -- assemble
-    l_action := adc_util.bulk_replace(C_DATA_TEMPLATE, adc_util.string_table(
-                  '#COMMAND#', p_action,
-                  '#PAGE_ITEM_LIST#', '[]', -- List is calulated once for the page
-                  '#TARGET_MODE#', l_target_mode,
-                  '#ACTION_MODE#', l_action_mode,
-                  '#NODE_ID#', l_node_id,
-                  '#MONITOR_CHANGES#', l_monitor_changes));
-    l_action := adc_util.bulk_replace(l_template, adc_util.string_table(
-                  '#DATA#', l_action,
-                  '#CONFIRM_MESSAGE#', p_row.amda_delete_confirm_message));
+    l_action := replace(replace(replace(replace(replace(replace(C_DATA_TEMPLATE, 
+                  '#COMMAND#', p_action),
+                  '#PAGE_ITEM_LIST#', '""'),--l_page_items),
+                  '#TARGET_MODE#', l_target_mode),
+                  '#ACTION_MODE#', l_action_mode),
+                  '#NODE_ID#', l_node_id),
+                  '#MONITOR_CHANGES#', l_monitor_changes);
+    l_action := replace(replace(l_template, 
+                  '#DATA#', l_action),
+                  '#CONFIRM_MESSAGE#', p_row.amda_delete_confirm_message);
 
     pit.leave_optional;
     return l_action;
@@ -786,6 +837,8 @@ as
            p_msg_text => replace(l_mandatory_message, '#LABEL#', param.capt_name));
       else
         adc.set_optional(
+          p_cpi_id => param.cap_page_item);
+        adc.set_visual_state(
           p_cpi_id => param.cap_page_item,
           p_visual_state => adc.C_SHOW_ENABLE);   
       end if;
@@ -1061,25 +1114,6 @@ as
 
 
   /** 
-    Procedure: show_form_crg
-      Method to show and populate an ADC Rule Group form of the designer and populate it with the values selected.
-   */
-  procedure show_form_crg
-  as
-  begin
-    pit.enter_mandatory('show_form_crg');
-
-    adc.refresh_item(C_REGION_CRG_FORM);
-    adc.show_hide_item('.adc-rule-group', '.adc-hide');
-    adc.set_region_content(
-      p_region_id => C_REGION_HELP,
-      p_html_code => pit.get_trans_item_description(C_PTI_PMG, 'CRG_HELP'));
-
-    pit.leave_mandatory;
-  end show_form_crg;
-
-
-  /** 
     Procedure: show_form_caa
       Method to show and populate a ADC Apex Action form of the designer and populate it with the values selected.
       
@@ -1094,29 +1128,30 @@ as
   procedure show_form_caa(
     p_environment in environment_rec)
   as
-    l_statement adc_util.max_char;
-    l_amfi_row adca_map_form_items%rowtype;
+    l_statement adc_util.max_char := q'^
+select null #PRE#caa_id, '#CRG_ID#' #PRE#caa_crg_id, 'ACTION' #PRE#caa_caat_id, null #PRE#caa_name,
+       null #PRE#caa_label, null #PRE#caa_context_label, null #PRE#caa_icon, 'fa' #PRE#caa_icon_type,
+       null #PRE#caa_shortcut, adc_util.C_FALSE #PRE#caa_initially_disabled, adc_util.C_FALSE #PRE#caa_initially_hidden,
+       null #PRE#caa_href, null #PRE#caa_action, null #PRE#caa_on_label, null #PRE#caa_off_label,
+       null #PRE#caa_get, null #PRE#caa_set, null #PRE#caa_choices, 
+       null #PRE#caa_label_classes, null #PRE#caa_label_start_classes,
+       null #PRE#caa_label_end_classes, null #PRE#caa_item_wrap_class, null #PRE#caa_caai_list
+  from dual^';
   begin
     pit.enter_mandatory('show_form_caa');
 
-    select /*+ result_cache */ *
-      into l_amfi_row
-      from adca_map_form_items
-     where amfi_id = C_REGION_CAA_FORM;
-     
     if p_environment.action = C_ACTION_CREATE then
       -- Was called to create a new CAA, initialize default values
-      l_statement := adc_util.bulk_replace(l_amfi_row.amfi_create_stmt, adc_util.string_table(
-                       '#CRG_ID#', p_environment.crg_id, 
-                       '#PRE#', C_PAGE_PREFIX));
+      l_statement := replace(
+                       replace(l_statement, '#CRG_ID#', p_environment.crg_id), 
+                       '#PRE#', C_PAGE_PREFIX);
+      adc.set_items_from_statement(
+        p_cpi_id => adc_util.c_no_firing_item, 
+        p_statement => l_statement);
     else
       -- Was called from the hierarchy tree
-      l_statement := l_amfi_row.amfi_edit_stmt;
+      adc.initialize_form_region(C_REGION_CAA_FORM);
     end if;
-    
-    adc.set_items_from_statement(
-      p_cpi_id => adc_util.c_no_firing_item, 
-      p_statement => l_statement);
 
     -- Show action atribute region
     adc.show_hide_item('.adc-apex-action', '.adc-hide');
@@ -1133,6 +1168,25 @@ as
     
     pit.leave_mandatory;
   end show_form_caa;
+
+
+  /** 
+    Procedure: show_form_crg
+      Method to show and populate an ADC Rule Group form of the designer and populate it with the values selected.
+   */
+  procedure show_form_crg
+  as
+  begin
+    pit.enter_mandatory('show_form_crg');
+
+    adc.refresh_item(C_REGION_CRG_FORM);
+    adc.show_hide_item('.adc-rule-group', '.adc-hide');
+    adc.set_region_content(
+      p_region_id => C_REGION_HELP,
+      p_html_code => pit.get_trans_item_description(C_PTI_PMG, 'CRG_HELP'));
+
+    pit.leave_mandatory;
+  end show_form_crg;
   
   
   /** 
@@ -1158,15 +1212,16 @@ as
     l_cru_id adc_rules.cru_id%type;
     l_cat_id adc_action_types.cat_id%type;
     l_caif_default adc_action_item_focus.caif_default%type;
-    l_statement adc_util.max_char;
-    l_amfi_row adca_map_form_items%rowtype;
+    l_statement adc_util.max_char := q'^
+select null #PRE#CRA_ID, '#CRG_ID#' #PRE#CRA_CRG_ID, '#CRU_ID#' #PRE#CRA_CRU_ID,
+       '#NO_FIRING_ITEM#' #PRE#CRA_CPI_ID, null #PRE#CRA_CAT_ID, adc_util.C_FALSE #PRE#CRA_ON_ERROR,
+       null #PRE#CRA_PARAM_1, null #PRE#CRA_PARAM_2, null #PRE#CRA_PARAM_3, null #PRE#CRA_COMMENT,
+       adc_util.C_TRUE #PRE#CRA_RAISE_RECURSIVE, adc_util.C_FALSE #PRE#CRA_RAISE_ON_VALIDATION,
+       #SORT_SEQ# #PRE#CRA_SORT_SEQ, adc_util.C_TRUE #PRE#CRA_ACTIVE
+  from dual
+    ^';
   begin
     pit.enter_mandatory('show_form_cra');
-
-    select /*+ result_cache */ *
-      into l_amfi_row
-      from adca_map_form_items
-     where amfi_id = C_REGION_CRA_FORM;
     
     -- Calculate form data for two possible use cases:
     -- - New CRA, get default values
@@ -1174,22 +1229,18 @@ as
     case when p_environment.action = C_ACTION_CREATE then
       -- Was called to create a new CRA, initialize default values
       l_cru_id := adc.get_number(C_ITEM_CRU_ID);
-      l_statement := adc_util.bulk_replace(l_amfi_row.amfi_create_stmt, adc_util.string_table(
-                       '#CRG_ID#', p_environment.crg_id,
-                       '#CRU_ID#', l_cru_id,
-                       '#NO_FIRING_ITEM#', adc_util.c_no_firing_item,
-                       '#SORT_SEQ#', get_cra_sort_seq(l_cru_id)));
-                       
+      l_statement := replace(replace(replace(replace(replace(l_statement,
+                       '#PRE#', C_PAGE_PREFIX),
+                       '#CRG_ID#', p_environment.crg_id),
+                       '#CRU_ID#', l_cru_id),
+                       '#NO_FIRING_ITEM#', adc_util.c_no_firing_item),
+                       '#SORT_SEQ#', get_cra_sort_seq(l_cru_id));
       adc.set_items_from_statement(
         p_cpi_id => adc_util.c_no_firing_item, 
         p_statement => l_statement);    
     when p_environment.action = C_ACTION_SHOW then
       -- Was called from the hierarchy tree
-      l_statement := l_amfi_row.amfi_edit_stmt;
-                       
-      adc.set_items_from_statement(
-        p_cpi_id => adc_util.c_no_firing_item, 
-        p_statement => l_statement);    
+      adc.initialize_form_region(C_REGION_CRA_FORM);
     else
       -- was called by changing the action type. Only control display state
       null;
@@ -1255,29 +1306,28 @@ as
   procedure show_form_cru(
     p_environment in environment_rec)
   as
-    l_statement adc_util.max_char;
-    l_amfi_row adca_map_form_items%rowtype;
+    l_statement adc_util.max_char := q'^
+select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_SEQ,
+       null #PRE#CRU_NAME, null #PRE#CRU_CONDITION,
+       adc_util.C_TRUE #PRE#CRU_ACTIVE, adc_util.C_FALSE #PRE#CRU_FIRE_ON_PAGE_LOAD
+  from dual
+    ^';
   begin
     pit.enter_mandatory('show_form_cru');
 
-    select /*+ result_cache */ *
-      into l_amfi_row
-      from adca_map_form_items
-     where amfi_id = C_REGION_CRU_FORM;
-
     case when p_environment.action = C_ACTION_CREATE then
       -- Was called to create a new CRU, initialize default values
-      l_statement := adc_util.bulk_replace(l_amfi_row.amfi_create_stmt, adc_util.string_table(
-                       '#CRG_ID#', p_environment.crg_id,
-                       '#SORT_SEQ#', get_cru_sort_seq(p_environment.crg_id)));
+      l_statement := replace(replace(replace(l_statement, 
+                       '#PRE#', C_PAGE_PREFIX),
+                       '#CRG_ID#', p_environment.crg_id),
+                       '#SORT_SEQ#', get_cru_sort_seq(p_environment.crg_id));
+      adc.set_items_from_statement(
+        p_cpi_id => adc_util.c_no_firing_item, 
+        p_statement => l_statement);
     else
       -- Was called from the rule report
-      l_statement := l_amfi_row.amfi_edit_stmt;
+      adc.initialize_form_region(C_REGION_CRU_FORM);
     end case;
-    
-    adc.set_items_from_statement(
-      p_cpi_id => adc_util.c_no_firing_item, 
-      p_statement => l_statement);
 
     adc.show_hide_item('.adc-rule', '.adc-hide');
     adc.set_region_content(
@@ -1298,27 +1348,23 @@ as
    */
   procedure show_form_fls
   as
-    l_statement adc_util.max_char;
-    l_amfi_row adca_map_form_items%rowtype;
+    l_statement adc_util.max_char := q'^
+select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, 'draft' #PRE#DIAGRAM_STATUS_ID
+  from dual^';
   begin
     pit.enter_mandatory('show_form_fls');
-
-    select /*+ result_cache */ *
-      into l_amfi_row
-      from adca_map_form_items
-     where amfi_id = C_REGION_CRA_FORM;
 
     $IF adc_util.C_WITH_FLOWS $THEN
     case when l_environment.action = C_ACTION_CREATE then
       -- Was called to create a new FLS, initialize default values
-      l_statement := l_amfi_row.amfi_create_stmt;
+      l_statement := replace(l_statement, '#PRE#', C_PAGE_PREFIX);
+      adc.set_items_from_statement(
+        p_cpi_id => adc_util.c_no_firing_item, 
+        p_statement => l_statement);
     else
       -- Was called from the rule report
-      l_statement := l_amfi_row.amfi_edit_stmt;
+      adc.initialize_form_region(C_REGION_FLS_FORM);
     end case;
-    adc.set_items_from_statement(
-      p_cpi_id => adc_util.c_no_firing_item, 
-      p_statement => l_statement);
 
     adc.show_hide_item('.adc-flows', '.adc-hide');
     adc.set_region_content(
@@ -1352,33 +1398,30 @@ as
       p_environment - Information about the status the designer is in
    */
   procedure validate_page(
-    p_environment in environment_rec)
+    p_environment in out nocopy environment_rec)
   as
-    l_apex_row adc_apex_actions_v%rowtype;
-    l_rule_row adc_rules%rowtype;
-    l_action_row adc_rule_actions%rowtype;
     $IF adc_util.C_WITH_FLOWS $THEN
     l_flow_row fls_diagrams_v%rowtype;
     $END
     l_caai_list char_table;
   begin
-    pit.enter_mandatory;
+    pit.enter_mandatory('validate_page');
 
     case p_environment.action_mode
       when C_MODE_CRU then
-        copy_rule(l_rule_row, p_environment.crg_id);
+        copy_rule(p_environment);
         pit.start_message_collection;
-        adc_admin.validate_rule(l_rule_row);
+        adc_admin.validate_rule(p_environment.cru_row);
         pit.stop_message_collection;
       when C_MODE_CRA then
-        copy_rule_action(l_action_row, p_environment.crg_id);
+        copy_rule_action(p_environment);
         pit.start_message_collection;
-        adc_admin.validate_rule_action(l_action_row);
+        adc_admin.validate_rule_action(p_environment.cra_row);
         pit.stop_message_collection;
       when C_MODE_CAA then
-        copy_apex_action(l_apex_row, l_caai_list);
+        copy_apex_action(p_environment, l_caai_list);
         pit.start_message_collection;
-        adc_admin.validate_apex_action(l_apex_row);
+        adc_admin.validate_apex_action(p_environment.caa_row);
         pit.stop_message_collection;
       else
         null;
@@ -1412,30 +1455,27 @@ as
       upon the method to call based on the command passed in.
    */
   procedure process_page(
-    p_environment environment_rec)
+    p_environment in out nocopy environment_rec)
   as
     l_crg_id adc_rule_groups.crg_id%type := adc.get_number(C_ITEM_CRG_ID);
-    l_apex_row adc_apex_actions_v%rowtype;
     l_rule_group_row adc_rule_groups%rowtype;
-    l_rule_row adc_rules%rowtype;
     $IF adc_util.C_WITH_FLOWS $THEN
     l_flow_row fls_diagrams_v%rowtype;
     $END
-    l_action_row adc_rule_actions%rowtype;
     l_selected_id adc_util.ora_name_type;
     l_caai_list char_table;
   begin
-    pit.enter_mandatory;
+    pit.enter_mandatory('process_page');
     
     case p_environment.action_mode
       when C_MODE_CRG then
         l_rule_group_row.crg_id := p_environment.crg_id;
       when C_MODE_CRU then
-        copy_rule(l_rule_row, p_environment.crg_id);
+        copy_rule(p_environment);
       when C_MODE_CRA then
-        copy_rule_action(l_action_row, p_environment.crg_id);
+        copy_rule_action(p_environment);
       when C_MODE_CAA then
-        copy_apex_action(l_apex_row, l_caai_list);
+        copy_apex_action(p_environment, l_caai_list);
       else
         null;
     end case;
@@ -1445,23 +1485,23 @@ as
         pit.info(msg.ADCA_ACTION_REQUESTED, msg_args(C_ACTION_UPDATE, p_environment.target_mode));
         case p_environment.target_mode
           when C_MODE_CRU then
-            adc_admin.merge_rule(l_rule_row);
+            adc_admin.merge_rule(p_environment.cru_row);
             adc.set_item(
               p_cpi_id => C_ITEM_CRU_ID,
-              p_item_value => l_rule_row.cru_id);
-            l_selected_id := C_MODE_CRU || '_' || l_rule_row.cru_id;
+              p_item_value => p_environment.cru_row.cru_id);
+            l_selected_id := C_MODE_CRU || '_' || p_environment.cru_row.cru_id;
           when C_MODE_CRA then
-            adc_admin.merge_rule_action(l_action_row);
+            adc_admin.merge_rule_action(p_environment.cra_row);
             adc.set_item(
               p_cpi_id => C_ITEM_CRA_ID,
-              p_item_value => l_action_row.cra_id);
-            l_selected_id := C_MODE_CRA || '_' || l_action_row.cra_id;
+              p_item_value => p_environment.cra_row.cra_id);
+            l_selected_id := C_MODE_CRA || '_' || p_environment.cra_row.cra_id;
           when C_MODE_CAA then
-            adc_admin.merge_apex_action(l_apex_row, l_caai_list);
+            adc_admin.merge_apex_action(p_environment.caa_row, l_caai_list);
             adc.set_item(
               p_cpi_id => C_ITEM_CAA_ID,
-              p_item_value => l_apex_row.caa_id);
-            l_selected_id := C_MODE_CAA || '_' || l_apex_row.caa_id;
+              p_item_value => p_environment.caa_row.caa_id);
+            l_selected_id := C_MODE_CAA || '_' || p_environment.caa_row.caa_id;
           $IF adc_util.C_WITH_FLOWS $THEN
           when C_MODE_FLS then
             fls_admin_api.merge_diagram(l_flow_row);
@@ -1489,11 +1529,11 @@ as
           when C_MODE_CRG then
             adc_admin.delete_rule_group(l_rule_group_row);
           when C_MODE_CRU then
-            adc_admin.delete_rule(l_rule_row);
+            adc_admin.delete_rule(p_environment.cru_row);
           when C_MODE_CRA then
-            adc_admin.delete_rule_action(l_action_row);
+            adc_admin.delete_rule_action(p_environment.cra_row);
           when C_MODE_CAA then
-            adc_admin.delete_apex_action(l_apex_row);
+            adc_admin.delete_apex_action(p_environment.caa_row);
           $IF adc_util.C_WITH_FLOWS $THEN
           when C_MODE_FLS then
             fls_admin_api.delete_diagram(
@@ -1531,10 +1571,12 @@ as
 
     -- Refresh reports
     adc.refresh_item(
-      p_cpi_id => C_REGION_HIERARCHY);
+      p_cpi_id => C_REGION_HIERARCHY,
+      p_item_value => adc.get_string('SELECTED_NODE'));
 
     adc.refresh_item(
-      p_cpi_id => C_REGION_RULES);
+      p_cpi_id => C_REGION_RULES,
+      p_item_value => adc.get_string('SELECTED_NODE'));
 
     adc.refresh_item(
       p_cpi_id => C_REGION_FINDINGS);
@@ -1551,7 +1593,7 @@ as
       p_environment - Information about the status the designer is in
    */
   procedure handle_dml(
-    p_environment in environment_rec)
+    p_environment in out nocopy environment_rec)
   as
   begin
     pit.enter_optional('handle_dml');
@@ -1599,7 +1641,7 @@ as
     pit.enter_optional('maintain_visual_state');
     
     -- Clean up any existing errors
-    --adc.remove_all_errors;
+    --adc.clear_errors;
       
     -- React on changes of the hierarchy
     case 
@@ -1623,9 +1665,8 @@ as
         end if;
         adc.select_region_entry(
           p_region_id => l_target_region, 
-          p_entry_id => p_environment.selected_node,
-          p_set_focus => adc_util.C_FALSE,
-          p_no_event => adc_util.C_TRUE);
+          p_entry_id => p_environment.selected_node, 
+          p_notify => adc_util.C_FALSE);
       else
         null;
     end case;
@@ -1657,10 +1698,55 @@ as
         adc.show_hide_item('.adc-no-attributes', '.adc-hide');
         adc.set_region_content(C_REGION_HELP, null);
       end case;
+
+      if page_state.amda_remember_page_state = adc_util.C_TRUE then
+        adc_api.remember_page_state(
+          p_cpi_id => adc_util.C_NO_FIRING_ITEM,
+          p_page_items => get_form_items(page_state.amda_form_id));
+      end if;
     end loop;
     
     pit.leave_optional;
   end maintain_visual_state;
+  
+  
+  /**
+    Procedure: initialize
+      Method to initialize the ADC_UI package
+
+      Initially collects the name of all ADC Desginer page items per
+      form region and persists them in an internal data structure for
+      convenient access when working with the page designer.
+   */
+  procedure initialize
+  as
+  begin
+       
+    -- Persist list of page items per form region to define which page items to load when processing a form dynamically
+    -- Hard coded to prevent expensive SQL for each page call in connection pool environment
+    g_form_item_list('R13_CAA_FORM') := '["P13_CAA_ACTION","P13_CAA_CAAI_LIST","P13_CAA_CAAT_ID","P13_CAA_CHOICES","P13_CAA_CONFIRM_MESSAGE_NAME","P13_CAA_CONTEXT_LABEL","P13_CAA_CRG_ID","P13_CAA_GET","P13_CAA_HREF","P13_CAA_ICON","P13_CAA_ICON_TYPE","P13_CAA_ID","P13_CAA_INITIALLY_DISABLED","P13_CAA_INITIALLY_HIDDEN","P13_CAA_ITEM_WRAP_CLASS","P13_CAA_LABEL","P13_CAA_LABEL_CLASSES","P13_CAA_LABEL_END_CLASSES","P13_CAA_LABEL_START_CLASSES","P13_CAA_NAME","P13_CAA_OFF_LABEL","P13_CAA_ON_LABEL","P13_CAA_SET","P13_CAA_SHORTCUT","P13_CAA_TITLE"]';
+    g_form_item_list('R13_CRA_FORM') := '["P13_CRA_ACTIVE","P13_CRA_CAT_ID","P13_CRA_COMMENT","P13_CRA_CPI_ID","P13_CRA_CRG_ID","P13_CRA_CRU_ID","P13_CRA_ID","P13_CRA_ON_ERROR","P13_CRA_PARAM_1","P13_CRA_PARAM_2","P13_CRA_PARAM_3","P13_CRA_PARAM_4","P13_CRA_PARAM_5","P13_CRA_PARAM_AREA_1","P13_CRA_PARAM_AREA_2","P13_CRA_PARAM_AREA_3","P13_CRA_PARAM_AREA_4","P13_CRA_PARAM_AREA_5","P13_CRA_PARAM_CB_1","P13_CRA_PARAM_CB_2","P13_CRA_PARAM_CB_3","P13_CRA_PARAM_CB_4","P13_CRA_PARAM_CB_5","P13_CRA_PARAM_LOV_1","P13_CRA_PARAM_LOV_2","P13_CRA_PARAM_LOV_3","P13_CRA_PARAM_LOV_4","P13_CRA_PARAM_LOV_5","P13_CRA_PARAM_SWITCH_1","P13_CRA_PARAM_SWITCH_2","P13_CRA_PARAM_SWITCH_3","P13_CRA_PARAM_SWITCH_4","P13_CRA_PARAM_SWITCH_5","P13_CRA_RAISE_ON_VALIDATION","P13_CRA_RAISE_RECURSIVE","P13_CRA_SORT_SEQ"]';
+    g_form_item_list('R13_CRU_FORM') := '["P13_CRU_ACTIVE","P13_CRU_CONDITION","P13_CRU_CRG_ID","P13_CRU_FIRE_ON_PAGE_LOAD","P13_CRU_ID","P13_CRU_NAME","P13_CRU_SORT_SEQ"]';
+    g_form_item_list('R13_FLS_FORM') := '["P13_DIAGRAM_CATEGORY","P13_DIAGRAM_ID","P13_DIAGRAM_NAME","P13_DIAGRAM_STATUS_ID","P13_DIAGRAM_VERSION"]';
+    
+    /*
+      to update this item list, execute this SQL and paste the result:
+      
+      with params as (
+             select 117 p_app_id,
+                    13 p_page_id
+               from dual)
+      select 'g_form_item_list(''' || r.static_id || ''') := ''[' ||  listagg('"' || i.item_name || '"', ',') within group (order by item_name) || ']'';' item_list 
+        from apex_application_page_items i
+        join apex_application_page_regions r
+          on i.data_source_region_id = r.region_id
+        join params p
+          on i.application_id = p_app_id
+         and i.page_id = p_page_id
+       group by r.static_id;
+    */
+    
+  end initialize;
 
 
   /* 
@@ -1750,16 +1836,15 @@ as
    */
   procedure validate_rule_condition
   as
-    l_rule_row adc_rules%rowtype;
     l_environment environment_rec;
   begin
     pit.enter_mandatory;
     
     l_environment := read_environment;
-    copy_rule(l_rule_row, l_environment.crg_id);
+    copy_rule(l_environment);
 
     pit.start_message_collection;
-    adc_admin.validate_rule_condition(l_rule_row);
+    adc_admin.validate_rule_condition(l_environment.cru_row);
     pit.stop_message_collection;
 
     pit.leave_mandatory;
@@ -1820,5 +1905,7 @@ as
     return l_result;
   end support_flows;
   
+begin
+  initialize;
 end adca_ui_designer;
 /
