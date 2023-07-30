@@ -1008,7 +1008,7 @@ as
     l_result := call_scenario_plsql_code('register_item');     
     -- See execute_ut_scenario
     
-    ut.expect(adc_internal.get_items_to_observe).to_equal(C_PREFIX || 'COMMISSION_PCT');
+    ut.expect(adc_internal.get_page_items).to_equal(C_PREFIX || 'COMMISSION_PCT');
   end register_item;
   
   

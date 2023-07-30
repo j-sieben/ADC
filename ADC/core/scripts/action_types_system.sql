@@ -788,7 +788,7 @@ q'{}',
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'CLOSE_MODAL_DIALOG',
-    p_cap_capt_id => 'STRING_OR_JAVASCRIPT',
+    p_cap_capt_id => 'JAVA_SCRIPT',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Legt fest, welche Elementwerte beim Schließen des modalen Dialogs an die aufrufende Seite zurück geliefert werden. Die Elementwerte können auf der Aufrufenden Seite über <span style="font-family:'Courier New', Courier, monospace;">adc_api.get_event_data</span> ermittelt werden.</p><p>Elementnamen müssen als kommaseparierte Zeichenkette übergeben werden. Beispiel:<span style="font-family:'Courier New', Courier, monospace;"> “P5_EMP_ID”, “P5_EMP_JOB_ID”</span></p>}',
@@ -1090,7 +1090,7 @@ q'{}',
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'MONITOR_EVENT',
-    p_cap_capt_id => 'JAVA_SCRIPT_FUNCTION',
+    p_cap_capt_id => 'JAVA_SCRIPT',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{}',
@@ -1186,7 +1186,7 @@ q'{}',
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'NOT_NULL',
-    p_cap_capt_id => 'PIT_MESSAGE',
+    p_cap_capt_id => 'STRING_OR_PIT_MESSAGE',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Meldungsname, der ausgegeben werden soll, falls die Prüfung misslingt. Muss ein PIT-Meldungsname sein, in der Form <span style="font-family:'Courier New', Courier, monospace;">MSG.[Meldungsname]</span></p>}',
@@ -1438,7 +1438,7 @@ q'{}',
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'SEND_VALIDATE_PAGE',
-    p_cap_capt_id => 'PIT_MESSAGE',
+    p_cap_capt_id => 'STRING_OR_PIT_MESSAGE',
     p_cap_sort_seq => 3,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Referenziert eine Meldung, falls die Validierung fehl schlug.</p>}',
@@ -1816,7 +1816,7 @@ q'{}',
 
   adc_admin.merge_action_parameter(
     p_cap_cat_id => 'XOR',
-    p_cap_capt_id => 'PIT_MESSAGE',
+    p_cap_capt_id => 'STRING_OR_PIT_MESSAGE',
     p_cap_sort_seq => 2,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Meldungsname, der ausgegeben werden soll, falls die Prüfung misslingt. Muss ein PIT-Meldungsname sein, in der Form <span style="font-family:'Courier New', Courier, monospace;">MSG.[Meldungsname]</span></p>}',
