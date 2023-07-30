@@ -104,7 +104,16 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_INIT_ORIGIN',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Regel #1# (#2#), zusätzlich ausgelöst beim Laden der Seite^',
+    p_pms_text => q'^Rekursion #1#, Lauf #2#: Regel #3# (#4#), allgemeine Initialisierung, Dauer: #TIME#hsec^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 30,
+    p_pms_pml_name => 'GERMAN',
+    p_error_number => null);
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_INIT_ORIGIN_ADDITIONAL',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Rekursion #1#, Lauf #2#: Regel #3# (#4#), zusätzliche Initialisierung, Dauer: #TIME#hsec^',
     p_pms_description => q'^^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
@@ -122,7 +131,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_INVALID_DATE',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Ungültiges Datum. Erwartetes Format: #1#^',
+    p_pms_text => q'^#SQLERRM#^',
     p_pms_description => q'^^',
     p_pms_pse_id => 30,
     p_pms_pml_name => 'GERMAN',
@@ -421,7 +430,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Element #1# wurde auf Rekursion #2# auf den Stack geschrieben.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => 50,
     p_pms_pml_name => 'GERMAN',
     p_error_number => null);
 
@@ -602,6 +611,14 @@ begin
     p_pms_name => 'ADC_ACTION_EXECUTED',
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Führe Aktion #1# aus.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 50,
+    p_pms_pml_name => 'GERMAN');
+
+  pit_admin.merge_message(
+    p_pms_name => 'ADC_RULE_IGNORED',
+    p_pms_pmg_name => 'ADC',
+    p_pms_text => q'^Regel #1# wurde von Element #2# angefordert, aber ignoriert, da sie bereits angefordert wurde.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 50,
     p_pms_pml_name => 'GERMAN');
