@@ -35,6 +35,7 @@ as
     Type: session_value_rec
     
     Properties:
+      cpi_may_have_value - Flag to indicate whether the actual page item can possibly contain a value
       string_value - Actual value of the item as VARCHAR2
       date_value - Actual value of the item as DATE, if possible
       number_value  - Actual value of the item as NUMBER, if possible
@@ -43,6 +44,7 @@ as
   type session_value_rec is record(
     cpi_id adc_page_items.cpi_id%type,
     cpi_conversion adc_page_items.cpi_conversion%type,
+    cpi_may_have_value boolean,
     string_value adc_util.max_char,
     date_value date,
     number_value number);
@@ -281,34 +283,34 @@ as
     return boolean
   as
     l_count pls_integer;
-    l_is_value_item boolean;
+    l_session_value session_value_rec;
   begin
     pit.enter_optional(
       p_params => msg_params(
                     msg_param('p_crg_id', p_crg_id),
                     msg_param('p_cpi_id', p_cpi_id)));
     
-    select count(*)
-      into l_count
-      from dual
-     where exists(
-           select null
-             from adc_page_items
-            where cpi_crg_id = p_crg_id
-              and cpi_id = p_cpi_id
-              and cpi_cpit_id in (C_ITEM, C_APP_ITEM, C_NUMBER_ITEM, C_DATE_ITEM));
-       
-    l_is_value_item := l_count = 1;
-       
-    if not l_is_value_item and g_session_values.exists(p_cpi_id) then
-      g_session_values.delete(p_cpi_id);
+    if not g_session_values.exists(p_cpi_id) then      
+      select count(*)
+        into l_count
+        from dual
+       where exists(
+             select null
+               from adc_page_items
+              where cpi_crg_id = p_crg_id
+                and cpi_id = p_cpi_id
+                and cpi_cpit_id in (C_ITEM, C_APP_ITEM, C_NUMBER_ITEM, C_DATE_ITEM));
+         
+      l_session_value.cpi_id := p_cpi_id;
+      l_session_value.cpi_may_have_value := l_count > 0;
+      g_session_values(p_cpi_id) := l_session_value;       
     end if;
   
     pit.leave_optional(
       p_params => msg_params(
-                    msg_param('Result', case  l_count when 1 then adc_util.C_TRUE else adc_util.C_FALSE end)));
+                    msg_param('Result', adc_util.bool_to_flag(g_session_values(p_cpi_id).cpi_may_have_value))));
                     
-    return l_is_value_item;
+    return g_session_values(p_cpi_id).cpi_may_have_value;
   end item_may_have_value;
   
   
@@ -475,8 +477,9 @@ as
     l_value.number_value := p_number_value;
     l_value.date_value := p_date_value;
     l_value.cpi_conversion := p_format_mask;
+    l_value.cpi_may_have_value := item_may_have_value(p_crg_id, l_value.cpi_id);
     
-    if item_may_have_value(p_crg_id, l_value.cpi_id) then    
+    if l_value.cpi_may_have_value then    
       -- If requested, get the value from the session state
       if p_value = C_FROM_SESSION_STATE then
         l_value.string_value := coalesce(utl_apex.get_string(l_value.cpi_id), get_mandatory_default_value(p_crg_id, l_value.cpi_id));
@@ -536,16 +539,14 @@ as
     
     l_cpi_id := adc_util.harmonize_page_item_name(p_cpi_id);
     case
-      when g_session_values.exists(l_cpi_id) then
+      when g_session_values.exists(l_cpi_id) and g_session_values(l_cpi_id).cpi_may_have_value then
         l_string_value := g_session_values(l_cpi_id).string_value;
-      when item_may_have_value(p_crg_id, l_cpi_id) then
+      else
         set_value(
           p_crg_id => p_crg_id,
           p_cpi_id => l_cpi_id,
           p_value => C_FROM_SESSION_STATE);
         l_string_value := g_session_values(l_cpi_id).string_value;
-      else
-        null;
     end case;
     
     pit.leave_optional(
@@ -580,17 +581,15 @@ as
                     
     l_cpi_id := adc_util.harmonize_page_item_name(p_cpi_id);
     case
-      when g_session_values.exists(l_cpi_id) then
+      when g_session_values.exists(l_cpi_id) and g_session_values(l_cpi_id).cpi_may_have_value then
         l_date_value := g_session_values(l_cpi_id).date_value;
-      when item_may_have_value(p_crg_id, l_cpi_id) then
+      else
         set_value(
           p_crg_id => p_crg_id,
           p_cpi_id => l_cpi_id,
           p_value => C_FROM_SESSION_STATE, 
           p_format_mask => p_format_mask);
         l_date_value := g_session_values(l_cpi_id).date_value;
-      else
-        null;
     end case;
       
     pit.leave_optional(
@@ -625,17 +624,15 @@ as
     
     l_cpi_id := adc_util.harmonize_page_item_name(p_cpi_id);
     case
-      when g_session_values.exists(l_cpi_id) then
+      when g_session_values.exists(l_cpi_id) and g_session_values(l_cpi_id).cpi_may_have_value then
         l_number_value := g_session_values(l_cpi_id).number_value;
-      when item_may_have_value(p_crg_id, l_cpi_id) then
+      else
         set_value(
           p_crg_id => p_crg_id,
           p_cpi_id => l_cpi_id,
           p_value => C_FROM_SESSION_STATE, 
           p_format_mask => p_format_mask);
         l_number_value := g_session_values(l_cpi_id).number_value;
-      else
-        null;
     end case;
     
     pit.leave_optional(

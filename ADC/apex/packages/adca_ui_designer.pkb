@@ -1676,6 +1676,8 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
                         p_amda_actual_mode => p_environment.target_mode, 
                         p_amda_actual_id => p_environment.action) 
     loop
+      pit.assert_not_null(page_state.amda_actual_mode, p_msg_args => msg_args('Actual page mode'));
+      
       maintain_dml_actions(page_state);
 
       case page_state.amda_actual_mode

@@ -99,7 +99,35 @@ as
   
   /**
     Group: Private methods
-   */  
+   */
+  /**
+    Function: test_condition
+      Wrapper around a boolean expression to enhance documentation and tracing capabilities
+      
+    Parameters:
+      p_test - boolean expression to evaluate
+      p_meaning - short description of the fact that is tested
+      
+    Returns:
+      Boolean value of p_test
+   */
+  function test_condition(
+    p_test in boolean,
+    p_meaning in varchar2)
+    return boolean
+  as
+    l_result boolean;
+  begin
+    l_result := p_test;
+    
+    if not l_result then
+      apex_debug.warn('Condition failed: ' || p_meaning);
+    end if;
+    
+    return l_result;
+  end test_condition;
+  
+  
   /** 
     Function: get_max_level
       Method to calculate up to which level the response fits into 32KByte
@@ -140,6 +168,46 @@ as
       p_params => msg_params(msg_param('Level', l_level)));
     return l_level;
   end get_max_level;
+  
+  
+  /**
+    Function: get_java_script
+      Method collects all JavaScript chunks for the response
+      
+    Returns:
+      Script containing all JavaScript chunks for the page
+   */
+  function get_java_script
+    return varchar2
+  as
+    l_java_script adc_util.max_char;
+    l_max_level binary_integer;
+    l_result boolean;
+  begin
+    pit.enter_optional('get_java_script');
+    pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Funktionstest'));
+    
+    if g_param.js_action_stack.count > 0 then
+      l_max_level := get_max_level;
+      
+      -- collect all javascript chunks
+      for i in 1 .. g_param.js_action_stack.count loop
+        if test_condition(g_param.js_action_stack.exists(i), 'Entry ' || i || ' does not exist')
+          and test_condition(coalesce(g_param.js_action_stack(i).debug_level, adc_util.C_JS_CODE) <= l_max_level, 'Level not allowed')
+          and test_condition(not(g_param.js_action_stack(i).debug_level = adc_util.C_JS_DEBUG), 'Level is debug')
+          --and test_condition(not pit.check_log_level_greater_equal(pit.LEVEL_DEBUG), 'Log settings are higher than message')
+          and test_condition(coalesce(length(l_java_script) + length(g_param.js_action_stack(i).script), 0) < adc_util.C_MAX_LENGTH, 'Max length exceeded')
+          and test_condition(length(replace(replace(g_param.js_action_stack(i).script, ' '), adc_util.C_CR)) > 0, 'no entry detected')
+        then
+          utl_text.append(l_java_script, replace(g_param.js_action_stack(i).script, adc_util.C_CR) || adc_util.C_CR);
+        end if;
+      end loop;
+    end if;
+    
+    pit.leave_optional(
+      p_params => msg_params(msg_param('JavaScript', l_java_script)));
+    return l_java_script;
+  end get_java_script;
   
    
   /** 
@@ -271,7 +339,8 @@ as
       g_param.level_length(l_response.debug_level) := g_param.level_length(l_response.debug_level) + length(l_response.script);
     end if;
   
-    pit.leave_optional;
+    pit.leave_optional(
+      p_params => msg_params(msg_param('Script added', l_response.script)));
   end add_javascript;
   
   
@@ -377,41 +446,20 @@ as
   as
     l_response clob;
     l_remaining_length binary_integer := 30000;
+    l_js_script_frame_template adc_util.sql_char;
     l_changed_items adc_util.max_char;
     l_firing_items adc_util.max_char;
-    l_errors adc_util.max_char;
-    l_max_level binary_integer;
-    l_js_script_frame_template adc_util.sql_char;
   begin
     pit.enter_optional('get_response');
   
     l_js_script_frame_template := utl_text.get_text_template(
-                                    p_type => adc_util.C_PARAM_GROUP,
-                                    p_name => 'JS_SCRIPT_FRAME',
-                                    p_mode => 'FRAME');
-                        
-    -- collect javascript from stack
-    if g_param.js_action_stack.count > 0 then
-      l_max_level := get_max_level;
-      
-      -- collect all javascript chunks
-      for i in 1 .. g_param.js_action_stack.count + 1 loop
-        if g_param.js_action_stack.exists(i)
-          and coalesce(g_param.js_action_stack(i).debug_level, adc_util.C_JS_CODE) <= l_max_level
-          and not(g_param.js_action_stack(i).debug_level = adc_util.C_JS_DEBUG 
-          and not(pit.check_log_level_greater_equal(pit.LEVEL_DEBUG)))
-          and coalesce(length(l_response), 0) + length(g_param.js_action_stack(i).script) < adc_util.C_MAX_LENGTH
-          and length(replace(replace(g_param.js_action_stack(i).script, ' '), adc_util.C_CR)) > 0
-        then
-          utl_text.append(l_response, replace(g_param.js_action_stack(i).script, adc_util.C_CR) || adc_util.C_CR);
-        end if;
-      end loop;
-    end if;
-    
+                                      p_type => adc_util.C_PARAM_GROUP,
+                                      p_name => 'JS_SCRIPT_FRAME',
+                                      p_mode => 'FRAME');
+       
     -- wrap JavaScript in <script> tag and add item value and error scripts
-    -- Replace explicitely to circumvent length limitation of CHAR_TABLE and to improve performance
     l_response := adc_util.bulk_replace(l_js_script_frame_template, adc_util.string_table(
-                    '#SCRIPT#', l_response,
+                    '#SCRIPT#', get_java_script,
                     '#JS_FILE#', C_JS_SHORTCUT,
                     '#JS_SHORTCUT#', C_JS_SHORTCUT,
                     '#JS_NAMESPACE#', C_JS_NAMESPACE,
@@ -427,10 +475,9 @@ as
     l_remaining_length := l_remaining_length - coalesce(length(l_changed_items), 0);
     l_firing_items := adc_recursion_stack.get_firing_items_as_json;
     l_remaining_length := l_remaining_length - coalesce(length(l_response), 0);
-    l_errors := get_errors_as_json(l_remaining_length);
     
     l_response := adc_util.bulk_replace(l_response, adc_util.string_table(
-                    '#ERROR_JSON#', l_errors,
+                    '#ERROR_JSON#', get_errors_as_json(l_remaining_length),
                     '#ITEM_JSON#', l_changed_items,
                     '#FIRING_ITEMS#', l_firing_items));
     

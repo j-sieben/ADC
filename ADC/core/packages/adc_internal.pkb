@@ -32,6 +32,7 @@ as
       cra_on_error - Flag to indicate whether this rule action is an error handler
       cru_has_error_handler - Flag to indicate whether this rule has got at least one error handler
       is_first_action - Flag to indicate whether this action is the first to execute.
+      actual_status - MSG_PARAMS instance to maintain column ACTUAL_STATUS of the rule record
    */
   type rule_action_rec is record(
     cru_id adc_rules.cru_id%type,
@@ -50,14 +51,13 @@ as
     cra_param_2_type adc_action_param_types.capt_id%type,
     cra_param_3 adc_rule_actions.cra_param_3%type,
     cra_param_3_type adc_action_param_types.capt_id%type,
-    cra_raise_recursive adc_action_param_types.capt_id%type,
+    cra_raise_recursive adc_action_types.cat_raise_recursive%type,
     cru_has_error_handler adc_rule_actions.cra_on_error%type,
     is_first_action adc_util.flag_type,
     actual_status msg_params
   );
 
   type rule_list_t is table of binary_integer;
-  g_rule_list rule_list_t;
 
   /** 
     Type: param_rec
@@ -86,6 +86,8 @@ as
     additional_items char_table,
     stop_flag adc_util.flag_type,
     has_errors boolean,
+    rule_stmt adc_rule_groups.crg_decision_table%type,
+    rule_list rule_list_t,
     rule_counter binary_integer,
     recursive_depth binary_integer
   );
@@ -403,7 +405,8 @@ as
       adc_response.add_comment(l_message, msg_args(to_char(p_action_rec.cra_sort_seq)));
     end if;
 
-    pit.leave_detailed;
+    pit.leave_detailed(
+      p_params => msg_params(msg_param('Execute Rule', adc_util.bool_to_flag(l_result))));
     return l_result;
   end check_execute_rule_action;
 
@@ -416,18 +419,13 @@ as
 
       - evaluate which rule to execute and 
       - execute all actions of that rule
-
-    Parameter:
-      p_rule_stmt - SQL statment of the decision rule. Read from the metadata earlier and passed in as a parameter
-                    to avoid several roundtrips to the SQL during a rule evaluation
    */
-  procedure evaluate_and_execute_rule_action(
-    p_rule_stmt in adc_util.max_char)
+  procedure evaluate_and_execute_rule_action
   as
     l_action_rec rule_action_rec;
     l_action_cur sys_refcursor;
     l_loop_counter binary_integer;
-    l_cru_id adc_rules.cru_id%type := 0;
+    l_is_first_row boolean := true;
   begin
     pit.enter_mandatory('evaluate_and_execute_rule_action');
 
@@ -436,23 +434,20 @@ as
     g_param.rule_counter := g_param.rule_counter + 1;
 
     -- Evaluate which rule to execute by querying the decision table
-    open l_action_cur for p_rule_stmt;
+    open l_action_cur for g_param.rule_stmt;
     fetch l_action_cur into l_action_rec;
     pit.info(msg.ADC_PROCESSING_RULE, msg_args(to_char(l_action_rec.cru_sort_seq), l_action_rec.cru_name));
 
-    if not l_action_rec.cru_id member of g_rule_list then
+    if not l_action_rec.cru_id member of g_param.rule_list then
       -- Process rule actions
-      g_rule_list.extend;
-      g_rule_list(g_rule_list.last) := l_action_rec.cru_id;
+      g_param.rule_list.extend;
+      g_param.rule_list(g_param.rule_list.last) := l_action_rec.cru_id;
       
       adc_util.monitor_loop;
       while l_action_cur%FOUND loop
-        if l_cru_id != l_action_rec.cru_id then
-          if l_cru_id > 0 then
-            adc_response.register_recursion_end(true);
-          end if;
-          l_cru_id := l_action_rec.cru_id;
+        if l_is_first_row then
           add_origin_comment(l_action_rec);
+          l_is_first_row := false;
         end if;
   
         -- execute rule action if possible
@@ -467,7 +462,7 @@ as
         adc_util.monitor_loop(l_loop_counter, 'evaluate_and_execute_rule_action');
       end loop;
   
-      adc_response.register_recursion_end(l_cru_id > 0);
+      adc_response.register_recursion_end(l_is_first_row);
       adc_util.close_cursor(l_action_cur);
     else
       if l_action_rec.cru_sort_seq is not null then 
@@ -480,7 +475,7 @@ as
   exception
     when others then
       adc_util.close_cursor(l_action_cur);
-      pit.handle_exception(msg.PIT_SQL_ERROR, msg_args(p_rule_stmt));
+      pit.handle_exception(msg.PIT_SQL_ERROR, msg_args(g_param.rule_stmt));
   end evaluate_and_execute_rule_action;
 
 
@@ -553,8 +548,7 @@ as
     Returns:
       HTML script element with a JavaScript code containing the answer of the rule.
    */
-  procedure process_rule(
-    p_rule_stmt in adc_util.max_char)
+  procedure process_rule
   as
   begin
     pit.enter_mandatory('process_rule');
@@ -562,7 +556,7 @@ as
     g_param.recursive_depth := adc_recursion_stack.get_level + 1;
 
     if g_param.stop_flag = adc_util.C_FALSE then
-      evaluate_and_execute_rule_action(p_rule_stmt);
+      evaluate_and_execute_rule_action;
     end if;
 
     -- remove processed item from recursive stack (or all, if requested)
@@ -572,7 +566,7 @@ as
     -- If a rule action changes the session state, the changed item will be pushed onto the recursive stack
     adc_recursion_stack.get_next(g_param.firing_item, g_param.firing_event, g_param.event_data);
     if g_param.firing_item is not null then
-      process_rule(p_rule_stmt);
+      process_rule;
     end if;
 
     pit.leave_mandatory;
@@ -604,24 +598,33 @@ as
   as
     l_row rule_action_rec;
   begin
-    pit.enter_detailed(
+    pit.enter_optional(
       p_params => msg_params(
-                    msg_param('p_cat_id', p_cat_id)));
+                    msg_param('p_cat_id', p_cat_id),
+                    msg_param('p_cpi_id', p_cpi_id),
+                    msg_param('p_param_1', p_param_1),
+                    msg_param('p_param_2', p_param_2),
+                    msg_param('p_param_3', p_param_3),
+                    msg_param('p_allow_recursion', p_allow_recursion)));
+                    
+    l_row.cra_item := p_cpi_id;
+    l_row.cra_param_1 := p_param_1;
+    l_row.cra_param_2 := p_param_2;
+    l_row.cra_param_3 := p_param_3;
+    l_row.cra_raise_recursive := p_allow_recursion;
 
-    select null cru_id, null cru_sort_seq, null cru_name, null cru_firing_items, null cru_fire_on_page_load,
-           p_cpi_id cra_item, cat_pl_sql, cat_js, null cra_sort_seq, null cra_on_error,
-           p_param_1 cra_param_1, max(decode(cap_sort_seq, 1, cap_capt_id)) cra_param_1_type,
-           p_param_2 cra_param_2, max(decode(cap_sort_seq, 2, cap_capt_id)) cra_param_2_type,
-           p_param_3 cra_param_3, max(decode(cap_sort_seq, 3, cap_capt_id)) cra_param_3_type,
-           p_allow_recursion cra_raise_recursive, null cru_has_error_handler, null is_first_action, msg_params() actual_status
-      into l_row
+    select cat_pl_sql, cat_js, 
+           max(decode(cap_sort_seq, 1, cap_capt_id)) cra_param_1_type,
+           max(decode(cap_sort_seq, 2, cap_capt_id)) cra_param_2_type,
+           max(decode(cap_sort_seq, 3, cap_capt_id)) cra_param_3_type
+      into l_row.cat_pl_sql, l_row.cat_js, l_row.cra_param_1_type, l_row.cra_param_2_type, l_row.cra_param_3_type
       from adc_action_types
       left join adc_action_parameters
         on cat_id = cap_cat_id
      where cat_id = p_cat_id
      group by cat_pl_sql, cat_js;
 
-    pit.leave_detailed;
+    pit.leave_optional;
     return l_row;
   end evaluate_action_type;
 
@@ -630,11 +633,10 @@ as
     Group: Public methods - Getter
    */
   /**
-    Function: get_crg_id
-      See <ADC_INTERNAL.get_crg_id>
+    Procedure: set_crg_id
+      Sets the actual crg id in G_PARAMS
    */
-  function get_crg_id
-    return adc_rule_groups.crg_id%type
+  procedure set_crg_id
   as
     l_active adc_util.flag_type;                 
   begin
@@ -655,8 +657,21 @@ as
       g_param.crg_is_active := case l_active when adc_util.C_TRUE then true else false end;                                               
     end if;
 
+    pit.assert_not_null(g_param.crg_id, p_msg_args => msg_args('CRG_ID'));
     pit.leave_optional(
       p_params => msg_params(msg_param('CRG_ID', g_param.crg_id)));
+  end set_crg_id;
+  
+  
+  /**
+    Function: get_crg_id
+      See <ADC_INTERNAL.get_crg_id>
+   */
+  function get_crg_id
+    return adc_rule_groups.crg_id%type
+  as
+    l_active adc_util.flag_type;                 
+  begin
     return g_param.crg_id;
   end get_crg_id;
 
@@ -881,7 +896,6 @@ as
     return clob
   as
     l_js_script adc_util.max_char;
-    l_rule_stmt adc_util.max_char;
   begin      
     pit.enter_mandatory;
 
@@ -898,13 +912,15 @@ as
             p_is_mandatory => null);
         end if;
 
-        -- get rule statement to evaluate the necessary actions
+        -- get decision table statement once for all recursions
         select crg_decision_table /*+ result_cache */
-          into l_rule_stmt
+          into g_param.rule_stmt
           from adc_rule_groups
          where crg_id = g_param.crg_id;
         -- recursively evaluate all applicable rules and execute them
-        process_rule(l_rule_stmt);
+        pit.assert_not_null(g_param.rule_stmt, p_msg_args => msg_args('decision table'));
+        
+        process_rule;
 
       end if;
 
@@ -955,15 +971,14 @@ as
                     msg_param('p_firing_item', p_firing_item),
                     msg_param('p_event', p_event),
                     msg_param('p_event_data', p_event_data)));
+                    
+    pit.assert_not_null(p_firing_item, p_msg_args => msg_args('p_firing_item'));
+    pit.assert_not_null(p_event, p_msg_args => msg_args('p_event'));
 
-    g_param.crg_id := get_crg_id;
-    pit.assert_not_null(g_param.crg_id);
-    g_rule_list := rule_list_t();
+    set_crg_id;
 
     if g_param.crg_is_active then
-      pit.assert_not_null(p_firing_item);
-      pit.assert_not_null(p_event);
-
+      
       -- Initialize collections
       g_param.bind_event_items := char_table();
       g_param.firing_item := p_firing_item;
@@ -973,6 +988,7 @@ as
       g_param.stop_flag := adc_util.C_FALSE;
       g_param.has_errors := false;
       g_param.rule_counter := 0;
+      g_param.rule_list := rule_list_t();
       adc_recursion_stack.reset(g_param.crg_id, g_param.firing_item, g_param.firing_event);    
       adc_page_state.reset;
       adc_response.initialize_response(g_param.initialize_mode, g_param.crg_id);
@@ -1085,6 +1101,7 @@ as
     when others then
       register_error(p_cpi_id, substr(sqlerrm, 12), '');
   end check_mandatory;
+  
 
   /**
     Procedure: get_javascript_for_action
@@ -1142,6 +1159,11 @@ as
       p_param_2 => p_param_2,
       p_param_3 => p_param_3,
       p_allow_recursion => p_allow_recursion);
+      
+    pit.log_state(
+      msg_params(
+        msg_param('PL/SQL', l_row.cat_pl_sql),
+        msg_param('JS', l_row.cat_js)));
 
     if l_row.cat_pl_sql is not null then
       l_pl_sql := generate_parameterized_code('PLSQL', l_row);
@@ -1157,7 +1179,8 @@ as
     when NO_DATA_FOUND then
       register_error('DOCUMENT', msg.ADC_ACTION_DOES_NOT_EXIST, msg_args(p_cat_id));
     when others then
-      pit.handle_exception(msg.ADC_PLSQL_ERROR, msg_args(l_row.cat_pl_sql));
+      pit.handle_exception(msg.ADC_PLSQL_ERROR, msg_args(l_pl_sql));
+      register_error(p_cpi_id, msg.ADC_PLSQL_ERROR, msg_args(apex_escape.json(l_pl_sql)));
   end execute_action;
 
 

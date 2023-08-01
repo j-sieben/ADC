@@ -330,12 +330,16 @@ as
     pit.enter_optional('get_level');
     
     l_stack_entry := get_first_item;
+    
     pit.leave_optional(
       p_params => msg_params(
                     msg_param('Level', l_stack_entry.recursive_level)));
     return l_stack_entry.recursive_level;
   exception
     when others then
+      pit.leave_optional(
+        p_params => msg_params(
+                      msg_param('Level', 0)));
       return 0;
   end get_level;
   
