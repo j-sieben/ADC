@@ -13,7 +13,7 @@ as
       p_row - Rowtype of the respective underlying view
    */
   procedure copy_edpti(
-    p_row in out nocopy pit_translatable_item_v%rowtype)
+    p_row in out nocopy pit_translatable_item%rowtype)
   as
   begin
     pit.enter_detailed('copy_edpti');
@@ -282,7 +282,7 @@ as
   function validate_edpti
   return boolean
   as
-    l_row pit_translatable_item_v%rowtype;
+    l_row pit_translatable_item%rowtype;
   begin
     pit.enter_mandatory;
 
@@ -303,7 +303,7 @@ as
 
   procedure process_edpti
   as
-    l_row pit_translatable_item_v%rowtype;
+    l_row pit_translatable_item%rowtype;
   begin
     pit.enter_mandatory;
 

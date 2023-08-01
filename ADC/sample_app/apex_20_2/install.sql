@@ -7,23 +7,24 @@ prompt &s1.Install application
 @&app_dir.sadc.sql
 
 set verify off
+define script_dir=&APP_SCRIPT_DIR.
 prompt &s1.Install ADC rules
-@&app_script_dir.merge_rule_group_sadc_adact
-@&app_script_dir.merge_rule_group_sadc_adadc
-@&app_script_dir.merge_rule_group_sadc_adanf
-@&app_script_dir.merge_rule_group_sadc_adrep
-@&app_script_dir.merge_rule_group_sadc_adsta
-@&app_script_dir.merge_rule_group_sadc_adval
-@&app_script_dir.merge_rule_group_sadc_adval2
-@&app_script_dir.merge_rule_group_sadc_caaex
-@&app_script_dir.merge_rule_group_sadc_catpi
-@&app_script_dir.merge_rule_group_sadc_doc
-@&app_script_dir.merge_rule_group_sadc_edemp
-@&app_script_dir.merge_rule_group_sadc_einit
-@&app_script_dir.merge_rule_group_sadc_elems
-@&app_script_dir.merge_rule_group_sadc_home
-@&app_script_dir.merge_rule_group_sadc_menu_cat
-@&app_script_dir.merge_rule_group_sadc_pseudo
-@&app_script_dir.merge_rule_group_sadc_tutorial
-@&app_script_dir.merge_rule_group_sadc_unittest
-@&app_script_dir.merge_rule_group_sadc_useadc
+@&tool_dir.run_script merge_rule_group_sadc_adact
+@&tool_dir.run_script merge_rule_group_sadc_adadc
+@&tool_dir.run_script merge_rule_group_sadc_adanf
+@&tool_dir.run_script merge_rule_group_sadc_adrep
+@&tool_dir.run_script merge_rule_group_sadc_adsta
+@&tool_dir.run_script merge_rule_group_sadc_adval
+@&tool_dir.run_script merge_rule_group_sadc_adval2
+@&tool_dir.run_script merge_rule_group_sadc_caaex
+@&tool_dir.run_script merge_rule_group_sadc_catpi
+@&tool_dir.run_script merge_rule_group_sadc_doc
+@&tool_dir.run_script merge_rule_group_sadc_edemp
+@&tool_dir.run_script merge_rule_group_sadc_einit
+@&tool_dir.run_script merge_rule_group_sadc_elems
+@&tool_dir.run_script merge_rule_group_sadc_home
+@&tool_dir.run_script merge_rule_group_sadc_menu_cat
+@&tool_dir.run_script merge_rule_group_sadc_pseudo
+@&tool_dir.run_script merge_rule_group_sadc_tutorial
+@&tool_dir.run_script merge_rule_group_sadc_unittest
+@&tool_dir.run_script merge_rule_group_sadc_useadc

@@ -140,11 +140,13 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
+    
+    
   adc_admin.merge_rule(
     p_cru_id => adc_admin.map_id(183),
     p_cru_crg_id => adc_admin.map_id(163),
     p_cru_name => 'Seite absenden',
-    p_cru_condition => q'|B50_SPEICHERN = c_clicked|',
+    p_cru_condition => q'|B50_SPEICHERN = click|',
     p_cru_sort_seq => 30,
     p_cru_fire_on_page_load => adc_util.C_FALSE,
     p_cru_active => adc_util.C_TRUE);
@@ -181,7 +183,7 @@ begin
     p_cru_id => adc_admin.map_id(189),
     p_cru_crg_id => adc_admin.map_id(163),
     p_cru_name => 'Schaltfläche "Meldung anzeigen" auswählen',
-    p_cru_condition => q'|B50_MLD = c_clicked|',
+    p_cru_condition => q'|B50_MLD = click|',
     p_cru_sort_seq => 20,
     p_cru_fire_on_page_load => adc_util.C_FALSE,
     p_cru_active => adc_util.C_TRUE);
