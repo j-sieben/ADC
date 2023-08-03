@@ -1159,11 +1159,6 @@ as
       p_param_2 => p_param_2,
       p_param_3 => p_param_3,
       p_allow_recursion => p_allow_recursion);
-      
-    pit.log_state(
-      msg_params(
-        msg_param('PL/SQL', l_row.cat_pl_sql),
-        msg_param('JS', l_row.cat_js)));
 
     if l_row.cat_pl_sql is not null then
       l_pl_sql := generate_parameterized_code('PLSQL', l_row);
@@ -1199,9 +1194,7 @@ as
       from adc_apex_actions
      where caa_id = p_command;
     g_param.firing_event := 'command';
-    pit.log_state(
-      msg_params(
-        msg_param('Command', g_param.event_data)));
+    
     adc_recursion_stack.push_firing_item(
       p_crg_id => g_param.crg_id,
       p_cpi_id => C_COMMAND,

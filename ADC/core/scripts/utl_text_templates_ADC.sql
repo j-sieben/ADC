@@ -272,6 +272,7 @@ q'[        group by cap_cat_id),\CR\]' ||
 q'[     session_state as(\CR\]' || 
 q'[       select /*+ no_merge */\CR\]' || 
 q'[              p_event event,\CR\]' || 
+q'[              p_event_data event_data,\CR\]' || 
 q'[              #EVENT_LIST#,\CR\]' || 
 q'[              #COLUMN_LIST#,\CR\]' || 
 q'[              c_true, c_false\CR\]' || 

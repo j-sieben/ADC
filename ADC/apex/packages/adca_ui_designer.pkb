@@ -350,7 +350,7 @@ as
       Method to retrieve a list of items for a given form
       
     Parameter:
-      p_form_id - ID of the form for which to get the item list for.
+      p_form_id - Static ID of the form for which to get the item list for.
   
     Returns:
       List of items for the requested form, empty array string if the form does not exist
@@ -456,16 +456,16 @@ as
     end case;
 
     -- assemble
-    l_action := replace(replace(replace(replace(replace(replace(C_DATA_TEMPLATE, 
-                  '#COMMAND#', p_action),
-                  '#PAGE_ITEM_LIST#', '""'),--l_page_items),
-                  '#TARGET_MODE#', l_target_mode),
-                  '#ACTION_MODE#', l_action_mode),
-                  '#NODE_ID#', l_node_id),
-                  '#MONITOR_CHANGES#', l_monitor_changes);
-    l_action := replace(replace(l_template, 
-                  '#DATA#', l_action),
-                  '#CONFIRM_MESSAGE#', p_row.amda_delete_confirm_message);
+    l_action := adc_util.bulk_replace(C_DATA_TEMPLATE, adc_util.string_table(
+                  '#COMMAND#', p_action,
+                  '#PAGE_ITEM_LIST#', '""',
+                  '#TARGET_MODE#', l_target_mode,
+                  '#ACTION_MODE#', l_action_mode,
+                  '#NODE_ID#', l_node_id,
+                  '#MONITOR_CHANGES#', l_monitor_changes));
+    l_action := adc_util.bulk_replace(l_template, adc_util.string_table(
+                  '#DATA#', l_action,
+                  '#CONFIRM_MESSAGE#', p_row.amda_delete_confirm_message));
 
     pit.leave_optional;
     return l_action;
@@ -804,16 +804,11 @@ as
        where coalesce(cra_id, 0) = coalesce(p_cra_id, 0)
          and cat_id = p_cat_id
        order by cap_sort_seq;
-
-    l_mandatory_message adc_util.max_char;
   begin
     pit.enter_optional('set_cra_param_settings',
       p_params => msg_params(
                     msg_param('p_cra_id', p_cra_id),
                     msg_param('p_cat_id', p_cat_id)));
-
-    -- Initialize
-    l_mandatory_message := pit.get_message_text(msg.ADC_ITEM_IS_MANDATORY);
 
     -- Hide all parameter regions
     adc.set_visual_state(
@@ -834,30 +829,28 @@ as
       if param.cap_mandatory = adc_util.C_TRUE then
         adc.set_mandatory(
            p_cpi_id => param.cap_page_item,
-           p_msg_text => replace(l_mandatory_message, '#LABEL#', param.capt_name));
+           p_msg_text => replace(pit.get_message_text(msg.ADC_ITEM_IS_MANDATORY), '#LABEL#', param.capt_name));
       else
         adc.set_optional(
-          p_cpi_id => param.cap_page_item);
-        adc.set_visual_state(
           p_cpi_id => param.cap_page_item,
           p_visual_state => adc.C_SHOW_ENABLE);   
       end if;
 
-     -- set values, if required after refresh
-     if instr(param.capt_capvt_id, 'LIST') > 0 then
-       -- any list type (LOV or CB) is based on a lov query, so set the name for that query
-       adc.set_item(
-         p_cpi_id => C_PAGE_PREFIX || 'CRA_LOV_PARAM_' || param.cap_sort_seq,
-         p_item_value => param.capt_id);
-       adc.refresh_item(
-         p_cpi_id => param.cap_page_item, 
-         p_item_value => enquote(param.cap_value));
-     else
-       adc.set_item(
-         p_cpi_id => param.cap_page_item,
-         p_item_value => param.cap_value,
-         p_allow_recursion => adc_util.C_FALSE);
-     end if;
+      -- set values, if required after refresh
+      if instr(param.capt_capvt_id, 'LIST') > 0 then
+        -- any list type (LOV or CB) is based on a lov query, so set the name for that query
+        adc.set_item(
+          p_cpi_id => C_PAGE_PREFIX || 'CRA_LOV_PARAM_' || param.cap_sort_seq,
+          p_item_value => param.capt_id);
+        adc.refresh_item(
+          p_cpi_id => param.cap_page_item, 
+          p_item_value => enquote(param.cap_value));
+      else
+        adc.set_item(
+          p_cpi_id => param.cap_page_item,
+          p_item_value => param.cap_value,
+          p_allow_recursion => adc_util.C_FALSE);
+      end if;
 
     end loop;
 
@@ -909,10 +902,12 @@ as
         -- Harmonize with page state
         set_id_values(l_environment);
       when C_ITEM_CRA_CAT_ID then
+        -- Action type has changed
         l_cra_id := adc.get_number(C_ITEM_CRA_ID);
         l_environment.crg_id := adc.get_number(C_ITEM_CRG_ID);
         l_environment.action := null;
       when C_ITEM_CRU_CONDITION then
+        -- technical condition has changed
         l_environment.crg_id := adc.get_number(C_ITEM_CRG_ID);
       when C_COMMAND then
         -- APEX Action has called the method. Event data is JSON, so extract attributes

@@ -82,7 +82,7 @@ as
                     msg_param('p_crg_id', p_crg_id),
                     msg_param('p_cpi_id', p_cpi_id)));
                     
-    select cpi_item_default
+    select /*+ result_cache */ cpi_item_default
       into l_default
       from adc_page_items
      where cpi_is_mandatory = adc_util.c_true

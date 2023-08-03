@@ -123,6 +123,7 @@ as
                       to_clob('null is null')) where_clause,
                     utl_text.generate_text(cursor(
                       select template, 'EVENT' cpi_id from params where uttm_mode = 'ACTUAL_STATUS' union all
+                      select template, 'EVENT_DATA' cpi_id from params where uttm_mode = 'ACTUAL_STATUS' union all
                       select template, 'FIRING_ITEM' cpi_id from params where uttm_mode = 'ACTUAL_STATUS' union all
                       select template, cpi_id
                         from adc_page_items
