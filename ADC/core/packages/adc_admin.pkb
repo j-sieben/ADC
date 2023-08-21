@@ -794,8 +794,7 @@ as
                        join adc_action_types
                          on capt_id = cap_capt_id
                       where cap_cat_id = cat_id
-                        and (cat_cato_id = p_cato_id or p_cato_id is null)
-                        and cap_sort_seq = 1)
+                        and (cat_cato_id = p_cato_id or p_cato_id is null))
            ), adc_util.C_CR)
       into l_action_param_types
       from utl_text_templates_v
