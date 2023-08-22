@@ -9,4 +9,4 @@ show errors
 
 prompt &s1.Create package Body ADC_PLUGIN
 @&plugin_dir.packages/adc_plugin.pkb
-show 
+show errors
