@@ -7,7 +7,6 @@ create table adca_map_form_items(
 
 comment on table adca_map_form_items is 'Table to store the item list and the initialization code of the ADC Designer for performance optimization';
 comment on column adca_map_form_items.amfi_id is 'Primary key, ID of the form region';
-comment on column adca_map_form_items.amfi_item_list is 'List of page items as a string list, ready to be inserted into a JavaScript expression';
 comment on column adca_map_form_items.amfi_create_stmt is 'Statement to populate a given form region for a new entry';
 comment on column adca_map_form_items.amfi_edit_stmt is 'Statement to populate a given form region for an existing entry';
 

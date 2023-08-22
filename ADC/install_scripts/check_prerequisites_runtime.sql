@@ -32,3 +32,12 @@ begin
   dbms_output.put_line('&s1.Checked.');
 end;
 /
+
+
+col util_owner new_val UTIL_OWNER format a128
+select owner util_owner
+  from all_objects
+ where object_name = 'PIT'
+   and object_type = 'PACKAGE'
+   and rownum = 1;
+   
