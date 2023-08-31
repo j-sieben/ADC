@@ -15,8 +15,8 @@ set /p AppId=Enter the admin application ID:
 
 set nls_lang=GERMAN_GERMANY.AL32UTF8
 
-echo @install_scripts/install_core.sql %ApexWorkspace% | sqlplus %InstallUser%/%PWD%@%SID% 
+sqlplus %InstallUser%/%PWD%@%SID% @install_scripts/install_core.sql %ApexWorkspace% 
 
-echo @install_scripts/install_apex.sql %ApexWorkspace% %AppId% | sqlplus %InstallUser%/%PWD%@%SID% 
+sqlplus %InstallUser%/%PWD%@%SID% @install_scripts/install_apex.sql %ApexWorkspace% %AppId%
 
 @echo off

@@ -1,7 +1,7 @@
 -- Parameters:
 -- None
 
-@tools/init_apex.sql ADCA
+@tools/init_apex.sql &1. &2. ADCA
 clear screen
 
 prompt

@@ -14,6 +14,6 @@ set /p AppId=Optionally enter a new sample application ID:
 
 set nls_lang=GERMAN_GERMANY.AL32UTF8
 
-echo @install_scripts/install_sample.sql %ApexWorkspace% %AppId% | sqlplus %InstallUser%/%PWD%@%SID% 
+sqlplus %InstallUser%/%PWD%@%SID% @install_scripts/install_sample.sql %ApexWorkspace% %AppId%
 
 @echo off

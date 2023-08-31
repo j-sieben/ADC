@@ -10,8 +10,11 @@ for /f "tokens=*" %%a in ('%PWD%') do set PWD=%%a
 
 set /p SID=Enter service name for the database or PDB:
 
+set /p ApexWorkspace=Enter name of APEX workspace:
+set /p AppId=Enter the admin application ID:
+
 set nls_lang=GERMAN_GERMANY.AL32UTF8
 
-echo @install_scripts/uninstall_apex.sql | sqlplus %InstallUser%/%PWD%@%SID% 
+sqlplus %InstallUser%/%PWD%@%SID% @install_scripts/uninstall_apex.sql %ApexWorkspace% %AppId%
 
 @echo off

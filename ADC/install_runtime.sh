@@ -13,7 +13,7 @@ echo ${SERVICE}
 NLS_LANG=GERMAN_GERMANY.AL32UTF8
 export NLS_LANG
 
-echo @install_scripts/install_runtime.sql | sqlplus ${OWNER}/${PWD}@${SERVICE}
+sqlplus ${OWNER}/${PWD}@${SERVICE} @install_scripts/install_runtime.sql
 
 pause
 EOF
