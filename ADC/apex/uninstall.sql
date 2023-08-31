@@ -12,7 +12,7 @@ declare
             from user_objects
            where object_name in (
                  '', -- Typen
-                 'ADCA_UI', 'ADC_UI_DESIGNER', 'SPLITTER_PLUGIN', -- Packages
+                 'ADCA_UI', 'ADCA_UI_DESIGNER', 'SPLITTER_PLUGIN', -- Packages
                  'ADCA_BL_CAT_HELP', 'ADCA_BL_CAT_PARAMETER_ITEMS', 'ADCA_BL_DESIGNER_ACTIONS', 
                  'ADCA_UI_ADMIN_CAIF', 'ADCA_UI_ADMIN_CAPT', 'ADCA_UI_ADMIN_CAT', 'ADCA_UI_DESIGNER_APEX_ACTION', 
                  'ADCA_UI_DESIGNER_FINDINGS', 'ADCA_UI_DESIGNER_RULE', 'ADCA_UI_DESIGNER_RULES', 
@@ -26,7 +26,7 @@ declare
                  'ADCA_UI_LOV_CRG_PAGE_ITEMS', 'ADCA_UI_LOV_EXPORT_CAT', 'ADCA_UI_LOV_EXPORT_TYPES', 
                  'ADCA_UI_LOV_ITEM_TYPES', 'ADCA_UI_LOV_PAGE_ITEMS', 'ADCA_UI_LOV_PAGE_ITEMS_P11', 'ADC_UI_LOV_ACTION_TYPE_OWNER',
                  'ADCA_UI_LOV_PAGE_ITEM_TYPE', 'ADCA_UI_LOV_PAGE_ITEM_TYPE_GROUP', 'ADCA_UI_LOV_YES_NO', -- Views
-                 'ADCA_LU_DESIGNER_ACTIONS', 'ADCA_LU_DESIGNER_MODES', 'ADCA_MAP_DESIGNER_ACTIONS',   -- Tabellen
+                 'ADCA_LU_DESIGNER_ACTIONS', 'ADCA_LU_DESIGNER_MODES', 'ADCA_MAP_DESIGNER_ACTIONS', 'ADCA_MAP_FORM_ITEMS', 'UT_ADC_OUTCOME',  -- Tabellen
                  '',  -- Synonyme
                  '' -- Sequenzen
                  )

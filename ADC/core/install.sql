@@ -63,6 +63,8 @@ prompt &h3.Create parameter lov views
 @&tool_dir.create_lov_view adc_param_lov_string_on_parameter
 @&tool_dir.create_lov_view adc_param_lov_submit_type
 
+@&tool_dir.recompile.sql
+
 prompt &h2.Merge default data
 prompt &h3.Create ADC parameters
 @&tool_dir.run_script ParameterGroup_ADC
