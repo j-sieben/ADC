@@ -224,6 +224,16 @@ as
   begin
     return adc_internal.get_firing_item;
   end get_firing_item;
+  
+
+  function get_flag(
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_throw_error in adc_util.flag_type default adc_util.c_false)
+    return adc_util.flag_type
+  as
+  begin
+    return adc_util.get_boolean(adc_page_state.get_string(adc_internal.get_crg_id, p_cpi_id));
+  end get_flag;
 
 
   function get_lov_sql(

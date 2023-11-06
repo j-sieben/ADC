@@ -1,3 +1,4 @@
+
 @&tool_dir.check_has_column ADC_ACTION_TYPES CAT_CATO_ID "VARCHAR2(50 CHAR) default on null ''ADC'' constraint c_cat_cato_id_nn not null"
 
 begin

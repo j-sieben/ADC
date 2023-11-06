@@ -8,7 +8,9 @@ select cat_name || case cat_active when adc_util.C_FALSE then ' (deprecated)' en
   from adc_action_types_v
   join adc_action_type_groups_v
     on cat_catg_id = catg_id
- where exists(
+ cross join params
+ where p_crg_id is not null
+   and exists(
        select null
          from adc_action_item_focus
          join adc_page_item_types

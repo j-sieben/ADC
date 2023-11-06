@@ -33,6 +33,7 @@ begin
 end;
 /
 
+set termout off
 
 col util_owner new_val UTIL_OWNER format a128
 select owner util_owner
@@ -41,3 +42,4 @@ select owner util_owner
    and object_type = 'PACKAGE'
    and rownum = 1;
    
+set termout on

@@ -247,6 +247,32 @@ as
     return varchar2;
 
 
+  /** 
+    Function: get_flag
+      Method to retrieve the value of a page item as FLAG_TYPE.
+      
+      Depending on parameter P_THROW_ERROR an error is not only register upon unsuccessful conversion but thrown as well.
+      This is useful if a rule cannot be processed any further if the conversion is not successful.
+      
+      If the element is mandatory and NULL, a default value is returned as defined in the APEX metadata. If no such default
+      value exists, an exception is registered with ADC.
+   
+    Parameters:
+      p_cpi_id - ID of the page item
+      p_throw_error - Optional flag to indicate whether a non successful conversion is treated as an error. Defaults to C_TRUE.
+                      
+                      - adc_util.C_TRUE: an error is registered and thrown
+                      - adc_util.C_FALSE: an error is registered but not thrown
+                    
+    Returns:
+      FLAG_TYPE value
+   */
+  function get_flag(
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_throw_error in adc_util.flag_type default adc_util.C_FALSE)
+    return adc_util.flag_type;
+
+
   /**
     Function: get_lov_sql
       Method to retrieve a select statement that reads values for a given

@@ -244,8 +244,8 @@ as
       p_environment.cru_row.cru_sort_seq := adc.get_number('cru_sort_seq');
       p_environment.cru_row.cru_name := adc.get_string('cru_name');
       p_environment.cru_row.cru_condition := adc.get_string('cru_condition');
-      p_environment.cru_row.cru_fire_on_page_load := coalesce(adc.get_string('cru_fire_on_page_load'), adc_util.C_FALSE);
-      p_environment.cru_row.cru_active := coalesce(adc.get_string('cru_active'), adc_util.C_TRUE);
+      p_environment.cru_row.cru_fire_on_page_load := coalesce(adc.get_flag('cru_fire_on_page_load'), adc_util.C_FALSE);
+      p_environment.cru_row.cru_active := coalesce(adc.get_flag('cru_active'), adc_util.C_TRUE);
     end if;
 
     pit.leave_detailed;

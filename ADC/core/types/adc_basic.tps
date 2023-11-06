@@ -96,7 +96,7 @@ as object (
     p_cpi_id in varchar2,
     p_value_list in varchar2,
     p_message in varchar2 default 'ASSERTION_FAILED',
-    p_error_on_null in varchar2 default 1),
+    p_error_on_null in &FLAG_TYPE. default &C_TRUE.),
 
 
   /** Function: exclusive_or
@@ -190,6 +190,21 @@ as object (
    */
   static function get_firing_item
     return varchar2,
+    
+  
+  /**
+    Function: get_flag
+      Retrieves the actual item value from the page state as instance of &FLAG_TYPE.
+      
+    Parameters:
+      p_cpi_id - Page item ID that is selected to show the error message
+      
+    Returns:
+      Actual value from the page state
+   */
+  static function get_flag(
+    p_cpi_id in varchar2)
+    return &FLAG_TYPE.,
     
   
   /**

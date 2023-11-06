@@ -92,7 +92,7 @@ as
     pit.enter_detailed('parse',
       p_params => msg_params(msg_param('p_stmt', p_stmt)));
 
-    l_ctx := dbms_sql.open_cursor(p_stmt);
+    l_ctx := dbms_sql.open_cursor;
     dbms_sql.parse(l_ctx, p_stmt, dbms_sql.NATIVE);
     dbms_sql.close_cursor(l_ctx);
 

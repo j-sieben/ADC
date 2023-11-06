@@ -8,23 +8,6 @@ define tool_dir=tools/
 
 prompt
 prompt &section.
-prompt &h1.Checking prerequisites
-@&tool_dir.set_compiler_flags.sql
-@install_scripts/check_prerequisites.sql &1.
-
-prompt
-prompt &section.
-prompt &h1.PLUGIN ADC
-@&plugin_dir.install.sql
-
-prompt
-prompt &section.
-prompt &h1.Optional unit test package installation
--- @&tool_dir.check_unit_test_exists.sql "unit_test/uninstall.sql" "clean up"
--- @&tool_dir.check_unit_test_exists.sql "unit_test/install.sql" "installation"
-
-prompt
-prompt &section.
 prompt &h1.APEX Dynamic Controller (ADC) APEX Application Installation
 @apex/install.sql
 

@@ -316,7 +316,7 @@ as
 
     l_crg_app_id := utl_apex.get_number('CRG_APP_ID');
     
-    if utl_apex.get_string('INCLUDE_APP') = adc_util.c_true then
+    if utl_apex.get_boolean('INCLUDE_APP') then
       l_mode := adc_admin.C_APEX_APP;
       l_zip_file_name := replace(l_application_filename, '#APP_ID#', l_crg_app_id);
     else

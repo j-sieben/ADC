@@ -51,6 +51,9 @@ as
    */
   type id_map_t is table of binary_integer index by binary_integer;
   g_id_map id_map_t;
+  g_true adc_util.flag_type := adc_util.C_TRUE;
+  g_false adc_util.flag_type := adc_util.C_FALSE;
+  g_cr adc_util.tiny_char := adc_util.C_CR;
   
   /**
     Group: Private Methods
@@ -77,8 +80,8 @@ as
            select /*+ no_merge */
                   uttm_text template, uttm_log_text log_template,
                   uttm_name, uttm_mode, p_crg_id g_crg_id,
-                  adc_util.C_TRUE c_true,
-                  adc_util.C_CR cr
+                  g_true c_true,
+                  g_cr cr
              from utl_text_templates_v
             where uttm_type = C_ADC
               and uttm_name = C_UTTM_NAME)
@@ -175,18 +178,18 @@ as
 
       with params as (
            -- Get common values, depending on whether the page contains a DML_FETCH_ROW process
-           select crg.crg_id, adc_util.C_CR cr,
-                  uttm.uttm_name, uttm.uttm_mode, uttm.uttm_text template,
-                  app.attribute_02, app.attribute_03, app.attribute_04, app.application_id, app.page_id
-             from apex_application_page_proc app
-             join adc_rule_groups crg
-               on app.application_id = crg.crg_app_id
-              and app.page_id = crg.crg_page_id
-            cross join utl_text_templates_v uttm
-            where app.process_type_code = 'DML_FETCH_ROW'
+           select crg_id, g_cr cr,
+                  uttm_name, uttm_mode, uttm_text template,
+                  attribute_02, attribute_03, attribute_04, application_id, page_id
+             from apex_application_page_proc
+             join adc_rule_groups
+               on application_id = crg_app_id
+              and page_id = crg_page_id
+            cross join utl_text_templates_v
+            where process_type_code = 'DML_FETCH_ROW'
               and uttm_type = C_ADC
               and uttm_name like 'INITIALIZE%'
-              and crg.crg_id = p_crg_id)
+              and crg_id = p_crg_id)
     select utl_text.generate_text(cursor(
              select template,
                     cr,
@@ -210,7 +213,7 @@ as
                         join adc_page_item_types sit
                           on cpi.cpi_cpit_id = sit.cpit_id
                        where api.item_source_type = 'Database Column'
-                         and cpi.cpi_is_required = adc_util.C_TRUE
+                         and cpi.cpi_is_required = g_true
                          and p.uttm_name = 'INITIALIZE_COL_VAL'), CR) item_stmt
                from dual)) resultat
       into l_initialization_code
@@ -266,7 +269,7 @@ as
                   cpi_conversion,
                   cpi_item_default,
                   cpi_css,
-                  adc_util.C_FALSE cpi_has_error,
+                  g_false cpi_has_error,
                   cpi_is_required,
                   cpi_is_mandatory,
                   cpi_may_have_value
@@ -316,11 +319,11 @@ as
     
     merge into adc_page_items t
     using (select distinct cpi_crg_id, cpi_id
-             from (select crg.crg_id cpi_crg_id, i.column_value cpi_id
-                     from adc_rules cru
-                     join adc_rule_groups crg
-                       on cru.cru_crg_id = crg.crg_id
-                    cross join table(utl_text.string_to_table(cru.cru_firing_items, ',')) i
+             from (select crg_id cpi_crg_id, i.column_value cpi_id
+                     from adc_rules
+                     join adc_rule_groups
+                       on cru_crg_id = crg_id
+                    cross join table(utl_text.string_to_table(cru_firing_items, ',')) i
                     where crg_id = p_crg_id
                     union all
                    select cpi_crg_id, cpi_id
@@ -331,7 +334,7 @@ as
        on (t.cpi_id = s.cpi_id
        and t.cpi_crg_id = s.cpi_crg_id)
      when matched then update set
-          t.cpi_is_required = adc_util.C_TRUE;
+          t.cpi_is_required = g_true;
             
     pit.leave_detailed;
   end mark_rule_condition_items;
@@ -365,7 +368,7 @@ as
                     else
                       replace(cra_param_2, ';') || '(''' || column_value || ''')'
                     end cpi_validation_method,
-                  adc_util.c_true cpi_is_required
+                  g_true cpi_is_required
              from data
             cross join table(
                   select utl_text.string_to_table(cra_param_1)
@@ -408,7 +411,7 @@ as
                join table (l_additional_items)
                  on cpi_id = column_value
               where cpi_crg_id = p_crg_id
-                and cpi_is_required = (select adc_util.C_FALSE from dual)) as char_table)
+                and cpi_is_required = g_false) as char_table)
       into l_additional_items
       from dual;
     
@@ -451,8 +454,8 @@ as
     
       delete from adc_page_items
        where cpi_crg_id = p_crg_id
-         and cpi_is_required = adc_util.C_FALSE
-         and cpi_has_error = adc_util.C_TRUE
+         and cpi_is_required = g_false
+         and cpi_has_error = g_true
          and cpi_id not in (
              select cra_cpi_id
                from adc_rule_actions
@@ -476,33 +479,33 @@ as
     pit.enter_detailed('mark_error_fields');
 
       update adc_rules
-         set cru_has_error = adc_util.C_FALSE
+         set cru_has_error = g_false
        where cru_crg_id = p_crg_id;
     
       merge into adc_rules t
       using (select distinct cru.cru_id
                from adc_page_items cpi
                join adc_rules cru
-                 on utl_text.contains(cru_firing_items, cpi_id) = adc_util.C_TRUE
+                 on utl_text.contains(cru_firing_items, cpi_id) = g_true
               where cpi_crg_id = p_crg_id
-                and cpi_has_error = adc_util.C_TRUE) s
+                and cpi_has_error = g_true) s
          on (t.cru_id = s.cru_id)
        when matched then update set
-            t.cru_has_error = adc_util.C_TRUE;
+            t.cru_has_error = g_true;
             
       update adc_rule_actions
-         set cra_has_error = adc_util.C_FALSE
+         set cra_has_error = g_false
        where cra_crg_id = p_crg_id;
 
       merge into adc_rule_actions t
       using (select cpi_crg_id cra_crg_id, cpi_id cra_cpi_id
                from adc_page_items
               where cpi_crg_id = p_crg_id
-                and cpi_has_error = adc_util.C_TRUE) s
+                and cpi_has_error = g_true) s
          on (t.cra_crg_id = s.cra_crg_id
          and t.cra_cpi_id = s.cra_cpi_id)
        when matched then update set
-            t.cra_has_error = adc_util.C_TRUE;
+            t.cra_has_error = g_true;
             
     pit.leave_detailed;
   end mark_error_fields;
@@ -561,8 +564,8 @@ as
 
     -- Initialize
     update adc_page_items
-       set cpi_is_required = adc_util.C_FALSE,
-           cpi_has_error = adc_util.C_TRUE,
+       set cpi_is_required = g_false,
+           cpi_has_error = g_true,
            cpi_validation_method = null
      where cpi_crg_id = p_crg_id;
 
@@ -614,7 +617,7 @@ as
               and (regexp_instr(upper(cru.cru_condition), replace(C_REGEX_ITEM, '#ITEM#', cpi.cpi_id)) > 0
                or instr(cpi.cpi_css, replace(regexp_substr(cru.cru_condition, C_REGEX_CSS), adc_util.C_APOS, C_PIPE)) > 0)
             where cpi.cpi_crg_id = p_crg_id
-              and cru.cru_active = adc_util.C_TRUE
+              and cru.cru_active = g_true
             group by cru.cru_id) s
        on (t.cru_id = s.cru_id)
      when matched then update set
@@ -795,7 +798,7 @@ as
                          on capt_id = cap_capt_id
                       where cap_cat_id = cat_id
                         and (cat_cato_id = p_cato_id or p_cato_id is null))
-           ), adc_util.C_CR)
+           ), g_cr)
       into l_action_param_types
       from utl_text_templates_v
      where uttm_type = C_ADC
@@ -897,7 +900,7 @@ as
                  cross join params p
                  where uttm_mode = 'ACTION_PARAMS'
                    and cap_cat_id = cat_id
-              ), adc_util.C_CR) rule_action_params
+              ), g_cr) rule_action_params
          from adc_action_types_v
          join params
            on cat_is_editable = p_cat_is_editable
@@ -987,7 +990,7 @@ as
                      utl_text.wrap_string(cato_description, C_WRAP_START, C_WRAP_END) cato_description
                 from adc_action_type_owners_v
                where cato_id != C_ADC
-             ), adc_util.C_CR)
+             ), g_cr)
         into l_action_type_owners
         from utl_text_templates_v
        where uttm_type = C_ADC
@@ -1230,7 +1233,7 @@ as
       p_params => msg_params(msg_param('p_crg_id', p_crg_id)));
       
     update adc_rule_groups
-       set crg_active = case crg_active when adc_util.c_true then adc_util.c_false else adc_util.c_true end
+       set crg_active = case crg_active when g_true then g_false else g_true end
      where crg_id = p_crg_id;
 
     pit.leave_mandatory;
@@ -1266,17 +1269,17 @@ as
                   select null
                     from adc_page_items
                    where cpi_crg_id = crg_id
-                     and cpi_has_error = adc_util.C_TRUE))
+                     and cpi_has_error = g_true))
     select utl_text.generate_text(cursor(
              select template, 
                     utl_text.generate_text(cursor(
-                      select p.template, p.crg_app_id, cpi.cpi_id
-                        from adc_page_items cpi
-                        join adc_page_item_types sit
-                          on cpi.cpi_cpit_id = sit.cpit_id
-                        join params p
-                          on cpi.cpi_crg_id = p.crg_id
-                       where cpi.cpi_has_error = adc_util.C_TRUE
+                      select template, crg_app_id, cpi_id
+                        from adc_page_items
+                        join adc_page_item_types
+                          on cpi_cpit_id = cpit_id
+                        join params
+                          on cpi_crg_id = crg_id
+                       where cpi_has_error = g_true
                     )) error_list
                from dual
            )) resultat
@@ -1759,19 +1762,19 @@ as
     pit.assert_not_null(p_row.cru_condition, msg.ADC_PARAM_MISSING, p_error_code => 'CRU_CONDITION_MISSING');
 
     harmonize_adc_page_item(p_row.cru_crg_id, p_row.cru_condition);
-
+/*
     -- create validation statement
     with params as(
-           select /*+ no_merge */ uttm_text template, uttm_mode,
+           select /*+ no_merge / uttm_text template, uttm_mode,
                   p_row.cru_crg_id crg_id,
                   p_row.cru_condition condition,
-                  adc_util.c_true c_true,
-                  adc_util.C_CR cr
+                  g_true c_true,
+                  g_cr cr
              from utl_text_templates_v
             where uttm_type = C_ADC
               and uttm_name in (C_UTTM_NAME, 'RULE_VIEW'))
     select utl_text.generate_text(cursor(
-             select p.template, p.condition, crg_id,
+             select template, condition, crg_id,
                     -- Events
                     utl_text.generate_text(cursor(
                       select template, cet_id, lower(cet_column_name) cet_column_name
@@ -1787,18 +1790,18 @@ as
                              replace(cpi_conversion, 'G') conversion,
                              cpi_id item,
                              cpit_cet_id
-                        from adc_page_item_types_v sit
+                        from adc_page_item_types_v
                         left join (
                                select cpi_id, cpi_cpit_id, cpi_conversion, cpi_is_required
                                  from adc_page_items
-                                where cpi_crg_id = crg_id) cpi
-                          on sit.cpit_id = cpi.cpi_cpit_id
-                       where adc_util.C_TRUE in (cpi_is_required, cpit_include_in_view)
+                                where cpi_crg_id = crg_id)
+                          on cpit_id = cpi_cpit_id
+                       where c_true in (cpi_is_required, cpit_include_in_view)
                          and cpit_col_template is not null
                       order by cpit_include_in_view desc, cpi_id), ',' || CR, 14) column_list
                from dual)) resultat
       into l_stmt
-      from params p
+      from params
      where uttm_mode = C_DEFAULT;
 
     -- perform validation
@@ -1813,7 +1816,7 @@ as
         end if;
         pit.error(msg.ADC_INVALID_SQL, msg_args(substr(sqlerrm, 12)));
     end;
-    
+    */
     pit.leave_mandatory;
   end validate_rule_condition;
   
@@ -2325,7 +2328,7 @@ as
     p_capvt_description in adc_action_param_visual_types_v.capvt_description%type default null,
     p_capvt_param_item_extension in adc_action_param_visual_types_v.capvt_param_item_extension%type default null,
     p_capvt_sort_seq in adc_action_param_visual_types_v.capvt_sort_seq%type default 10,
-    p_capvt_active in adc_action_param_visual_types_v.capvt_active%type default ADC_UTIL.C_TRUE)
+    p_capvt_active in adc_action_param_visual_types_v.capvt_active%type default adc_util.C_TRUE)
   as
     l_row adc_action_param_visual_types_v%rowtype;
   begin
@@ -2466,7 +2469,7 @@ as
     p_capt_select_list_query in adc_action_param_types_v.capt_select_list_query%type default null, 
     p_capt_select_view_comment in adc_action_param_types_v.capt_select_view_comment%type default null,
     p_capt_sort_seq in adc_action_param_types_v.capt_sort_seq%type default 10,
-    p_capt_active in adc_action_param_types_v.capt_active%type default ADC_UTIL.C_TRUE)
+    p_capt_active in adc_action_param_types_v.capt_active%type default adc_util.C_TRUE)
   as
     l_row adc_action_param_types_v%rowtype;
   begin
@@ -3017,7 +3020,7 @@ as
                      utl_text.wrap_string(capvt_description, C_WRAP_START, C_WRAP_END) capvt_description,
                      capvt_param_item_extension, capvt_display_name, capvt_sort_seq
                 from adc_action_param_visual_types_v
-             ), adc_util.C_CR)
+             ), g_cr)
         into l_action_param_visual_types
         from utl_text_templates_v
        where uttm_type = C_ADC
@@ -3073,7 +3076,7 @@ as
                      utl_text.wrap_string(caif_description, C_WRAP_START, C_WRAP_END) caif_description,
                      adc_util.to_bool(caif_actual_page_only) caif_actual_page_only, caif_item_types
                 from adc_action_item_focus_v
-             ), adc_util.C_CR)
+             ), g_cr)
         into l_action_item_focus
         from utl_text_templates_v
        where uttm_type = C_ADC
@@ -3085,7 +3088,7 @@ as
                      catg_id, catg_name, adc_util.to_bool(catg_active) catg_active,
                      utl_text.wrap_string(catg_description, C_WRAP_START, C_WRAP_END) catg_description
                 from adc_action_type_groups_v
-             ), adc_util.C_CR)
+             ), g_cr)
         into l_action_type_groups
         from utl_text_templates_v
        where uttm_type = C_ADC
@@ -3099,7 +3102,7 @@ as
                      utl_text.wrap_string(cato_description, C_WRAP_START, C_WRAP_END) cato_description
                 from adc_action_type_owners_v
                where cato_id = C_ADC
-             ), adc_util.C_CR)
+             ), g_cr)
         into l_action_type_owners
         from utl_text_templates_v
        where uttm_type = C_ADC
@@ -3111,7 +3114,7 @@ as
                      caat_id, caat_name, adc_util.to_bool(caat_active) caat_active,
                      utl_text.wrap_string(caat_description, C_WRAP_START, C_WRAP_END) caat_description
                 from adc_apex_action_types_v
-             ), adc_util.C_CR)
+             ), g_cr)
         into l_apex_action_types
         from utl_text_templates_v
        where uttm_type = C_ADC
@@ -3134,7 +3137,7 @@ as
                       l_action_types action_types,
                       l_apex_action_types apex_action_types
                  from dual
-             ), adc_util.C_CR) resultat
+             ), g_cr) resultat
         into l_export_script
         from utl_text_templates_v
        where uttm_type = C_ADC

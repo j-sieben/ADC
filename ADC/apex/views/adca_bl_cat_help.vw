@@ -2,7 +2,7 @@ create or replace force view adca_bl_cat_help
 as 
   with params as(
        select uttm_mode, uttm_text template
-         from utl_text_templates
+         from utl_text_templates_v
         where uttm_type = 'ADC'
           and uttm_name = 'ACTION_TYPE_HELP')
 select cat_id,
