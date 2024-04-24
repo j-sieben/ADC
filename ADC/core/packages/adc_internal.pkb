@@ -764,29 +764,22 @@ as
   function get_bind_items_as_json
     return clob
   as
-    C_BIND_JSON_TEMPLATE constant adc_util.sql_char := '[#JSON#]';
-    C_BIND_JSON_ELEMENT constant adc_util.sql_char := '{"id":"#ID#","event":"#EVENT#","action":"#STATIC_ACTION#"}';
-    -- List of item which need to bind an event
-    cursor rule_group_cpi_ids(p_crg_id adc_rule_groups.crg_id%type) is
-      select cpi_id, cpit_cet_id, cpit_has_value, static_action
-        from adc_bl_bind_items
-       where crg_id = p_crg_id;
     l_json clob;
   begin
     pit.enter_optional('get_bind_items_as_json',
       p_params => msg_params(
                     msg_param('crg_id', g_param.crg_id)));
-
-    for item in rule_group_cpi_ids(g_param.crg_id) loop
-      l_json := l_json 
-             || adc_util.bulk_replace(C_BIND_JSON_ELEMENT, adc_util.string_table(
-                  '#ID#', item.cpi_id,
-                  '#EVENT#', item.cpit_cet_id,
-                  '#STATIC_ACTION#', item.static_action)) 
-             || adc_util.C_DELIMITER;
-    end loop;
-
-    l_json := replace(C_BIND_JSON_TEMPLATE, '#JSON#', rtrim(l_json, adc_util.C_DELIMITER));
+                    
+    select json_arrayagg(
+             json_object(
+               'id' value cpi_id, 
+               'event' value cpit_cet_id, 
+               'action' value static_action absent on null))
+      into l_json
+      from adc_bl_bind_items
+     where crg_id = g_param.crg_id;
+     
+    l_json := coalesce(l_json, '[]');
 
     pit.leave_optional(
       p_params => msg_params(msg_param('JSON', l_json)));
