@@ -275,7 +275,8 @@ q'[              p_event event,\CR\]' ||
 q'[              p_event_data event_data,\CR\]' || 
 q'[              #EVENT_LIST#,\CR\]' || 
 q'[              #COLUMN_LIST#,\CR\]' || 
-q'[              c_true, c_false\CR\]' || 
+q'[              c_true, c_false,\CR\]' || 
+q'[              case p_event when 'click' then p_firing_item end c_clicked\CR\]' || 
 q'[         from params p),\CR\]' || 
 q'[     rules as (\CR\]' || 
 q'[       select cru_id, cru_crg_id crg_id, cru_sort_seq, cru_name,\CR\]' || 
