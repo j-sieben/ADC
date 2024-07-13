@@ -20,14 +20,16 @@ ADC is implemented as a Dynamic Action Plugin. It can be installed on page 0 if 
 
 Once the page with ADC is run, it detects that no use cases are defined for that page. It then creates a new emtpy set of use cases, also called rules in ADC. The idea is to create new use cases as you need them. As soon as you created a new use case, it will work immediately after the page is reloaded. Use cases are defined in a separate APEX applciation that ships with ADC. It allows to create use cases for any application in your workspace that has ADC implemented.
 
-A use case follows a very simple principle: If the user does XYZ, ADC should do ABC. A basic use case could be like this: "If the user selects a job that is commission eligible, make page item P1_COMMISSION_PCT a mandatory field.". In ADC, you split this use case up into three parts:
+A use case follows a very simple principle: If the user does XYZ, ADC should do ABC. A basic use case could be like this: "If the user selects a job that is commission eligible, make page item `P1_COMMISSION_PCT` a mandatory field.". In ADC, you split this use case up into three parts:
 
 - A free text description of the use case: (If the user) selects a job that is commission eligible
-- A technical term that allows the database to recognize the action the user has taken. Say, you have a function that checks wether a job is commission eligible which returns 1 if this is the case and 0 otherwise, the technical condition could be written as: `my_pkg.check_job_is_comm_eligible(P1_JOB_ID) = 1`.
-Notice that a PL/SQL function may be used directly and that P1_JOB_ID does not require apostrophes. This is because the code is evaluated within the database where PL/SQL is available and that the page state is offered as a column value of the same name. Should this function return 1, this use case can be executed.
+- A technical term that allows the database to recognize the action the user has taken. Say, you have a function that checks wether a job is commission eligible which returns `1` if this is the case and `0` otherwise, the technical condition could be written as: `my_pkg.check_job_is_comm_eligible(P1_JOB_ID) = 1`.
+Notice that a PL/SQL function may be used directly and that P1_JOB_ID does not require apostrophes. This is because the code is evaluated within the database where PL/SQL is available and that the page state is offered as a column value of the same name. Should this function return `1`, this use case can be executed.
 - A list of actions to take. In the ADC application, defining the actions to take is very similar to defining actions in a Dynamic Action: You choose the desired action (or as many as you like) from a list of predefined action types and parameterize it. This way, the whole process remains declarative with only minimal complexity.
 
+The term Page State is used here in distinction to the term Session State that is known from APEX. It differs in that it contains information about the actual event that occurred and by the fact that the page item values it contains are taken from the actual page. The session state on the other hand is maintained automatically by APEX during the response phase but not dynamically, unless you tell APEX to take the actual values with it when performing a Dynamic Action or a partial page refresh. ADC takes away the burdon of defining this explicitly. It "knows" which page items are relevant for the evaluation of the use cases and takes their respective value with it. Also, the page state contains this information in the correct format, so a date field is of type `DATE` and a number field is of type `NUMBER`.
 
+As a side effect of this, ADC automatically checks conversion errors and reports them as errors on the page without further ado. Also, all mandatory items are dynamically checked after their value has changed. So checking these is done automatically and does not require any programming.
 
 # ADC Sample Application
 
