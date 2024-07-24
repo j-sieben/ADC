@@ -1570,7 +1570,7 @@ as
     pit.leave_mandatory;
   exception
     when no_data_found then
-      pit.warn(msg.ADC_NO_RULE_GROUP_FOUND, msg_args(p_workspace, p_app_alias));
+      pit.raise_warn(msg.ADC_NO_RULE_GROUP_FOUND, msg_args(p_workspace, p_app_alias));
       pit.leave_mandatory;
   end prepare_rule_group_import;
 
@@ -1814,7 +1814,7 @@ as
         if dbms_sql.is_open(l_ctx) then
           dbms_sql.close_cursor(l_ctx);
         end if;
-        pit.error(msg.ADC_INVALID_SQL, msg_args(substr(sqlerrm, 12)));
+        pit.raise_error(msg.ADC_INVALID_SQL, msg_args(substr(sqlerrm, 12)));
     end;
     */
     pit.leave_mandatory;
@@ -2552,7 +2552,7 @@ as
         when dbms_sql_translator.INSUFFICIENT_PRIVILEGE then
           null;
         when others then
-          pit.error(msg.ADC_ACTION_PARAM_TYPE, msg_args(l_stmt));
+          pit.raise_error(msg.ADC_ACTION_PARAM_TYPE, msg_args(l_stmt));
       end;
     end if;
     
@@ -2562,7 +2562,7 @@ as
         execute immediate l_stmt;
       exception
         when others then
-          pit.error(msg.ADC_ACTION_PARAM_TYPE, msg_args(l_stmt));
+          pit.raise_error(msg.ADC_ACTION_PARAM_TYPE, msg_args(l_stmt));
       end;
     end if;
     

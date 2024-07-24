@@ -70,7 +70,7 @@ as
   exception
     when NO_DATA_FOUND then
       pit.leave_detailed;
-      pit.error(msg.ADC_PARAM_VALIDATION_FAILED, p_error_code => msg.ADC_INVALID_SEQUENCE);
+      pit.raise_error(msg.ADC_PARAM_VALIDATION_FAILED, p_error_code => msg.ADC_INVALID_SEQUENCE);
   end validate_is_simple_sql_name;
 
 
@@ -212,7 +212,7 @@ end;~';
     when others then
       dbms_sql.close_cursor(l_ctx);
       pit.leave_detailed;
-      pit.error(
+      pit.raise_error(
         p_message_name => msg.ADC_PARAM_VALIDATION_FAILED,
         p_msg_args => msg_args(substr(SQLERRM, instr(SQLERRM, ':', 1, 3) + 1)),
         p_error_code => msg.ADC_METHOD_PARSE_EXCEPTION);
@@ -462,7 +462,7 @@ end;~';
     pit.leave_optional;
   exception
     when NO_DATA_FOUND then
-      pit.error(msg.ADC_PARAM_VALIDATION_FAILED, p_error_code => msg.ADC_INVALID_JQUERY);
+      pit.raise_error(msg.ADC_PARAM_VALIDATION_FAILED, p_error_code => msg.ADC_INVALID_JQUERY);
   end validate_is_selector;
 
 
@@ -493,7 +493,7 @@ end;~';
     pit.leave_optional;
   exception
     when NO_DATA_FOUND then
-      pit.error(msg.ADC_INVALID_JQUERY, p_error_code => msg.ADC_INVALID_PAGE_ITEM);
+      pit.raise_error(msg.ADC_INVALID_JQUERY, p_error_code => msg.ADC_INVALID_PAGE_ITEM);
   end validate_is_page_item;
 
 
@@ -516,7 +516,7 @@ end;~';
      where sequence_name = upper(p_value);
   exception
     when NO_DATA_FOUND then
-      pit.error(msg.ADC_PARAM_VALIDATION_FAILED, p_error_code => msg.ADC_INVALID_SEQUENCE);
+      pit.raise_error(msg.ADC_PARAM_VALIDATION_FAILED, p_error_code => msg.ADC_INVALID_SEQUENCE);
   end validate_is_sequence;
 
 

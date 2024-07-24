@@ -286,7 +286,7 @@ as
     g_loop_counter := coalesce(p_counter, 0) + 1;
     
     if g_loop_counter > 100 then
-      pit.error(msg.ADC_INFINITE_LOOP, msg_args(p_loop_name));
+      pit.raise_error(msg.ADC_INFINITE_LOOP, msg_args(p_loop_name));
     end if;
   end monitor_loop;
   

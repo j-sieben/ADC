@@ -73,7 +73,7 @@ as
         apex_exec.execute_plsql(
           p_plsql_code => l_statement);
       exception when others then
-        pit.error(msg.PIT_SQL_ERROR);
+        pit.raise_error(msg.PIT_SQL_ERROR);
       end;
     
       l_result := apex_error.g_error_result;

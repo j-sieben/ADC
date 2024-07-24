@@ -11,7 +11,7 @@ begin
     p_pms_pmg_name => 'ADCA',
     p_pms_text => q'^Es existieren ungesicherte Eingaben auf der Anwendungsseite. Bitte bestätigen Sie, dass diese verworfen werden sollen.^',
     p_pms_description => q'^Wird ausgelöst, falls ungesicherte Änderungen auf der Anwendungsseite verloren gehen könnten.^',
-    p_pms_pse_id => 40,
+    p_pms_pse_id => pit.level_warn,
     p_pms_pml_name => 'GERMAN');
 
   pit_admin.merge_message(
@@ -19,7 +19,7 @@ begin
     p_pms_pmg_name => 'ADCA',
     p_pms_text => q'^Bitte bestätigen Sie, dass die Daten gelöscht werden sollen.^',
     p_pms_description => q'^Wird ausgelöst, wenn eine Löschoperation ausgelöst wird, um umgewolltes Löschen zu vermeiden.^',
-    p_pms_pse_id => 40,
+    p_pms_pse_id => pit.level_warn,
     p_pms_pml_name => 'GERMAN');
 
   pit_admin.merge_message(
@@ -27,7 +27,7 @@ begin
     p_pms_pmg_name => 'ADCA',
     p_pms_text => q'^#1#-Aktion für #2# angefordert.^',
     p_pms_description => q'^Information über die Aktion die durch die Logik ermittelt wurde.^',
-    p_pms_pse_id => 50,
+    p_pms_pse_id => pit.level_info,
     p_pms_pml_name => 'GERMAN');
 
   pit_admin.merge_message(
@@ -35,7 +35,7 @@ begin
     p_pms_pmg_name => 'ADCA',
     p_pms_text => q'^Unbekannte Aktion #1# angefordert.^',
     p_pms_description => q'^Programmierfehler.^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'GERMAN');
 
   pit_admin.merge_message(
@@ -43,7 +43,7 @@ begin
     p_pms_pmg_name => 'ADCA',
     p_pms_text => q'^Änderungen gespeichert.^',
     p_pms_description => q'^Erfolgsmeldung, falls eine Datenänderung erfolgreich gespeichert werden konnte.^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => pit.level_all,
     p_pms_pml_name => 'GERMAN');
 
   pit_admin.merge_message(
@@ -51,7 +51,7 @@ begin
     p_pms_pmg_name => 'ADCA',
     p_pms_text => q'^Daten wurden gelöscht.^',
     p_pms_description => q'^Erfolgsmeldung, falls Daten erfolgreich gelöscht werden konnten.^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => pit.level_all,
     p_pms_pml_name => 'GERMAN');
 
   pit_admin.merge_message(
@@ -59,7 +59,7 @@ begin
     p_pms_pmg_name => 'ADCA',
     p_pms_text => q'^Das Element #1# muss nicht beobachtet werden, da eine technische Bedingung das Element referenziert.^',
     p_pms_description => q'^Die Aktion kann entfernt werden, ohne das Verhalten der dynamischen Seite zu ändern.^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => pit.level_all,
     p_pms_pml_name => 'GERMAN');
 
   pit_admin.merge_message(
@@ -67,7 +67,7 @@ begin
     p_pms_pmg_name => 'ADCA',
     p_pms_text => q'^Die Aktion #1# ist deprecated und sollte durch ein anderes Verfahren ersetzt werden.^',
     p_pms_description => q'^Bitte folgen Sie den Anweisungen im Hilfetext des Aktionstyps.^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => pit.level_all,
     p_pms_pml_name => 'GERMAN');
 
   pit_admin.merge_message(
@@ -75,7 +75,7 @@ begin
     p_pms_pmg_name => 'ADCA',
     p_pms_text => q'^Das Element #1# existiert auf der Seite nicht.^',
     p_pms_description => q'^Eventuell wurde das Element gelöscht oder umbenannt. Bitte kontrollieren Sie dies, da ansonsten JavaScript-Fehler auf der Seite auftauchen.^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => pit.level_all,
     p_pms_pml_name => 'GERMAN');
 
   commit;

@@ -185,7 +185,7 @@ as
     l_result boolean;
   begin
     pit.enter_optional('get_java_script');
-    pit.debug(msg.PIT_PASS_MESSAGE, msg_args('Funktionstest'));
+    pit.raise_debug(msg.PIT_PASS_MESSAGE, msg_args('Funktionstest'));
     
     if g_param.js_action_stack.count > 0 then
       l_max_level := get_max_level;

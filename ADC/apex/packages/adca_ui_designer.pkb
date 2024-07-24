@@ -1477,7 +1477,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
 
     case p_environment.action 
       when C_ACTION_UPDATE then
-        pit.info(msg.ADCA_ACTION_REQUESTED, msg_args(C_ACTION_UPDATE, p_environment.target_mode));
+        pit.raise_info(msg.ADCA_ACTION_REQUESTED, msg_args(C_ACTION_UPDATE, p_environment.target_mode));
         case p_environment.target_mode
           when C_MODE_CRU then
             adc_admin.merge_rule(p_environment.cru_row);
@@ -1519,7 +1519,7 @@ select null #PRE#DIAGRAM_ID, null #PRE#DIAGRAM_NAME, '0' #PRE#DIAGRAM_VERSION, '
           p_item_value => l_selected_id);
         commit;
       when C_ACTION_DELETE then
-        pit.info(msg.ADCA_ACTION_REQUESTED, msg_args(C_ACTION_DELETE, p_environment.action_mode));
+        pit.raise_info(msg.ADCA_ACTION_REQUESTED, msg_args(C_ACTION_DELETE, p_environment.action_mode));
         case p_environment.action_mode
           when C_MODE_CRG then
             adc_admin.delete_rule_group(l_rule_group_row);

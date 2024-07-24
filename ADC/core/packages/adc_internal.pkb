@@ -202,7 +202,7 @@ as
       if g_param.stop_flag = adc_util.C_FALSE then
         adc_response.add_javascript(generate_parameterized_code('JAVASCRIPT', p_action_rec));
       else
-        pit.info(msg.ADC_STOP_NO_JAVASCRIPT, msg_args(p_action_rec.cat_js));
+        pit.raise_info(msg.ADC_STOP_NO_JAVASCRIPT, msg_args(p_action_rec.cat_js));
       end if;
 
       pit.leave_optional;
@@ -436,7 +436,7 @@ as
     -- Evaluate which rule to execute by querying the decision table
     open l_action_cur for g_param.rule_stmt;
     fetch l_action_cur into l_action_rec;
-    pit.info(msg.ADC_PROCESSING_RULE, msg_args(to_char(l_action_rec.cru_sort_seq), l_action_rec.cru_name));
+    pit.raise_info(msg.ADC_PROCESSING_RULE, msg_args(to_char(l_action_rec.cru_sort_seq), l_action_rec.cru_name));
 
     if not l_action_rec.cru_id member of g_param.rule_list then
       -- Process rule actions
@@ -1422,7 +1422,7 @@ as
       -- SQL parsen, um Spaltenbezeichner zu ermitteln
       dbms_sql.parse(l_cur, l_stmt, dbms_sql.native);
       dbms_sql.describe_columns2(l_cur, l_col_cnt, l_desc_tab);
-      pit.debug(msg.ADC_COLUMNS_FOUND, msg_args(to_char(l_col_cnt)));
+      pit.raise_debug(msg.ADC_COLUMNS_FOUND, msg_args(to_char(l_col_cnt)));
       for i in 1 .. l_col_cnt loop
         dbms_sql.define_column(l_cur, i, l_result, 4000);
       end loop;

@@ -205,7 +205,7 @@ as
           l_stack_entry.event := p_event;
           l_stack_entry.event_data := p_event_data;
           g_recursion.item_stack(p_cpi_id) := l_stack_entry;
-          pit.debug(msg.ADC_FIRING_ITEM_PUSHED, msg_args(p_cpi_id, to_char(p_recursive_depth))); 
+          pit.raise_debug(msg.ADC_FIRING_ITEM_PUSHED, msg_args(p_cpi_id, to_char(p_recursive_depth))); 
         end if;
       end if;
     end if;
@@ -252,7 +252,7 @@ as
     if p_all = adc_util.C_TRUE then
       g_recursion.item_stack.delete;
     else
-      pit.debug(msg.ADC_FIRING_ITEM_POPPED, msg_args(p_cpi_id));
+      pit.raise_debug(msg.ADC_FIRING_ITEM_POPPED, msg_args(p_cpi_id));
       g_recursion.item_stack.delete(p_cpi_id);
       --g_recursion.item_stack.delete(g_recursion.item_stack.first);
     end if;

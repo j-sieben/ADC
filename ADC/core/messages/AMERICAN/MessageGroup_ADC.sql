@@ -11,7 +11,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^ADC action #1# does not exist.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -20,7 +20,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Execute action #1#.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 50,
+    p_pms_pse_id => pit.level_info,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -29,7 +29,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Action #1# was not executed because there was an error and this action is not an error handler.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 40,
+    p_pms_pse_id => pit.level_warn,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -38,7 +38,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Integration of the page actions^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -47,7 +47,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^APEX action #1# does not exist.^',
     p_pms_description => q'^When validating a parameter of type APEX_ACTION, a non-existent APEX action was referenced.^',
-    p_pms_pse_id => 40,
+    p_pms_pse_id => pit.level_warn,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -56,7 +56,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^APEX application #1# does not exist.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -65,7 +65,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^#1#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => pit.level_all,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -74,7 +74,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^The rule group already exists. Choose a unique name.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -83,7 +83,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^The name of the rule group must be unique for this application.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -92,7 +92,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Datum element #1# set to value #2#, string value: #3#.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 50,
+    p_pms_pse_id => pit.level_info,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -101,7 +101,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Rule SQL: "#1#"^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 60,
+    p_pms_pse_id => pit.level_debug,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -110,7 +110,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^#1#// Dynamically generated JavaScript^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => pit.level_all,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -119,7 +119,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^error occurred in recursion #1#, rule #2# (#3#), triggering element: "#4#", execute error handling^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 40,
+    p_pms_pse_id => pit.level_warn,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -128,7 +128,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Expected format ~#1#~.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 40,
+    p_pms_pse_id => pit.level_warn,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -137,7 +137,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Element #1# was written to the stack on recursion #2#.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => pit.level_all,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -146,7 +146,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^"#1#".^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -155,7 +155,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Loop #1# has exceeded the maximum allowed number of passes and has been aborted.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -164,7 +164,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Error during initialization of rule group #1#: #2#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -173,7 +173,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Error during initialization of the single rule #1#: #2#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -182,7 +182,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Rule #1# (#2#), additionally triggered on page load^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -191,7 +191,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^An error has occurred on the page: #SQLERRM#.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -200,7 +200,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Invalid date: #1#.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -209,7 +209,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^The debug level is not allowed, just use adc_util.C_JS_CODE, adc_util.C_JS_DEBUG, adc_util.C_JS_COMMENT or adc_util.C_JS_DETAIL.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -218,7 +218,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^The selector "#1#" is not used on the page.^',
     p_pms_description => q'^When validating a jQuery selector, it must be present on the page.^',
-    p_pms_pse_id => 40,
+    p_pms_pse_id => pit.level_warn,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -227,7 +227,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Invalid number. Expected format ~#1#~.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -236,7 +236,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Invalid number removed: #1#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -245,7 +245,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^The page element "#1#" is not used on the page.^',
     p_pms_description => q'^When validating an element name, it must be present on the page.^',
-    p_pms_pse_id => 40,
+    p_pms_pse_id => pit.level_warn,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -254,7 +254,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^The sequence "#1#" does not exist.^',
     p_pms_description => q'^A non-existent sequence was referenced.^',
-    p_pms_pse_id => 40,
+    p_pms_pse_id => pit.level_warn,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -263,7 +263,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Error in technical condition: #1#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -272,7 +272,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Page element #1# does not exist in application #2#.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -281,7 +281,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^#LABEL# is a mandatory element. Please enter a value.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -290,7 +290,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Element #LABEL# is a mandatory element. Please enter a value.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => pit.level_all,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -299,7 +299,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Error when merging rule #1#: #SQLERRM#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -308,7 +308,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Error when merging rule action #1#, #2#: #SQLERRM#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -317,7 +317,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Error when merging rule group #1#: #SQLERRM#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -326,7 +326,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^#1#^',
     p_pms_description => q'^A parse error was raised when validating a method. Correct the method.^',
-    p_pms_pse_id => 40,
+    p_pms_pse_id => pit.level_warn,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -335,7 +335,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^No data found for #1#.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -344,7 +344,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^No data found for workspace "#1#" and alias "#2#".^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -353,7 +353,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^No JavaScript code for rule "#1#"^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 60,
+    p_pms_pse_id => pit.level_debug,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -362,7 +362,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^No JavaScript action^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 60,
+    p_pms_pse_id => pit.level_debug,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -371,7 +371,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^No use case found for the current page status^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 40,
+    p_pms_pse_id => pit.level_warn,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -380,7 +380,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^No data found for workspace #1# and application #2#.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 50,
+    p_pms_pse_id => pit.level_info,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -389,7 +389,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Number element #1# set to value #2#, string value: #3#.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 50,
+    p_pms_pse_id => pit.level_info,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -398,7 +398,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Exactly one of the fields #1# and #2# is mandatory.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -407,7 +407,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Another JavaScript action suppressed because too long^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 40,
+    p_pms_pse_id => pit.level_warn,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -416,7 +416,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Output reduced to level #1# because of length^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 60,
+    p_pms_pse_id => pit.level_debug,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -425,7 +425,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^APEX application page #1# does not exist in application #2#.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -434,7 +434,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Fix all page errors before sending.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 40,
+    p_pms_pse_id => pit.level_warn,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -443,7 +443,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^The LOV view #1# does not have the specified columns D, R and CRG_ID.^',
     p_pms_description => q'^For a LOV view to be used, it must have exactly 3 columns with the identifiers D, R and CRG_ID.^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -452,7 +452,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^The parameter type #1# requires a LOV view of the name #2#. This is missing.^',
     p_pms_description => q'^A parameter type that requires a LOV list requires a corresponding LOV view so that the required data can be determined.^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -461,7 +461,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Field #LABEL# is a mandatory field.^',
     p_pms_description => q'^The input field is a mandatory parameter and must therefore be filled.^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -470,7 +470,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^#1#^',
     p_pms_description => q'^When validating a parameter value, it is checked for plausibility, depending on its type. The incorrect parameter value must be corrected.^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -479,7 +479,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Error parsing JSON: #SQLERRM#.^',
     p_pms_description => q'^Errors occurred while parsing a JSON instance. Correct the JSON instance and try again.^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -488,7 +488,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^PL/SQL code: "#1#"^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 60,
+    p_pms_pse_id => pit.level_debug,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -497,7 +497,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Error executing PL/SQL code #1#: #SQLERRM#.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -506,7 +506,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Create action for rule #1# (#2#)^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => pit.level_all,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -515,7 +515,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Element #1# has exceeded recursion depth of #2#.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -524,7 +524,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Element #1# created a recursive loop at recursion depth #2# and was therefore ignored.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -533,7 +533,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^This combination of attributes of a rule action already exists.^',
     p_pms_description => q'^The attributes CRA_CRG_ID, CRA_CRU_ID, CRA_CPI_ID, CRA_CAT_ID and CRA_ON_ERROR must be unique.^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -542,7 +542,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Rule #1# does not exist.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -551,7 +551,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Recursion #1#, Run #2#: Rule #3# (If the user #4#), Triggering element: "#5#"#6| (Value: |)|#, Duration: #TIME#hsec^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -560,7 +560,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Error validating rule #1#: #2#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -569,7 +569,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Rule group view #1# was created.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => pit.level_all,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -578,7 +578,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Rule group view #1# has been deleted.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => pit.level_all,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -587,7 +587,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Element ~#1#~ was set to the value ~#2#~.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 60,
+    p_pms_pse_id => pit.level_debug,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -596,7 +596,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Standard ADC JavaScript^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 60,
+    p_pms_pse_id => pit.level_debug,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -605,7 +605,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^JavaScript code "#1#" was not considered because there was an error and the rule was stopped.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 40,
+    p_pms_pse_id => pit.level_warn,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -614,7 +614,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^PL/SQL code was not executed because there was an error and the rule was stopped.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 40,
+    p_pms_pse_id => pit.level_warn,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -623,7 +623,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Rule group #1# is already on application #2#, page #3# and cannot be copied over itself.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -632,7 +632,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Unexpected element type ~#1#~ with format mask.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -641,7 +641,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Error executing "#1#", cannot continue work.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -650,7 +650,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Unbekannter Parametertyp: #1#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -659,7 +659,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Export type #1# is unknown.^',
     p_pms_description => q'^An unsupported export type was requested. Only use the constants C_%_GROUP(S).^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -668,7 +668,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Rule group #1# successfully created^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => pit.level_all,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -677,7 +677,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Error creating Decision Table #1#: #2#.^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -686,7 +686,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^Error while generating the WHERE clause: #SQLERRM#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 
@@ -695,7 +695,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^#1#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 70,
+    p_pms_pse_id => pit.level_all,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => null);
 
@@ -704,7 +704,7 @@ begin
     p_pms_pmg_name => 'ADC',
     p_pms_text => q'^A conversion could not be executed^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 20,
+    p_pms_pse_id => pit.level_fatal,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -20000);
 

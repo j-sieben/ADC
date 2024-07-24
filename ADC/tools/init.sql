@@ -30,11 +30,20 @@ select pit.get_default_language default_language,
   
 @settings.sql
   
-/*select case count(*) when 0 then 'false' else 'true' end with_flows
-  from all_objects
- where object_name = 'FLOW_API'
-   and object_type = 'PACKAGE';*/
-define WITH_FLOWS=false
+declare
+  l_version number;
+  x_old_Version exception;
+begin
+  -- Dynamic PL/SQL to avoid compilation errors
+  execute immediate 'begin :x := pit.version; end' using out l_version;
+  if l_version < 1.2 then
+   raise x_old_version;
+  end if;
+exception
+  when others then
+    raise_application_error(-20000, 'PIT in version 1.2 or greater is required to install ADC');
+end;
+/
    
 col ora_name_type new_val ORA_NAME_TYPE format a30
 select 'varchar2(' || data_length || ' byte)' ora_name_type
