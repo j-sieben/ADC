@@ -622,23 +622,27 @@ as
       
     pit.leave_optional;
   end set_optional;
-  
-  
+
+
   static procedure set_region_content(
     p_region_id in varchar2,
-    p_html_code in varchar2)
+    p_header in varchar2 default null,
+    p_html_code in varchar2 default null,
+    p_css_class in varchar2 default null)
   as
   begin
     pit.enter_optional(
       p_params => msg_params(
                     msg_param('p_region_id', p_region_id),
                     msg_param('p_html_code', p_html_code)));
-    
+
     adc_api.execute_action(
       p_cat_id => 'SET_REGION_CONTENT',
       p_cpi_id => p_region_id,
-      p_param_1 => trim(adc_util.C_APOS from apex_escape.js_literal(p_html_code)));
-      
+      p_param_1 => trim(adc_util.C_APOS from apex_escape.js_literal(p_html_code)),
+      p_param_2 => trim(adc_util.C_APOS from apex_escape.js_literal(p_header)),
+      p_param_3 => trim(adc_util.C_APOS from apex_escape.js_literal(p_css_class)));
+
     pit.leave_optional;
   end set_region_content;
   

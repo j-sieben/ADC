@@ -587,19 +587,21 @@ as object (
     p_cpi_id in varchar2 default 'DOCUMENT',
     p_jquery_selector in varchar2 default null,
     p_visual_state in varchar2 default null),
-  
-  
-  /** 
+  /**
     Procedure: set_region_content
       Sets the HTML content of a page region
-   
+
     Parameters:
       p_region_id - ID of the page region
+      p_header - Optional header for the region
       p_html_code - HTML code of the region. Must not be escaped, this will be done within this method
+      p_css_class - Optional header accent class
    */
   static procedure set_region_content(
     p_region_id in varchar2,
-    p_html_code in varchar2),
+    p_header in varchar2 default null,
+    p_html_code in varchar2 default null,
+    p_css_class in varchar2 default null),
 
 
   /** 
