@@ -13,7 +13,6 @@ whenever sqlerror exit
 set termout off
 col default_language new_val DEFAULT_LANGUAGE format a30
 col apex_path new_val APEX_PATH format a20
-col with_flows new_val WITH_FLOWS format a20
 
 define MIN_UT_VERSION=3.1
 

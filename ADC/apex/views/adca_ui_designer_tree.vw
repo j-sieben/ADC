@@ -58,14 +58,7 @@ with page_state as(
          join page_state
            on crg_app_id = p_app_id
          join adc_action_types_v
-           on cra_cat_id = cat_id
-        union all
-       select 'FLG_' || p_app_id, 'PAGE', pti_name, 99999, icon_fls || color_fls
-         from page_state
-        cross join pit_translatable_item_v
-        where pti_pmg_name = 'ADC'
-          and pti_id = 'FLG'
-          and C_SUPPORT_FLOWS = C_TRUE)
+           on cra_cat_id = cat_id)
  select /*+ result_cache */ case when connect_by_isleaf = 1 then 0 when level = 1 then 1 else -1 end as status,
         level lvl,
         node_name as title,

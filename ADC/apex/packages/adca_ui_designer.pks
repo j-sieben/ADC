@@ -96,16 +96,5 @@ as
    */
   procedure check_parameter_value;
   
-  
-  /**
-    Function: support_flows
-      Method checks whether flows has to be supported by the designer
-      
-    Returns:
-      C_TRUE, if Flows for APEX is installed and C_FALSE otherwise.
-   */
-  function support_flows
-    return adc_util.flag_type;
-  
 end adca_ui_designer;
 /

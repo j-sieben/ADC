@@ -85,6 +85,3 @@ prompt &h2.Version specific installation
 
 -- Re-Init after APEX install
 @tools/re_init_apex.sql
-
--- Install Flows extension if necessary
-@&tool_dir.check_flows_exists flows_extension/install.sql

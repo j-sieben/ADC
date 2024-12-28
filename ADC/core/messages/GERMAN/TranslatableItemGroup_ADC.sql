@@ -2502,24 +2502,6 @@ begin
   );
 
   pit_admin.merge_translatable_item(
-    p_pti_id => 'FLG',
-    p_pti_pml_name => q'^GERMAN^',
-    p_pti_pmg_name => q'^ADC^',
-    p_pti_name => q'^Workflows^',
-    p_pti_display_name => q'^^',
-    p_pti_description => q'^^'
-  );
-
-  pit_admin.merge_translatable_item(
-    p_pti_id => 'FLS',
-    p_pti_pml_name => q'^GERMAN^',
-    p_pti_pmg_name => q'^ADC^',
-    p_pti_name => q'^Workflow^',
-    p_pti_display_name => q'^^',
-    p_pti_description => q'^^'
-  );
-
-  pit_admin.merge_translatable_item(
     p_pti_id => 'ITEM_STATUS_A_SHOW_ENABLE',
     p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^ADC^',
