@@ -96,7 +96,7 @@ as object (
     p_cpi_id in varchar2,
     p_value_list in varchar2,
     p_message in varchar2 default 'ASSERTION_FAILED',
-    p_error_on_null in &FLAG_TYPE. default &C_TRUE.),
+    p_error_on_null in PIT_UTIL.FLAG_TYPE default pit_util.C_TRUE),
 
 
   /** Function: exclusive_or
@@ -194,7 +194,7 @@ as object (
   
   /**
     Function: get_flag
-      Retrieves the actual item value from the page state as instance of &FLAG_TYPE.
+      Retrieves the actual item value from the page state as instance of PIT_UTIL.FLAG_TYPE
       
     Parameters:
       p_cpi_id - Page item ID that is selected to show the error message
@@ -204,7 +204,7 @@ as object (
    */
   static function get_flag(
     p_cpi_id in varchar2)
-    return &FLAG_TYPE.,
+    return PIT_UTIL.FLAG_TYPE,
     
   
   /**

@@ -82,7 +82,7 @@ as
     p_cpi_id in varchar2,
     p_value_list in varchar2,
     p_message in varchar2 default 'ASSERTION_FAILED',
-    p_error_on_null in &FLAG_TYPE. default &C_TRUE.)
+    p_error_on_null in PIT_UTIL.FLAG_TYPE default PIT_UTIL.C_TRUE)
   as
     l_result adc_util.flag_type;
   begin
@@ -164,7 +164,7 @@ as
   
   static function get_flag(
     p_cpi_id in varchar2)
-    return &FLAG_TYPE.
+    return PIT_UTIL.FLAG_TYPE
   as
   begin
     return adc_api.get_flag(p_cpi_id);
