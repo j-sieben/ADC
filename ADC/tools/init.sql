@@ -4,12 +4,12 @@ set echo off
 set feedback off
 set lines 120
 set pages 9999
-
+/*
 whenever sqlerror continue
 alter session set plsql_implicit_conversion_bool = true;
 
 whenever sqlerror exit
-
+*/
 set termout off
 col default_language new_val DEFAULT_LANGUAGE format a30
 col apex_path new_val APEX_PATH format a20
