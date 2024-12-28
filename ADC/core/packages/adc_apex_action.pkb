@@ -234,7 +234,7 @@ as
     select utl_text.generate_text(cursor(
              select uttm_text template,
                     adc_util.C_CR cr,
-                    pit.get_message_text(msg.ADC_APEX_ACTION_ORIGIN) apex_action_origin,
+                    pit.get_message_text(msg.ADC_APEX_ACTION_ORIGIN, msg_args(null)) apex_action_origin,
                     utl_text.generate_text(cursor(
                       select uttm_text template,
                              cpi_id, caa_name
@@ -262,7 +262,7 @@ as
                              case caa_initially_disabled when adc_util.c_true then 'true' else 'false' end caa_initially_disabled,
                              case caa_initially_hidden when adc_util.c_true then 'true' else 'false' end caa_initially_hidden,
                              case when caa_confirm_message_name is not null 
-                                  then apex_escape.json(pit.get_message_text(replace(caa_confirm_message_name, 'msg.'))) 
+                                  then apex_escape.json(pit.get_message_text(replace(caa_confirm_message_name, 'msg.'), msg_args(null))) 
                              end confirm_message,
                              -- Default is to inform ADC about invoking an APEX action on the page
                              case 

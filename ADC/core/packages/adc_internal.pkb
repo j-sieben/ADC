@@ -207,7 +207,7 @@ as
 
       pit.leave_optional;
     else
-      pit.verbose(msg.ADC_NO_JAVASCRIPT_ACTION);
+      pit.raise_verbose(msg.ADC_NO_JAVASCRIPT_ACTION);
     end if;
   end get_and_collect_js_code;
 
@@ -1604,7 +1604,7 @@ as
       end loop;
       if g_param.has_errors then
         if p_msg_name is not null then
-          l_error_message := pit.get_message_text(p_msg_name);
+          l_error_message := pit.get_message_text(p_msg_name, msg_args(null));
         else
           l_error_message := adc_util.get_standard_message('CSM_PAGE_HAS_ERROR');
         end if;

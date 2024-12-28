@@ -366,7 +366,7 @@ end;~';
   as
     l_message clob;
   begin
-    l_message := pit.get_message_text(upper(p_value));
+    l_message := pit.get_message_text(upper(p_value), msg_args(null));
   end validate_is_pit_message;
 
 
@@ -692,7 +692,7 @@ end;~';
       into l_pms_name
       from pit_message_v
      where pms_name = replace(upper(p_message_name), 'MSG.');
-    l_message := pit.get_message_text(l_pms_name);
+    l_message := pit.get_message_text(l_pms_name, msg_args(null));
 
     pit.leave_optional;
     return l_message;

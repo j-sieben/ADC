@@ -47,7 +47,7 @@ as
     return flag_type
   as
   begin
-    return &C_TRUE.;
+    return pit_util.c_true;
   end c_true;
 
   
@@ -59,7 +59,7 @@ as
     return flag_type
   as
   begin
-    return &C_FALSE.;
+    return pit_util.c_false;
   end c_false;
 
   
@@ -205,7 +205,7 @@ as
     l_item_name := upper(p_cpi_id);
     
     if l_item_name != adc_util.C_NO_FIRING_ITEM and p_cpi_id is not null then
-      l_page_prefix := utl_apex.get_page_prefix;
+      l_page_prefix := 'P'; --utl_apex.get_page_prefix;
       l_button_prefix := replace(l_page_prefix, 'P', 'B');
       l_region_prefix := replace(l_page_prefix, 'P', 'R');
         
