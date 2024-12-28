@@ -82,7 +82,7 @@ as
     p_cpi_id in varchar2,
     p_value_list in varchar2,
     p_message in varchar2 default 'ASSERTION_FAILED',
-    p_error_on_null in PIT_UTIL.FLAG_TYPE default PIT_UTIL.C_TRUE)
+    p_error_on_null in boolean default true)
   as
     l_result adc_util.flag_type;
   begin
@@ -95,7 +95,7 @@ as
 
     l_result := exclusive_or(p_value_list);
     if (l_result = adc_util.C_FALSE 
-       or (l_result is null and p_error_on_null = adc_util.C_TRUE)) then
+       or (l_result is null and p_error_on_null)) then
       adc_api.register_error(p_cpi_id, p_message, msg_args(''));
     end if;
     
@@ -164,10 +164,10 @@ as
   
   static function get_flag(
     p_cpi_id in varchar2)
-    return PIT_UTIL.FLAG_TYPE
+    return boolean
   as
   begin
-    return adc_api.get_flag(p_cpi_id);
+    return pit_util.to_bool(adc_api.get_flag(p_cpi_id));
   end get_flag;
   
   

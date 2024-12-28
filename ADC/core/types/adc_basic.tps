@@ -96,7 +96,7 @@ as object (
     p_cpi_id in varchar2,
     p_value_list in varchar2,
     p_message in varchar2 default 'ASSERTION_FAILED',
-    p_error_on_null in PIT_UTIL.FLAG_TYPE default pit_util.C_TRUE),
+    p_error_on_null in boolean default true),
 
 
   /** Function: exclusive_or
@@ -204,7 +204,7 @@ as object (
    */
   static function get_flag(
     p_cpi_id in varchar2)
-    return PIT_UTIL.FLAG_TYPE,
+    return boolean,
     
   
   /**
