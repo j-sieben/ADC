@@ -24,7 +24,7 @@ as
     return varchar2
   as
   begin
-    return chr(13) || chr(10);
+    return utl_text.get_newline_char;
   end c_cr;
   
   
@@ -205,7 +205,7 @@ as
     l_item_name := upper(p_cpi_id);
     
     if l_item_name != adc_util.C_NO_FIRING_ITEM and p_cpi_id is not null then
-      l_page_prefix := 'P'; --utl_apex.get_page_prefix;
+      l_page_prefix := utl_apex.get_page_prefix;
       l_button_prefix := replace(l_page_prefix, 'P', 'B');
       l_region_prefix := replace(l_page_prefix, 'P', 'R');
         

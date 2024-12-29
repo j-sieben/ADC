@@ -432,6 +432,11 @@ as
     -- Initialization
     g_param.has_errors := false;
     g_param.rule_counter := g_param.rule_counter + 1;
+    adc_recursion_stack.push_firing_item(
+      p_crg_id => g_param.crg_id,
+      p_cpi_id => g_param.firing_item,
+      p_event => g_param.firing_event,
+      p_recursive_depth => g_param.recursive_depth);
 
     -- Evaluate which rule to execute by querying the decision table
     open l_action_cur for g_param.rule_stmt;

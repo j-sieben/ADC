@@ -42,8 +42,9 @@ as
     Group: Type definitions
    */
    
-  /** 
-    id_map_t - PL/SQL table for mapping old IDs to new ones. Used when importing rule groups.
+  /**
+    Type: id_map_t
+      PL/SQL table for mapping old IDs to new ones. Used when importing rule groups.
    */
   type id_map_t is table of binary_integer index by binary_integer;
   g_id_map id_map_t;
@@ -91,7 +92,7 @@ as
                         join params
                           on uttm_mode = case cet_is_custom_event when c_true then 'EVENT' else upper(cet_id) end
                        where (cet_is_custom_event = c_true
-                          or cet_id in ('initialize', 'command'))
+                          or cet_id in ('initialize', 'command', 'notification'))
                        order by case cet_is_custom_event when c_true then 1 else 0 end, cet_id), ',' || CR, 14) event_list,
                     -- Spaltenliste im SessionState
                     utl_text.generate_text(cursor(
@@ -148,6 +149,82 @@ as
     when others then
       pit.stop(msg.ADC_VIEW_CREATION, msg_args(sqlerrm, l_stmt));
   end create_decision_table;
+
+
+  /** 
+    Function: create_initialization_code
+      Method to generate initialization code that copies initial page item values to the session state.
+      
+      Is used to copy initial values into the session state during page rendering. This is required to assure that
+      any rule that is based on certain session state values is processed at initialization time.
+      
+    Parameter:
+      p_crg_id - Rule group ID
+      
+    Returns:
+      Anonymous PL/SQL block that copies the actual session state values into the session state
+   */
+  function create_initialization_code(
+    p_crg_id in adc_rule_groups.crg_id%type)
+    return varchar2
+  as
+    l_initialization_code utl_apex.max_char;
+  begin
+    pit.enter_optional('create_initialization_code',
+      p_params => msg_params(
+                    msg_param('p_crg_id', p_crg_id)));
+
+      with params as (
+           -- Get common values, depending on whether the page contains a DML_FETCH_ROW process
+           select crg_id, g_cr cr,
+                  uttm_name, uttm_mode, uttm_text template,
+                  attribute_02, attribute_03, attribute_04, application_id, page_id
+             from apex_application_page_proc
+             join adc_rule_groups
+               on application_id = crg_app_id
+              and page_id = crg_page_id
+            cross join utl_text_templates_v
+            where process_type_code = 'DML_FETCH_ROW'
+              and uttm_type = C_ADC
+              and uttm_name like 'INITIALIZE%'
+              and crg_id = p_crg_id)
+    select utl_text.generate_text(cursor(
+             select template,
+                    cr,
+                    -- select statement to select the actual page values from the table referenced by the DML_FETCH_ROW process
+                    utl_text.generate_text(cursor(
+                      select p.template, p.attribute_02, p.attribute_03, p.attribute_04
+                        from params p
+                       where p.uttm_mode = case p.attribute_04 when 'ROWID' then p.attribute_04 else 'DEFAULT' end
+                         and p.uttm_name = 'INITIALIZE_COLUMN'), ',' || CR) sql_stmt,
+                    -- generate adc_util.set_session_state calls for any page element
+                    utl_text.generate_text(cursor(
+                      select p.template, sit.cpit_init_template, cpi.cpi_conversion,
+                             api.item_name, api.item_source
+                        from params p
+                        join apex_application_page_items api
+                          on p.application_id = api.application_id
+                         and p.page_id = api.page_id
+                        join adc_page_items cpi
+                          on p.crg_id = cpi.cpi_crg_id
+                         and api.item_name = cpi.cpi_id
+                        join adc_page_item_types sit
+                          on cpi.cpi_cpit_id = sit.cpit_id
+                       where api.item_source_type = 'Database Column'
+                         and cpi.cpi_is_required = g_true
+                         and p.uttm_name = 'INITIALIZE_COL_VAL'), CR) item_stmt
+               from dual)) resultat
+      into l_initialization_code
+      from params
+     where uttm_name = 'INITIALIZE';
+
+    pit.leave_optional(p_params => msg_params(msg_param('Initialization Code', l_initialization_code)));
+    return l_initialization_code;
+  exception
+    when no_data_found then
+      pit.leave_optional(p_params => msg_params(msg_param('Initialization Code', 'NULL')));
+      return null;
+  end create_initialization_code;
   
   
   /**
@@ -432,6 +509,30 @@ as
   end mark_error_fields;
   
   
+  /**
+    Procedure: create_initialization_code
+      Creates optional initialization code for the rule group
+      
+    Parameters:
+      p_crg_id - Rule group ID
+   */
+  procedure create_initialization_code(
+    p_crg_id in adc_rule_groups.crg_id%type)
+  as
+    l_initialization_code adc_rule_groups.crg_initialization_code%type;
+  begin
+    pit.enter_optional('create_initialization_code');
+            
+    l_initialization_code := create_initialization_code(p_crg_id);
+
+    update adc_rule_groups
+       set crg_initialization_code = l_initialization_code
+     where crg_id = p_crg_id;
+     
+    pit.leave_optional;
+  end create_initialization_code;
+  
+  
   /** 
     Procedure: harmonize_adc_page_item
       Method to harmonize <Tables.ADC_PAGE_ITEMS> against APEX Data Dictionary.
@@ -477,6 +578,8 @@ as
     remove_irrelevant_fields(p_crg_id);
       
     mark_error_fields(p_crg_id);
+    
+    create_initialization_code(p_crg_id);
 
     pit.leave_optional;
   exception
@@ -648,6 +751,9 @@ as
     pit.assert_not_null(p_crg_app_id, p_error_code => 'APP_ID_MISSING');
     
     pit.leave_optional;
+  exception
+    when others then
+      pit.stop;
   end validate_export_rule_groups;
   
   
@@ -700,6 +806,45 @@ as
     pit.leave_optional;
     return l_action_param_types;
   end get_action_param_types;
+  
+  
+  /**
+    Function: get_action_param_owners
+      Method to retrieve all action parameter type scripts for the given action type owner.
+      
+      If the requested owner is different from the default owner C_ADC then only those
+      parameter types are returned which are not already defined within the core delivery.
+      
+    Parameter:
+      p_cato_id - Owner of the action parameter types
+      
+    Returns:
+      Install script with all API calls for the action parameter types for the requested owner
+   */
+  function get_action_param_owners(
+    p_cato_id in adc_action_type_owners.cato_id%type)
+    return clob
+  as
+    l_action_param_owners clob;
+  begin
+    pit.enter_optional('get_action_param_owners',
+      p_params => msg_params(
+                    msg_param('p_cato_id', p_cato_id)));
+                    
+    select utl_text.generate_text(cursor(
+            select uttm_text template,
+                   cato_id, adc_util.to_bool(cato_active) cato_active,
+                   utl_text.wrap_string(cato_description, C_WRAP_START, C_WRAP_END) cato_description
+             from adc_action_type_owners_v))
+      into l_action_param_owners
+      from utl_text_templates_v
+     where uttm_type = C_ADC
+       and uttm_name = C_UTTM_NAME
+       and uttm_mode = 'ACTION_TYPE_OWNER';
+       
+    pit.leave_optional;
+    return l_action_param_owners;
+  end get_action_param_owners;
   
   
   /**
@@ -1051,7 +1196,7 @@ as
   as
     l_cur sys_refcursor;
   begin
-    pit.enter_mandatory('validate_rule_group');
+    pit.enter_mandatory;
       
     pit.assert_not_null(p_row.crg_app_id, msg.ADC_PARAM_MISSING, p_error_code => 'CRG_APP_ID_MISSING');
     pit.assert_not_null(p_row.crg_page_id, msg.ADC_PARAM_MISSING, p_error_code => 'CRG_PAGE_ID_MISSING');
@@ -1910,7 +2055,7 @@ as
   as
     l_cur sys_refcursor;
   begin
-    pit.enter_optional('validate_rule_action');
+    pit.enter_optional;
     
     pit.assert_not_null(p_row.cra_cru_id, msg.ADC_PARAM_MISSING, p_error_code => 'CRA_CRU_ID_MISSING');
     pit.assert_not_null(p_row.cra_crg_id, msg.ADC_PARAM_MISSING, p_error_code => 'CRA_CRG_ID_MISSING');
@@ -2051,7 +2196,7 @@ as
     p_row in adc_action_type_groups_v%rowtype)
   as
   begin
-    pit.enter_mandatory('validate_action_type_group');
+    pit.enter_mandatory;
     
     pit.assert_not_null(p_row.catg_id, msg.ADC_PARAM_MISSING, p_error_code => 'CATG_ID_MISSING');
     pit.assert_not_null(p_row.catg_name, msg.ADC_PARAM_MISSING, p_error_code => 'CATG_NAME_MISSING');
@@ -2162,7 +2307,7 @@ as
     p_row in adc_action_type_owners_v%rowtype)
   as
   begin
-    pit.enter_mandatory('validate_action_type_owner');
+    pit.enter_mandatory;
     
     pit.assert_not_null(p_row.cato_id, msg.ADC_PARAM_MISSING, p_error_code => 'CATO_ID_MISSING');
     
@@ -2300,7 +2445,7 @@ as
     p_row in adc_action_param_visual_types_v%rowtype)
   as
   begin
-    pit.enter_mandatory('validate_action_param_visual_type');
+    pit.enter_mandatory;
     
     pit.assert_not_null(p_row.capvt_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAPVT_ID_MISSING');
     pit.assert_not_null(p_row.capvt_name, msg.ADC_PARAM_MISSING, p_error_code => 'CAPVT_NAME_MISSING');
@@ -2486,7 +2631,7 @@ as
     p_row in adc_action_param_types_v%rowtype)
   as
   begin
-    pit.enter_mandatory('validate_action_param_type');
+    pit.enter_mandatory;
     
     pit.assert_not_null(p_row.capt_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAPT_ID_MISSING');
     pit.assert_not_null(p_row.capt_name, msg.ADC_PARAM_MISSING, p_error_code => 'CAPT_NAME_MISSING');
@@ -2633,7 +2778,7 @@ as
     p_row in adc_action_item_focus_v%rowtype)
   as
   begin
-    pit.enter_mandatory('validate_action_item_focus');
+    pit.enter_mandatory;
     
     /** TODO: Add validation */
     
@@ -2804,7 +2949,7 @@ as
     p_row in adc_action_types_v%rowtype)
   as
   begin
-    pit.enter_mandatory('validate_action_type');
+    pit.enter_mandatory;
   
     pit.assert_not_null(p_row.cat_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAT_ID_MISSING');
     pit.assert_not_null(p_row.cat_catg_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAT_CATG_ID_MISSING');
@@ -2813,6 +2958,9 @@ as
     pit.assert_not_null(p_row.cat_name, msg.ADC_PARAM_MISSING, p_error_code => 'CAT_NAME_MISSING');
     
     pit.leave_mandatory;
+  exception
+    when others then
+      pit.handle_panic;
   end validate_action_type;
 
 
@@ -3016,8 +3164,7 @@ as
     return l_zip_file;
   exception
     when others then
-      pit.handle_exception;
-      raise;
+      pit.handle_panic;
   end export_action_types;
 
 
@@ -3170,7 +3317,7 @@ as
     p_row in adc_action_parameters_v%rowtype)
   as
   begin
-    pit.enter_mandatory('validate_action_parameter');
+    pit.enter_mandatory;
     
     /** TODO: Add validation */
     
@@ -3255,9 +3402,9 @@ as
     p_row in adc_page_item_type_groups%rowtype)
   as
   begin
-    pit.enter_mandatory('validate_page_item_type_group');
+    pit.enter_mandatory;
     
-    /** TODO: Add validation */
+    /** TODO: Enter validation */
     
     pit.leave_mandatory;
   end validate_page_item_type_group;
@@ -3342,6 +3489,8 @@ as
   begin
     pit.enter_mandatory;
     
+    /** TODO: Enter implementation, if necessary */
+    
     pit.leave_mandatory;
   end delete_event_type;
     
@@ -3353,9 +3502,9 @@ as
     p_row in adc_event_types_v%rowtype)
   as
   begin
-    pit.enter_mandatory('validate_event_type');
+    pit.enter_mandatory;
     
-    /** TODO: Add validation */
+    /** TODO: Enter validation */
     
     pit.leave_mandatory;
   end validate_event_type;
@@ -3461,10 +3610,10 @@ as
     p_row in adc_page_item_types_v%rowtype)
   as
   begin
-    pit.enter_mandatory('validate_page_item_type');
+    pit.enter_mandatory;
     
-    /** TODO: Add validation */
-
+    /** TODO: Enter validation */
+    
     pit.leave_mandatory;
   end validate_page_item_type;
   
@@ -3586,9 +3735,9 @@ as
     p_row in adc_apex_action_types_v%rowtype)
   as
   begin
-    pit.enter_mandatory('validate_apex_action_type');
+    pit.enter_mandatory;
     
-    /** TODO: Add validation */
+    /** TODO: Enter validation */
     
     pit.leave_mandatory;
   end validate_apex_action_type;
@@ -3839,9 +3988,9 @@ as
     p_row in adc_apex_actions_v%rowtype)
   as
   begin
-    pit.enter_mandatory('validate_apex_action');
+    pit.enter_mandatory;
     
-    /** TODO: Add validation */
+    /** TODO: Add validation*/
     
     pit.leave_mandatory;
   end validate_apex_action;
@@ -4039,7 +4188,7 @@ as
     p_row in adc_standard_messages_v%rowtype)
   as
   begin
-    pit.enter_mandatory('validate_standard_message');
+    pit.enter_mandatory;
     
     pit.assert_not_null(p_row.csm_id, p_error_code => 'CSM_ID_MISSING');
     pit.assert_not_null(p_row.csm_message, p_error_code => 'CSM_MESSAGE_MISSING');
