@@ -1780,7 +1780,7 @@ as
                         join params
                           on uttm_mode = case cet_is_custom_event when c_true then 'EVENT' else upper(cet_id) end
                        where (cet_is_custom_event = c_true
-                          or cet_id in ('initialize', 'command'))
+                          or cet_id in ('initialize', 'command', 'notification'))
                        order by case cet_is_custom_event when c_true then 1 else 0 end, cet_id), ',' || CR, 14) event_list,
                     -- Column List
                     utl_text.generate_text(cursor(
