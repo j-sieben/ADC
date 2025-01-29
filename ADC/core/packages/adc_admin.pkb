@@ -145,9 +145,9 @@ as
      where crg_id = p_crg_id;
 
     pit.leave_optional;
-  exception
+  /*exception
     when others then
-      pit.stop(msg.ADC_VIEW_CREATION, msg_args(sqlerrm, l_stmt));
+      pit.stop(msg.ADC_VIEW_CREATION, msg_args(sqlerrm, l_stmt));*/
   end create_decision_table;
 
 
