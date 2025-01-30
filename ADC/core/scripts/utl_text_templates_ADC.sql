@@ -1094,5 +1094,4 @@ q'^    p_cato_active => #CATO_ACTIVE#);^',
   commit;
 end;
 /
-
 set define on
