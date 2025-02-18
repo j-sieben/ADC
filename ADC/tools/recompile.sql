@@ -2,7 +2,7 @@
 prompt &h1.Recompiling invalid objects
 declare
   cursor obj_cur is
-    select object_type, object_name,
+    select replace(object_type, ' BODY') object_type, object_name,
            case when instr(object_type, 'BODY') = 0 then 1 else 2 end recompile_order
       from user_objects
      where status = 'INVALID'
@@ -12,9 +12,9 @@ declare
 begin
   for o in obj_cur loop
     if o.recompile_order = 1 then
-      execute immediate 'alter ' || o.object_type || ' compile';
+      execute immediate 'alter ' || o.object_type || ' ' || o.object_name || ' compile';
     else
-      execute immediate 'alter ' || o.object_type || ' compile body';
+      execute immediate 'alter ' || o.object_type || ' ' || o.object_name ||  ' compile body';
     end if;
   end loop;
     
