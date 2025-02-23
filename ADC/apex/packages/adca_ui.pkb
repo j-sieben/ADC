@@ -340,7 +340,7 @@ as
       p_file_name => l_zip_file_name);
   exception
     when others then
-      pit.panic;
+      pit.handle_panic;
   end process_export_crg;
   
     

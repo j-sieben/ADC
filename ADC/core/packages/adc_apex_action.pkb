@@ -212,7 +212,9 @@ as
     l_confirm_action adc_util.max_char;
     l_cur sys_refcursor;
   begin
-    pit.enter_optional('get_crg_apex_actions');
+    pit.enter_optional('get_crg_apex_actions',
+      p_params => msg_params(
+                    msg_param('p_crg_id', p_crg_id)));
     
     -- check whether APEX actions exist
     open l_cur for

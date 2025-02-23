@@ -3,7 +3,6 @@ with page_state as(
        select /*+ no_merge */
               utl_apex.get_number('CRG_APP_ID') p_app_id,
               adc_util.C_TRUE c_true,
-              adca_ui_designer.support_flows c_support_flows,
               '' color_deactive,
               ' u-danger-text' color_error_handler,
               ' u-color-1-text' color_cgr,

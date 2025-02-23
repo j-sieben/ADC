@@ -9,7 +9,10 @@ with session_state as(
               utl_apex.get_number('CRG_ID') p_target_crg_id
          from dual),
      confirm_message as(
-       select apex_escape.json(pit.get_message_text(replace(caa_confirm_message_name, 'msg.'))) amda_delete_confirm_message, 
+       select apex_escape.json(
+                pit.get_message_text(
+                  p_message_name => replace(caa_confirm_message_name, 'msg.'),
+                  p_msg_args => null)) amda_delete_confirm_message, 
               case when cra_crg_id is null then adc_util.c_true end has_actions
          from adc_apex_actions
          join adc_rule_groups
