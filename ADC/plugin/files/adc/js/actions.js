@@ -63,6 +63,9 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   const C_HIDE = 'HIDE';
   const C_SHOW_DISABLE = 'SHOW_DISABLE';
   const C_SHOW_ENABLE = 'SHOW_ENABLE';
+
+  // Event type constants
+  const C_NOTIFICATION = 'NOTIFICATION';
   
   // Event constants
   const C_CLICK_EVENT = 'click';
@@ -74,6 +77,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   const C_APEX_AFTER_REFRESH = 'apexafterrefresh';
   const C_MODAL_DIALOG_CANCEL_EVENT = 'apexaftercanceldialog';
   const C_MODAL_DIALOG_CLOSE_EVENT = 'apexafterclosedialog';
+  const C_NOTIFICATION_EVENT = 'notification';
   
   const C_TABKEY = 9;
 
@@ -612,7 +616,55 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     }
   }; // hideMessage
 
-  
+  /**
+    Function: handleNotification
+      Method to upgrade a http connection to websocket protocol
+
+    Parameters:
+      pMessage - Message to be sent to ADC as event data
+   */
+  actions.handleNotification = function(pRoom, pURL, pAction){
+    apex.debug.log(pMessage);
+    adc.controller.setTriggeringElememnt(C_NOTIFICATION, C_NOTIFICATION_EVENT, pMessage);
+    adc.controller.execute();
+  }
+
+  /**
+    Function: initWebsocket
+      Method to upgrade a http connection to websocket protocol
+
+    Parameters:
+      pRoom - Array of rooms the page wants to receive messages for
+      pURL - URL of the websocket server to connect to
+      pAction - Optional callback method to execute if a websocket message is retrieved. if NULL; ADC is informed and the message is passed as event data
+   */
+  actions.initWebsocket = function(pRoom, pURL, pAction){
+    const sessionId = apex.item('pInstance').getValue();
+    const message = `{"id":${sessionId},"rooms":${pRoom}}`;
+    const socket = new WebSocket(`${pURL}?params=${message}`);
+    let callback;
+
+    if (typeof(pAction) == 'function'){
+      callback = pAction;
+    } else{
+      callback = actions.handleNotification;
+    }
+
+    socket.onopen = function(pEvent){
+      apex.debug.log('Websocket connnection established');
+    }
+
+    socket.onclose = function(pEvent){
+      apex.debug.log('Websocket connnection terminated');
+    }
+
+    socket.onmessage = function(pEvent){
+      let message = JSON.parse(pEvent.data);
+      apex.debug.log(message);
+      callback(message);
+    }
+  }
+
   /** 
     Function: registerPageItemsOnce
       Method to register a list of page items that are to be additionally sent to the server during the next ADC event
