@@ -261,7 +261,10 @@ as
   as
     pragma autonomous_transaction;
   begin
-    apex_util.set_session_state(p_cpi_id, p_value);
+    if coalesce(apex_util.get_session_state(p_cpi_id), 'foo') != coalesce(p_value, 'foo') then
+      apex_util.set_session_state(p_cpi_id, p_value);
+      adc_recursion_stack.register_touched_item(p_cpi_id);
+    end if;
     commit;
   end set_session_value;
   
