@@ -529,6 +529,19 @@ as
     p_page_items in varchar2 default null);
     
     
+  /**
+    Procedure: set_command_state
+      Method to control the visual state of an apex action on the page.
+      
+    Parameters:
+      p_action_name - Name of the apex action to control
+      p_page_state - State to the set apex action to
+   */
+  procedure set_command_state(
+    p_action_name in varchar2,
+    p_page_state in varchar2);
+    
+    
   /** 
     Procedure: set_session_state
       Wrapper around apex_util to set a value in the session state.

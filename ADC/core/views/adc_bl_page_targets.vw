@@ -55,6 +55,10 @@ select crg_id, button_static_id, 'BUTTON', 'BUTTON', 'ACTION', label, null, null
    and page_id = crg.crg_page_id
  where button_static_id is not null
  union all
+-- APEX_ACTIONS
+select caa_crg_id, caa_name, 'COMMAND', 'COMMAND', 'ACTION', caa_name, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE, adc_util.C_FALSE, null
+  from adc_apex_actions
+ union all
 -- REGIONS
 select crg_id, static_id, 
        case source_type_code

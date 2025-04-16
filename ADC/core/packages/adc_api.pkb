@@ -617,6 +617,37 @@ as
   end remember_page_state;
   
   
+  procedure set_command_state(
+    p_action_name in varchar2,
+    p_page_state in varchar2)
+  as
+  begin
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_action_name', p_action_name),
+                    msg_param('p_page_state', p_page_state)));
+                    
+    adc_apex_action.action_init(p_action_name);
+    case p_page_state
+      when 'SHOW_ENABLE' then
+        adc_apex_action.set_disabled(false);
+        adc_apex_action.set_visible(true);
+      when 'SHOW_DISABLE' then
+        adc_apex_action.set_disabled(true);
+        adc_apex_action.set_visible(true);
+      when 'HIDE' then
+        adc_apex_action.set_disabled(true);
+        adc_apex_action.set_visible(false);
+      else
+        null;
+    end case;
+
+    adc_apex_action.register_action_script;
+      
+    pit.leave_mandatory;
+  end set_command_state;
+  
+  
   procedure set_session_state(
     p_cpi_id in adc_page_items.cpi_id%type,
     p_value in varchar2 default null,
