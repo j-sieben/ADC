@@ -134,7 +134,8 @@ begin
     p_capt_display_name => '',
     p_capt_description => q'{<p>Bezeichner einer PIT-Meldung in der Form msg.NAME oder 'NAME', muss eine existierende Meldung sein.</p>}',
     p_capt_capvt_id => 'SELECT_LIST',
-    p_capt_select_list_query => q'{select pms_name d, 'msg.' || pms_name r, null crg_id  from pit_message_v}',
+    p_capt_select_list_query => q'{select pms_name d, 'msg.' || pms_name r, null crg_id  from pit_message_v\CR\}' || 
+q'{ order by pms_name}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -1002,7 +1003,7 @@ begin
     p_cat_caif_id => 'DOCUMENT',
     p_cat_cato_id => 'ADC',
     p_cat_name => 'Benachrichtigung aktivieren',
-    p_cat_display_name => q'{<p><strong>aktivere Benachtirchtigungen</strong> für diese Seite</p>}',
+    p_cat_display_name => q'{<p><strong>aktiviere Benachrichtigungen</strong> für diese Seite</p>}',
     p_cat_description => q'{<p>Stellt eine Verbindung zu einem Websocket-Server her, um zu ermöglichen, dass der Server Benachrichtigungen an diese Anwendungsseite schicken kann.</p>}',
     p_cat_pl_sql => q'{}',
     p_cat_js => q'{de.condes.plugin.adc.actions.initWebsocket('#PARAM_1#', '#PARAM_2#', #PARAM_3#);}',
