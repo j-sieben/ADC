@@ -1500,7 +1500,7 @@ q'{ order by pms_name}',
     p_cap_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_type(
-    p_cat_id => 'SET_ACTION_STATUDS',
+    p_cat_id => 'SET_ACTION_STATUS',
     p_cat_catg_id => 'APEX_ACTION',
     p_cat_caif_id => 'COMMAND',
     p_cat_cato_id => 'ADC',
@@ -1514,7 +1514,7 @@ q'{ order by pms_name}',
     p_cat_raise_recursive => adc_util.C_FALSE);
 
   adc_admin.merge_action_parameter(
-    p_cap_cat_id => 'SET_ACTION_STATUDS',
+    p_cap_cat_id => 'SET_ACTION_STATUS',
     p_cap_capt_id => 'ITEM_STATUS',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',

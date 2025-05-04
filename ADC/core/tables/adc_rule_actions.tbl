@@ -18,7 +18,7 @@ create table adc_rule_actions(
   constraint r_cra_cat_id foreign key (cra_cat_id)
     references adc_action_types (cat_id) on delete cascade,
   constraint r_cra_cpi_id foreign key (cra_crg_id, cra_cpi_id)
-    references adc_page_items (cpi_crg_id, cpi_id) on delete cascade,
+    references adc_page_items (cpi_crg_id, cpi_id) on delete cascade disable,
   constraint r_cra_cru_id foreign key (cra_cru_id)
     references adc_rules (cru_id) on delete cascade,
   constraint c_cra_active check (cra_active in (&C_TRUE., &C_FALSE.)),
