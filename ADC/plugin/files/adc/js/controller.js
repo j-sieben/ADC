@@ -84,7 +84,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
   /**
    * @typedef {Object} commandData
-   * @description <p>A Json object containting data describing a command object which is based on @link{apex.action}</p>
+   * @description <p>A Json object containting data describing a command object which is based on @link{apex.action}>p>
    * @type Object
    *
    * @property {string} command Name of the command to execute
@@ -161,11 +161,11 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pWait - Flag to indicate whether a wait spinner should be shown during processing
    */
   const changeCallback = function(pEvent, pEventData, pWait) {
-    getTriggeringElement(pEvent, pEventData);
+    getTriggeringElement(pEvent);
 
     $(C_BODY).queue(function () {
       adc.actions.showWaitSpinner(pWait);
-      ctl.execute();
+      ctl.execute(pEvent, pEventData);
     });
   }; // changeCallback
       
@@ -179,7 +179,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pEventData - <props.eventData> instance that goes along with the event
     */
   const enterCallback = function (pEvent, pEventData, pWait){
-    getTriggeringElement(pEvent, pEventData);
+    getTriggeringElement(pEvent);
 
     // Place request in queue to process multiple events in sequence
     if (props.triggeringElement.event === C_ENTER_EVENT){
@@ -187,7 +187,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       $('body').queue(function(){
         
         adc.actions.showWaitSpinner(pWait);
-        ctl.execute();
+        ctl.execute(pEventData);
       });
     }
   }; // enterCallback
@@ -202,7 +202,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pWait - Flag to indicate whether a wait spinner should be shown during processing
     */
   const unsavedCallback = function (pEvent, pWait) {
-    getTriggeringElement(pEvent, pEventData);
+    getTriggeringElement(pEvent);
 
     $(C_BODY).queue(function () {
       
@@ -338,14 +338,14 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     Parameter:
       e - Event to get the triggering element for
    */
-  const getTriggeringElement = function (pEvent, pEventData) {
+  const getTriggeringElement =function (pEvent) {
     var $element;
     var $button;
 
     // Copy event data to a local variable to allow for tayloring
     props.triggeringElement.id = C_NO_TRIGGERING_ITEM;
     props.triggeringElement.event = pEvent.type;
-    props.triggeringElement.data = pEventData;
+    props.triggeringElement.data = pEvent.data;
     props.triggeringElement.isClick = false; // reset status to known default
 
     if (typeof pEvent.target != 'undefined') {
@@ -360,11 +360,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
           $element = $(`#${props.triggeringElement.id}`);
           if ($element.attr('type') === 'radio' || $element.attr('type') === 'checkbox') {
             // In case of a radio group or a checkbox, the id has to be taken from the parent fieldset
-            const selectId = $element.parents('.apex-item-radio,.apex-item-checkbox').attr('id');
-            if(selectId){
-              // In case of a switch, the type is checkbox but the ID is already set correctly
-              props.triggeringElement.id = selectId;
-            }
+            props.triggeringElement.id = $element.parents('.radio_group,.checkbox_group').attr('id');
           }
           if (props.triggeringElement.id && props.triggeringElement.id.match(/oj.*/)){
             // item is Oracle Jet item group, traverse up

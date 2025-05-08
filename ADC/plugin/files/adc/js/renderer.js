@@ -162,10 +162,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       // the selection list does not become active and another value can be selected via keyboard
       $itemLabel.addClass(C_ADC_DISABLED);
     }
-    // if the page item is a CKEDITOR, the built in APEX method can savely be used
-    else if ($item.parent('div').find('div.ck').length){
-      apex.item(pItemId).disable();
-    }
+
     // if the page element is a date field, then also deactivate the button for the date selection
     else if ($item.hasClass("hasDatepicker") || $item.hasClass("color_picker") || $item.hasClass("popup_lov")) {
       $item.parent().find("button").prop(C_DISABLED_PROP, true);
@@ -351,7 +348,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       pFocusItem - Flag to indicate whether this dialog is a confirmation dialog
    */
   renderer.showDialog = function(pStyle, pMessage, pTitle, pFocusItem){
-    if (pFocusItem === undefined){
+    if (pFocusItem != undefined){
       pFocusItem  = $('.t-Body').find('input, button').not(':hidden').first().attr('id');
     };
     const callback = function(){
@@ -458,10 +455,10 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       pMessage - Alert message warning the user if submit couldn't be executed due to errors on page
    */
   renderer.submitPage = function(pRequest, pMessage){
-    if ($(C_APEX_ERROR_CLASS_SEL).length == 0 && pMessage.length == 0) {
+    if ($(C_APEX_ERROR_CLASS_SEL).length == 0) {
       apex.page.submit({
         "request" : pRequest,
-        "showWait" : false
+        "showWait" : true
       });
     }
     else{
