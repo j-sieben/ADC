@@ -15,7 +15,6 @@ prompt &h3.Create tables
 @&tool_dir.create_table adc_action_param_types
 @&tool_dir.create_table adc_apex_action_types
 @&tool_dir.create_table adc_page_item_type_groups
---muss vor adc_page_item_types installiert werden
 @&tool_dir.create_table adc_event_types
 @&tool_dir.create_table adc_page_item_types
 @&tool_dir.create_table adc_action_parameters
@@ -113,10 +112,6 @@ prompt &h3.Create package bodies
 
 prompt &h3.Access type bodies
 @&tool_dir.create_type_body adc_basic
-
-prompt &h2.Create parameters
-prompt &s1.Create ADC parameters
-@&tool_dir.run_script ParameterGroup_ADC
 
 prompt &h2.Merge initial data
 @&tool_dir.run_script action_types_system
