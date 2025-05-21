@@ -19,10 +19,9 @@ as
       Juergen Sieben, ConDeS GmbH
    */
   
-  /* CORE FUNCTIONALITY wrapper around <ADC_INTERNAL>
-   * Methods are in alphabetical order.
-   */
-  
+  /**
+    Group: CORE FUNCTIONALITY wrapper around <ADC_INTERNAL>
+   */  
   /**
     Procedure: add_javascript
       Method to incorporate a JavaScript chunk into the response.
@@ -37,7 +36,7 @@ as
       Removing duplicates reduces the amount of code the browser has to execute.
 
     Parameter:
-      p_script - JavaScript chunk to add
+      p_javascript - JavaScript chunk to add
    */
   procedure add_javascript(
     p_javascript in varchar2);
@@ -92,6 +91,8 @@ as
       p_param_1 - Optional first parameter value of the action
       p_param_2 - Optional second parameter value of the action
       p_param_3 - Optional third parameter value of the action
+      p_allow_recursion - Flag to indicate, whether changing the page state triggers recursion or not.
+                          Defaults to adc_util.C_FALSE, so if you want to trigger recursion, this parameter must be set.
    */
   procedure execute_action(
     p_cat_id in adc_action_types.cat_id%type,
@@ -151,21 +152,20 @@ as
 
 
   /** 
-    Function: exclusive_or
+    Procedure: exclusive_or
       Method to assure that exactly one or at most one page item of a selection of page items contains a value.
-      Is used to be able to utilize EXCLUSIVE_OR within an ADC rule condition (used in SQL).
 
     Parameter:
+      p_cpi_id - Page item ID to show the error message at
       p_item_list - colon-separated list of page item IDs to check
-   
-    Returns:
-      - adc_util.C_TRUE if rule is satisfied
-      - adc_util.C_FALSE if rule is not satisfied
-      - NULL if all page item values are null
+      p_message - Error message to show. Defaults to msg.PIT_ASSERTION_FAILED
+      p_error_on_null - Flag to indicate whether an exception is raised if all items are empty
    */
-  function exclusive_or(
-    p_item_list in varchar2)
-    return adc_util.flag_type;
+  procedure exclusive_or(
+    p_cpi_id in varchar2,
+    p_item_list in varchar2,
+    p_message in varchar2 default null,
+    p_error_on_null in boolean default true);
 
 
   /**
@@ -247,32 +247,6 @@ as
     return varchar2;
 
 
-  /** 
-    Function: get_flag
-      Method to retrieve the value of a page item as FLAG_TYPE.
-      
-      Depending on parameter P_THROW_ERROR an error is not only register upon unsuccessful conversion but thrown as well.
-      This is useful if a rule cannot be processed any further if the conversion is not successful.
-      
-      If the element is mandatory and NULL, a default value is returned as defined in the APEX metadata. If no such default
-      value exists, an exception is registered with ADC.
-   
-    Parameters:
-      p_cpi_id - ID of the page item
-      p_throw_error - Optional flag to indicate whether a non successful conversion is treated as an error. Defaults to C_TRUE.
-                      
-                      - adc_util.C_TRUE: an error is registered and thrown
-                      - adc_util.C_FALSE: an error is registered but not thrown
-                    
-    Returns:
-      FLAG_TYPE value
-   */
-  function get_flag(
-    p_cpi_id in adc_page_items.cpi_id%type,
-    p_throw_error in adc_util.flag_type default adc_util.C_FALSE)
-    return adc_util.flag_type;
-
-
   /**
     Function: get_lov_sql
       Method to retrieve a select statement that reads values for a given
@@ -280,7 +254,9 @@ as
       
     Parameters:
       p_capt_id - Type of the Action Parameter
-      p_crg_id - ID of the rule group. Is used to filter the LOV statement
+      p_crg_id - ID of the rule group. Is used to filter the LOV statement. Do not refactor
+                 to params.crg_id inside the package, as this CRG-ID may be from a different
+                 application (fi in the ADC-Designer)
     
     Returns:
       Select statement to be executed by the ADC_UI to retrieve values for an Action Parameter#
@@ -365,6 +341,15 @@ as
   procedure handle_bulk_errors(
     p_mapping in char_table default null,
     p_filter_list in varchar2 default null);
+    
+    
+  /** 
+    Procedure: handle_event_data
+      If the event data is set by using set_event_data, it uses a predefined form.
+      This method knows about these forms(the type is contained within the JSON)
+      and handles them in a standardized way, fi  by showing an error or success message.
+   */
+  procedure handle_event_data;
 
 
   /**
@@ -504,12 +489,16 @@ as
       p_is_mandatory - Flag that indicates whether a page item is mandatory (adc_util.C_TRUE) or not (adc_util.C_FALSE)
       p_cpi_mandatory_message - Optional message that is shown if a mandatory page item is null
       p_jquery_selector - Optional selector to set the mandatory status of many items at once
+      p_visual_state - Optional indicator for the visual state. Only applicable if p_is_mandatory is adc_util.C_FALSE, 
+                       mandatory items are always visible and editable. If the visual state is HIDE, this will also
+                       remove any error for this item from the page.
    */
   procedure register_mandatory(
     p_cpi_id in adc_page_items.cpi_id%type,
     p_is_mandatory in adc_util.flag_type,
     p_cpi_mandatory_message in varchar2,
-    p_jquery_selector in adc_rule_actions.cra_param_1%type default null);
+    p_jquery_selector in adc_rule_actions.cra_param_1%type default null,
+    p_visual_state in varchar2 default null);
     
     
   /**
@@ -530,16 +519,38 @@ as
     
     
   /**
-    Procedure: set_command_state
-      Method to control the visual state of an apex action on the page.
+    Procedure: remove_error_for_item
+      Method to remove any displayed error for a page item.
       
+      Allows for action types to explicitly remove any existing errors, 
+      fi when hiding an item.
+   
     Parameters:
-      p_action_name - Name of the apex action to control
-      p_page_state - State to the set apex action to
+      p_cpi_id - Page item to set to touched
+      p_jquery_selector - Optional selector to set many items at once
+      p_check - Optional check. Only if true, the item error gets removed
    */
-  procedure set_command_state(
-    p_action_name in varchar2,
-    p_page_state in varchar2);
+  procedure remove_error_for_item(
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_jquery_selector in adc_rule_actions.cra_param_1%type default null,
+    p_check in boolean default true);
+    
+    
+  /** 
+    Procedure: set_event_data
+      Method to create a JSON event data instance with a predefined form
+
+    Parameters:
+      p_cpi_id - page item that stores the create event data
+      p_event_type - page item to set
+      p_message_name - Name of a PIT message
+      p_msg_args - Optional message arguments
+   */
+  procedure set_event_data(
+    p_cpi_id in varchar2,
+    p_event_type in varchar2,
+    p_message_name in varchar2,
+    p_msg_args in msg_args default null);
     
     
   /** 
@@ -558,6 +569,8 @@ as
       p_allow_recursion - Flag to indicate whether changing the item value is allowed 
                           to raise recursive rule execution. Defaults to adc_util.C_TRUE
       p_jquery_selector - Optional selector to set many items at once
+      p_visual_state - Optional indicator for the visual state. Is evaluated only if the new value is NULL
+                       or the visual state is HIDE. In these cases any error for this item is removed from the page.
    */
   procedure set_session_state(
     p_cpi_id in adc_page_items.cpi_id%type,
@@ -565,9 +578,35 @@ as
     p_number_value in number default null,
     p_date_value in date default null,
     p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE,
-    p_jquery_selector in adc_rule_actions.cra_param_1%type default null);
+    p_jquery_selector in adc_rule_actions.cra_param_1%type default null,
+    p_visual_state in varchar2 default null);
+    
+    
+  /** 
+    Procedure: reset_mandatory_item
+      Is used to reset a mandatory item. Mandatory items must be treated specifically
+      because they throw an exception when set to NULL, causing other actions and rules
+      to not being executed anymore.
+      Therefore, this method avoids stopping rule execution if a mandatory item is
+      reset to NULL.
 
-
+    Parameters:
+      p_cpi_id - page item to set
+      p_throw_error - Flag to indicate whether resetting the item should generate an error
+                      on the GUI. This will not prevent other actions to be executed.
+      p_jquery_selector - Optional selector to set many items at once
+      p_allow_recursion - Flag to indicate whether changing the item value is allowed 
+                          to raise recursive rule execution. Defaults to adc_util.C_TRUE
+      p_visual_state - Optional indicator for the visual state.
+   */
+  procedure reset_mandatory_item(
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_throw_error in boolean,
+    p_jquery_selector in adc_rule_actions.cra_param_2%type default null,
+    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE,
+    p_visual_state in adc_rule_actions.cra_param_3%type default null);
+    
+    
   /** 
     Procedure: set_value_from_statement
       Procedure to set the session state of one or many items based on a SQL statement.

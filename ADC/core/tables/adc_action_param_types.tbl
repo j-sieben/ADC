@@ -3,7 +3,9 @@ create table adc_action_param_types(
   capt_pti_id varchar2(50 char) constraint c_capt_pti_id_nn not null,
   capt_pmg_name varchar2(3 byte) default on null 'ADC' constraint c_capt_pmg_name_nn not null,
   capt_capvt_id varchar2(50 char) default on null 'TEXT'constraint c_capt_capvt_id_nn not null,
-  capt_sort_seq number default on null 10 constraint c_capt_soprt_seq_nn not null,
+  capt_select_list_query varchar2(1000 byte),
+  capt_select_view_comment varchar2(200 byte),
+  capt_sor1t_seq number default on null 10 constraint c_capt_soprt_seq_nn not null,
   capt_active &FLAG_TYPE. default on null &C_TRUE. constraint c_capt_active_nn not null,
   constraint p_capt_id primary key(capt_id),
   constraint r_capt_pti_id foreign key(capt_pti_id, capt_pmg_name)
@@ -22,5 +24,7 @@ comment on column adc_action_param_types.capt_id is 'PK, technical key';
 comment on column adc_action_param_types.capt_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
 comment on column adc_action_param_types.capt_pmg_name is 'Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC';
 comment on column adc_action_param_types.capt_capvt_id is 'Reference to ADC_ACTION_PARAM_VISUAL_TYPES, type of visual control to use for this parameter type';
+comment on column adc_action_param_types.capt_select_list_query is 'Optional SQL query for static or dynamic parameter types';
+comment on column adc_action_param_types.capt_select_view_comment is 'Optional comment to explain what the select list contains';
 comment on column adc_action_param_types.capt_sort_seq is 'Sort criteria';
 comment on column adc_action_param_types.capt_active is 'Flag to indicate whether parameter type is in use';

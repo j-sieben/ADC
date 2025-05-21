@@ -78,6 +78,17 @@ as
 
 
   /**
+    Procedure: set_shortcut
+      Method to set the SHORTCUT param in an ACTION type APEX-Action.
+   
+    Parameter:
+      p_shortcut - Shortcut to execute the action
+   */
+  procedure set_shortcut(
+    p_shortcut in adc_apex_actions_v.caa_shortcut%type);
+
+
+  /**
     Procedure: execute_immediate
       Method to execute the action, either immediately or after setting all attributes first.
       

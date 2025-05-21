@@ -13,12 +13,12 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       <ul>
         <li>create the necessary event handlers when the page is rendered>li><li>collect the relevant data from the page when an event occurs and send it to the server>li><li>implement the returned response with instructions to modify the application page.>li>
       >ul>
-    >p>
+    </p>
     <p>The controller works on the server side with a decision tree that computes a list of action instructions for a given situation.<br>
-    During the calculation, the state of the application page can be changed by actions, which leads to a recursive check of the changed page state against the decision tree. The response includes all change instructions for the application page, including the recursive change instructions.>p>
-    <p>The ADC response is delivered in the form of a script with an ID and inserted on the page by this component. Thus, all included actions are executed directly. Afterwards, the plugin removes the server's response, as it is no longer needed.>p>
-    <p>Change instructions to application page partly depend on APEX version used and especially on theme used. The plugin starts from Theme 42, however, all theme-specific implementations of the activities are swapped out into a separate file, which is linked as a namespace object when parameterizing the plugin as a component parameter. As per default, this is <de.condes.plugin.adc.apex_42_5_1>, implementent in file <adcApex.js>, but it can be easily replaced by a client specific implementation.>p>
-    <p>To work, this plugin must only be called during page load, no administration or parameterization is required.>p>
+    During the calculation, the state of the application page can be changed by actions, which leads to a recursive check of the changed page state against the decision tree. The response includes all change instructions for the application page, including the recursive change instructions.</p>
+    <p>The ADC response is delivered in the form of a script with an ID and inserted on the page by this component. Thus, all included actions are executed directly. Afterwards, the plugin removes the server's response, as it is no longer needed.</p>
+    <p>Change instructions to application page partly depend on APEX version used and especially on theme used. The plugin starts from Theme 42, however, all theme-specific implementations of the activities are swapped out into a separate file, which is linked as a namespace object when parameterizing the plugin as a component parameter. As per default, this is <de.condes.plugin.adc.apex_42_5_1>, implementent in file <adcApex.js>, but it can be easily replaced by a client specific implementation.</p>
+    <p>To work, this plugin must only be called during page load, no administration or parameterization is required.</p>
    */
 (function (adc, $, server) {
   "use strict";
@@ -26,7 +26,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   /**
    * @typedef {Object} error
    * @description
-     <p>An error is a JSON object representing an error. It contains information about the error message, the affected page item and additional information that shows only if the page is rendered in debug mode.>p>
+     <p>An error is a JSON object representing an error. It contains information about the error message, the affected page item and additional information that shows only if the page is rendered in debug mode.</p>
    * @type Object
    * @property {string} item Page item that is affected by this error
    * @property {string} message Error message
@@ -38,7 +38,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
    * @typedef {Object} errorList
    * @description
      <p>An errorList is a collection of errors that occurred on the page. It also contains arrays for error dependent items (i.e. items that have to be disabled if an error occurred on the page) and firingItems.<br>
-     Firing items provide information about page items that have been 'touched' by executed rules. Intention is to remove any error that is related to a firing item from the collection of errors on the page and replace it with the newly provided error message, if any. This way, error messages which don't apply are removed, but errors relating to other page items on the page stay on page.>p>
+     Firing items provide information about page items that have been 'touched' by executed rules. Intention is to remove any error that is related to a firing item from the collection of errors on the page and replace it with the newly provided error message, if any. This way, error messages which don't apply are removed, but errors relating to other page items on the page stay on page.</p>
    * @type Object
    * @property {string} count Amount of errors
    * @property {string[]} firingItems Array of page items that are
@@ -52,7 +52,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
   /**
    * @typedef {Object} props.triggeringElement
-   * @description <p>An object to collect informations about the triggering item>p>
+   * @description <p>An object to collect informations about the triggering item</p>
    * @type Object
    *
    * @property {string} id ID of the page element that triggered the event.
@@ -63,7 +63,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
   /**
    * @typedef {Object} pAction
-   * @description <p>An answer object of the plugin framework containing attributes to control further processing>p>
+   * @description <p>An answer object of the plugin framework containing attributes to control further processing</p>
    * @type Object
    *
    * @property {string} attribute_01 JSON object containing all page items and their events which are bound by the plugin
@@ -75,7 +75,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
   /**
    * @typedef {Object} props.eventData
-   * @description <p>A Json object containting data for the server call such as the ajaxIdentifier and the page items to submit>p>
+   * @description <p>A Json object containting data for the server call such as the ajaxIdentifier and the page items to submit</p>
    * @type Object
    *
    * @property {string} ajaxIdentifier Reference to props.ajaxIdentifier
@@ -84,7 +84,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
   /**
    * @typedef {Object} commandData
-   * @description <p>A Json object containting data describing a command object which is based on @link{apex.action}>p>
+   * @description <p>A Json object containting data describing a command object which is based on @link{apex.action}</p>
    * @type Object
    *
    * @property {string} command Name of the command to execute
@@ -100,14 +100,16 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   const C_CHANGE_EVENT = 'change';
   const C_CLICK_EVENT = 'click';
   const C_DBLCLICK_EVENT = 'dblclick';
+  const C_COMMAND_EVENT = 'command';
   const C_ENTER_EVENT = 'enter';
   const C_KEYPRESS_EVENT = 'keypress';
   const C_APEX_BEFORE_REFRESH = 'apexbeforerefresh';
   const C_APEX_AFTER_REFRESH = 'apexafterrefresh';
   const C_APEX_AFTER_CLOSE_DIALOG = 'apexafterclosedialog';
+  const C_APEX_AFTER_CANCEL_DIALOG = 'apexaftercanceldialog';
   const C_NO_TRIGGERING_ITEM = 'DOCUMENT';
-  const C_LOCK_LENGTH = 200;
-  const C_PROTECTED_EVENTS = [C_CLICK_EVENT, C_DBLCLICK_EVENT, C_ENTER_EVENT];
+  const C_LOCK_LENGTH = 500;
+  const C_PROTECTED_EVENTS = [C_CLICK_EVENT, C_COMMAND_EVENT, C_DBLCLICK_EVENT, C_ENTER_EVENT, C_APEX_AFTER_CLOSE_DIALOG, C_APEX_AFTER_CANCEL_DIALOG];
   const C_BODY = 'body';
   const C_BUTTON = 'button';
   const C_APEX_BUTTON = 't-Button';
@@ -161,11 +163,11 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pWait - Flag to indicate whether a wait spinner should be shown during processing
    */
   const changeCallback = function(pEvent, pEventData, pWait) {
-    getTriggeringElement(pEvent);
+    getTriggeringElement(pEvent, pEventData);
 
     $(C_BODY).queue(function () {
       adc.actions.showWaitSpinner(pWait);
-      ctl.execute(pEvent, pEventData);
+      ctl.execute();
     });
   }; // changeCallback
       
@@ -179,7 +181,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pEventData - <props.eventData> instance that goes along with the event
     */
   const enterCallback = function (pEvent, pEventData, pWait){
-    getTriggeringElement(pEvent);
+    getTriggeringElement(pEvent, pEventData);
 
     // Place request in queue to process multiple events in sequence
     if (props.triggeringElement.event === C_ENTER_EVENT){
@@ -187,7 +189,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       $('body').queue(function(){
         
         adc.actions.showWaitSpinner(pWait);
-        ctl.execute(pEventData);
+        ctl.execute();
       });
     }
   }; // enterCallback
@@ -199,24 +201,50 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       
     Parameters:
       pEvent - Event that occured
-      pWait - Flag to indicate whether a wait spinner should be shown during processing
+      pEventData - <props.eventData> instance that goes along with the event
     */
-  const unsavedCallback = function (pEvent, pWait) {
-    getTriggeringElement(pEvent);
+  const unsavedCallback = function (pEvent, pEventData) {
+    getTriggeringElement(pEvent, pEventData);
 
-    $(C_BODY).queue(function () {
+    if (props.triggeringElement.id) {
+      $(C_BODY).queue(function () {                                  
+        if(ctl.hasUnsavedChanges()){
+          // Handle event only after confirmation from the user
+          adc.renderer.confirmRequest(pEvent, changeCallback);
+        }
+        else{
+          // No changes on the page, continue
+          changeCallback(pEvent);
+        };
+      });
+    }
+  }; // unsavedCallback      
+    
+  /** 
+    Function: unchangedCallback
+      Wraps the call to the database in a confirmation dialog that is shown if the page contains unsaved changes.
       
-      adc.actions.showWaitSpinner(pWait);
-      if(ctl.hasUnsavedChanges()){
-        // Handle event only after confirmation from the user
-        adc.renderer.confirmRequest(pEvent, changeCallback);
-      }
-      else{
-        // No changes on the page, continue
-        changeCallback(pEvent);
-      };
-    });
-  }; // unsavedCallback
+    Parameters:
+      pEvent - Event that occured
+      pEventData - <props.eventData> instance that goes along with the event
+    */
+  const unchangedCallback = function (pEvent, pEventData) {
+    getTriggeringElement(pEvent, pEventData);
+
+    if (props.triggeringElement.id) {
+      $(C_BODY).queue(function () {
+        
+        if(! ctl.hasUnsavedChanges()){
+          // Show message that no change exists on the page
+          adc.renderer.showDialog('INFO', pEvent.message, pEvent.title);
+        }
+        else{
+          // Changes exist on the page, continue
+          changeCallback(pEvent);
+        };
+      });
+    }
+  }; // unchangedCallback
 
 
   /**
@@ -327,7 +355,17 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       ScriptSelector = '#' + $(pCode).attr('id');
       $(ScriptSelector).remove();
     }
+    
+    setTimeout(
+      function(){
+       props.quarantineList = [];
+      },
+      C_LOCK_LENGTH
+    );
+    
     $(C_BODY).dequeue();
+    setTimeout(function(){$(C_BODY).dequeue();}, 5000)
+    props.lastTriggeringElement = props.triggeringElement.id;
   }; // executeCode
   
 
@@ -336,9 +374,10 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       Method to describe the event and calling item after an event has occured.
       
     Parameter:
-      e - Event to get the triggering element for
+      pEvent - Event that occured
+      pEventData - <props.eventData> instance that goes along with the event
    */
-  const getTriggeringElement =function (pEvent) {
+  const getTriggeringElement =function (pEvent, pEventData) {
     var $element;
     var $button;
 
@@ -360,7 +399,11 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
           $element = $(`#${props.triggeringElement.id}`);
           if ($element.attr('type') === 'radio' || $element.attr('type') === 'checkbox') {
             // In case of a radio group or a checkbox, the id has to be taken from the parent fieldset
-            props.triggeringElement.id = $element.parents('.radio_group,.checkbox_group').attr('id');
+            const selectId = $element.parents('.apex-item-radio,.apex-item-checkbox').attr('id');
+            if(selectId){
+              // In case of a switch, the type is checkbox but the ID is already set correctly
+              props.triggeringElement.id = selectId;
+            }
           }
           if (props.triggeringElement.id && props.triggeringElement.id.match(/oj.*/)){
             // item is Oracle Jet item group, traverse up
@@ -396,7 +439,11 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
         default:
           props.triggeringElement.id = pEvent.target.id;
       }
-      apex.debug.info(`Event '${props.triggeringElement.event}' raised at Triggering element '${props.triggeringElement.id}'`);
+      if (props.triggeringElement.id){
+        apex.debug.info(`Event '${props.triggeringElement.event}' raised at Triggering element '${props.triggeringElement.id}'`);}
+      else {
+        console.log(`Could not determine triggering element ID for ${pEvent.target}`);
+      }
     }
   }; // getTriggeringElement
 
@@ -583,6 +630,20 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   ctl.bindUnsavedConfirmationHandler = function(pTarget, pMessage, pDialogTitle){
     addButtonHandler(pTarget, pMessage, pDialogTitle, unsavedCallback);
   }; // bindUnsavedConfirmationHandler
+
+  
+  /** 
+    Function: bindUnchangedConfirmationHandler
+      Shows a confirmation dialog prior to raising the ADC event notification if no changes exist on page.
+      
+    Parameters:
+      pTarget - jQuery item representing the page item to bind to
+      pMessage - Message to show within the confirmation
+      pDialogTitle - Title of the dialog
+   */
+  ctl.bindUnchangedConfirmationHandler = function(pTarget, pMessage, pDialogTitle){
+    addButtonHandler(pTarget, pMessage, pDialogTitle, unchangedCallback);
+  }; // bindUnchangedConfirmationHandler
   
 
   /**
@@ -607,6 +668,15 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   
 
   /**
+    Function: getLastTriggeringItem
+      Method to retrieve the ID of the item that fired the last ADC event
+   */
+  ctl.getLastTriggeringItem = function() {
+    return props.lastTriggeringElement;
+  }; // getLastTriggeringItem
+  
+
+  /**
     Function: getPageState
       Method to retrieve the actually valid page state
    */
@@ -622,9 +692,20 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     Parameter:
       pPageState - Instance of the actually valid page state
    */
-  ctl.setPageState = function(pPageState) {
-    props.pageState = pPageState;
-  }; // getPageState
+  ctl.setPageState = function(pPageItems) {
+    let itemValue;
+    props.pageState.itemMap.clear();
+    
+    $.each(pPageItems, function(idx, item){
+        if(item.id){
+          item = item.id;
+        };
+        itemValue = apex.item(item).getValue();
+        props.pageState.itemMap.set(item, itemValue);
+        apex.debug.info(`Saving ${item} with value ${itemValue}`);
+      }
+    );
+  }; // setPageState
 
 
   /**
@@ -652,14 +733,10 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     Parameter:
       pPageItems - Optional array of all page item ids to capture. If empty, all page items are captured.
    */
-  ctl.hasUnsavedChanges = function(pPageItems){
-    var itemList;
-    var isDifferent = false;
-    
-    // Initialize
-    Array.isArray(pPageItems) ? itemList = pPageItems : itemList = $(C_INPUT_SELECTOR);
-    
-    $.each(itemList, function(item){
+  ctl.hasUnsavedChanges = function(){
+    let isDifferent = false;
+   
+    $.each(props.pageState.itemMap, function(item){
       item = itemList[item];
       if(item.id){
         item = item.id;
@@ -800,6 +877,9 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
         }
       );
     }
+    else {
+      executeCode();
+    };
   }; // execute
 
   

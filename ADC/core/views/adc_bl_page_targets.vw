@@ -18,7 +18,13 @@ select crg_id cpi_crg_id,
          when 'CHECKBOX' then 'TOGGLE'
          else null end cpi_caat_id,
        label cpi_label,
-       format_mask cpi_conversion,
+       case when item_source_data_type = 'NUMBER' or regexp_like(format_mask, '(^|(FM))[09DGL\.\,]+$', 'i') then
+         'FM' || replace(upper(coalesce(format_mask, 'fm9999999999999999999')), 'FM')
+       when item_source_data_type in ('DATE', 'TIMESTAMP') then 
+         coalesce(format_mask, aa.date_format)
+       else 
+         format_mask
+       end cpi_conversion,
        item_default cpi_item_default,
        '|' || replace(trim(item_css_classes), ' ', '|') || '|' || replace(trim(html_form_element_css_classes), ' ', '|') || '|' cpi_css,
        -- Default mandatory items
@@ -36,6 +42,8 @@ select crg_id cpi_crg_id,
   join adc_rule_groups crg
     on aai.application_id = crg.crg_app_id
    and aai.page_id = crg.crg_page_id
+  join apex_applications aa
+    on aai.application_id = aa.application_id
   left join apex_application_page_regions aar
     on crg.crg_app_id = aar.application_id
    and crg.crg_page_id = aar.page_id
@@ -54,10 +62,6 @@ select crg_id, button_static_id, 'BUTTON', 'BUTTON', 'ACTION', label, null, null
     on application_id = crg.crg_app_id
    and page_id = crg.crg_page_id
  where button_static_id is not null
- union all
--- APEX_ACTIONS
-select caa_crg_id, caa_name, 'COMMAND', 'COMMAND', 'ACTION', caa_name, null, null, null, adc_util.C_FALSE, adc_util.C_FALSE, adc_util.C_FALSE, null
-  from adc_apex_actions
  union all
 -- REGIONS
 select crg_id, static_id, 

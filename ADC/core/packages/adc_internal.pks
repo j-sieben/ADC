@@ -1,6 +1,6 @@
 create or replace package adc_internal
   authid definer
-  accessible by (package adc_plugin, package adc_api, package ut_adc_internal)
+  accessible by (package adc_plugin, package adc_api, package adc_actions, package ut_adc_internal)
 as
   
   
@@ -252,15 +252,6 @@ as
   procedure add_javascript(
     p_java_script in varchar2,
     p_debug_level in binary_integer default adc_util.C_JS_CODE);
-
-
-  /**
-    Procedure: check_mandatory
-      See <adc_api.check_mandatory>
-   */
-  procedure check_mandatory(
-    p_cpi_id in adc_page_items.cpi_id%type,
-    p_stop in adc_util.flag_type default adc_util.C_FALSE);
     
     
   /**
@@ -294,7 +285,7 @@ as
       See <adc_api.execute_command>
    */
   procedure execute_command(
-    p_command in adc_apex_actions.caa_id%type);
+    p_command in adc_apex_actions.caa_name%type);
 
 
   /**
@@ -334,7 +325,17 @@ as
     p_cpi_id in adc_page_items.cpi_id%type,
     p_cpi_mandatory_message in varchar2,
     p_is_mandatory in adc_util.flag_type,
-    p_jquery_selector in adc_rule_actions.cra_param_1%type default null);
+    p_jquery_selector in adc_rule_actions.cra_param_2%type default null,
+    p_visual_state in adc_rule_actions.cra_param_3%type default null);
+
+
+  /**
+    Procedure: register_touched_item
+      See <adc_api.register_touched_item>
+   */
+  procedure register_touched_item(
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_jquery_selector in adc_rule_actions.cra_param_2%type default null);
 
 
   /**
@@ -347,8 +348,21 @@ as
     p_number_value in number default null,
     p_date_value in date default null,
     p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE,
-    p_jquery_selector in adc_rule_actions.cra_param_2%type default null);
+    p_jquery_selector in adc_rule_actions.cra_param_2%type default null,
+    p_visual_state in adc_rule_actions.cra_param_3%type default null);
 
+
+  /**
+    Procedure: reset_mandatory_item
+      See <adc_api.reset_mandatory_item>
+   */
+  procedure reset_mandatory_item(
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_throw_error in adc_util.flag_type,
+    p_jquery_selector in adc_rule_actions.cra_param_2%type default null,
+    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE,
+    p_visual_state in adc_rule_actions.cra_param_3%type default null);
+    
 
   /**
     Procedure: set_value_from_statement

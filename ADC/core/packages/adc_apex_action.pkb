@@ -58,7 +58,8 @@ as
    */
   C_INIT_TEMPLATE constant template_t := q'^action = apex.actions.lookup('#NAME#');^';
 
-  C_UPDATE_TEMPLATE constant template_t := q'^    apex.actions.update('#NAME#');^';
+  C_UPDATE_TEMPLATE constant template_t := q'^    apex.actions.update('#NAME#');
+    de.condes.plugin.adc.actions.setApexActionAccessKey('#NAME#');^';
   C_EXECUTE_IMMEDIATE constant template_t := q'^    apex.actions.invoke('#NAME#');^';
 
   C_HREF_TEMPLATE constant template_t := q'^    action.href="#JS##HREF#"; action.action='';^';
@@ -71,6 +72,7 @@ as
   C_ENABLE_TEMPLATE constant template_t := q'^    action.disabled = false;^';
   C_SHOW_TEMPLATE constant template_t := q'^    action.hide = false;^';
   C_HIDE_TEMPLATE constant template_t := q'^    action.hide = true;^';
+  C_SHORTCUT_TEMPLATE CONSTANT template_t := q'^    action.shortcut = 'Alt+#SHORTCUT#';^';
 
   C_JAVA_SCRIPT_TAG constant adc_util.ora_name_type := 'javascript:';
   -- The following constants are used to prevent ADC_RESPONSE from escaping these namespace objects
@@ -103,7 +105,6 @@ as
     p_for_action in boolean default TRUE)
   as
   begin
-    pit.enter_detailed('append');
     if p_text is not null then
       if p_for_action then
         g_action.javascript_stack := g_action.javascript_stack || adc_util.C_CR
@@ -112,7 +113,6 @@ as
         g_action.additional_javascript := g_action.additional_javascript || adc_util.C_CR || p_text;
       end if;
     end if;
-    pit.leave_detailed;
   end append;
 
 
@@ -181,9 +181,7 @@ as
     l_script := g_action.javascript_stack;
     g_action := null;
 
-    pit.leave_optional(
-      p_params => msg_params(
-                    msg_param('Script', l_script)));
+    pit.leave_optional;
     return l_script;
   end get_action_script;
   
@@ -212,9 +210,7 @@ as
     l_confirm_action adc_util.max_char;
     l_cur sys_refcursor;
   begin
-    pit.enter_optional('get_crg_apex_actions',
-      p_params => msg_params(
-                    msg_param('p_crg_id', p_crg_id)));
+    pit.enter_optional('get_crg_apex_actions');
     
     -- check whether APEX actions exist
     open l_cur for
@@ -225,7 +221,6 @@ as
                 
     l_default_action := utl_text.get_text_template(adc_util.C_PARAM_GROUP, 'DEFAULT_APEX_ACTION', 'FRAME');
     l_confirm_action := utl_text.get_text_template(adc_util.C_PARAM_GROUP, 'CONFIRM_APEX_ACTION', 'FRAME');
-    utl_text.set_secondary_anchor_char(null);
     
     -- Generate initalization JavaScript for APEX actions based on UTL_TEXT templates of name APEX_ACTION
     with templates as (
@@ -236,7 +231,7 @@ as
     select utl_text.generate_text(cursor(
              select uttm_text template,
                     adc_util.C_CR cr,
-                    pit.get_message_text(msg.ADC_APEX_ACTION_ORIGIN, msg_args(null)) apex_action_origin,
+                    pit.get_message_text(msg.ADC_APEX_ACTION_ORIGIN) apex_action_origin,
                     utl_text.generate_text(cursor(
                       select uttm_text template,
                              cpi_id, caa_name
@@ -264,7 +259,7 @@ as
                              case caa_initially_disabled when adc_util.c_true then 'true' else 'false' end caa_initially_disabled,
                              case caa_initially_hidden when adc_util.c_true then 'true' else 'false' end caa_initially_hidden,
                              case when caa_confirm_message_name is not null 
-                                  then apex_escape.json(pit.get_message_text(replace(caa_confirm_message_name, 'msg.'), msg_args(null))) 
+                                  then apex_escape.json(pit.get_message_text(replace(caa_confirm_message_name, 'msg.'))) 
                              end confirm_message,
                              -- Default is to inform ADC about invoking an APEX action on the page
                              case 
@@ -287,9 +282,7 @@ as
       into l_actions_js
       from dual;
 
-    pit.leave_optional(
-      p_params => msg_params(
-                    msg_param('APEX_ACTIONS', l_actions_js)));
+    pit.leave_optional;
     return l_actions_js;
   exception
     when msg.PIT_ASSERT_EXISTS_ERR then
@@ -345,6 +338,26 @@ as
 
     pit.leave_optional;
   end set_action;
+
+
+  /**
+    Procedure: set_shortcut
+      See <ADC_APEX_ACTIONS.set_shortcut>
+   */
+  procedure set_shortcut(
+    p_shortcut in adc_apex_actions_v.caa_shortcut%type)
+  is
+  begin
+    pit.enter_optional(
+      p_params => msg_params(
+                    msg_param('p_shortcut', p_shortcut)));
+
+
+    append(replace(C_SHORTCUT_TEMPLATE, '#SHORTCUT#', p_shortcut));
+    g_action.needs_update := true;
+
+    pit.leave_optional;
+  end set_shortcut;
 
 
   /**

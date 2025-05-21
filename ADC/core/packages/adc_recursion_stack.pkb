@@ -52,7 +52,7 @@ as
   
   g_recursion recursion_rec;
   g_recursion_level binary_integer;
-  
+  g_crg_id adc_rule_groups.crg_id%type;
   
   /**
     Group: Private constants
@@ -74,8 +74,15 @@ as
   function stack_is_not_empty
     return boolean
   as
+    l_is_not_empty boolean;
   begin
-    return g_recursion.item_stack.count > 0;
+    pit.enter_detailed('stack_is_not_empty');
+    
+    l_is_not_empty := g_recursion.item_stack.count > 0;
+    
+    pit.leave_detailed(
+      p_params => msg_params(msg_param('Result', l_is_not_empty)));
+    return l_is_not_empty;
   end stack_is_not_empty;
   
   
@@ -86,8 +93,15 @@ as
   function get_first_item
     return recursive_entry_t
   as
+    l_entry recursive_entry_t;
   begin
-    return g_recursion.item_stack(g_recursion.item_stack.first);
+    pit.enter_detailed('get_first_item');
+    
+    l_entry := g_recursion.item_stack(g_recursion.item_stack.first);
+    
+    pit.leave_detailed(
+      p_params => msg_params(msg_param('Entry', l_entry.cpi_id)));
+    return l_entry;
   end get_first_item;
   
   
@@ -129,12 +143,13 @@ as
     pop_firing_item(null, adc_util.C_TRUE);
     g_recursion.firing_items.delete;
     g_recursion_level := 0;
+    g_crg_id := p_crg_id;
         
     -- set recursion flag
     select coalesce(crg_with_recursion, adc_util.C_TRUE)
       into g_recursion.allow_recursion
       from adc_rule_groups
-     where crg_id = p_crg_id;
+     where crg_id = g_crg_id;
      
     pit.leave_optional(
       p_params => msg_params(
@@ -147,7 +162,6 @@ as
       See <ADC_RECURSION_STACK.push_firing_item>
    */
   procedure push_firing_item(
-    p_crg_id in adc_rule_groups.crg_id%type,
     p_cpi_id in adc_page_items.cpi_id%type,
     p_event in adc_page_item_types.cpit_cet_id%type,
     p_event_data in adc_util.max_char default null,
@@ -160,53 +174,46 @@ as
   begin
     pit.enter_optional('push_firing_item',
       p_params => msg_params(
-                    msg_param('p_crg_id', p_crg_id),
                     msg_param('p_cpi_id', p_cpi_id),
                     msg_param('p_event', p_event),
                     msg_param('p_event_data', p_event_data),
                     msg_param('p_allow_recursion', p_allow_recursion)));
     
-    pit.assert_not_null(p_crg_id, p_msg_args => msg_args('P_CRG_ID'));
-    pit.assert_not_null(p_cpi_id, p_msg_args => msg_args('P_CPI_ID'));
-    
+    pit.assert_not_null(p_cpi_id, p_msg_args => msg_args('P_CPI_ID'));    
     -- check recursion level does not exceeded max level
-    pit.assert(coalesce(p_recursive_depth, 0) <= g_recursion.recursion_limit + 20, msg.ADC_RECURSION_LIMIT, msg_args(p_cpi_id, to_char(g_recursion.recursion_limit)));
+    pit.assert(coalesce(p_recursive_depth, 0) <= g_recursion.recursion_limit, msg.ADC_RECURSION_LIMIT, msg_args(p_cpi_id, to_char(g_recursion.recursion_limit)));
     
-    if g_recursion.allow_recursion = adc_util.C_TRUE and p_allow_recursion = adc_util.C_TRUE then
-    
-      -- Item has not been pushed already
-      if not p_cpi_id member of g_recursion.firing_items then
-        case 
-          when p_cpi_id = C_COMMAND then
-            l_must_be_processed := 1;
-          when p_cpi_id != adc_util.C_NO_FIRING_ITEM then
-          -- If page item to be registered is referenced in rules, register recursive call for this page item
-          select count(*)
-            into l_must_be_processed
-            from dual
-           where exists(
-                 select null
-                   from adc_rules
-                   join adc_page_items
-                     on instr(',' || cru_firing_items || ',', ',' || cpi_id || ',') > 0
-                  where cpi_id = p_cpi_id
-                    and (instr(cpi_cpit_id, 'ITEM') > 0)
-                    and cru_crg_id = p_crg_id);
-        else
-          l_must_be_processed := 0;
-        end case;
-        
-        if (l_must_be_processed > 0 or p_force = adc_util.C_TRUE) and p_cpi_id != adc_util.C_NO_FIRING_ITEM then
-          -- First, push item uniquely on g_recursion.firing_items to retrieve all firing items later
-          register_touched_item(p_cpi_id);
-          -- then add item to the recursive stack. After succesful completion the firing item will be popped from that stack
-          l_stack_entry.cpi_id := p_cpi_id;
-          l_stack_entry.recursive_level := p_recursive_depth;
-          l_stack_entry.event := p_event;
-          l_stack_entry.event_data := p_event_data;
-          g_recursion.item_stack(p_cpi_id) := l_stack_entry;
-          pit.raise_debug(msg.ADC_FIRING_ITEM_PUSHED, msg_args(p_cpi_id, to_char(p_recursive_depth))); 
-        end if;
+    if g_recursion.allow_recursion = adc_util.C_TRUE and p_allow_recursion = adc_util.C_TRUE and not g_recursion.item_stack.exists(p_cpi_id) then    
+      case 
+        when p_cpi_id = C_COMMAND then
+          l_must_be_processed := 1;
+        when p_cpi_id != adc_util.C_NO_FIRING_ITEM then
+        -- If page item to be registered is referenced in rules, register recursive call for this page item
+        select count(*)
+          into l_must_be_processed
+          from dual
+         where exists(
+               select null
+                 from adc_rules
+                 join adc_page_items
+                   on instr(',' || cru_firing_items || ',', ',' || cpi_id || ',') > 0
+                where cpi_id = p_cpi_id
+                  and (instr(cpi_cpit_id, 'ITEM') > 0)
+                  and cru_crg_id = g_crg_id);
+      else
+        l_must_be_processed := 0;
+      end case;
+      
+      if (l_must_be_processed > 0 or p_force = adc_util.C_TRUE) and p_cpi_id != adc_util.C_NO_FIRING_ITEM then
+        -- First, push item uniquely on g_recursion.firing_items to retrieve all firing items later
+        register_touched_item(p_cpi_id);
+        -- then add item to the recursive stack. After succesful completion the firing item will be popped from that stack
+        l_stack_entry.cpi_id := p_cpi_id;
+        l_stack_entry.recursive_level := p_recursive_depth;
+        l_stack_entry.event := p_event;
+        l_stack_entry.event_data := p_event_data;
+        g_recursion.item_stack(p_cpi_id) := l_stack_entry;
+        pit.raise_debug(msg.ADC_FIRING_ITEM_PUSHED, msg_args(p_cpi_id, to_char(p_recursive_depth))); 
       end if;
     end if;
     
@@ -252,9 +259,9 @@ as
     if p_all = adc_util.C_TRUE then
       g_recursion.item_stack.delete;
     else
-      pit.raise_debug(msg.ADC_FIRING_ITEM_POPPED, msg_args(p_cpi_id));
       g_recursion.item_stack.delete(p_cpi_id);
       --g_recursion.item_stack.delete(g_recursion.item_stack.first);
+      pit.raise_debug(msg.ADC_FIRING_ITEM_POPPED, msg_args(p_cpi_id));
     end if;
     
     pit.leave_optional;
@@ -278,11 +285,14 @@ as
                     msg_param('p_cra_cpi_id', p_cra_cpi_id),
                     msg_param('p_cru_fire_on_page_load', p_cru_fire_on_page_load)));
     
-    case when p_cra_cpi_id = adc_util.C_NO_FIRING_ITEM and p_cru_fire_on_page_load = adc_util.C_TRUE
-      then l_result := adc_util.C_FALSE;
+    case 
+      when p_cra_cpi_id = adc_util.C_NO_FIRING_ITEM 
+       and p_cru_fire_on_page_load = adc_util.C_TRUE then 
+        l_result := adc_util.C_FALSE;
       when p_cra_raise_recursive = adc_util.C_FALSE then
         l_result := p_cra_raise_recursive;
-      else l_result := adc_util.C_TRUE;
+      else 
+        l_result := adc_util.C_TRUE;
     end case;
     
     pit.leave_detailed(msg_params(msg_param('Result', l_result)));
@@ -330,7 +340,6 @@ as
     pit.enter_optional('get_level');
     
     l_stack_entry := get_first_item;
-    
     pit.leave_optional(
       p_params => msg_params(
                     msg_param('Level', l_stack_entry.recursive_level)));
@@ -351,35 +360,23 @@ as
   function get_firing_items_as_json
     return varchar2
   as
-    l_firing_items adc_util.max_char;
+    l_items_array json_array_t;
+    l_firing_items clob;
   begin
     pit.enter_optional;
   
-    if g_recursion.firing_items.count > 0 then
-      l_firing_items := '["' || utl_text.table_to_string(g_recursion.firing_items, '","') || '"]';
-    else
-      l_firing_items := '[]';
-    end if;
+    l_items_array := json_array_t();
+    for i in 1 .. g_recursion.firing_items.count loop
+      l_items_array.append(g_recursion.firing_items(i));
+    end loop;
     
-    pit.leave_optional(msg_params(msg_param('JSON', l_firing_items)));
-    return l_firing_items;
-  end get_firing_items_as_json;
-    
-    
-  /**
-    Procedure: raise_recursion_level
-      See <ADC_RECURSION_STACK.raise_recursion_level>
-   */
-  procedure raise_recursion_level
-  as
-  begin
-    pit.enter_optional;
-    
-    g_recursion_level := g_recursion_level + 1;
+    l_firing_items := l_items_array.to_clob();
     
     pit.leave_optional(
-      p_params => msg_params(msg_param('Level', g_recursion_level)));
-  end raise_recursion_level;
+      p_params => msg_params(
+                    msg_param('Firing Items', l_firing_items)));
+    return l_firing_items;
+  end get_firing_items_as_json;
 
 begin
   initialize;

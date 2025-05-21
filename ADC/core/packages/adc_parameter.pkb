@@ -229,28 +229,18 @@ end;~';
   procedure validate_is_apex_action(
     p_value in out nocopy varchar2)
   as
-    l_exists binary_integer;
-    l_environment adc_util.environment_rec;
+    l_cur sys_refcursor;
   begin
     pit.enter_optional('validate_is_apex_action',
       p_params => msg_params(msg_param('p_value', p_value)));
       
-    l_environment := adc_util.get_environment;
-    select count(*)
-      into l_exists
-      from dual
-     where exists(
-           select null
-             from adc_apex_actions
-            where caa_crg_id = l_environment.crg_id
-              and caa_name = p_value);
+    open l_cur for
+      select null
+        from adc_apex_actions
+       where caa_name = p_value
+          or caa_id = p_value;
               
-    if l_exists = 0 then
-      adc_api.register_error(
-        p_cpi_id => p_value,
-        p_message_name => msg.ADC_APEX_ACTION_UNKNOWN,
-        p_msg_args => msg_args(p_value));
-    end if;
+    pit.assert_exists(l_cur, msg.ADC_PARAM_VALIDATION_FAILED, p_error_code => msg.ADC_APEX_ACTION_UNKNOWN);
     
     pit.leave_optional;
   end validate_is_apex_action;
@@ -366,7 +356,7 @@ end;~';
   as
     l_message clob;
   begin
-    l_message := pit.get_message_text(upper(p_value), msg_args(null));
+    l_message := pit.get_message_text(upper(p_value));
   end validate_is_pit_message;
 
 
@@ -692,7 +682,7 @@ end;~';
       into l_pms_name
       from pit_message_v
      where pms_name = replace(upper(p_message_name), 'MSG.');
-    l_message := pit.get_message_text(l_pms_name, msg_args(null));
+    l_message := pit.get_message_text(l_pms_name);
 
     pit.leave_optional;
     return l_message;
@@ -719,7 +709,6 @@ end;~';
    */
   function analyze_parameter_value(
     p_param in adc_rule_actions.cra_param_1%type,
-    p_crg_id in adc_rule_groups.crg_id%type,
     p_cpi_id in varchar2)
     return varchar2
   as
@@ -732,9 +721,9 @@ end;~';
 
     case
       when p_param = adc_util.C_PARAM_ITEM_VALUE then
-        l_result := adc_page_state.get_string(p_crg_id, p_cpi_id);
+        l_result := adc_page_state.get_string(p_cpi_id);
       when instr(p_param, adc_util.C_PARAM_ITEM_VALUE) > 0 then
-        l_result := replace(p_param, adc_util.C_PARAM_ITEM_VALUE, adc_page_state.get_string(p_crg_id, p_cpi_id));
+        l_result := replace(p_param, adc_util.C_PARAM_ITEM_VALUE, adc_page_state.get_string(p_cpi_id));
       when p_param = adc_util.C_PARAM_EVENT_DATA then
         l_result := adc_api.get_event_data(null);
       when instr(p_param, adc_util.C_PARAM_EVENT_DATA) > 0 then
@@ -821,8 +810,8 @@ end;~';
 
     pit.leave_optional;
   end validate_param_lov;
-
-
+  
+  
   /**
     Procedure: validate_parameter
       See <ADC_PARAMETER.validate_parameter>
@@ -884,6 +873,11 @@ end;~';
     when msg.ADC_PARAM_VALIDATION_FAILED_ERR then
       l_error := pit.get_active_message;
       case l_error.error_code
+        when msg.ADC_APEX_ACTION_UNKNOWN then
+          adc_api.register_error(
+            p_cpi_id => p_cpi_id,
+            p_message_name => msg.ADC_APEX_ACTION_UNKNOWN,
+            p_msg_args => msg_args(p_value));
         when msg.ADC_INVALID_JQUERY then
           adc_api.register_error(
             p_cpi_id => p_cpi_id,
@@ -934,45 +928,26 @@ end;~';
                                              
     return varchar2
   as
-    C_VIEW_STATEMENT_TEMPLATE constant adc_util.max_char := q'^create or replace force view #VIEW_NAME# as #CR##QUERY#;^';
+    C_VIEW_STATEMENT_TEMPLATE constant adc_util.max_char := q'^#QUERY#;^';
     C_VIEW_STATIC_LIST_TEMPLATE constant adc_util.max_char := q'^
-  select pti_name d, substr(pti_id, #IDX#) r, null crg_id
+  select pti_name d, replace(pti_id, '#CAPT_ID#_') r, null crg_id
     from pit_translatable_item_v
    where pti_pmg_name = 'ADC'
-     and pti_id like '#VIEW_NAME#%'^';
-                                                                                                           
+     and pti_id like '#CAPT_ID#_%'^';
+    l_view_name adc_util.ora_name_type;                                                                        
     l_stmt adc_util.max_char;
                                   
     l_idx binary_integer;
   begin
     pit.enter_optional;
+    l_stmt := p_row.capt_select_list_query;
+    
     if p_row.capt_capvt_id = C_STATIC_LIST then
-      with params as (
-             select length(p_row.capt_id) p_position,
-                    p_row.capt_id || '%' p_capt_id_pattern
-               from dual)
-      select p_position + case when substr(pti_id, p_position + 3, 1) = '_' then 4 else 2 end
-        into l_idx
-        from pit_translatable_item_v
-        join params
-          on pti_id like p_capt_id_pattern
-       where pti_pmg_name = 'ADC'
-         and rownum = 1;
-
-      p_row.capt_select_list_query := replace(replace(C_VIEW_STATIC_LIST_TEMPLATE,
-                                       '#VIEW_NAME#', p_row.capt_id),
-                                       '#IDX#', to_char(l_idx));
-    end if;
-
-    if p_row.capt_select_list_query is not null then
-      l_stmt := replace(replace(replace(C_VIEW_STATEMENT_TEMPLATE,
-                  '#VIEW_NAME#', C_CAPT_VIEW_NAME_PREFIX || p_row.capt_id),
-                  '#QUERY#', p_row.capt_select_list_query),
-                  '#CR#', adc_util.C_CR);
+      l_stmt := replace(C_VIEW_STATIC_LIST_TEMPLATE, '#CAPT_ID#', p_row.capt_id);
     end if;
     
     pit.leave_optional;
-    return replace(l_stmt, chr(10));
+    return l_stmt;
   end get_param_lov_query;
   
   
@@ -1052,7 +1027,6 @@ end;~';
   function evaluate_parameter(
     p_capt_id adc_action_param_types.capt_id%type,
     p_param_value adc_rule_actions.cra_param_1%type,
-    p_crg_id in adc_rule_groups.crg_id%type,
     p_cpi_id in adc_page_items.cpi_id%type)
     return varchar2
   as
@@ -1063,7 +1037,6 @@ end;~';
       p_params => msg_params(
                     msg_param('p_capt_id', p_capt_id),
                     msg_param('p_param_value', p_param_value),
-                    msg_param('p_crg_id', p_crg_id),
                     msg_param('p_cpi_id', p_cpi_id)));
 
     -- Initialize
@@ -1072,7 +1045,7 @@ end;~';
       l_special_values := char_table(adc_util.C_PARAM_ITEM_VALUE, adc_util.C_PARAM_EVENT_DATA);
 
       if l_value member of l_special_values or instr(l_value, '#') > 0 then
-        l_value := analyze_parameter_value(l_value, p_crg_id, p_cpi_id);
+        l_value := analyze_parameter_value(l_value, p_cpi_id);
       else
         if p_capt_id is not null then
           case p_capt_id
@@ -1095,7 +1068,7 @@ end;~';
             when C_SWITCH then
               l_value := adc_util.to_javascript_boolean(l_value);
             else
-              null;
+              l_value := coalesce(l_value, 'null');
             end case;
         end if;
       end if;

@@ -45,7 +45,7 @@ as
     p_capt_id in adc_action_param_types.capt_id%type,
     p_capt_capvt_id in adc_action_param_types.capt_capvt_id%type);
     
-
+    
   /**
     Procedure: validate_parameter
       Method to check an entered parameter value against meta data and
@@ -132,6 +132,7 @@ as
     Parameters:
       p_capt_id - Type of the parameter
       p_param_value - Actual parameter value
+      p_cpi_id - ID of the page item
       
     Returns:
       Evaluated parameter value.
@@ -139,7 +140,6 @@ as
   function evaluate_parameter(
     p_capt_id adc_action_param_types.capt_id%type,
     p_param_value adc_rule_actions.cra_param_1%type,
-    p_crg_id in adc_rule_groups.crg_id%type,
     p_cpi_id in adc_page_items.cpi_id%type)
     return varchar2;
   

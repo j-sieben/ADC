@@ -1,7 +1,9 @@
 create or replace package body adc_api 
 as
 
-  /* CORE FUNCTIONALITY wrapper around ADC_INTERNAL */
+  /**
+    Group: CORE FUNCTIONALITY wrapper around ADC_INTERNAL 
+   */
   procedure add_javascript(
     p_javascript in varchar2)
   as
@@ -22,7 +24,7 @@ as
     pit.enter_mandatory;
     
     apex_util.clear_page_cache(utl_apex.get_page_id);
-    adc_page_state.reset;
+    adc_page_state.reset(adc_internal.get_crg_id, adc_util.C_NO_FIRING_ITEM);
     
     pit.leave_mandatory;
   end clear_page_state;
@@ -75,7 +77,7 @@ as
                     msg_param('p_param_2', p_param_2),
                     msg_param('p_param_3', p_param_3),
                     msg_param('p_allow_recursion', p_allow_recursion)));
-        
+                    
     adc_internal.execute_action(
       p_cat_id => p_cat_id,
       p_cpi_id => p_cpi_id,
@@ -113,80 +115,44 @@ as
       p_params => msg_params(
                     msg_param('p_plsql', p_plsql)));
                     
-    l_cmd := replace(c_cmd_template, '#PL_SQL#', replace(trim(p_plsql), ';'));
-    execute immediate l_cmd using out l_result;
-    
-    adc_internal.add_javascript(replace(l_result, 'javascript:'), adc_util.C_JS_CODE);
-
+    adc_actions.execute_javascript(
+      p_plsql => p_plsql);
+      
     pit.leave_mandatory;
-  exception
-    when others then
-      pit.handle_exception(msg.ADC_UNHANDLED_EXCEPTION, msg_args(l_cmd));
-      adc_internal.register_error(adc_util.C_NO_FIRING_ITEM, msg.ADC_UNHANDLED_EXCEPTION, msg_args(apex_escape.json(l_cmd)));
-      -- surpress recursion
-      adc_internal.stop_rule;
   end execute_javascript;
     
 
   procedure execute_plsql(
     p_plsql in varchar2)
   as
-    C_CMD_TEMPLATE constant varchar2(100) := 'begin #PL_SQL# end;';
-    l_plsql adc_util.max_char;
   begin
-    pit.enter_mandatory(p_params => msg_params(msg_param('p_cmd', substr(p_plsql, 1, 4000))));
+    pit.enter_mandatory(p_params => msg_params(msg_param('p_plsql', p_plsql)));
 
+    adc_actions.execute_plsql(
+      p_plsql => p_plsql);
     
-    l_plsql := rtrim(trim(p_plsql), ';') || ';';
-    pit.assert(l_plsql != ';');
-    execute immediate replace(C_CMD_TEMPLATE, '#PL_SQL#', l_plsql);
-
     pit.leave_mandatory;
-  exception
-    when msg.PIT_ASSERT_TRUE_ERR then
-      pit.handle_exception;
-      adc_internal.register_error(adc_util.C_NO_FIRING_ITEM, msg.PIT_ASSERT_TRUE);
-      -- surpress recursion
-      adc_internal.stop_rule;
-    when others then
-      pit.handle_exception(msg.ADC_UNHANDLED_EXCEPTION, msg_args(l_plsql));
-      adc_internal.register_error(
-        p_cpi_id => adc_util.C_NO_FIRING_ITEM, 
-        p_message_name => msg.ADC_UNHANDLED_EXCEPTION, 
-        p_msg_args => msg_args(apex_escape.json(l_plsql)));
-      -- surpress recursion
-      adc_internal.stop_rule;
   end execute_plsql;
   
   
-  function exclusive_or(
-    p_item_list in varchar2)
-    return adc_util.flag_type
+  procedure exclusive_or(
+    p_cpi_id in varchar2,
+    p_item_list in varchar2,
+    p_message in varchar2 default null,
+    p_error_on_null in boolean default true)
   as
-    l_value_list char_table;
-    l_value_counter binary_integer := -1;
-    l_result adc_util.flag_type;
   begin
     pit.enter_mandatory(
       p_params => msg_params(
                     msg_param('p_item_list', p_item_list)));
                     
-    -- Tracing done in ADC_API  
-    adc_page_state.get_item_values_as_char_table(adc_internal.get_crg_id, p_item_list, l_value_list);
-    
-    select count(*)
-      into l_value_counter
-      from table(l_value_list)
-     where column_value is not null
-       and rownum < 3;
-      
-    l_result := case l_value_counter
-                when 0 then null
-                when 1 then adc_util.C_TRUE
-                else adc_util.C_FALSE end;      
+    adc_actions.exclusive_or(
+      p_cpi_id => p_cpi_id,
+      p_item_list => p_item_list,
+      p_message => p_message,
+      p_error_on_null => p_error_on_null);
                     
-    pit.leave_mandatory;          
-    return l_result;
+    pit.leave_mandatory;
   end exclusive_or;
   
 
@@ -197,7 +163,7 @@ as
     return date
   as
   begin
-    return adc_page_state.get_date(adc_internal.get_crg_id, p_cpi_id, p_format_mask);
+    return adc_page_state.get_date(p_cpi_id, p_format_mask);
   end get_date;
     
     
@@ -224,16 +190,6 @@ as
   begin
     return adc_internal.get_firing_item;
   end get_firing_item;
-  
-
-  function get_flag(
-    p_cpi_id in adc_page_items.cpi_id%type,
-    p_throw_error in adc_util.flag_type default adc_util.c_false)
-    return adc_util.flag_type
-  as
-  begin
-    return adc_util.get_boolean(adc_page_state.get_string(adc_internal.get_crg_id, p_cpi_id));
-  end get_flag;
 
 
   function get_lov_sql(
@@ -241,19 +197,18 @@ as
     p_crg_id in adc_rule_groups.crg_id%type)
     return varchar2
   as
-    C_STMT constant varchar2(200) := q'^select d, r
-  from adc_param_lov_#CAPT_ID#
- where crg_id = #CRG_ID#
-    or crg_id is null^';
-    l_stmt varchar2(1000);
+    l_stmt adc_util.max_char;
   begin
-    if p_capt_id is not null then
-      l_stmt := utl_text.bulk_replace(C_STMT, char_table(
-                  'CAPT_ID', lower(p_capt_id),
-                  'CRG_ID', coalesce(p_crg_id, 0)));
-    else
-      l_stmt := 'select null d, null r from dual';
-    end if;
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_capt_id', p_capt_id),
+                    msg_param('p_crg_id', p_crg_id)));
+                    
+    l_stmt := adc_actions.get_lov_sql(
+                p_capt_id => p_capt_id,
+                p_crg_id => p_crg_id);
+                  
+    pit.leave_mandatory;
     return l_stmt;
   end get_lov_sql;
   
@@ -265,7 +220,7 @@ as
     return number
   as
   begin
-    return adc_page_state.get_number(adc_internal.get_crg_id, p_cpi_id, p_format_mask);
+    return adc_page_state.get_number(p_cpi_id, p_format_mask);
   end get_number;
   
   
@@ -274,7 +229,7 @@ as
     return varchar2
   as
   begin
-    return adc_page_state.get_string(adc_internal.get_crg_id, p_cpi_id);
+    return adc_page_state.get_string(p_cpi_id);
   end get_string;
   
 
@@ -282,93 +237,37 @@ as
     p_mapping in char_table default null,
     p_filter_list in varchar2 default null) 
   as
-    type error_code_map_t is table of utl_apex.ora_name_type index by utl_apex.ora_name_type;
-    l_error_code_map error_code_map_t;
-    l_filter_items char_table;
-    l_has_filter boolean;
-    l_allow_message boolean;
-    l_message_list pit_message_table;
-    l_message message_type;
-    l_item utl_apex.item_rec;
-    l_processed_messages char_table := char_table();
-    l_related_item adc_util.ora_name_type;
   begin
     pit.enter_optional(
       p_params => msg_params(
                     msg_param('p_filter_list', p_filter_list)));
     
-    l_message_list := pit.get_message_collection;
-    
-    if l_message_list.count > 0 then
-      -- Initialize
-      utl_text.string_to_table(p_filter_list, l_filter_items);
-      l_has_filter := l_filter_items.count > 0;
-      
-      -- copy p_mapping to pl/sql table to allow for easy access using EXISTS method
-      if p_mapping is not null then
-        for i in 1 .. p_mapping.count loop
-          if mod(i, 2) = 1 then            
-            l_error_code_map(p_mapping(i)) := adc_util.harmonize_page_item_name(p_mapping(i + 1));
-          end if;
-        end loop;
-      end if;
-      
-      for i in 1 .. l_message_list.count loop
-        l_message := l_message_list(i);
-        l_allow_message := not l_has_filter;
-        
-        if l_message.severity in (pit.level_fatal, pit.level_error) then
-        
-          if l_error_code_map.exists(l_message.error_code) then
-            if l_has_filter then
-              l_related_item := l_error_code_map(l_message.error_code);
-              l_allow_message := l_related_item member of l_filter_items or l_related_item = 'DOCUMENT';
-            end if;
-            if l_allow_message then
-              utl_apex.get_page_element(l_error_code_map(l_message.error_code), l_item);
-            end if;
-          end if;
-          
-          if l_message.error_code not member of l_processed_messages and l_allow_message then
-            -- Push on local message list to remove double errors
-            l_processed_messages.extend;
-            l_processed_messages(l_processed_messages.count) := l_message.error_code;
-            
-            register_error(
-              p_cpi_id => coalesce(l_item.item_name, adc_util.C_NO_FIRING_ITEM),
-              p_error_msg => replace(l_message.message_text, '#LABEL#', l_item.item_label),
-              p_internal_error => l_message.message_description);
-          end if;          
-        end if;
-      end loop;
-    end if;
+    adc_actions.handle_bulk_errors(
+      p_mapping => p_mapping,
+      p_filter_list => p_filter_list);
     
     pit.leave_optional;
   end handle_bulk_errors;
+  
+  
+  procedure handle_event_data
+  as
+  begin
+    pit.enter_mandatory;
+    -- TODO: Implementierung hinzufügen
+    pit.leave_mandatory;
+  end handle_event_data;
   
   
   function has_class(
     p_class in varchar2)
     return adc_util.flag_type
   as
-    l_class_found binary_integer;
     l_result adc_util.flag_type;
-    l_crg_id adc_rule_groups.crg_id%type;
-    l_firing_item adc_util.ora_name_type;
   begin
-    pit.enter_mandatory('has_class');
-
-    l_crg_id := adc_internal.get_crg_id;
-    l_firing_item := adc_internal.get_firing_item;
-    
-    select count(*)
-      into l_class_found
-      from adc_page_items
-     where cpi_crg_id = l_crg_id
-       and cpi_id = l_firing_item
-       and instr(lower(cpi_css), '|' || lower(p_class) || '|') > 0;
+    pit.enter_mandatory;
      
-    l_result := adc_util.bool_to_flag(l_class_found = 1);
+    l_result := adc_actions.has_class(p_class);
 
     pit.leave_mandatory(p_params => msg_params(msg_param('Result', l_result)));
     return l_result;
@@ -400,67 +299,14 @@ as
   procedure initialize_form_region(
     p_static_id in adc_util.ora_name_type)
   as
-    l_stmt adc_util.max_char;
   begin
     pit.enter_mandatory(
       p_params => msg_params(
                     msg_param('p_static_id', p_static_id)));
 
-    with templates as(
-           select /*+ no_merge */
-                  uttm_text template, uttm_mode,
-                  utl_apex.get_application_id g_app_id,
-                  utl_apex.get_page_id g_page_id,
-                  p_static_id g_static_id
-             from utl_text_templates_v
-            where uttm_type = 'ADC'
-              and uttm_name = 'INITIALIZE_FORM')
-    select utl_text.generate_text(cursor(
-           select t.template, table_name,
-                  utl_text.generate_text(cursor(
-                    select s.template, i.item_source column_name, i.item_name item_name,
-                           case i.item_source_data_type when 'NUMBER' then 'number' when 'DATE' then 'date' else 'string' end data_type
-                      from apex_application_page_items i
-                      join templates s
-                        on application_id = g_app_id
-                       and page_id = g_page_id
-                     where i.data_source_region_id = r.region_id
-                       and is_primary_key = 'Yes'
-                       and uttm_mode = 'STATE'),
-                    ',' || adc_util.C_CR, 8) session_state,
-                  utl_text.generate_text(cursor(
-                    select s.template, i.item_source column_name, i.item_name item_name
-                      from apex_application_page_items i
-                      join templates s
-                        on application_id = g_app_id
-                       and page_id = g_page_id
-                     where i.data_source_region_id = r.region_id
-                       and uttm_mode = 'COLUMNS'),
-                    ', ') column_list
-             from apex_application_page_regions r
-             join templates t
-               on application_id = g_app_id
-              and page_id = g_page_id
-              and static_id = g_static_id
-            where uttm_mode = 'FRAME'))
-      into l_stmt
-      from dual;
-      
-    pit.log_state(
-      msg_params(
-        msg_param('APP', utl_apex.get_application_id),
-        msg_param('PAGE', utl_apex.get_page_id),
-        msg_param('ID', p_static_id),
-        msg_param('Statement', l_stmt)));
-    adc_internal.set_value_from_statement(
-      p_cpi_id => null, 
-      p_statement => l_stmt, 
-      p_allow_recursion => adc_util.C_FALSE);
+    adc_actions.initialize_form_region(p_static_id);
     
     pit.leave_mandatory;
-  exception
-    when no_data_found then
-      pit.leave_mandatory;
   end initialize_form_region;
   
   
@@ -468,24 +314,13 @@ as
     p_item_list in varchar2)
     return adc_util.flag_type
   as
-    l_value_list char_table;
-    l_value_counter binary_integer;
     l_result adc_util.flag_type := adc_util.C_FALSE;
   begin
     pit.enter_mandatory(
       p_params => msg_params(
                     msg_param('p_item_list', p_item_list)));
     
-    -- Tracing done in ADC_API
-    adc_page_state.get_item_values_as_char_table(adc_internal.get_crg_id, p_item_list, l_value_list);
-    select count(*)
-      into l_value_counter
-      from table(l_value_list)
-     where column_value is not null
-       and rownum < 2;
-    if l_value_counter = 1 then
-      l_result := adc_util.C_TRUE;
-    end if;    
+    l_result := adc_actions.not_null(p_item_list);
     
     pit.leave_mandatory;    
     return l_result;
@@ -513,18 +348,14 @@ as
     p_internal_error in varchar2)
   as
   begin
-    pit.enter_mandatory(
-      p_params => msg_params(
-                    msg_param('p_cpi_id', p_cpi_id),
-                    msg_param('p_error_msg', p_error_msg),
-                    msg_param('p_internal_error', p_internal_error)));
+    -- Tracing done in ADC_INTERNAL, as this method is called from various
+    -- places within ADC_API
                     
     adc_internal.register_error(
       p_cpi_id => p_cpi_id,
       p_error_msg => p_error_msg,
       p_internal_error => p_internal_error);
       
-    pit.leave_mandatory;
   end register_error;
   
   
@@ -534,17 +365,14 @@ as
     p_msg_args in msg_args default null)
   as
   begin
-    pit.enter_mandatory(
-      p_params => msg_params(
-                    msg_param('p_cpi_id', p_cpi_id),
-                    msg_param('p_message_name', p_message_name)));
+    -- Tracing done in ADC_INTERNAL, as this method is called from various
+    -- places within ADC_API
                     
     adc_internal.register_error(
       p_cpi_id => p_cpi_id,
       p_message_name => p_message_name,
       p_msg_args => p_msg_args);
       
-    pit.leave_mandatory;
   end register_error;
   
   
@@ -552,7 +380,8 @@ as
     p_cpi_id in adc_page_items.cpi_id%type,
     p_is_mandatory in adc_util.flag_type,
     p_cpi_mandatory_message in varchar2,
-    p_jquery_selector in adc_rule_actions.cra_param_1%type default null)
+    p_jquery_selector in adc_rule_actions.cra_param_1%type default null,
+    p_visual_state in varchar2 default null)
   as
   begin
     pit.enter_mandatory(
@@ -560,13 +389,15 @@ as
                     msg_param('p_cpi_id', p_cpi_id),
                     msg_param('p_cpi_mandatory_message', p_cpi_mandatory_message),
                     msg_param('p_is_mandatory', p_is_mandatory),
-                    msg_param('p_jquery_selector', p_jquery_selector)));
+                    msg_param('p_jquery_selector', p_jquery_selector),
+                    msg_param('p_visual_state', p_visual_state)));
                     
     adc_internal.register_mandatory(
       p_cpi_id => p_cpi_id,
       p_cpi_mandatory_message => p_cpi_mandatory_message,
       p_is_mandatory => p_is_mandatory,
-      p_jquery_selector => p_jquery_selector);
+      p_jquery_selector => p_jquery_selector,
+      p_visual_state => p_visual_state);
     
     pit.leave_mandatory;
   end register_mandatory;
@@ -576,76 +407,61 @@ as
     p_cpi_id in varchar2 default null,
     p_page_items in varchar2 default null)
   as
-    l_page_item_json adc_util.max_char;
-    l_crg_id adc_rule_groups.crg_id%type;
-    C_ACTION_TEMPLATE constant adc_util.sql_char := 
-      q'^de.condes.plugin.adc.actions.rememberPageItemStatus(#PARAM_1#);^';
   begin
     pit.enter_mandatory(
       p_params => msg_params(
                     msg_param('p_cpi_id', p_cpi_id),
                     msg_param('p_page_items', p_page_items)));
                     
-    l_crg_id := adc_internal.get_crg_id;
-    if p_cpi_id = adc_util.C_NO_FIRING_ITEM then
-      -- TODO analyze p_page_items
-      case substr(trim(p_page_items), 1, 1)
-        when '[' then
-          l_page_item_json := p_page_items;
-        when '#' then
-          l_page_item_json := '["' || replace(replace(p_page_items, '#'), ',', '"') || '"]';
-        when '.' then
-          select '["' || listagg(cpi_id, '", "') within group (order by cpi_id) || '"]'
-            into l_page_item_json
-            from adc_page_items
-           where cpi_crg_id = l_crg_id
-             and instr(cpi_css, '|' ||  p_cpi_id || '|') > 0;
-        else
-          l_page_item_json := '[]';
-      end case;
-    else
-      select '["' || listagg(cpi_id, '", "') within group (order by cpi_id) || '"]'
-        into l_page_item_json
-        from adc_page_items
-       where cpi_crg_id = l_crg_id
-         and (cpi_id = p_cpi_id
-          or cpi_form_region_id = p_cpi_id);
-    end if;
+    adc_actions.remember_page_state(
+      p_cpi_id => p_cpi_id,
+      p_page_items => p_page_items);
     
-    add_javascript(replace(C_ACTION_TEMPLATE, '#PARAM_1#', l_page_item_json));
     pit.leave_mandatory;
   end remember_page_state;
+
+
+  procedure remove_error_for_item(
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_jquery_selector in adc_rule_actions.cra_param_1%type default null,
+    p_check in boolean default true)
+  as
+    l_item_list char_table;
+  begin
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_cpi_id', p_cpi_id),
+                    msg_param('p_jquery_selector', p_jquery_selector)));
+                    
+    if p_cpi_id is not null and p_check then
+      adc_internal.register_touched_item(p_cpi_id, p_jquery_selector);
+    end if;
+    
+    pit.leave_mandatory;
+  end remove_error_for_item;
   
   
-  procedure set_command_state(
-    p_action_name in varchar2,
-    p_page_state in varchar2)
+  procedure set_event_data(
+    p_cpi_id in varchar2,
+    p_event_type in varchar2,
+    p_message_name in varchar2,
+    p_msg_args in msg_args default null)
   as
   begin
     pit.enter_mandatory(
       p_params => msg_params(
-                    msg_param('p_action_name', p_action_name),
-                    msg_param('p_page_state', p_page_state)));
+                    msg_param('p_cpi_id', p_cpi_id),
+                    msg_param('p_event_type', p_event_type),
+                    msg_param('p_message_name', p_message_name)));
                     
-    adc_apex_action.action_init(p_action_name);
-    case p_page_state
-      when 'SHOW_ENABLE' then
-        adc_apex_action.set_disabled(false);
-        adc_apex_action.set_visible(true);
-      when 'SHOW_DISABLE' then
-        adc_apex_action.set_disabled(true);
-        adc_apex_action.set_visible(true);
-      when 'HIDE' then
-        adc_apex_action.set_disabled(true);
-        adc_apex_action.set_visible(false);
-      else
-        null;
-    end case;
-
-    adc_apex_action.register_action_script;
-      
+    adc_actions.set_event_data(
+      p_cpi_id => p_cpi_id,
+      p_event_type => p_event_type,
+      p_message_name => p_message_name,
+      p_msg_args => p_msg_args);
+                    
     pit.leave_mandatory;
-  end set_command_state;
+  end set_event_data;
   
   
   procedure set_session_state(
@@ -654,7 +470,8 @@ as
     p_number_value in number default null,
     p_date_value in date default null,
     p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE,
-    p_jquery_selector in adc_rule_actions.cra_param_1%type default null)
+    p_jquery_selector in adc_rule_actions.cra_param_1%type default null,
+    p_visual_state in varchar2 default null)
   as
   begin
     pit.enter_mandatory(
@@ -664,7 +481,8 @@ as
                     msg_param('p_number_value', p_number_value),
                     msg_param('p_date_value', p_date_value),
                     msg_param('p_allow_recursion', p_allow_recursion),
-                    msg_param('p_jquery_selector', p_jquery_selector)));
+                    msg_param('p_jquery_selector', p_jquery_selector),
+                    msg_param('p_visual_state', p_visual_state)));
                     
     adc_internal.set_session_state(
       p_cpi_id => p_cpi_id,
@@ -672,10 +490,38 @@ as
       p_number_value => p_number_value,
       p_date_value => p_date_value,
       p_allow_recursion => p_allow_recursion,
-      p_jquery_selector => p_jquery_selector);
+      p_jquery_selector => p_jquery_selector,
+      p_visual_state => p_visual_state);
       
     pit.leave_mandatory;
   end set_session_state;
+  
+  
+  procedure reset_mandatory_item(
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_throw_error in boolean,
+    p_jquery_selector in adc_rule_actions.cra_param_2%type default null,
+    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE,
+    p_visual_state in adc_rule_actions.cra_param_3%type default null)
+  as
+  begin
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_cpi_id', p_cpi_id),
+                    msg_param('p_throw_error', p_throw_error),
+                    msg_param('p_jquery_selector', p_jquery_selector),
+                    msg_param('p_allow_recursion', p_allow_recursion),
+                    msg_param('p_visual_state', p_visual_state)));
+                    
+    adc_internal.reset_mandatory_item(
+      p_cpi_id => p_cpi_id,
+      p_throw_error => utl_apex.get_bool(p_throw_error),
+      p_jquery_selector => p_jquery_selector,
+      p_allow_recursion => p_allow_recursion,
+      p_visual_state => p_visual_state);
+      
+    pit.leave_mandatory;
+  end reset_mandatory_item;
   
 
   procedure set_value_from_statement(

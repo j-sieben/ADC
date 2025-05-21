@@ -61,6 +61,22 @@ de.condes.plugin.adc.apex_42_20_2 = {};
   const C_APEX_AFTER_REFRESH = 'apexafterrefresh';
   const C_CLICK = 'click';
   
+  /** 
+    Function: setFocus
+      Local method to securely set the focus to a requested item
+
+    Parameter:
+      pSelector - Selector to set the focus to
+    */
+  setFocus = function(pSelector){
+      const anchors = ['.', '#'];
+      if ($.trim(pSelector).length !== 0) {
+          if (!anchors.includes($.trim(pSelector).charAt(0))){
+              p_selector = `#${pSelector}`;
+          }
+          $(pSelector).focus();
+      };
+  }; //setFocus
 
 
   /**
@@ -124,7 +140,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
         pCallback(pEventOrMessage);
       }
       else {
-        apex.item(pFocusItem).setFocus();
+        setFocus(pFocusItem);
       };
     });
     renderer.setModalDialogTitle(dialogTitle);
@@ -161,6 +177,11 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       // in selection lists also provide the label with this class, so that when clicking on the label
       // the selection list does not become active and another value can be selected via keyboard
       $itemLabel.addClass(C_ADC_DISABLED);
+    }
+
+    // if the page item is a CKEDITOR, the built in APEX method can savely be used
+    else if ($item.parent('div').find('div.ck').length){
+      apex.item(pItemId).disable();
     }
 
     // if the page element is a date field, then also deactivate the button for the date selection
@@ -348,11 +369,11 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       pFocusItem - Flag to indicate whether this dialog is a confirmation dialog
    */
   renderer.showDialog = function(pStyle, pMessage, pTitle, pFocusItem){
-    if (pFocusItem != undefined){
+    if (pFocusItem === undefined){
       pFocusItem  = $('.t-Body').find('input, button').not(':hidden').first().attr('id');
     };
     const callback = function(){
-      $(`#${pFocusItem}`).focus();
+      setFocus(pFocusItem);
     };
     const options = {
       "modern":true,
@@ -366,7 +387,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       case 'SUCCESS':
         msg.showPageSuccess(pMessage);
         $('.t-Button--closeAlert').one('click', function(){
-          $(`#${pFocusItem}`).focus();
+          setFocus(pFocusItem);
         });
         break;
       case 'WARNING':
@@ -455,10 +476,10 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       pMessage - Alert message warning the user if submit couldn't be executed due to errors on page
    */
   renderer.submitPage = function(pRequest, pMessage){
-    if ($(C_APEX_ERROR_CLASS_SEL).length == 0) {
+    if ($(C_APEX_ERROR_CLASS_SEL).length == 0 && pMessage.length == 0) {
       apex.page.submit({
         "request" : pRequest,
-        "showWait" : true
+        "showWait" : false
       });
     }
     else{

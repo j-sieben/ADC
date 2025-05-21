@@ -10,13 +10,13 @@ as
 
    */
 
-  
+
   /**
     Group: Private constants
    */
-   
+
   /**
-    Constants: 
+    Constants:
       C_ADC - UTL_TEXT template group for ADC
       C_REGEX_ITEM - Regular expression to identify firing items in trechnical conditions
       C_REGEX_CSS - Regular expression to identify CSS class references
@@ -24,43 +24,39 @@ as
   C_ADC constant adc_util.ora_name_type := 'ADC';
   C_FRAME constant adc_util.ora_name_type := 'FRAME';
   C_DEFAULT constant adc_util.ora_name_type := 'DEFAULT';
-  C_CAPT_VIEW_NAME_PREFIX constant adc_util.ora_name_type := 'ADC_PARAM_LOV_';  
-  C_STATIC_LIST constant adc_util.ora_name_type := 'STATIC_LIST';
 
   C_REGEX_ITEM constant varchar2(50 byte) := q'~(^|[ '\(])#ITEM#([ ',=<^>\)]|$)~';
   C_REGEX_CSS constant varchar2(50 byte) := q'~'.+'~';
-  
+
   C_UTTM_NAME constant adc_util.ora_name_type := 'EXPORT_ACTION_TYPE';
   C_WRAP_START constant adc_util.tiny_char := 'q''{';
   C_WRAP_END constant adc_util.tiny_char := '}''';
-  
+
   C_PIPE constant adc_util.tiny_char := '|';
-  
+
   C_REGISTER_ADDITIONAL_ITEMS constant adc_util.ora_name_type := 'REGISTER_ADDITIONAL_ITEM';
-  
+
+  /* Globale Variablen */
+
   /**
     Group: Type definitions
    */
-   
+
   /**
     Type: id_map_t
       PL/SQL table for mapping old IDs to new ones. Used when importing rule groups.
    */
   type id_map_t is table of binary_integer index by binary_integer;
   g_id_map id_map_t;
-  g_true adc_util.flag_type := adc_util.C_TRUE;
-  g_false adc_util.flag_type := adc_util.C_FALSE;
-  g_cr adc_util.tiny_char := adc_util.C_CR;
-  
-  
+
   /**
     Group: Private Methods
    */
-  /** 
+  /**
     Procedure: create_decision_table
       Method to generate the decision table logic for an ADC rule group.
       Result is persisted in column <Tables.ADC_RULE_GROUPS>.CRG_DECISION_TABLE.
-      
+
     Parameter:
       p_crg_id - Rule group ID
    */
@@ -70,7 +66,7 @@ as
     C_UTTM_NAME constant adc_util.ora_name_type := 'RULE_VIEW';
     l_stmt clob;
   begin
-    pit.enter_optional('create_decision_table', 
+    pit.enter_optional('create_decision_table',
       p_params => msg_params(msg_param('p_crg_id', p_crg_id)));
 
     -- generate view SQL
@@ -78,8 +74,8 @@ as
            select /*+ no_merge */
                   uttm_text template, uttm_log_text log_template,
                   uttm_name, uttm_mode, p_crg_id g_crg_id,
-                  g_true c_true,
-                  g_cr cr
+                  adc_util.C_TRUE c_true,
+                  adc_util.C_CR cr
              from utl_text_templates_v
             where uttm_type = C_ADC
               and uttm_name = C_UTTM_NAME)
@@ -145,93 +141,17 @@ as
      where crg_id = p_crg_id;
 
     pit.leave_optional;
-  /*exception
+  exception
     when others then
-      pit.stop(msg.ADC_VIEW_CREATION, msg_args(sqlerrm, l_stmt));*/
+      pit.stop(msg.ADC_VIEW_CREATION, msg_args(sqlerrm, l_stmt));
   end create_decision_table;
 
 
-  /** 
-    Function: create_initialization_code
-      Method to generate initialization code that copies initial page item values to the session state.
-      
-      Is used to copy initial values into the session state during page rendering. This is required to assure that
-      any rule that is based on certain session state values is processed at initialization time.
-      
-    Parameter:
-      p_crg_id - Rule group ID
-      
-    Returns:
-      Anonymous PL/SQL block that copies the actual session state values into the session state
-   */
-  function create_initialization_code(
-    p_crg_id in adc_rule_groups.crg_id%type)
-    return varchar2
-  as
-    l_initialization_code utl_apex.max_char;
-  begin
-    pit.enter_optional('create_initialization_code',
-      p_params => msg_params(
-                    msg_param('p_crg_id', p_crg_id)));
-
-      with params as (
-           -- Get common values, depending on whether the page contains a DML_FETCH_ROW process
-           select crg_id, g_cr cr,
-                  uttm_name, uttm_mode, uttm_text template,
-                  attribute_02, attribute_03, attribute_04, application_id, page_id
-             from apex_application_page_proc
-             join adc_rule_groups
-               on application_id = crg_app_id
-              and page_id = crg_page_id
-            cross join utl_text_templates_v
-            where process_type_code = 'DML_FETCH_ROW'
-              and uttm_type = C_ADC
-              and uttm_name like 'INITIALIZE%'
-              and crg_id = p_crg_id)
-    select utl_text.generate_text(cursor(
-             select template,
-                    cr,
-                    -- select statement to select the actual page values from the table referenced by the DML_FETCH_ROW process
-                    utl_text.generate_text(cursor(
-                      select p.template, p.attribute_02, p.attribute_03, p.attribute_04
-                        from params p
-                       where p.uttm_mode = case p.attribute_04 when 'ROWID' then p.attribute_04 else 'DEFAULT' end
-                         and p.uttm_name = 'INITIALIZE_COLUMN'), ',' || CR) sql_stmt,
-                    -- generate adc_util.set_session_state calls for any page element
-                    utl_text.generate_text(cursor(
-                      select p.template, sit.cpit_init_template, cpi.cpi_conversion,
-                             api.item_name, api.item_source
-                        from params p
-                        join apex_application_page_items api
-                          on p.application_id = api.application_id
-                         and p.page_id = api.page_id
-                        join adc_page_items cpi
-                          on p.crg_id = cpi.cpi_crg_id
-                         and api.item_name = cpi.cpi_id
-                        join adc_page_item_types sit
-                          on cpi.cpi_cpit_id = sit.cpit_id
-                       where api.item_source_type = 'Database Column'
-                         and cpi.cpi_is_required = g_true
-                         and p.uttm_name = 'INITIALIZE_COL_VAL'), CR) item_stmt
-               from dual)) resultat
-      into l_initialization_code
-      from params
-     where uttm_name = 'INITIALIZE';
-
-    pit.leave_optional(p_params => msg_params(msg_param('Initialization Code', l_initialization_code)));
-    return l_initialization_code;
-  exception
-    when no_data_found then
-      pit.leave_optional(p_params => msg_params(msg_param('Initialization Code', 'NULL')));
-      return null;
-  end create_initialization_code;
-  
-  
   /**
     Procedure: get_key
       Method to retrive a new primary key if not present. If P_KEY is NULL, a new sequence key is provided.
-      
-    Parameter:  
+
+    Parameter:
       p_key - Key to set
    */
   procedure get_key(
@@ -242,22 +162,23 @@ as
       p_key := adc_seq.nextval;
     end if;
   end get_key;
-  
-  
+
+
   /**
     Procedure: mark_number_date_required_fields
       Mark any item with a conversion or mandatory as required to enable ADC to dynamically validate the format.
       Mark any item with a required label as mandatory to dynamically check for NOT NULL.
-      
+
     Parameters:
       p_crg_id - Rule group ID
    */
   procedure mark_number_date_required_fields(
     p_crg_id in adc_rule_groups.crg_id%type)
   as
+    l_cpi_id adc_page_items.cpi_id%type;
   begin
     pit.enter_detailed('mark_number_date_required_fields');
-    
+
     merge into adc_page_items t
     using (select cpi_crg_id,
                   cpi_cpit_id,
@@ -267,7 +188,7 @@ as
                   cpi_conversion,
                   cpi_item_default,
                   cpi_css,
-                  g_false cpi_has_error,
+                  adc_util.C_FALSE cpi_has_error,
                   cpi_is_required,
                   cpi_is_mandatory,
                   cpi_may_have_value
@@ -287,23 +208,32 @@ as
           t.cpi_is_mandatory = s.cpi_is_mandatory,
           t.cpi_may_have_value = s.cpi_may_have_value
      when not matched then insert(
-            cpi_id, cpi_cpit_id, cpi_caat_id, cpi_label, cpi_crg_id, 
-            cpi_conversion, cpi_item_default, cpi_css, cpi_is_required, 
+            cpi_id, cpi_cpit_id, cpi_caat_id, cpi_label, cpi_crg_id,
+            cpi_conversion, cpi_item_default, cpi_css, cpi_is_required,
             cpi_is_mandatory, cpi_may_have_value)
           values(
-            s.cpi_id, s.cpi_cpit_id, s.cpi_caat_id, s.cpi_label, s.cpi_crg_id, 
-            s.cpi_conversion, s.cpi_item_default, s.cpi_css, s.cpi_is_required, 
+            s.cpi_id, s.cpi_cpit_id, s.cpi_caat_id, s.cpi_label, s.cpi_crg_id,
+            s.cpi_conversion, s.cpi_item_default, s.cpi_css, s.cpi_is_required,
             s.cpi_is_mandatory, s.cpi_may_have_value);
-            
+
     pit.leave_detailed;
+  exception
+    when msg.ORA_INSTABLE_ROW_GROUP_ERR then
+      select cpi_id
+        into l_cpi_id
+        from adc_bl_page_targets
+       where cpi_crg_id = p_crg_id
+       group by cpi_id
+      having count(*) > 1;
+    pit.error(msg.ADC_NON_UNIQUE_STATIC_ID, msg_args(to_char(p_crg_id), l_cpi_id));
   end mark_number_date_required_fields;
-  
-  
+
+
   /**
     Procedure: mark_rule_condition_items
       Mark any page item that is referenced in a technical rule condition as required.
       Method evaluates existing and newly added rule conditions.
-      
+
     Parameters:
       p_crg_id - Rule group ID
       p_new_condition - Optional. If a new rule is created, the new rule condition must be obeyed as well
@@ -314,9 +244,9 @@ as
   as
   begin
     pit.enter_detailed('mark_rule_condition_items');
-    
+
     merge into adc_page_items t
-    using (select distinct cpi_crg_id, cpi_id
+     using (select distinct cpi_crg_id, cpi_id
              from (select crg_id cpi_crg_id, i.column_value cpi_id
                      from adc_rules
                      join adc_rule_groups
@@ -332,17 +262,18 @@ as
        on (t.cpi_id = s.cpi_id
        and t.cpi_crg_id = s.cpi_crg_id)
      when matched then update set
-          t.cpi_is_required = g_true;
-            
+          t.cpi_is_required = adc_util.C_TRUE
+          where cpi_has_error = adc_util.C_FALSE;
+
     pit.leave_detailed;
   end mark_rule_condition_items;
-  
-  
+
+
   /**
     Procedure: mark_auto_validate_fields
       Mark any item that is referenced in action type VALIDATE_ITEMS and
       store the validation method name with the item.
-      
+
     Parameters:
       p_crg_id - Rule group ID
    */
@@ -351,7 +282,7 @@ as
   as
   begin
     pit.enter_detailed('mark_auto_validate_fields');
-    
+
     merge into adc_page_items t
     using (with data as(
                   select cra_param_1, cra_param_2
@@ -366,7 +297,7 @@ as
                     else
                       replace(cra_param_2, ';') || '(''' || column_value || ''')'
                     end cpi_validation_method,
-                  g_true cpi_is_required
+                  adc_util.c_true cpi_is_required
              from data
             cross join table(
                   select utl_text.string_to_table(cra_param_1)
@@ -374,18 +305,19 @@ as
        on (t.cpi_id = s.cpi_id and t.cpi_crg_id = s.cpi_crg_id)
      when matched then update set
           t.cpi_validation_method = s.cpi_validation_method,
-          t.cpi_is_required = s.cpi_is_required;
-            
+          t.cpi_is_required = s.cpi_is_required
+          where t.cpi_has_error = (select adc_util.C_FALSE from dual);
+
     pit.leave_detailed;
   end mark_auto_validate_fields;
-  
-  
+
+
   /**
     Procedure: maintain_additional_items
       Method checks additional fields against required fields. If a n additional
       field is marked as required, it is removed from the additional fields set.
       If the additional fields rule action has no field to add, it gets removed from the rule
-      
+
     Parameters:
       p_crg_id - Rule group ID
    */
@@ -395,24 +327,25 @@ as
     l_additional_items char_table;
   begin
     pit.enter_detailed('maintain_additional_items');
-    
+
     select utl_text.string_to_table(cra_param_1)
       into l_additional_items
       from adc_rule_actions
      where cra_crg_id = p_crg_id
        and cra_cat_id = C_REGISTER_ADDITIONAL_ITEMS;
-    
+
     -- update list of items to only non required entries
     select cast(multiset(
-             select cpi_id 
+             select cpi_id
                from adc_page_items
                join table (l_additional_items)
                  on cpi_id = column_value
               where cpi_crg_id = p_crg_id
-                and cpi_is_required = g_false) as char_table)
+                and cpi_is_required = (select adc_util.C_FALSE from dual)
+                and cpi_has_error = (select adc_util.C_FALSE from dual)) as char_table)
       into l_additional_items
       from dual;
-    
+
     -- harmonize or remove action type
     if l_additional_items.count > 0 then
       update adc_rule_actions
@@ -424,23 +357,23 @@ as
        where cra_crg_id = p_crg_id
          and cra_cat_id = C_REGISTER_ADDITIONAL_ITEMS;
     end if;
-    
+
     pit.leave_detailed;
   exception
     when NO_DATA_FOUND then
       -- no rule action to add additional fields, ignore
       pit.leave_detailed;
   end maintain_additional_items;
-  
-  
+
+
   /**
     Procedure: remove_irrelevant_fields
-      Remove any item that is 
-     
+      Remove any item that is
+
       - irrelevant and
       - erroneus (fi not existing anymore) and
       - not referenced by rule actions
-      
+
     Parameters:
       p_crg_id - Rule group ID
    */
@@ -449,24 +382,24 @@ as
   as
   begin
     pit.enter_detailed('remove_irrelelvant_fields');
-    
+
       delete from adc_page_items
        where cpi_crg_id = p_crg_id
-         and cpi_is_required = g_false
-         and cpi_has_error = g_true
+         and cpi_is_required = adc_util.C_FALSE
+         and cpi_has_error = adc_util.C_TRUE
          and cpi_id not in (
              select cra_cpi_id
                from adc_rule_actions
               where cra_crg_id = p_crg_id);
-            
+
     pit.leave_detailed;
   end remove_irrelevant_fields;
-  
-  
+
+
   /**
     Procedure: mark_error_fields
       Marks rules and rule actions that have any errors
-      
+
     Parameters:
       p_crg_id - Rule group ID
    */
@@ -477,79 +410,55 @@ as
     pit.enter_detailed('mark_error_fields');
 
       update adc_rules
-         set cru_has_error = g_false
+         set cru_has_error = adc_util.C_FALSE
        where cru_crg_id = p_crg_id;
-    
+
       merge into adc_rules t
       using (select distinct cru.cru_id
                from adc_page_items cpi
                join adc_rules cru
-                 on utl_text.contains(cru_firing_items, cpi_id) = g_true
+                 on utl_text.contains(cru_firing_items, cpi_id) = adc_util.C_TRUE
               where cpi_crg_id = p_crg_id
-                and cpi_has_error = g_true) s
+                and cpi_has_error = adc_util.C_TRUE) s
          on (t.cru_id = s.cru_id)
        when matched then update set
-            t.cru_has_error = g_true;
-            
+            t.cru_has_error = adc_util.C_TRUE;
+
       update adc_rule_actions
-         set cra_has_error = g_false
+         set cra_has_error = adc_util.C_FALSE
        where cra_crg_id = p_crg_id;
 
       merge into adc_rule_actions t
       using (select cpi_crg_id cra_crg_id, cpi_id cra_cpi_id
                from adc_page_items
               where cpi_crg_id = p_crg_id
-                and cpi_has_error = g_true) s
+                and cpi_has_error = adc_util.C_TRUE) s
          on (t.cra_crg_id = s.cra_crg_id
          and t.cra_cpi_id = s.cra_cpi_id)
        when matched then update set
-            t.cra_has_error = g_true;
-            
+            t.cra_has_error = adc_util.C_TRUE;
+
     pit.leave_detailed;
   end mark_error_fields;
-  
-  
-  /**
-    Procedure: create_initialization_code
-      Creates optional initialization code for the rule group
-      
-    Parameters:
-      p_crg_id - Rule group ID
-   */
-  procedure create_initialization_code(
-    p_crg_id in adc_rule_groups.crg_id%type)
-  as
-    l_initialization_code adc_rule_groups.crg_initialization_code%type;
-  begin
-    pit.enter_optional('create_initialization_code');
-            
-    l_initialization_code := create_initialization_code(p_crg_id);
 
-    update adc_rule_groups
-       set crg_initialization_code = l_initialization_code
-     where crg_id = p_crg_id;
-     
-    pit.leave_optional;
-  end create_initialization_code;
-  
-  
-  /** 
+
+  /**
     Procedure: harmonize_adc_page_item
       Method to harmonize <Tables.ADC_PAGE_ITEMS> against APEX Data Dictionary.
-      
+
       If a rule group changes, all rules and page elements are checked against each other.
       The resulting values are used as the basis for a single rule.
       Additionally, this method is called if a new rule is created to check whether the condition
       is syntactically plausible. Therefore, the new condition (which is not stored in the tables yet)
       must be added to identify any new page items referenced within this rule.
-      
-    Attention:: 
+
+    Attention::
       Method removes non existing page items from the table and deletes any rule actions attached to these page items!
-      
+
     Parameters:
       p_crg_id - Rule group ID
       p_new_condition - Optional. If a new rule is created, the new rule condition must be obeyed as well
-      
+
    */
   procedure harmonize_adc_page_item(
     p_crg_id in adc_rule_groups.crg_id%type,
@@ -562,24 +471,22 @@ as
 
     -- Initialize
     update adc_page_items
-       set cpi_is_required = g_false,
-           cpi_has_error = g_true,
+       set cpi_is_required = adc_util.C_FALSE,
+           cpi_has_error = adc_util.C_TRUE,
            cpi_validation_method = null
      where cpi_crg_id = p_crg_id;
 
     mark_number_date_required_fields(p_crg_id);
 
     mark_rule_condition_items(p_crg_id, p_new_condition);
-    
+
     mark_auto_validate_fields(p_crg_id);
-    
+
     maintain_additional_items(p_crg_id);
-    
+
     remove_irrelevant_fields(p_crg_id);
-      
+
     mark_error_fields(p_crg_id);
-    
-    create_initialization_code(p_crg_id);
 
     pit.leave_optional;
   exception
@@ -588,13 +495,13 @@ as
   end harmonize_adc_page_item;
 
 
-  /** 
+  /**
     Procedure: harmonize_firing_items
       Helper to harmonize page items which are referenced by a rule at <Tables.ADC_RULES>.
-      
-      Method extracts page item names from a rule condition using regex C_REGEX_ITEM.
+
+      Method extracts page item names from a rule condition using C_REGEX_ITEM.
       Used to validate a rule condition and further application logic.
-      
+
     Parameter:
       p_crg_id - Rule group ID
    */
@@ -615,7 +522,7 @@ as
               and (regexp_instr(upper(cru.cru_condition), replace(C_REGEX_ITEM, '#ITEM#', cpi.cpi_id)) > 0
                or instr(cpi.cpi_css, replace(regexp_substr(cru.cru_condition, C_REGEX_CSS), adc_util.C_APOS, C_PIPE)) > 0)
             where cpi.cpi_crg_id = p_crg_id
-              and cru.cru_active = g_true
+              and cru.cru_active = adc_util.C_TRUE
             group by cru.cru_id) s
        on (t.cru_id = s.cru_id)
      when matched then update set
@@ -623,15 +530,15 @@ as
 
     pit.leave_detailed;
   end harmonize_firing_items;
-  
-  
+
+
   /**
     Function: export_apex_application
       Method to export a requested APEX application
-      
+
     Parameters:
       p_app_id - ID of the application to export
-      
+
     Returns:
       CLOB with the export script
    */
@@ -643,26 +550,26 @@ as
   begin
     pit.enter_optional('export_apex_application',
       p_params => msg_params(msg_param('p_app_id', p_app_id)));
-      
+
     l_export_file := apex_export.get_application (
                        p_application_id => p_app_id,
                        p_with_ir_public_reports => true,
                        p_with_supporting_objects => 'N');
-                       
+
     pit.leave_optional;
     return l_export_file(1).contents;
   end export_apex_application;
-  
-  
-  /** 
+
+
+  /**
     Function: integrate_rule_groups_into_app
       Helper method to include rule group export script into the application export.
-      
+
     Parameters:
       p_crg_app_id - ID of the APEX application to integrate the rule group script into
       p_script - Rule group script
       p_install_id - ID for the APEX supporting object install id
-      
+
     Returns:
       Script with the APEX export and rule group script integrated
    */
@@ -683,9 +590,14 @@ as
     l_prefix adc_util.max_char;
     l_no_end_comment_found boolean := true;
   begin
+    pit.enter_optional('integrate_rule_groups_into_app',
+      p_params => msg_params(
+                    msg_param('p_crg_app_id', p_crg_app_id),
+                    msg_param('p_install_id', p_install_id)));
+
     -- Get APEX application
     l_script := export_apex_application(p_crg_app_id);
-                
+
     -- Find position to integrate rule script into the export file
     l_length := length(l_script);
 
@@ -693,7 +605,7 @@ as
       -- Add some text to securly detect C_END_COMMENT
       l_add_amount := length(C_END_COMMENT);
       l_amount := l_amount + l_add_amount;
-    
+
       dbms_lob.read(l_script, l_amount, l_offset, l_buffer);
       -- Try to find C_END_COMMENT.
       if instr(l_buffer, C_END_COMMENT) > 0 then
@@ -701,14 +613,14 @@ as
         l_amount := l_amount + 1000;
         dbms_lob.read(l_script, l_amount, l_offset, l_buffer);
         dbms_lob.append(l_script, substr(l_buffer, 1, instr(l_buffer, C_END_COMMENT) - 1));
-      
+
       select replace(uttm_text, '#CRG_INSTALL_ID#', p_install_id)
         into l_prefix
         from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = 'EXPORT_RULE_GROUP'
          and uttm_mode = 'DEFAULT_APP_PREFIX';
-         
+
         dbms_lob.append(l_script, l_prefix);
         dbms_lob.append(l_script, p_rule_group);
         dbms_lob.append(l_script, substr(l_buffer, instr(l_buffer, C_END_COMMENT)));
@@ -718,55 +630,54 @@ as
         l_amount := l_amount - l_add_amount;
         dbms_lob.append(l_script, substr(l_buffer, 1, length(l_buffer) - l_add_amount));
       end if;
-    
+
       l_offset := l_offset + l_amount;
     end loop;
-    
+
+    pit.leave_optional;
     return l_script;
   end integrate_rule_groups_into_app;
-  
-  
-  /** 
+
+
+  /**
     Procedure: validate_export_rule_groups
       Helper method to validate an export rule group according to the P_MODE request.
       Based on the parameters passed in this method will export one or more rule groups.
-      
+
     Parameters:
       p_crg_app_id - APEX application ID of the application of which all rule groups are to be exported.
       p_crg_page_id - If a rule group is copied, this parameter defines the target application page id
       p_mode - Export mode. Determines which parameters are mandatory
-      
-    Errors:
+
+    Error codes:
       APP_ID_MISSING - if <P_MODE> requires an application id
-      PAGE_ID_MISSING - if <P_MODE> requires an application page id
    */
   procedure validate_export_rule_groups(
     p_crg_app_id in out nocopy adc_rule_groups.crg_app_id%type)
   as
-    l_cur sys_refcursor;
   begin
     pit.enter_optional('validate_export_rule_groups',
       p_params => msg_params(
                     msg_param('p_crg_app_id', p_crg_app_id)));
-    pit.assert_not_null(p_crg_app_id, p_error_code => 'APP_ID_MISSING');
-    
+    pit.assert_not_null(p_crg_app_id, msg.ADC_PARAM_MISSING, p_error_code => 'APP_ID_MISSING');
+
     pit.leave_optional;
   exception
     when others then
       pit.stop;
   end validate_export_rule_groups;
-  
-  
+
+
   /**
     Function: get_action_param_types
       Method to retrieve all action parameter type scripts for the given action type owner.
-      
+
       If the requested owner is different from the default owner C_ADC then only those
       parameter types are returned which are not already defined within the core delivery.
-      
+
     Parameter:
       p_cato_id - Owner of the action parameter types
-      
+
     Returns:
       Install script with all API calls for the action parameter types for the requested owner
    */
@@ -779,7 +690,7 @@ as
     pit.enter_optional('get_action_param_types',
       p_params => msg_params(
                     msg_param('p_cato_id', p_cato_id)));
-                    
+
     select utl_text.generate_text(cursor(
             select uttm_text template,
                    capt_id, capt_name, adc_util.to_bool(capt_active) capt_active,
@@ -796,64 +707,25 @@ as
                          on capt_id = cap_capt_id
                       where cap_cat_id = cat_id
                         and (cat_cato_id = p_cato_id or p_cato_id is null))
-           ), g_cr)
+           ), adc_util.C_CR)
       into l_action_param_types
       from utl_text_templates_v
      where uttm_type = C_ADC
        and uttm_name = C_UTTM_NAME
        and uttm_mode = 'PARAM_TYPE';
-       
+
     pit.leave_optional;
     return l_action_param_types;
   end get_action_param_types;
-  
-  
-  /**
-    Function: get_action_param_owners
-      Method to retrieve all action parameter type scripts for the given action type owner.
-      
-      If the requested owner is different from the default owner C_ADC then only those
-      parameter types are returned which are not already defined within the core delivery.
-      
-    Parameter:
-      p_cato_id - Owner of the action parameter types
-      
-    Returns:
-      Install script with all API calls for the action parameter types for the requested owner
-   */
-  function get_action_param_owners(
-    p_cato_id in adc_action_type_owners.cato_id%type)
-    return clob
-  as
-    l_action_param_owners clob;
-  begin
-    pit.enter_optional('get_action_param_owners',
-      p_params => msg_params(
-                    msg_param('p_cato_id', p_cato_id)));
-                    
-    select utl_text.generate_text(cursor(
-            select uttm_text template,
-                   cato_id, adc_util.to_bool(cato_active) cato_active,
-                   utl_text.wrap_string(cato_description, C_WRAP_START, C_WRAP_END) cato_description
-             from adc_action_type_owners_v))
-      into l_action_param_owners
-      from utl_text_templates_v
-     where uttm_type = C_ADC
-       and uttm_name = C_UTTM_NAME
-       and uttm_mode = 'ACTION_TYPE_OWNER';
-       
-    pit.leave_optional;
-    return l_action_param_owners;
-  end get_action_param_owners;
-  
-  
+
+
   /**
     Function: get_action_types
       Method to retrieve all action type scripts for the given action type owner.
-      
+
     Parameter:
       p_cato_id - Owner of the action types
-      
+
     Returns:
       Install script with all API calls for the action types for the requested owner
    */
@@ -868,10 +740,10 @@ as
     pit.enter_optional('get_action_types',
       p_params => msg_params(
                     msg_param('p_cato_id', p_cato_id)));
-                    
+
     -- Collect action types. Different API for performance and size reasons
     dbms_lob.createtemporary(l_action_types, false, dbms_lob.call);
-    open l_cur for         
+    open l_cur for
        with params as (
               select uttm_mode, uttm_text template, null p_cat_is_editable
                 from utl_text_templates_v
@@ -898,7 +770,7 @@ as
                  cross join params p
                  where uttm_mode = 'ACTION_PARAMS'
                    and cap_cat_id = cat_id
-              ), g_cr) rule_action_params
+              ), adc_util.C_CR) rule_action_params
          from adc_action_types_v
          join params
            on cat_is_editable = p_cat_is_editable
@@ -910,56 +782,17 @@ as
     for i in 1 .. l_action_type_list.count loop
       dbms_lob.append(l_action_types, l_action_type_list(i));
     end loop;
-    
+
     pit.leave_optional;
     return l_action_types;
   end get_action_types;
-  
-  
-  /**
-    Procedure: add_param_lov_statements
-      Method to add install scripts vor dynamically defined, lov based action parameter types
-      
-    Parameter:
-      p_zip_file - ZIP file with all files generated so far
-      p_cato_id - Owner of the parameters
-   */
-  procedure add_param_lov_statements(
-    p_cato_id in adc_action_type_owners_v.cato_id%type,
-    p_zip_file in out nocopy blob)
-  as
-    l_export_script clob;
-  begin
-    pit.enter_optional('add_param_lov_statements');
-    
-    -- Finally, add all create view statements for LOV-based parameter types
-    for cpt in (select v.*
-                  from adc_action_param_types_v v
-                  join adc_action_parameters
-                    on capt_id = cap_capt_id
-                  join adc_action_types
-                    on cap_cat_id = cat_id
-                 where cat_cato_id = p_cato_id
-                   and cap_sort_seq = 1
-                   and (capt_capvt_id = C_STATIC_LIST
-                    or capt_select_list_query is not null)) loop
-      l_export_script := adc_parameter.get_param_lov_query(cpt);
-    
-      apex_zip.add_file(
-        p_zipped_blob => p_zip_file,
-        p_file_name => 'adc_param_lov_' || lower(cpt.capt_id) || '.lov',
-        p_content => utl_text.clob_to_blob(l_export_script));
-    end loop;
-    
-    pit.leave_optional;
-  end add_param_lov_statements;
-  
-  
+
+
   /**
     Procedure: add_custom_action_types
       Method to add all custom defined action types along with their exclusively
       defined parameter types to separate installation files
-      
+
     Parameter:
       p_zip_file - ZIP file with all files generated so far
    */
@@ -976,27 +809,27 @@ as
     l_custom_action_types clob;
   begin
     pit.enter_optional('add_custom_action_types');
-    
+
     for cato in custom_actions_cur loop
       l_action_param_types := get_action_param_types(cato.cato_id);
-      l_action_types := get_action_types(cato.cato_id);      
-  
+      l_action_types := get_action_types(cato.cato_id);
+
       select utl_text.generate_text(cursor(
               select uttm_text template,
-                     cato_id, 
+                     cato_id,
                      adc_util.to_bool(cato_active) cato_active,
                      utl_text.wrap_string(cato_description, C_WRAP_START, C_WRAP_END) cato_description
                 from adc_action_type_owners_v
                where cato_id != C_ADC
-             ), g_cr)
+             ), adc_util.C_CR)
         into l_action_type_owners
         from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = 'ACTION_TYPE_OWNER';
-      
+
       select utl_text.generate_text(cursor(
-               select uttm_text template, 
+               select uttm_text template,
                       l_action_param_types action_param_types,
                       l_action_types action_types,
                       l_action_type_owners action_type_owners
@@ -1006,15 +839,13 @@ as
                   and uttm_mode = 'CUSTOM_FRAME'))
         into l_custom_action_types
         from dual;
-      
+
       apex_zip.add_file(
         p_zipped_blob => p_zip_file,
         p_file_name => replace(param.get_string('USER_ACTION_TYPE_FILENAME', C_ADC), '#CATO#', cato.cato_id),
         p_content => utl_text.clob_to_blob(l_custom_action_types));
-        
-      add_param_lov_statements(cato.cato_id, p_zip_file);
     end loop;
-    
+
     pit.leave_optional;
   end add_custom_action_types;
 
@@ -1022,7 +853,7 @@ as
   /**
     Group: Public Methods - Helper Functions
    */
-  
+
   /**
     Function: map_id
       See <ADC_ADMIN.map_id>
@@ -1074,11 +905,11 @@ as
 
   /**
     Group: Public Methods - Rule Group Functions
-   */    
+   */
   /**
     Procedure: merge_rule_group
       See <ADC_ADMIN.merge_rule_group>
-   */ 
+   */
   procedure merge_rule_group(
     p_crg_app_id in adc_rule_groups.crg_app_id%type,
     p_crg_page_id in adc_rule_groups.crg_page_id%type,
@@ -1095,14 +926,14 @@ as
                     msg_param('p_crg_id', p_crg_id),
                     msg_param('p_crg_with_recursion', p_crg_with_recursion),
                     msg_param('p_crg_active', p_crg_active)));
-                    
+
     l_row.crg_app_id := p_crg_app_id;
     l_row.crg_page_id := p_crg_page_id;
     l_row.crg_id := p_crg_id;
     l_row.crg_with_recursion := adc_util.get_boolean(p_crg_with_recursion);
     l_row.crg_active := adc_util.get_boolean(p_crg_active);
-    
-    merge_rule_group(l_row);    
+
+    merge_rule_group(l_row);
 
     pit.leave_mandatory;
   end merge_rule_group;
@@ -1111,19 +942,19 @@ as
   /**
     Procedure: merge_rule_group
       See <ADC_ADMIN.merge_rule_group>
-   */ 
+   */
   procedure merge_rule_group(
     p_row in out nocopy adc_rule_groups%rowtype)
   as
   begin
     pit.enter_mandatory;
-    
+
     p_row.crg_with_recursion := coalesce(p_row.crg_with_recursion, adc_util.C_TRUE);
     p_row.crg_active := coalesce(p_row.crg_active, adc_util.C_TRUE);
 
     validate_rule_group(p_row);
-      
-    get_key(p_row.crg_id);    
+
+    get_key(p_row.crg_id);
 
     merge into adc_rule_groups t
     using (select p_row.crg_id crg_id,
@@ -1139,9 +970,9 @@ as
           t.crg_active = s.crg_active
      when not matched then insert(crg_id, crg_app_id, crg_page_id, crg_with_recursion, crg_active)
           values(s.crg_id, s.crg_app_id, s.crg_page_id, s.crg_with_recursion, s.crg_active);
-     
+
     harmonize_adc_page_item(p_row.crg_id);
-    
+
     pit.leave_mandatory;
   exception
     when others then
@@ -1152,7 +983,7 @@ as
   /**
     Procedure: delete_rule_group
       See <ADC_ADMIN.delete_rule_group>
-   */ 
+   */
   procedure delete_rule_group(
     p_crg_id in adc_rule_groups.crg_id%type)
   as
@@ -1161,11 +992,11 @@ as
     pit.enter_mandatory(
       p_params => msg_params(
                     msg_param('p_crg_id', p_crg_id)));
-                    
+
     l_row.crg_id := p_crg_id;
-    
+
     delete_rule_group(l_row);
-     
+
     pit.leave_mandatory;
   end delete_rule_group;
 
@@ -1173,37 +1004,37 @@ as
   /**
     Procedure: delete_rule_group
       See <ADC_ADMIN.delete_rule_group>
-   */ 
+   */
   procedure delete_rule_group(
     p_row in out nocopy adc_rule_groups%rowtype)
   as
   begin
     pit.enter_mandatory;
-    
+
     delete from adc_rule_groups
      where crg_id = p_row.crg_id;
-     
+
     pit.leave_mandatory;
   end delete_rule_group;
-  
-  
+
+
   /**
     Procedure: validate_rule_group
       See <ADC_ADMIN.validate_rule_group>
-   */ 
+   */
   procedure validate_rule_group(
     p_row in adc_rule_groups%rowtype)
   as
     l_cur sys_refcursor;
   begin
     pit.enter_mandatory;
-      
+
     pit.assert_not_null(p_row.crg_app_id, msg.ADC_PARAM_MISSING, p_error_code => 'CRG_APP_ID_MISSING');
     pit.assert_not_null(p_row.crg_page_id, msg.ADC_PARAM_MISSING, p_error_code => 'CRG_PAGE_ID_MISSING');
 
     if p_row.crg_id is null then
       -- only if inserting we need to check whether the name is unique
-      open l_cur for 
+      open l_cur for
         select null
           from adc_rule_groups
          where crg_app_id = p_row.crg_app_id
@@ -1214,24 +1045,24 @@ as
         p_msg_args => null,
         p_affected_id => 'CRG_PAGE_ID');
     end if;
-    
+
     pit.leave_mandatory;
   end validate_rule_group;
-  
-  
+
+
   /**
     Procedure: toggle_rule_group
       See <ADC_ADMIN.toggle_rule_group>
-   */ 
+   */
   procedure toggle_rule_group(
     p_crg_id in adc_rule_groups.crg_id%type)
   as
   begin
     pit.enter_mandatory(
       p_params => msg_params(msg_param('p_crg_id', p_crg_id)));
-      
+
     update adc_rule_groups
-       set crg_active = case crg_active when g_true then g_false else g_true end
+       set crg_active = case crg_active when adc_util.c_true then adc_util.c_false else adc_util.c_true end
      where crg_id = p_crg_id;
 
     pit.leave_mandatory;
@@ -1241,7 +1072,7 @@ as
   /**
     Function: validate_rule_group
       See <ADC_ADMIN.validate_rule_group>
-   */ 
+   */
   function validate_rule_group(
     p_crg_id in adc_rule_groups.crg_id%type)
     return varchar2
@@ -1267,17 +1098,17 @@ as
                   select null
                     from adc_page_items
                    where cpi_crg_id = crg_id
-                     and cpi_has_error = g_true))
+                     and cpi_has_error = adc_util.C_TRUE))
     select utl_text.generate_text(cursor(
-             select template, 
+             select template,
                     utl_text.generate_text(cursor(
-                      select template, crg_app_id, cpi_id
-                        from adc_page_items
-                        join adc_page_item_types
-                          on cpi_cpit_id = cpit_id
-                        join params
-                          on cpi_crg_id = crg_id
-                       where cpi_has_error = g_true
+                      select p.template, p.crg_app_id, cpi.cpi_id
+                        from adc_page_items cpi
+                        join adc_page_item_types sit
+                          on cpi.cpi_cpit_id = sit.cpit_id
+                        join params p
+                          on cpi.cpi_crg_id = p.crg_id
+                       where cpi.cpi_has_error = adc_util.C_TRUE
                     )) error_list
                from dual
            )) resultat
@@ -1293,7 +1124,7 @@ as
   /**
     Procedure: propagate_rule_change
       See <ADC_ADMIN.propagate_rule_change>
-   */ 
+   */
   procedure propagate_rule_change(
     p_crg_id in adc_rule_groups.crg_id%type)
   as
@@ -1309,12 +1140,12 @@ as
 
     pit.leave_mandatory;
   end propagate_rule_change;
-  
-  
+
+
   /**
     Function: export_rule_group
       See <ADC_ADMIN.export_rule_group>
-   */ 
+   */
   function export_rule_group(
     p_crg_id in adc_rule_groups.crg_id%type,
     p_mode in varchar2 default C_APP_GROUPS,
@@ -1325,14 +1156,14 @@ as
     l_template adc_util.ora_name_type;
     l_stmt_frame clob;
     l_stmt clob;
-  begin      
+  begin
     -- Create export script based on UTL_TEXT export templates
     utl_text.set_secondary_anchor_char('§');
-        
+
     with params as (
            select uttm_mode, uttm_text template,
                   case p_mode when C_APEX_APP then 'DEFAULT_APP' else C_DEFAULT end g_mode,
-                  crg_id, crg_app_id, crg_page_id, 
+                  crg_id, crg_app_id, crg_page_id,
                   adc_util.to_bool(crg_active) crg_active,
                   adc_util.to_bool(crg_with_recursion) crg_with_recursion,
                   p_install_id crg_install_id
@@ -1392,11 +1223,11 @@ as
       into l_stmt
       from params p
      where uttm_mode = g_mode;
-     
+
     if p_mode = C_APEX_APP then
       l_stmt := replace(replace(utl_text.wrap_string(l_stmt), ' ||', ','), '\CR\');
       select utl_text.generate_text(cursor(
-               select uttm_text template, crg_id * crg_id crg_id_square, lower(page_alias) crg_page_alias, 
+               select uttm_text template, crg_id * crg_id crg_id_square, lower(page_alias) crg_page_alias,
                       crg_sort_seq, p_install_id crg_install_id
                  from (select crg.*, rank() over (partition by crg_app_id order by crg_page_id) * 10 crg_sort_seq
                          from adc_rule_groups crg)
@@ -1413,19 +1244,19 @@ as
     end if;
     return l_stmt;
   end export_rule_group;
-  
+
 
   /**
     Function: export_rule_groups
       See <ADC_ADMIN.export_rule_groups>
-   */ 
+   */
   function export_rule_groups(
     p_crg_app_id in adc_rule_groups.crg_app_id%type,
     p_mode in varchar2 default C_APP_GROUPS)
     return blob
   as
     cursor rule_group_cur(
-      p_crg_app_id in adc_rule_groups.crg_app_id%type) 
+      p_crg_app_id in adc_rule_groups.crg_app_id%type)
     is
       select crg_id, a.alias app_alias, p.page_alias, lower(a.alias || '_' || p.page_alias) crg_file_name
         from adc_rule_groups
@@ -1436,12 +1267,12 @@ as
          and crg_page_id = p.page_id
        where crg_app_id = p_crg_app_id
        order by p.page_id;
-    
+
     l_zip_file blob;
     l_clob clob;
     l_blob blob;
     l_file_name varchar2(100);
-    
+
     l_crg_app_id adc_rule_groups.crg_app_id%type;
     l_app_alias adc_util.ora_name_type;
     l_install_id number;
@@ -1451,40 +1282,40 @@ as
       p_params => msg_params(
                     msg_param('p_crg_app_id', p_crg_app_id),
                     msg_param('p_mode', p_mode)));
-    
+
     -- Initialize
     dbms_lob.createtemporary(l_clob, false, dbms_lob.call);
     l_crg_app_id := p_crg_app_id;
-                    
+
     validate_export_rule_groups(
-      p_crg_app_id => l_crg_app_id);      
-    
+      p_crg_app_id => l_crg_app_id);
+
     if p_mode = C_APEX_APP then
       -- Initialize
       l_install_id := trunc(dbms_random.value * 100000000);
       l_embed_rule_groups := param.get_boolean('ADC_EMBED_RULE_GROUPS', 'ADC');
-       
+
       if l_embed_rule_groups then
         -- Get all rule groups
         for crg in rule_group_cur(l_crg_app_id) loop
           dbms_lob.append(
-            l_clob, 
+            l_clob,
             export_rule_group(
               p_crg_id => crg.crg_id,
               p_mode => p_mode,
               p_install_id => l_install_id));
         end loop;
-           
+
         l_clob := integrate_rule_groups_into_app(
-                    p_crg_app_id => p_crg_app_id, 
+                    p_crg_app_id => p_crg_app_id,
                     p_rule_group => l_clob,
                     p_install_id => l_install_id);
         l_blob := utl_text.clob_to_blob(l_clob);
-          
+
         apex_zip.add_file(
           p_zipped_blob => l_zip_file,
           p_file_name => 'application.sql',
-          p_content => l_blob);   
+          p_content => l_blob);
       else
         -- combine rule group exports and apex export in one zip
         for crg in rule_group_cur(l_crg_app_id) loop
@@ -1500,37 +1331,37 @@ as
             p_file_name => l_file_name,
             p_content => l_blob);
         end loop;
-        
+
         -- add apex application
         l_blob := utl_text.clob_to_blob(
-                    export_apex_application(p_crg_app_id));        
-        l_file_name := adc_util.bulk_replace(param.get_string('APPLICATION_FILENAME', C_ADC), adc_util.string_table(
+                    export_apex_application(p_crg_app_id));
+        l_file_name := utl_text.bulk_replace(param.get_string('APPLICATION_FILENAME', C_ADC), char_table(
                          '#ALIAS#', upper(l_app_alias),
                          '#alias#', lower(l_app_alias),
                          '#APP_ID#', p_crg_app_id));
         apex_zip.add_file(
           p_zipped_blob => l_zip_file,
           p_file_name => l_file_name,
-          p_content => l_blob);   
+          p_content => l_blob);
       end if;
-    else   
+    else
       for crg in rule_group_cur(l_crg_app_id) loop
-      
+
         l_blob := utl_text.clob_to_blob(
                     export_rule_group(
                       p_crg_id => crg.crg_id,
                       p_mode => p_mode));
-                  
+
         l_file_name := replace(param.get_string('RULE_GROUP_FILENAME', C_ADC), '#CRG_FILE_NAME#', crg.crg_file_name);
-     
+
         apex_zip.add_file(
           p_zipped_blob => l_zip_file,
           p_file_name => l_file_name,
           p_content => l_blob);
-  
+
       end loop;
     end if;
-    
+
     apex_zip.finish(l_zip_file);
 
     pit.leave_mandatory(
@@ -1543,7 +1374,7 @@ as
   /**
     Procedure: prepare_rule_group_import
       See <ADC_ADMIN.prepare_rule_group_import>
-   */ 
+   */
   procedure prepare_rule_group_import(
     p_workspace in varchar2,
     p_app_alias in varchar2)
@@ -1568,7 +1399,7 @@ as
     pit.leave_mandatory;
   exception
     when no_data_found then
-      pit.raise_warn(msg.ADC_NO_RULE_GROUP_FOUND, msg_args(p_workspace, p_app_alias));
+      pit.warn(msg.ADC_NO_RULE_GROUP_FOUND, msg_args(p_workspace, p_app_alias));
       pit.leave_mandatory;
   end prepare_rule_group_import;
 
@@ -1576,7 +1407,7 @@ as
   /**
     Procedure: prepare_rule_group_import
       See <ADC_ADMIN.prepare_rule_group_import>
-   */ 
+   */
   procedure prepare_rule_group_import(
     p_workspace in varchar2,
     p_app_id in adc_rule_groups.crg_app_id%type)
@@ -1610,7 +1441,7 @@ as
     p_crg_page_id in adc_rule_groups.crg_page_id%type)
   as
   begin
-    pit.enter_mandatory('prepare_rule_group_import', 
+    pit.enter_mandatory('prepare_rule_group_import',
       p_params => msg_params(
                     msg_param('p_crg_app_id', p_crg_app_id),
                     msg_param('p_crg_page_id', p_crg_page_id)));
@@ -1630,7 +1461,7 @@ as
   /**
     Procedure: merge_rule
       See <ADC_ADMIN.merge_rule>
-   */ 
+   */
   procedure merge_rule(
     p_cru_id in adc_rules.cru_id%type default null,
     p_cru_crg_id in adc_rules.cru_crg_id%type,
@@ -1651,7 +1482,7 @@ as
                     msg_param('p_cru_fire_on_page_load', p_cru_fire_on_page_load),
                     msg_param('p_cru_sort_seq', p_cru_sort_seq),
                     msg_param('p_cru_active', p_cru_active)));
-                    
+
       l_row.cru_id := p_cru_id;
       l_row.cru_crg_id := p_cru_crg_id;
       l_row.cru_name := p_cru_name;
@@ -1659,9 +1490,9 @@ as
       l_row.cru_fire_on_page_load := p_cru_fire_on_page_load;
       l_row.cru_sort_seq := p_cru_sort_seq;
       l_row.cru_active := p_cru_active;
-      
+
     merge_rule(l_row);
-      
+
     pit.leave_mandatory;
   end merge_rule;
 
@@ -1669,17 +1500,17 @@ as
   /**
     Procedure: merge_rule
       See <ADC_ADMIN.merge_rule>
-   */ 
+   */
   procedure merge_rule(
     p_row in out nocopy adc_rules%rowtype)
   as
   begin
     pit.enter_mandatory;
-    
+
     validate_rule(p_row);
-    
+
     get_key(p_row.cru_id);
-    
+
     merge into adc_rules t
     using (select p_row.cru_id cru_id,
                   p_row.cru_crg_id cru_crg_id,
@@ -1710,16 +1541,16 @@ as
   /**
     Procedure: delete_rule
       See <ADC_ADMIN.delete_rule>
-   */ 
+   */
   procedure delete_rule(
     p_cru_id in adc_rules.cru_id%type)
   as
     l_row adc_rules%rowtype;
   begin
     pit.enter_mandatory;
-    
+
     l_row.cru_id := p_cru_id;
-    
+
     delete_rule(l_row);
 
     pit.leave_mandatory;
@@ -1729,7 +1560,7 @@ as
   /**
     Procedure: delete_rule
       See <ADC_ADMIN.delete_rule>
-   */ 
+   */
   procedure delete_rule(
     p_row in adc_rules%rowtype)
   as
@@ -1741,12 +1572,12 @@ as
 
     pit.leave_mandatory;
   end delete_rule;
-  
-  
+
+
   /**
     Procedure: validate_rule_condition
       See <ADC_ADMIN.validate_rule_condition>
-   */ 
+   */
   procedure validate_rule_condition(
     p_row in adc_rules%rowtype)
   as
@@ -1756,7 +1587,7 @@ as
     l_ctx pls_integer;
   begin
     pit.enter_mandatory('validate_rule_condition');
-    
+
     pit.assert_not_null(p_row.cru_condition, msg.ADC_PARAM_MISSING, p_error_code => 'CRU_CONDITION_MISSING');
 
     harmonize_adc_page_item(p_row.cru_crg_id, p_row.cru_condition);
@@ -1766,13 +1597,13 @@ as
            select /*+ no_merge */ uttm_text template, uttm_mode,
                   p_row.cru_crg_id crg_id,
                   p_row.cru_condition condition,
-                  g_true c_true,
-                  g_cr cr
+                  adc_util.c_true c_true,
+                  adc_util.C_CR cr
              from utl_text_templates_v
             where uttm_type = C_ADC
               and uttm_name in (C_UTTM_NAME, 'RULE_VIEW'))
     select utl_text.generate_text(cursor(
-             select template, condition, crg_id,
+             select p.template, p.condition, crg_id,
                     -- Events
                     utl_text.generate_text(cursor(
                       select template, cet_id, lower(cet_column_name) cet_column_name
@@ -1780,7 +1611,7 @@ as
                         join params
                           on uttm_mode = case cet_is_custom_event when c_true then 'EVENT' else upper(cet_id) end
                        where (cet_is_custom_event = c_true
-                          or cet_id in ('initialize', 'command', 'notification'))
+                          or cet_id in ('initialize', 'command'))
                        order by case cet_is_custom_event when c_true then 1 else 0 end, cet_id), ',' || CR, 14) event_list,
                     -- Column List
                     utl_text.generate_text(cursor(
@@ -1788,18 +1619,18 @@ as
                              replace(cpi_conversion, 'G') conversion,
                              cpi_id item,
                              cpit_cet_id
-                        from adc_page_item_types_v
+                        from adc_page_item_types_v sit
                         left join (
                                select cpi_id, cpi_cpit_id, cpi_conversion, cpi_is_required
                                  from adc_page_items
-                                where cpi_crg_id = crg_id)
-                          on cpit_id = cpi_cpit_id
-                       where c_true in (cpi_is_required, cpit_include_in_view)
+                                where cpi_crg_id = crg_id) cpi
+                          on sit.cpit_id = cpi.cpi_cpit_id
+                       where adc_util.C_TRUE in (cpi_is_required, cpit_include_in_view)
                          and cpit_col_template is not null
                       order by cpit_include_in_view desc, cpi_id), ',' || CR, 14) column_list
                from dual)) resultat
       into l_stmt
-      from params
+      from params p
      where uttm_mode = C_DEFAULT;
 
     -- perform validation
@@ -1812,28 +1643,26 @@ as
         if dbms_sql.is_open(l_ctx) then
           dbms_sql.close_cursor(l_ctx);
         end if;
-        pit.raise_error(msg.ADC_INVALID_SQL, msg_args(substr(sqlerrm, 12)));
+        pit.error(msg.ADC_INVALID_SQL, msg_args(substr(sqlerrm, 12)));
     end;
-    
+
     pit.leave_mandatory;
   end validate_rule_condition;
-  
+
 
   /**
     Procedure: validate_rule
       See <ADC_ADMIN.validate_rule>
-   */ 
+   */
   procedure validate_rule(
     p_row in adc_rules%rowtype)
   as
   begin
-    pit.enter_mandatory('validate_rule');
-    
+    pit.enter_mandatory;
     pit.assert_not_null(p_row.cru_crg_id, msg.ADC_PARAM_MISSING, p_error_code => 'CRU_CRG_ID_MISSING');
     pit.assert_not_null(p_row.cru_name, msg.ADC_PARAM_MISSING, p_error_code => 'CRU_NAME_MISSING');
 
     validate_rule_condition(p_row);
-    
     pit.leave_mandatory;
   end validate_rule;
 
@@ -1841,7 +1670,7 @@ as
   /**
     Procedure: resequence_rule
       See <ADC_ADMIN.resequence_rule>
-   */ 
+   */
   procedure resequence_rule(
     p_cru_id in adc_rules.cru_id%type)
   as
@@ -1849,7 +1678,7 @@ as
   begin
     pit.enter_optional('resequence_rule',
       p_params => msg_params(msg_param('p_cru_id', p_cru_id)));
-    
+
     begin
       select cru_crg_id
         into l_crg_id
@@ -1929,7 +1758,7 @@ as
                     msg_param('p_cra_raise_on_validation', p_cra_raise_on_validation),
                     msg_param('p_cra_active', p_cra_active),
                     msg_param('p_cra_comment', p_cra_comment)));
-    
+
     l_row.cra_id := p_cra_id;
     l_row.cra_cru_id := p_cra_cru_id;
     l_row.cra_crg_id := p_cra_crg_id;
@@ -1946,7 +1775,7 @@ as
     l_row.cra_comment := p_cra_comment;
 
     merge_rule_action(l_row);
-    
+
     pit.leave_mandatory;
   exception
     when others then
@@ -1963,11 +1792,11 @@ as
   as
   begin
     pit.enter_mandatory;
-    
+
     validate_rule_action(p_row);
-    
+
     get_key(p_row.cra_id);
-    
+
     merge into adc_rule_actions t
     using (select p_row.cra_id cra_id,
                   p_row.cra_cru_id cra_cru_id,
@@ -2019,12 +1848,12 @@ as
   begin
     pit.enter_mandatory(
       p_params => msg_params(
-                    msg_param('p_cra_id', to_char(p_cra_id))));
+                    msg_param('p_cra_id', p_cra_id)));
 
     l_row.cra_id := p_cra_id;
-    
+
     delete_rule_action(l_row);
-    
+
     pit.leave_mandatory;
   end delete_rule_action;
 
@@ -2041,11 +1870,11 @@ as
 
     delete from adc_rule_actions
      where cra_id = p_row.cra_id;
-    
+
     pit.leave_optional;
   end delete_rule_action;
-  
-  
+
+
   /**
     Procedure: validate_rule_action
       See <ADC_ADMIN.validate_rule_action>
@@ -2054,37 +1883,43 @@ as
     p_row in adc_rule_actions%rowtype)
   as
     l_cur sys_refcursor;
+    C_DOCUMENT constant adc_util.ora_name_type := 'DOCUMENT';
   begin
     pit.enter_optional;
-    
+
     pit.assert_not_null(p_row.cra_cru_id, msg.ADC_PARAM_MISSING, p_error_code => 'CRA_CRU_ID_MISSING');
     pit.assert_not_null(p_row.cra_crg_id, msg.ADC_PARAM_MISSING, p_error_code => 'CRA_CRG_ID_MISSING');
     pit.assert_not_null(p_row.cra_cpi_id, msg.ADC_PARAM_MISSING, p_error_code => 'CRA_CPI_ID_MISSING');
     pit.assert_not_null(p_row.cra_cat_id, msg.ADC_PARAM_MISSING, p_error_code => 'CRA_CAT_ID_MISSING');
-    
+
     if p_row.cra_id is null then
       open l_cur for
         select null
           from adc_rule_actions
          where cra_crg_id = p_row.cra_crg_id
            and cra_cru_id = p_row.cra_cru_id
-           and cra_cpi_id = p_row.cra_cpi_id
+           and case 
+                 when cra_cpi_id = C_DOCUMENT and cra_param_2 is not null then cra_param_2
+                 else cra_cpi_id end = 
+               case 
+                 when p_row.cra_cpi_id = C_DOCUMENT and p_row.cra_param_2 is not null then p_row.cra_param_2
+                 else p_row.cra_cpi_id end
            and cra_cat_id = p_row.cra_cat_id
            and cra_on_error = p_row.cra_on_error;
       pit.assert_not_exists(l_cur, msg.ADC_RULE_ACTION_EXISTS);
     end if;
-    
+
     pit.leave_optional;
   end validate_rule_action;
-  
-  
+
+
   /**
     Group: Public Methods - Action Type Methods
    */
   /**
     Procedure: merge_action_type_group
       See <ADC_ADMIN.merge_action_type_group>
-   */ 
+   */
   procedure merge_action_type_group(
     p_catg_id in adc_action_type_groups_v.catg_id%type,
     p_catg_name in adc_action_type_groups_v.catg_name%type,
@@ -2099,12 +1934,12 @@ as
                     msg_param('p_catg_name', p_catg_name),
                     msg_param('p_catg_description', p_catg_description),
                     msg_param('p_catg_active', p_catg_active)));
-                    
+
     l_row.catg_id := p_catg_id;
     l_row.catg_name := p_catg_name;
     l_row.catg_description := utl_text.unwrap_string(p_catg_description);
     l_row.catg_active := adc_util.get_boolean(p_catg_active);
-    
+
     merge_action_type_group(l_row);
 
     pit.leave_mandatory;
@@ -2114,14 +1949,14 @@ as
   /**
     Procedure: merge_action_type_group
       See <ADC_ADMIN.merge_action_type_group>
-   */ 
+   */
   procedure merge_action_type_group(
     p_row in out nocopy adc_action_type_groups_v%rowtype)
   as
     l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
-    
+
     validate_action_type_group(p_row);
 
     -- maintain translatable item
@@ -2145,7 +1980,7 @@ as
           t.catg_active = s.catg_active
      when not matched then insert(catg_id, catg_pti_id, catg_pmg_name, catg_active)
           values(s.catg_id, s.catg_pti_id, s.catg_pmg_name, s.catg_active);
-    
+
     pit.leave_mandatory;
   end merge_action_type_group;
 
@@ -2153,7 +1988,7 @@ as
   /**
     Procedure: delete_action_type_group
       See <ADC_ADMIN.delete_action_type_group>
-   */ 
+   */
   procedure delete_action_type_group(
     p_catg_id in adc_action_type_groups_v.catg_id%type)
   as
@@ -2162,11 +1997,11 @@ as
     pit.enter_mandatory(
       p_params => msg_params(
                     msg_param('p_catg_id', p_catg_id)));
-    
+
     l_row.catg_id := p_catg_id;
-    
+
     delete_action_type_group(l_row);
-    
+
     pit.leave_mandatory;
   end delete_action_type_group;
 
@@ -2174,16 +2009,16 @@ as
   /**
     Procedure: delete_action_type_group
       See <ADC_ADMIN.delete_action_type_group>
-   */ 
+   */
   procedure delete_action_type_group(
     p_row in adc_action_type_groups_v%rowtype)
   as
   begin
     pit.enter_mandatory;
-                    
+
     delete from adc_action_type_groups
      where catg_id = p_row.catg_id;
-    
+
     pit.leave_mandatory;
   end delete_action_type_group;
 
@@ -2191,24 +2026,24 @@ as
   /**
     Procedure: validate_action_type_group
       See <ADC_ADMIN.validate_action_type_group>
-   */ 
+   */
   procedure validate_action_type_group(
     p_row in adc_action_type_groups_v%rowtype)
   as
   begin
     pit.enter_mandatory;
-    
+
     pit.assert_not_null(p_row.catg_id, msg.ADC_PARAM_MISSING, p_error_code => 'CATG_ID_MISSING');
     pit.assert_not_null(p_row.catg_name, msg.ADC_PARAM_MISSING, p_error_code => 'CATG_NAME_MISSING');
-    
+
     pit.leave_mandatory;
   end validate_action_type_group;
-  
-    
+
+
   /**
     Procedure: merge_action_type_owner
       See <ADC_ADMIN.merge_action_type_owner>
-   */ 
+   */
   procedure merge_action_type_owner(
     p_cato_id in adc_action_type_owners_v.cato_id%type,
     p_cato_description in adc_action_type_owners_v.cato_description%type,
@@ -2221,11 +2056,11 @@ as
                     msg_param('p_cato_id', p_cato_id),
                     msg_param('p_cato_description', p_cato_description),
                     msg_param('p_cato_active', p_cato_active)));
-                    
+
     l_row.cato_id := p_cato_id;
     l_row.cato_description := utl_text.unwrap_string(p_cato_description);
     l_row.cato_active := adc_util.get_boolean(p_cato_active);
-    
+
     merge_action_type_owner(l_row);
 
     pit.leave_mandatory;
@@ -2235,14 +2070,14 @@ as
   /**
     Procedure: merge_action_type_owner
       See <ADC_ADMIN.merge_action_type_owner>
-   */ 
+   */
   procedure merge_action_type_owner(
     p_row in out nocopy adc_action_type_owners_v%rowtype)
   as
     l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
-    
+
     validate_action_type_owner(p_row);
 
     -- store local data
@@ -2256,7 +2091,7 @@ as
           t.cato_active = s.cato_active
      when not matched then insert(cato_id, cato_description, cato_active)
           values(s.cato_id, s.cato_description, s.cato_active);
-    
+
     pit.leave_mandatory;
   end merge_action_type_owner;
 
@@ -2264,7 +2099,7 @@ as
   /**
     Procedure: delete_action_type_owner
       See <ADC_ADMIN.delete_action_type_owner>
-   */ 
+   */
   procedure delete_action_type_owner(
     p_cato_id in adc_action_type_owners_v.cato_id%type)
   as
@@ -2273,11 +2108,11 @@ as
     pit.enter_mandatory(
       p_params => msg_params(
                     msg_param('p_cato_id', p_cato_id)));
-    
+
     l_row.cato_id := p_cato_id;
-    
+
     delete_action_type_owner(l_row);
-    
+
     pit.leave_mandatory;
   end delete_action_type_owner;
 
@@ -2285,16 +2120,16 @@ as
   /**
     Procedure: delete_action_type_owner
       See <ADC_ADMIN.delete_action_type_owner>
-   */ 
+   */
   procedure delete_action_type_owner(
     p_row in adc_action_type_owners_v%rowtype)
   as
   begin
     pit.enter_mandatory;
-                    
+
     delete from adc_action_type_owners
      where cato_id = p_row.cato_id;
-    
+
     pit.leave_mandatory;
   end delete_action_type_owner;
 
@@ -2302,23 +2137,23 @@ as
   /**
     Procedure: validate_action_type_owner
       See <ADC_ADMIN.validate_action_type_owner>
-   */ 
+   */
   procedure validate_action_type_owner(
     p_row in adc_action_type_owners_v%rowtype)
   as
   begin
     pit.enter_mandatory;
-    
+
     pit.assert_not_null(p_row.cato_id, msg.ADC_PARAM_MISSING, p_error_code => 'CATO_ID_MISSING');
-    
+
     pit.leave_mandatory;
   end validate_action_type_owner;
-  
-  
+
+
   /**
     Procedure: merge_action_param_visual_type
       See <ADC_ADMIN.merge_action_param_visual_type>
-   */ 
+   */
   procedure merge_action_param_visual_type(
     p_capvt_id in adc_action_param_visual_types_v.capvt_id%type,
     p_capvt_name in adc_action_param_visual_types_v.capvt_name%type,
@@ -2326,7 +2161,7 @@ as
     p_capvt_description in adc_action_param_visual_types_v.capvt_description%type default null,
     p_capvt_param_item_extension in adc_action_param_visual_types_v.capvt_param_item_extension%type default null,
     p_capvt_sort_seq in adc_action_param_visual_types_v.capvt_sort_seq%type default 10,
-    p_capvt_active in adc_action_param_visual_types_v.capvt_active%type default adc_util.C_TRUE)
+    p_capvt_active in adc_action_param_visual_types_v.capvt_active%type default ADC_UTIL.C_TRUE)
   as
     l_row adc_action_param_visual_types_v%rowtype;
   begin
@@ -2339,7 +2174,7 @@ as
                     msg_param('p_capvt_param_item_extension', p_capvt_param_item_extension),
                     msg_param('p_capvt_sort_seq', p_capvt_sort_seq),
                     msg_param('p_capvt_active', p_capvt_active)));
-                    
+
     l_row.capvt_id := p_capvt_id;
     l_row.capvt_name := p_capvt_name;
     l_row.capvt_display_name := p_capvt_display_name;
@@ -2347,9 +2182,9 @@ as
     l_row.capvt_param_item_extension := p_capvt_param_item_extension;
     l_row.capvt_sort_seq := p_capvt_sort_seq;
     l_row.capvt_active := adc_util.get_boolean(p_capvt_active);
-    
+
     merge_action_param_visual_type(l_row);
-          
+
     pit.leave_mandatory;
   end merge_action_param_visual_type;
 
@@ -2357,19 +2192,19 @@ as
   /**
     Procedure: merge_action_param_visual_type
       See <ADC_ADMIN.merge_action_param_visual_type>
-   */ 
+   */
   procedure merge_action_param_visual_type(
     p_row in out nocopy adc_action_param_visual_types_v%rowtype)
   as
     l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
-    
+
     validate_action_param_visual_type(p_row);
-    
+
     -- maintain translatable item
     l_pti_id := 'CAPVT_' || p_row.capvt_id;
-    
+
     pit_admin.merge_translatable_item(
       p_pti_id => l_pti_id,
       p_pti_pml_name => null,
@@ -2394,7 +2229,7 @@ as
           t.capvt_active = s.capvt_active
      when not matched then insert(capvt_id, capvt_pti_id, capvt_pmg_name, capvt_param_item_extension, capvt_sort_seq, capvt_active)
           values(s.capvt_id, s.capvt_pti_id, s.capvt_pmg_name, s.capvt_param_item_extension, s.capvt_sort_seq, s.capvt_active);
-    
+
     pit.leave_mandatory;
   end merge_action_param_visual_type;
 
@@ -2402,20 +2237,20 @@ as
   /**
     Procedure: delete_action_param_visual_type
       See <ADC_ADMIN.delete_action_param_visual_type>
-   */ 
+   */
   procedure delete_action_param_visual_type(
     p_capvt_id in adc_action_param_visual_types_v.capvt_id%type)
-  as  
+  as
     l_row adc_action_param_visual_types_v%rowtype;
   begin
     pit.enter_mandatory(
       p_params => msg_params(
                     msg_param('p_capvt_id', p_capvt_id)));
-    
+
     l_row.capvt_id := p_capvt_id;
-    
+
     delete_action_param_visual_type(l_row);
-    
+
     pit.leave_mandatory;
   end delete_action_param_visual_type;
 
@@ -2423,51 +2258,51 @@ as
   /**
     Procedure: delete_action_param_visual_type
       See <ADC_ADMIN.delete_action_param_visual_type>
-   */ 
+   */
   procedure delete_action_param_visual_type(
     p_row in adc_action_param_visual_types_v%rowtype)
   as
   begin
     pit.enter_mandatory;
-                    
+
     delete from adc_action_param_visual_types
      where capvt_id = p_row.capvt_id;
-    
+
     pit.leave_mandatory;
   end delete_action_param_visual_type;
-  
-  
+
+
   /**
     Procedure: validate_action_param_visual_type
       See <ADC_ADMIN.validate_action_param_visual_type>
-   */ 
+   */
   procedure validate_action_param_visual_type(
     p_row in adc_action_param_visual_types_v%rowtype)
   as
   begin
     pit.enter_mandatory;
-    
+
     pit.assert_not_null(p_row.capvt_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAPVT_ID_MISSING');
     pit.assert_not_null(p_row.capvt_name, msg.ADC_PARAM_MISSING, p_error_code => 'CAPVT_NAME_MISSING');
-    
+
     pit.leave_mandatory;
   end validate_action_param_visual_type;
-  
-  
+
+
   /**
     Procedure: merge_action_param_type
       See <ADC_ADMIN.merge_action_param_type>
-   */ 
+   */
   procedure merge_action_param_type(
     p_capt_id in adc_action_param_types_v.capt_id%type,
     p_capt_name in adc_action_param_types_v.capt_name%type,
     p_capt_display_name in adc_action_param_types_v.capt_display_name%type default null,
     p_capt_description in adc_action_param_types_v.capt_description%type default null,
     p_capt_capvt_id in adc_action_param_types_v.capt_capvt_id%type,
-    p_capt_select_list_query in adc_action_param_types_v.capt_select_list_query%type default null, 
+    p_capt_select_list_query in adc_action_param_types_v.capt_select_list_query%type default null,
     p_capt_select_view_comment in adc_action_param_types_v.capt_select_view_comment%type default null,
     p_capt_sort_seq in adc_action_param_types_v.capt_sort_seq%type default 10,
-    p_capt_active in adc_action_param_types_v.capt_active%type default adc_util.C_TRUE)
+    p_capt_active in adc_action_param_types_v.capt_active%type default ADC_UTIL.C_TRUE)
   as
     l_row adc_action_param_types_v%rowtype;
   begin
@@ -2482,7 +2317,7 @@ as
                     msg_param('p_capt_select_view_comment', p_capt_select_view_comment),
                     msg_param('p_capt_sort_seq', p_capt_sort_seq),
                     msg_param('p_capt_active', p_capt_active)));
-                    
+
     l_row.capt_id := p_capt_id;
     l_row.capt_name := p_capt_name;
     l_row.capt_display_name := p_capt_display_name;
@@ -2492,9 +2327,9 @@ as
     l_row.capt_select_view_comment := utl_text.unwrap_string(p_capt_select_view_comment);
     l_row.capt_sort_seq := p_capt_sort_seq;
     l_row.capt_active := adc_util.get_boolean(p_capt_active);
-    
+
     merge_action_param_type(l_row);
-          
+
     pit.leave_mandatory;
   end merge_action_param_type;
 
@@ -2502,20 +2337,20 @@ as
   /**
     Procedure: merge_action_param_type
       See <ADC_ADMIN.merge_action_param_type>
-   */ 
+   */
   procedure merge_action_param_type(
     p_row in out nocopy adc_action_param_types_v%rowtype)
   as
-    l_stmt adc_util.max_char;
+    l_view_stmt adc_util.max_char;
     l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
-    
+
     validate_action_param_type(p_row);
-    
+
     -- maintain translatable item
     l_pti_id := 'CAPT_' || p_row.capt_id;
-    
+
     pit_admin.merge_translatable_item(
       p_pti_id => l_pti_id,
       p_pti_pml_name => null,
@@ -2524,12 +2359,17 @@ as
       p_pti_display_name => p_row.capt_display_name,
       p_pti_description => p_row.capt_description);
 
+    -- Create generic View statement for static lists (they reference transalatable items)
+    l_view_stmt := rtrim(adc_parameter.get_param_lov_query(p_row), ';');
+
     -- store local data
     merge into adc_action_param_types t
     using (select p_row.capt_id capt_id,
                   l_pti_id capt_pti_id,
                   C_ADC capt_pmg_name,
                   p_row.capt_capvt_id capt_capvt_id,
+                  l_view_stmt capt_select_list_query,
+                  p_row.capt_select_view_comment capt_select_view_comment,
                   p_row.capt_sort_seq capt_sort_seq,
                   p_row.capt_active capt_active
              from dual) s
@@ -2537,57 +2377,40 @@ as
      when matched then update set
           t.capt_capvt_id = s.capt_capvt_id,
           t.capt_sort_seq = s.capt_sort_seq,
-          t.capt_active = s.capt_active
-     when not matched then insert(capt_id, capt_pti_id, capt_pmg_name, capt_capvt_id, capt_sort_seq, capt_active)
-          values(s.capt_id, s.capt_pti_id, s.capt_pmg_name, s.capt_capvt_id, s.capt_sort_seq, s.capt_active);
-    
-    -- Create generic View statement for static lists (they reference transalatable items)
-    l_stmt := rtrim(adc_parameter.get_param_lov_query(p_row), ';');
-    if l_stmt is not null then
-      begin
-        execute immediate l_stmt;
-      exception
-        when dbms_sql_translator.INSUFFICIENT_PRIVILEGE then
-          null;
-        when others then
-          pit.raise_error(msg.ADC_ACTION_PARAM_TYPE, msg_args(l_stmt));
-      end;
-    end if;
-    
-    l_stmt := adc_parameter.get_param_lov_comment(p_row);
-    if l_stmt is not null then
-      begin
-        execute immediate l_stmt;
-      exception
-        when others then
-          pit.raise_error(msg.ADC_ACTION_PARAM_TYPE, msg_args(l_stmt));
-      end;
-    end if;
-    
+          t.capt_active = s.capt_active,
+          t.capt_select_list_query = s.capt_select_list_query,
+          t.capt_select_view_comment = s.capt_select_view_comment
+     when not matched then insert(
+            capt_id, capt_pti_id, capt_pmg_name, capt_capvt_id,
+            capt_select_list_query, capt_select_view_comment, capt_sort_seq, capt_active)
+          values(
+            s.capt_id, s.capt_pti_id, s.capt_pmg_name, s.capt_capvt_id,
+            s.capt_select_list_query, s.capt_select_view_comment, s.capt_sort_seq, s.capt_active);
+
     pit.leave_mandatory;
   exception
     when others then
-      pit.handle_panic;
+      pit.stop;
   end merge_action_param_type;
 
 
   /**
     Procedure: delete_action_param_type
       See <ADC_ADMIN.delete_action_param_type>
-   */ 
+   */
   procedure delete_action_param_type(
     p_capt_id in adc_action_param_types_v.capt_id%type)
-  as  
+  as
     l_row adc_action_param_types_v%rowtype;
   begin
     pit.enter_mandatory(
       p_params => msg_params(
                     msg_param('p_capt_id', p_capt_id)));
-    
+
     l_row.capt_id := p_capt_id;
-    
+
     delete_action_param_type(l_row);
-    
+
     pit.leave_mandatory;
   end delete_action_param_type;
 
@@ -2595,7 +2418,7 @@ as
   /**
     Procedure: delete_action_param_type
       See <ADC_ADMIN.delete_action_param_type>
-   */ 
+   */
   procedure delete_action_param_type(
     p_row in adc_action_param_types_v%rowtype)
   as
@@ -2603,55 +2426,39 @@ as
     l_stmt adc_util.sql_char;
   begin
     pit.enter_mandatory;
-                    
+
     delete from adc_action_param_types
      where capt_id = p_row.capt_id;
-     
-    select count(*)
-      into l_has_view
-      from user_views
-     where exists(
-           select null
-             from user_views
-            where view_name = C_CAPT_VIEW_NAME_PREFIX || p_row.capt_id);
-    if l_has_view = 1 then
-      l_stmt := 'drop view ' || C_CAPT_VIEW_NAME_PREFIX || p_row.capt_id;
-      execute immediate l_stmt;
-    end if;
-    
+
     pit.leave_mandatory;
   end delete_action_param_type;
-  
-  
+
+
   /**
     Procedure: validate_action_param_type
       See <ADC_ADMIN.validate_action_param_type>
-   */ 
+   */
   procedure validate_action_param_type(
     p_row in adc_action_param_types_v%rowtype)
   as
   begin
     pit.enter_mandatory;
-    
+
     pit.assert_not_null(p_row.capt_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAPT_ID_MISSING');
     pit.assert_not_null(p_row.capt_name, msg.ADC_PARAM_MISSING, p_error_code => 'CAPT_NAME_MISSING');
     pit.assert_not_null(p_row.capt_capvt_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAPT_CAPVT_ID_MISSING');
-    
+
     if p_row.capt_capvt_id = 'SELECT_LIST' then
       pit.assert_not_null(p_row.capt_select_list_query, msg.ADC_PARAM_MISSING, p_error_code => 'CAPVT_VIEW_STATEMENT_MISSING');
     end if;
-    
-    adc_parameter.validate_param_lov(
-      p_capt_id => p_row.capt_id,
-      p_capt_capvt_id => p_row.capt_capvt_id);
-      
+
     pit.leave_mandatory;
   end validate_action_param_type;
 
   /**
     Procedure: merge_action_item_focus
       See <ADC_ADMIN.merge_action_item_focus>
-   */ 
+   */
   procedure merge_action_item_focus(
     p_caif_id in adc_action_item_focus_v.caif_id%type,
     p_caif_name in adc_action_item_focus_v.caif_name%type,
@@ -2672,7 +2479,7 @@ as
                     msg_param('p_caif_item_types', p_caif_item_types),
                     msg_param('p_caif_default', p_caif_default),
                     msg_param('p_caif_active', p_caif_active)));
-                    
+
     l_row.caif_id := p_caif_id;
     l_row.caif_name := p_caif_name;
     l_row.caif_description := utl_text.unwrap_string(p_caif_description);
@@ -2680,9 +2487,9 @@ as
     l_row.caif_item_types := p_caif_item_types;
     l_row.caif_default := p_caif_default;
     l_row.caif_active := adc_util.get_boolean(p_caif_active);
-    
+
     merge_action_item_focus(l_row);
-    
+
     pit.leave_mandatory;
   end merge_action_item_focus;
 
@@ -2690,16 +2497,16 @@ as
   /**
     Procedure: merge_action_item_focus
       See <ADC_ADMIN.merge_action_item_focus>
-   */ 
+   */
   procedure merge_action_item_focus(
     p_row in out nocopy adc_action_item_focus_v%rowtype)
   as
     l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
-    
+
     validate_action_item_focus(p_row);
-                    
+
     -- maintain translatable item
     l_pti_id := 'CAIF_' || p_row.caif_id;
     pit_admin.merge_translatable_item(
@@ -2727,7 +2534,7 @@ as
           t.caif_active = s.caif_active
      when not matched then insert(caif_id, caif_pti_id, caif_pmg_name, caif_actual_page_only, caif_item_types, caif_default, caif_active)
           values(s.caif_id, s.caif_pti_id, s.caif_pmg_name, s.caif_actual_page_only, s.caif_item_types, s.caif_default, s.caif_active);
-    
+
     pit.leave_mandatory;
   end merge_action_item_focus;
 
@@ -2735,7 +2542,7 @@ as
   /**
     Procedure: delete_action_item_focus
       See <ADC_ADMIN.delete_action_item_focus>
-   */ 
+   */
   procedure delete_action_item_focus(
     p_caif_id in adc_action_item_focus_v.caif_id%type)
   as
@@ -2744,11 +2551,11 @@ as
     pit.enter_mandatory(
       p_params => msg_params(
                     msg_param('p_caif_id', p_caif_id)));
-    
+
     l_row.caif_id := p_caif_id;
-    
+
     delete_action_item_focus(l_row);
-    
+
     pit.leave_mandatory;
   end delete_action_item_focus;
 
@@ -2756,32 +2563,32 @@ as
   /**
     Procedure: delete_action_item_focus
       See <ADC_ADMIN.delete_action_item_focus>
-   */ 
+   */
   procedure delete_action_item_focus(
     p_row in adc_action_item_focus_v%rowtype)
   as
   begin
     pit.enter_mandatory;
-                    
+
     delete from adc_action_item_focus
      where caif_id = p_row.caif_id;
-    
+
     pit.leave_mandatory;
   end delete_action_item_focus;
-  
+
 
   /**
     Procedure: validate_action_item_focus
       See <ADC_ADMIN.validate_action_item_focus>
-   */ 
+   */
   procedure validate_action_item_focus(
     p_row in adc_action_item_focus_v%rowtype)
   as
   begin
     pit.enter_mandatory;
-    
+
     /** TODO: Add validation */
-    
+
     pit.leave_mandatory;
   end validate_action_item_focus;
 
@@ -2790,7 +2597,7 @@ as
   /**
     Procedure: merge_action_type
       See <ADC_ADMIN.merge_action_type>
-   */ 
+   */
   procedure merge_action_type(
     p_cat_id in adc_action_types_v.cat_id%type,
     p_cat_catg_id in adc_action_types_v.cat_catg_id%type,
@@ -2821,7 +2628,7 @@ as
                     msg_param('p_cat_is_editable', p_cat_is_editable),
                     msg_param('p_cat_raise_recursive', p_cat_raise_recursive),
                     msg_param('p_cat_active', p_cat_active)));
-    
+
     l_row.cat_id := p_cat_id;
     l_row.cat_catg_id := p_cat_catg_id;
     l_row.cat_caif_id := p_cat_caif_id;
@@ -2834,9 +2641,9 @@ as
     l_row.cat_is_editable := adc_util.get_boolean(p_cat_is_editable);
     l_row.cat_raise_recursive := adc_util.get_boolean(p_cat_raise_recursive);
     l_row.cat_active := adc_util.get_boolean(p_cat_active);
-    
+
     merge_action_type(l_row);
-    
+
     pit.leave_mandatory;
   end merge_action_type;
 
@@ -2844,7 +2651,7 @@ as
   /**
     Procedure: merge_action_type
       See <ADC_ADMIN.merge_action_type>
-   */ 
+   */
   procedure merge_action_type(
     p_row in adc_action_types_v%rowtype)
   as
@@ -2853,11 +2660,11 @@ as
     pit.enter_mandatory;
 
     validate_action_type(p_row);
-    
+
     -- Remove existing parameter entries
     delete from adc_action_parameters
      where cap_cat_id = p_row.cat_id;
-      
+
     -- maintain translatable item
     l_pti_id := 'CAT_' || p_row.cat_id;
     pit_admin.merge_translatable_item(
@@ -2898,7 +2705,7 @@ as
           values (
             s.cat_id, s.cat_catg_id, s.cat_caif_id, s.cat_cato_id, s.cat_pti_id, s.cat_pmg_name, s.cat_pl_sql, s.cat_js,
             s.cat_is_editable, s.cat_raise_recursive, s.cat_active);
-      
+
     pit.leave_mandatory;
   end merge_action_type;
 
@@ -2906,7 +2713,7 @@ as
   /**
     Procedure: delete_action_type
       See <ADC_ADMIN.delete_action_type>
-   */ 
+   */
   procedure delete_action_type(
     p_cat_id in adc_action_types_v.cat_id%type)
   as
@@ -2915,11 +2722,11 @@ as
     pit.enter_mandatory(
       p_params => msg_params(
                     msg_param('p_cat_id', p_cat_id)));
-    
+
     l_row.cat_id := p_cat_id;
-    
+
     delete_action_type(l_row);
-    
+
     pit.leave_mandatory;
   end delete_action_type;
 
@@ -2933,13 +2740,13 @@ as
   as
   begin
     pit.enter_mandatory;
-                    
+
     delete from adc_action_types
      where cat_id = p_row.cat_id;
-      
+
     pit.leave_mandatory;
   end delete_action_type;
-  
+
 
   /**
     Procedure: validate_action_type
@@ -2950,17 +2757,18 @@ as
   as
   begin
     pit.enter_mandatory;
-  
+
     pit.assert_not_null(p_row.cat_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAT_ID_MISSING');
     pit.assert_not_null(p_row.cat_catg_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAT_CATG_ID_MISSING');
     pit.assert_not_null(p_row.cat_caif_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAT_CAIF_ID_MISSING');
     pit.assert_not_null(p_row.cat_cato_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAT_CATO_ID_MISSING');
     pit.assert_not_null(p_row.cat_name, msg.ADC_PARAM_MISSING, p_error_code => 'CAT_NAME_MISSING');
-    
+
     pit.leave_mandatory;
   exception
     when others then
-      pit.handle_panic;
+      pit.leave_mandatory;
+      raise;
   end validate_action_type;
 
 
@@ -2992,19 +2800,17 @@ as
     -- prevent unwanted escapings on nested anchors
     utl_text.set_main_anchor_char('#');
     utl_text.set_secondary_anchor_char(null);
-    
+    l_zip_file_name := param.get_string('ACTION_TYPE_FILENAME', C_ADC);
+
     -- Set export mode
     case p_mode
     when C_EXPORT_USER then
-      l_zip_file_name := 'action_types_user.sql';
       l_with_user := true;
       l_with_system := false;
     when C_EXPORT_SYSTEM then
-      l_zip_file_name := 'action_types_system.sql';
       l_with_user := false;
       l_with_system := true;
     else
-      l_zip_file_name := 'action_types_all.sql';
       l_with_user := true;
       l_with_system := true;
     end case;
@@ -3017,19 +2823,19 @@ as
                      utl_text.wrap_string(capvt_description, C_WRAP_START, C_WRAP_END) capvt_description,
                      capvt_param_item_extension, capvt_display_name, capvt_sort_seq
                 from adc_action_param_visual_types_v
-             ), g_cr)
+             ), adc_util.C_CR)
         into l_action_param_visual_types
         from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = 'PARAM_VISUAL_TYPE';
-         
+
       l_action_param_types := get_action_param_types(C_ADC);
-         
+
       select utl_text.generate_text(cursor(
               select uttm_text template,
-                     cpitg_id, 
-                     adc_util.to_bool(cpitg_has_value) cpitg_has_value, 
+                     cpitg_id,
+                     adc_util.to_bool(cpitg_has_value) cpitg_has_value,
                      adc_util.to_bool(cpitg_include_in_view) cpitg_include_in_view
                 from adc_page_item_type_groups
             ))
@@ -3038,7 +2844,7 @@ as
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = 'PAGE_ITEM_TYPE_GROUP';
-         
+
       select utl_text.generate_text(cursor(
               select uttm_text template,
                      cet_id, cet_name, cet_cpitg_id, cet_column_name,
@@ -3050,14 +2856,14 @@ as
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = 'EVENT_TYPE';
-  
+
       select utl_text.generate_text(cursor(
               select uttm_text template,
-                     cpit_id, cpit_cpitg_id, cpit_name, 
-                     adc_util.to_bool(cpit_has_value) cpit_has_value, 
-                     adc_util.to_bool(cpit_include_in_view) cpit_include_in_view, 
-                     cpit_cet_id, 
-                     utl_text.wrap_string(cpit_col_template, C_WRAP_START, C_WRAP_END) cpit_col_template, 
+                     cpit_id, cpit_cpitg_id, cpit_name,
+                     adc_util.to_bool(cpit_has_value) cpit_has_value,
+                     adc_util.to_bool(cpit_include_in_view) cpit_include_in_view,
+                     cpit_cet_id,
+                     utl_text.wrap_string(cpit_col_template, C_WRAP_START, C_WRAP_END) cpit_col_template,
                      utl_text.wrap_string(cpit_init_template, C_WRAP_START, C_WRAP_END) cpit_init_template
                 from adc_page_item_types_v
             ))
@@ -3066,60 +2872,60 @@ as
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = 'PAGE_ITEM_TYPE';
-  
+
       select utl_text.generate_text(cursor(
               select uttm_text template,
                      caif_id, caif_name, adc_util.to_bool(caif_active) caif_active, caif_default,
                      utl_text.wrap_string(caif_description, C_WRAP_START, C_WRAP_END) caif_description,
                      adc_util.to_bool(caif_actual_page_only) caif_actual_page_only, caif_item_types
                 from adc_action_item_focus_v
-             ), g_cr)
+             ), adc_util.C_CR)
         into l_action_item_focus
         from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = 'ITEM_FOCUS';
-  
+
       select utl_text.generate_text(cursor(
               select uttm_text template,
                      catg_id, catg_name, adc_util.to_bool(catg_active) catg_active,
                      utl_text.wrap_string(catg_description, C_WRAP_START, C_WRAP_END) catg_description
                 from adc_action_type_groups_v
-             ), g_cr)
+             ), adc_util.C_CR)
         into l_action_type_groups
         from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = 'ACTION_TYPE_GROUP';
-  
+
       select utl_text.generate_text(cursor(
               select uttm_text template,
-                     cato_id, 
+                     cato_id,
                      adc_util.to_bool(cato_active) cato_active,
                      utl_text.wrap_string(cato_description, C_WRAP_START, C_WRAP_END) cato_description
                 from adc_action_type_owners_v
                where cato_id = C_ADC
-             ), g_cr)
+             ), adc_util.C_CR)
         into l_action_type_owners
         from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = 'ACTION_TYPE_OWNER';
-  
+
       select utl_text.generate_text(cursor(
               select uttm_text template,
                      caat_id, caat_name, adc_util.to_bool(caat_active) caat_active,
                      utl_text.wrap_string(caat_description, C_WRAP_START, C_WRAP_END) caat_description
                 from adc_apex_action_types_v
-             ), g_cr)
+             ), adc_util.C_CR)
         into l_apex_action_types
         from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = 'APEX_ACTION_TYPE';
-         
+
       l_action_types := get_action_types(C_ADC);
-  
+
       -- create export statement
       select utl_text.generate_text(cursor(
                select uttm_text template,
@@ -3134,37 +2940,36 @@ as
                       l_action_types action_types,
                       l_apex_action_types apex_action_types
                  from dual
-             ), g_cr) resultat
+             ), adc_util.C_CR) resultat
         into l_export_script
         from utl_text_templates_v
        where uttm_type = C_ADC
          and uttm_name = C_UTTM_NAME
          and uttm_mode = C_FRAME;
-      
+
       apex_zip.add_file(
         p_zipped_blob => l_zip_file,
         p_file_name => l_zip_file_name,
         p_content => utl_text.clob_to_blob(l_export_script));
-        
-      add_param_lov_statements(C_ADC, l_zip_file);
     end if;
-      
+
     -- export user action types
     if l_with_user then
       add_custom_action_types(l_zip_file);
     end if;
-    
+
     if l_zip_file is not null then
       apex_zip.finish(l_zip_file);
     end if;
 
     -- reset utl_text to standard values
-    utl_text.initialize;   
+    utl_text.initialize;
     pit.leave_mandatory(p_params => msg_params(msg_param('ZIP file size', dbms_lob.getlength(l_zip_file))));
     return l_zip_file;
   exception
     when others then
-      pit.handle_panic;
+      pit.handle_exception;
+      raise;
   end export_action_types;
 
 
@@ -3188,13 +2993,13 @@ as
       p_params => msg_params(
                     msg_param('p_cap_cat_id', p_cap_cat_id),
                     msg_param('p_cap_capt_id', p_cap_capt_id),
-                    msg_param('p_cap_sort_seq', to_char(p_cap_sort_seq)),
+                    msg_param('p_cap_sort_seq', p_cap_sort_seq),
                     msg_param('p_cap_default', p_cap_default),
                     msg_param('p_cap_description', p_cap_description),
                     msg_param('p_cap_display_name', p_cap_display_name),
                     msg_param('p_cap_mandatory', p_cap_mandatory),
                     msg_param('p_cap_active', p_cap_active)));
-    
+
     l_row.cap_cat_id := p_cap_cat_id;
     l_row.cap_capt_id := p_cap_capt_id;
     l_row.cap_sort_seq := p_cap_sort_seq;
@@ -3203,9 +3008,9 @@ as
     l_row.cap_display_name := p_cap_display_name;
     l_row.cap_mandatory := p_cap_mandatory;
     l_row.cap_active := adc_util.get_boolean(p_cap_active);
-    
+
     merge_action_parameter(l_row);
-    
+
     pit.enter_mandatory;
   end merge_action_parameter;
 
@@ -3220,9 +3025,9 @@ as
     l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
-    
+
     validate_action_parameter(p_row);
-                    
+
     -- maintain translatable item
     l_pti_id := 'CAP_' || p_row.cap_cat_id || '_PARAM_' || p_row.cap_sort_seq;
 
@@ -3237,14 +3042,14 @@ as
     insert into adc_action_parameters (
       cap_cat_id, cap_capt_id, cap_sort_seq, cap_default,
       cap_pti_id, cap_pmg_name, cap_mandatory, cap_active)
-    values ( 
+    values (
       p_row.cap_cat_id, p_row.cap_capt_id, p_row.cap_sort_seq, p_row.cap_default,
       l_pti_id, C_ADC, p_row.cap_mandatory, p_row.cap_active);
-    
+
     pit.leave_mandatory;
   end merge_action_parameter;
-  
-  
+
+
   /**
     Procedure: delete_action_parameter
       See <ADC_ADMIN.delete_action_parameter>
@@ -3261,15 +3066,15 @@ as
                     msg_param('p_cap_cat_id', p_cap_cat_id),
                     msg_param('p_cap_capt_id', p_cap_capt_id),
                     msg_param('p_cap_sort_seq', p_cap_sort_seq)));
-                    
+
     l_row.cap_cat_id := p_cap_cat_id;
     l_row.cap_capt_id := p_cap_capt_id;
     l_row.cap_sort_seq := p_cap_sort_seq;
-    
+
     delete_action_parameter(l_row);
-    
+
     pit.leave_mandatory;
-  end delete_action_parameter;      
+  end delete_action_parameter;
 
 
   /**
@@ -3280,16 +3085,16 @@ as
     p_row in adc_action_parameters_v%rowtype)
   as
   begin
-                    
+
     delete from adc_action_parameters
      where cap_cat_id = p_row.cap_cat_id
        and cap_capt_id = p_row.cap_capt_id
        and cap_sort_seq = p_row.cap_sort_seq;
-    
+
     pit.leave_mandatory;
   end delete_action_parameter;
-  
-  
+
+
   /**
     Procedure: delete_action_parameters
       See <ADC_ADMIN.delete_action_parameters>
@@ -3301,13 +3106,13 @@ as
     pit.enter_mandatory(
       p_params => msg_params(
                     msg_param('p_cap_cat_id', p_cap_cat_id)));
-                    
+
     delete from adc_action_parameters
      where cap_cat_id = p_cap_cat_id;
-    
+
     pit.leave_mandatory;
   end delete_action_parameters;
-    
+
 
   /**
     Procedure: validate_action_parameter
@@ -3318,13 +3123,13 @@ as
   as
   begin
     pit.enter_mandatory;
-    
+
     /** TODO: Add validation */
-    
+
     pit.leave_mandatory;
   end validate_action_parameter;
-  
-    
+
+
   /**
     Procedure: merge_page_item_type_group
       See <ADC_ADMIN.merge_page_item_type_group>
@@ -3341,16 +3146,16 @@ as
                     msg_param('p_cpitg_id', p_cpitg_id),
                     msg_param('p_cpitg_has_value', p_cpitg_has_value),
                     msg_param('p_cpitg_include_in_view', p_cpitg_include_in_view)));
-    
+
     l_row.cpitg_id := p_cpitg_id;
     l_row.cpitg_has_value := p_cpitg_has_value;
     l_row.cpitg_include_in_view := p_cpitg_include_in_view;
-    
+
     merge_page_item_type_group(l_row);
-    
+
     pit.leave_mandatory;
   end merge_page_item_type_group;
-    
+
   /**
     Procedure: merge_page_item_type_group
       See <ADC_ADMIN.merge_page_item_type_group>
@@ -3360,9 +3165,9 @@ as
   as
   begin
     pit.enter_mandatory;
-    
+
     validate_page_item_type_group(p_row);
-    
+
     merge into adc_page_item_type_groups t
     using (select p_row.cpitg_id cpitg_id,
                   p_row.cpitg_has_value cpitg_has_value,
@@ -3374,7 +3179,7 @@ as
           t.cpitg_include_in_view = s.cpitg_include_in_view
     when not matched then insert(cpitg_id, cpitg_has_value, cpitg_include_in_view)
          values(s.cpitg_id, s.cpitg_has_value, s.cpitg_include_in_view);
-         
+
     pit.leave_mandatory;
   end merge_page_item_type_group;
 
@@ -3387,13 +3192,13 @@ as
   as
   begin
     pit.enter_mandatory;
-    
+
     delete from adc_page_item_type_groups
      where cpitg_id = p_row.cpitg_id;
-    
+
     pit.leave_mandatory;
   end delete_page_item_type_group;
-    
+
   /**
     Procedure: validate_page_item_type_group
       See <ADC_ADMIN.validate_page_item_type_group>
@@ -3403,13 +3208,11 @@ as
   as
   begin
     pit.enter_mandatory;
-    
-    /** TODO: Enter validation */
-    
+
     pit.leave_mandatory;
   end validate_page_item_type_group;
-  
-  
+
+
   /**
     Procedure: merge_event_type
       See <ADC_ADMIN.merge_event_type>
@@ -3428,17 +3231,17 @@ as
                     msg_param('p_cet_name', p_cet_name),
                     msg_param('p_cet_column_name', p_cet_column_name),
                     msg_param('p_cet_is_custom_event', p_cet_is_custom_event)));
-    
+
     l_row.cet_id := p_cet_id;
     l_row.cet_name := p_cet_name;
     l_row.cet_column_name := p_cet_column_name;
     l_row.cet_is_custom_event := p_cet_is_custom_event;
-    
+
     merge_event_type(l_row);
-    
+
     pit.leave_mandatory;
   end merge_event_type;
-    
+
   /**
     Procedure: merge_event_type
       See <ADC_ADMIN.merge_event_type>
@@ -3449,18 +3252,18 @@ as
     l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
-    
+
     validate_event_type(p_row);
-    
+
     -- maintain translatable item
     l_pti_id := 'CET_' || upper(replace(p_row.cet_id, '-', '_'));
-    
+
     pit_admin.merge_translatable_item(
       p_pti_id => l_pti_id,
       p_pti_pml_name => null,
       p_pti_pmg_name => C_ADC,
       p_pti_name => p_row.cet_name);
-    
+
     merge into adc_event_types t
     using (select p_row.cet_id cet_id,
                   l_pti_id cet_pti_id,
@@ -3475,7 +3278,7 @@ as
        t.cet_is_custom_event = s.cet_is_custom_event
      when not matched then insert (cet_id, cet_pti_id, cet_pmg_name, cet_cpitg_id, cet_column_name, cet_is_custom_event)
        values (s.cet_id, s.cet_pti_id, s.cet_pmg_name, s.cet_cpitg_id, s.cet_column_name, s.cet_is_custom_event);
-    
+
     pit.leave_mandatory;
   end merge_event_type;
 
@@ -3487,13 +3290,9 @@ as
     p_row in adc_event_types_v%rowtype)
   as
   begin
-    pit.enter_mandatory;
-    
-    /** TODO: Enter implementation, if necessary */
-    
-    pit.leave_mandatory;
+    null;
   end delete_event_type;
-    
+
   /**
     Procedure: validate_event_type
       See <ADC_ADMIN.validate_event_type>
@@ -3502,14 +3301,10 @@ as
     p_row in adc_event_types_v%rowtype)
   as
   begin
-    pit.enter_mandatory;
-    
-    /** TODO: Enter validation */
-    
-    pit.leave_mandatory;
+    null;
   end validate_event_type;
-  
-  
+
+
   /**
     Procedure: merge_page_item_type
       See <ADC_ADMIN.merge_page_item_type>
@@ -3520,7 +3315,7 @@ as
     p_cpit_cpitg_id in adc_page_item_types_v.cpit_cpitg_id%type,
     p_cpit_cet_id in adc_page_item_types_v.cpit_cet_id%type,
     p_cpit_col_template in adc_page_item_types_v.cpit_col_template%type,
-    p_cpit_init_template in adc_page_item_types_v.cpit_init_template%type) 
+    p_cpit_init_template in adc_page_item_types_v.cpit_init_template%type)
   as
     l_row adc_page_item_types_v%rowtype;
   begin
@@ -3532,13 +3327,13 @@ as
     l_row.cpit_cet_id := p_cpit_cet_id;
     l_row.cpit_col_template := p_cpit_col_template;
     l_row.cpit_init_template := p_cpit_init_template;
-    
+
     merge_page_item_type(l_row);
 
     pit.leave_mandatory;
   end merge_page_item_type;
-  
-  
+
+
   /**
     Procedure: merge_page_item_type
       See <ADC_ADMIN.merge_page_item_type>
@@ -3549,12 +3344,12 @@ as
     l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
-    
+
     validate_page_item_type(p_row);
-    
+
     -- maintain translatable item
     l_pti_id := 'CPIT_' || p_row.cpit_id;
-    
+
     pit_admin.merge_translatable_item(
       p_pti_id => l_pti_id,
       p_pti_pml_name => null,
@@ -3600,8 +3395,8 @@ as
 
     pit.leave_mandatory;
   end delete_page_item_type;
-  
-  
+
+
   /**
     Procedure: validate_page_item_type
       See <ADC_ADMIN.validate_page_item_type>
@@ -3611,20 +3406,21 @@ as
   as
   begin
     pit.enter_mandatory;
-    
-    /** TODO: Enter validation */
-    
+
+    -- TODO: Add tests here
+    null;
+
     pit.leave_mandatory;
   end validate_page_item_type;
-  
-  
+
+
   /**
     Group: Public Methods - APEX Action Methods
    */
   /**
     Procedure: merge_apex_action_type
       See <ADC_ADMIN.merge_apex_action_type>
-   */ 
+   */
   procedure merge_apex_action_type(
     p_caat_id in adc_apex_action_types_v.caat_id%type,
     p_caat_name in adc_apex_action_types_v.caat_name%type,
@@ -3639,29 +3435,29 @@ as
                     msg_param('p_caat_name', p_caat_name),
                     msg_param('p_caat_description', p_caat_description),
                     msg_param('p_caat_active', p_caat_active)));
-                    
+
     l_row.caat_id := p_caat_id;
     l_row.caat_name := p_caat_name;
     l_row.caat_description := utl_text.unwrap_string(p_caat_description);
     l_row.caat_active := adc_util.get_boolean(p_caat_active);
-    
+
     merge_apex_action_type(l_row);
-    
+
     pit.leave_mandatory;
   end merge_apex_action_type;
-  
-  
+
+
   /**
     Procedure: merge_apex_action_type
       See <ADC_ADMIN.merge_apex_action_type>
-   */ 
+   */
   procedure merge_apex_action_type(
     p_row in out nocopy adc_apex_action_types_v%rowtype)
   as
     l_pti_id pit_translatable_item_v.pti_id%type;
   begin
     pit.enter_mandatory;
-    
+
     validate_apex_action_type(p_row);
 
     -- maintain translatable item
@@ -3685,7 +3481,7 @@ as
             t.caat_active = s.caat_active
      when not matched then insert(t.caat_id, t.caat_pti_id, t.caat_pmg_name, t.caat_active)
           values(s.caat_id, s.caat_pti_id, s.caat_pmg_name, s.caat_active);
-      
+
     pit.leave_mandatory;
   end merge_apex_action_type;
 
@@ -3693,7 +3489,7 @@ as
   /**
     Procedure: delete_apex_action_type
       See <ADC_ADMIN.delete_apex_action_type>
-   */ 
+   */
   procedure delete_apex_action_type(
     p_caat_id in adc_apex_action_types_v.caat_id%type)
   as
@@ -3702,10 +3498,10 @@ as
     pit.enter_mandatory(
       p_params => msg_params(
                     msg_param('p_caat_id', p_caat_id)));
-     
+
     l_row.caat_id := p_caat_id;
     delete_apex_action_type(l_row);
-    
+
     pit.leave_mandatory;
   end delete_apex_action_type;
 
@@ -3713,32 +3509,32 @@ as
   /**
     Procedure: delete_apex_action_type
       See <ADC_ADMIN.delete_apex_action_type>
-   */ 
+   */
   procedure delete_apex_action_type(
     p_row in adc_apex_action_types_v%rowtype)
   as
   begin
     pit.enter_mandatory;
-    
+
     delete from adc_apex_action_types
      where caat_id = p_row.caat_id;
-    
+
     pit.leave_mandatory;
   end delete_apex_action_type;
-  
-  
+
+
   /**
     Procedure: validate_apex_action_type
       See <ADC_ADMIN.validate_apex_action_type>
-   */ 
+   */
   procedure validate_apex_action_type(
     p_row in adc_apex_action_types_v%rowtype)
   as
   begin
     pit.enter_mandatory;
-    
+
     /** TODO: Enter validation */
-    
+
     pit.leave_mandatory;
   end validate_apex_action_type;
 
@@ -3746,7 +3542,7 @@ as
   /**
     Procedure: merge_apex_action
       See <ADC_ADMIN.merge_apex_action>
-   */ 
+   */
   procedure merge_apex_action(
     p_caa_id in adc_apex_actions_v.caa_id%type,
     p_caa_crg_id in adc_apex_actions_v.caa_crg_id%type,
@@ -3805,7 +3601,7 @@ as
                     msg_param('p_caa_label_start_classes', p_caa_label_start_classes),
                     msg_param('p_caa_label_end_classes', p_caa_label_end_classes),
                     msg_param('p_caa_item_wrap_class', p_caa_item_wrap_class)));
-    
+
     l_row.caa_id := p_caa_id;
     l_row.caa_crg_id := p_caa_crg_id;
     l_row.caa_caat_id := p_caa_caat_id;
@@ -3830,7 +3626,7 @@ as
     l_row.caa_label_start_classes := p_caa_label_start_classes;
     l_row.caa_label_end_classes := p_caa_label_end_classes;
     l_row.caa_item_wrap_class := p_caa_item_wrap_class;
-    
+
     merge_apex_action(l_row);
 
     pit.leave_mandatory;
@@ -3840,7 +3636,7 @@ as
   /**
     Procedure: merge_apex_action
       See <ADC_ADMIN.merge_apex_action>
-   */ 
+   */
   procedure merge_apex_action(
     p_row in out nocopy adc_apex_actions_v%rowtype,
     p_caa_caai_list in char_table default null)
@@ -3850,8 +3646,8 @@ as
     pit.enter_mandatory;
 
     validate_apex_action(p_row);
-    
-    get_key(p_row.caa_id);    
+
+    get_key(p_row.caa_id);
 
     -- maintain translatable item
     l_pti_id := 'CAA_' || p_row.caa_id;
@@ -3913,21 +3709,21 @@ as
             t.caa_label_end_classes = s.caa_label_end_classes,
             t.caa_item_wrap_class = s.caa_item_wrap_class
      when not matched then insert(
-            t.caa_id, t.caa_crg_id, t.caa_name, t.caa_caat_id, t.caa_pti_id, t.caa_pmg_name, t.caa_confirm_message_name, 
-            t.caa_icon, t.caa_icon_type, t.caa_shortcut, t.caa_initially_disabled, t.caa_initially_hidden, 
-            t.caa_href, t.caa_action, t.caa_get, t.caa_set, t.caa_on_label, t.caa_off_label, t.caa_choices, t.caa_label_classes, 
+            t.caa_id, t.caa_crg_id, t.caa_name, t.caa_caat_id, t.caa_pti_id, t.caa_pmg_name, t.caa_confirm_message_name,
+            t.caa_icon, t.caa_icon_type, t.caa_shortcut, t.caa_initially_disabled, t.caa_initially_hidden,
+            t.caa_href, t.caa_action, t.caa_get, t.caa_set, t.caa_on_label, t.caa_off_label, t.caa_choices, t.caa_label_classes,
             t.caa_label_start_classes, t.caa_label_end_classes, t.caa_item_wrap_class)
           values(
             s.caa_id, s.caa_crg_id, s.caa_name, s.caa_caat_id, s.caa_pti_id, s.caa_pmg_name, s.caa_confirm_message_name,
-            s.caa_icon, s.caa_icon_type, s.caa_shortcut, s.caa_initially_disabled, s.caa_initially_hidden, 
+            s.caa_icon, s.caa_icon_type, s.caa_shortcut, s.caa_initially_disabled, s.caa_initially_hidden,
             s.caa_href, s.caa_action, s.caa_get, s.caa_set, s.caa_on_label, s.caa_off_label, s.caa_choices, s.caa_label_classes,
             s.caa_label_start_classes, s.caa_label_end_classes, s.caa_item_wrap_class);
-    
+
     -- Register connected items by deleting and re-assigning them
     delete from adc_apex_action_items
      where caai_caa_id = p_row.caa_id
        and caai_cpi_crg_id = p_row.caa_crg_id;
-       
+
     if p_caa_caai_list is not null then
       for i in 1 .. p_caa_caai_list.count loop
         merge_apex_action_item(
@@ -3937,7 +3733,7 @@ as
           p_caai_active => adc_util.C_TRUE);
       end loop;
     end if;
-    
+
     pit.leave_mandatory;
   end merge_apex_action;
 
@@ -3945,7 +3741,7 @@ as
   /**
     Procedure: delete_apex_action
       See <ADC_ADMIN.delete_apex_action>
-   */ 
+   */
   procedure delete_apex_action(
     p_caa_id in adc_apex_actions_v.caa_id%type)
   as
@@ -3954,9 +3750,9 @@ as
     pit.enter_mandatory(
       p_params => msg_params(
                     msg_param('p_caa_id', p_caa_id)));
-                    
+
     l_row.caa_id := p_caa_id;
-    
+
     delete_apex_action(l_row);
 
     pit.leave_mandatory;
@@ -3966,7 +3762,7 @@ as
   /**
     Procedure: delete_apex_action
       See <ADC_ADMIN.delete_apex_action>
-   */ 
+   */
   procedure delete_apex_action(
     p_row in adc_apex_actions_v%rowtype)
   as
@@ -3983,15 +3779,15 @@ as
   /**
     Procedure: validate_apex_action
       See <ADC_ADMIN.validate_apex_action>
-   */ 
+   */
   procedure validate_apex_action(
     p_row in adc_apex_actions_v%rowtype)
   as
   begin
     pit.enter_mandatory;
-    
+
     /** TODO: Add validation*/
-    
+
     pit.leave_mandatory;
   end validate_apex_action;
 
@@ -3999,7 +3795,7 @@ as
   /**
     Procedure: merge_apex_action_item
       See <ADC_ADMIN.merge_apex_action_item>
-   */ 
+   */
   procedure merge_apex_action_item(
     p_caai_caa_id in adc_apex_action_items.caai_caa_id%type,
     p_caai_cpi_crg_id in adc_apex_action_items.caai_cpi_crg_id%type,
@@ -4014,14 +3810,14 @@ as
                     msg_param('p_caai_cpi_crg_id', p_caai_cpi_crg_id),
                     msg_param('p_caai_cpi_id', p_caai_cpi_id),
                     msg_param('p_caai_active', p_caai_active)));
-                    
+
     l_row.caai_caa_id := p_caai_caa_id;
     l_row.caai_cpi_crg_id := p_caai_cpi_crg_id;
     l_row.caai_cpi_id := p_caai_cpi_id;
     l_row.caai_active := adc_util.get_boolean(p_caai_active);
-    
+
     merge_apex_action_item(l_row);
-            
+
     pit.leave_mandatory;
   end merge_apex_action_item;
 
@@ -4029,15 +3825,15 @@ as
   /**
     Procedure: merge_apex_action_item
       See <ADC_ADMIN.merge_apex_action_item>
-   */ 
+   */
   procedure merge_apex_action_item(
     p_row in out nocopy adc_apex_action_items%rowtype)
   as
   begin
     pit.enter_mandatory;
-    
+
     validate_apex_action_item(p_row);
-                    
+
     merge into adc_apex_action_items t
     using (select p_row.caai_caa_id caai_caa_id,
                   p_row.caai_cpi_crg_id caai_cpi_crg_id,
@@ -4051,7 +3847,7 @@ as
             t.caai_active = s.caai_active
      when not matched then insert(t.caai_caa_id, t.caai_cpi_crg_id, t.caai_cpi_id, t.caai_active)
           values(s.caai_caa_id, s.caai_cpi_crg_id, s.caai_cpi_id, s.caai_active);
-      
+
     pit.leave_mandatory;
   end merge_apex_action_item;
 
@@ -4059,7 +3855,7 @@ as
   /**
     Procedure: delete_apex_action_item
       See <ADC_ADMIN.delete_apex_action_item>
-   */ 
+   */
   procedure delete_apex_action_item(
     p_caai_caa_id in adc_apex_action_items.caai_caa_id%type)
   as
@@ -4068,11 +3864,11 @@ as
     pit.enter_mandatory(
       p_params => msg_params(
                     msg_param('p_caai_caa_id', p_caai_caa_id)));
-                    
+
     l_row.caai_caa_id := p_caai_caa_id;
-    
+
     delete_apex_action_item(l_row);
-    
+
     pit.leave_mandatory;
   end delete_apex_action_item;
 
@@ -4080,37 +3876,37 @@ as
   /**
     Procedure: delete_apex_action_item
       See <ADC_ADMIN.delete_apex_action_item>
-   */ 
+   */
   procedure delete_apex_action_item(
     p_row in adc_apex_action_items%rowtype)
   as
   begin
     pit.enter_mandatory;
-                    
+
     delete from adc_apex_action_items
      where caai_caa_id = p_row.caai_caa_id;
-    
+
     pit.leave_mandatory;
   end delete_apex_action_item;
-  
-  
+
+
   /**
     Procedure: validate_apex_action_item
       See <ADC_ADMIN.validate_apex_action_item>
-   */ 
+   */
   procedure validate_apex_action_item(
     p_row in adc_apex_action_items%rowtype)
   as
   begin
     pit.enter_mandatory('validate_apex_action_item');
-    
+
     /** TODO: Add validation */
-    
+
     pit.leave_mandatory;
   end validate_apex_action_item;
-    
 
-  /** 
+
+  /**
     Procedure: merge_standard_message
       See <ADC_ADMIN.merge_standard_message>
    */
@@ -4124,7 +3920,7 @@ as
     l_row.csm_id := p_csm_id;
     l_row.csm_message := p_csm_message;
     l_row.csm_description := p_csm_description;
-    
+
     merge_standard_message(l_row);
   end merge_standard_message;
 
@@ -4137,9 +3933,9 @@ as
   as
   begin
     pit.enter_mandatory;
-    
+
     validate_standard_message(p_row);
-    
+
     pit_admin.merge_translatable_item(
       p_pti_id => p_row.csm_id,
       p_pti_pml_name => null,
@@ -4147,7 +3943,7 @@ as
       p_pti_name => p_row.csm_message,
       p_pti_display_name => null,
       p_pti_description => p_row.csm_description);
-      
+
     pit.leave_mandatory;
   end merge_standard_message;
 
@@ -4161,7 +3957,7 @@ as
     l_row adc_standard_messages_v%rowtype;
   begin
     l_row.csm_id := p_csm_id;
-    
+
     delete_standard_message(l_row);
   end delete_standard_message;
 
@@ -4189,13 +3985,13 @@ as
   as
   begin
     pit.enter_mandatory;
-    
+
     pit.assert_not_null(p_row.csm_id, p_error_code => 'CSM_ID_MISSING');
     pit.assert_not_null(p_row.csm_message, p_error_code => 'CSM_MESSAGE_MISSING');
     if p_row.csm_id is not null then
       pit.assert(substr(upper(p_row.csm_id), 1, 4) = 'CSM_', msg.ADC_CSM_WRONG_PREFIX);
     end if;
-    
+
     pit.leave_mandatory;
   end validate_standard_message;
 
