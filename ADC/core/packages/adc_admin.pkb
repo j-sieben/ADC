@@ -225,7 +225,7 @@ as
        where cpi_crg_id = p_crg_id
        group by cpi_id
       having count(*) > 1;
-    pit.error(msg.ADC_NON_UNIQUE_STATIC_ID, msg_args(to_char(p_crg_id), l_cpi_id));
+    pit.raise_error(msg.ADC_NON_UNIQUE_STATIC_ID, msg_args(to_char(p_crg_id), l_cpi_id));
   end mark_number_date_required_fields;
 
 
@@ -1399,7 +1399,7 @@ as
     pit.leave_mandatory;
   exception
     when no_data_found then
-      pit.warn(msg.ADC_NO_RULE_GROUP_FOUND, msg_args(p_workspace, p_app_alias));
+      pit.raise_warn(msg.ADC_NO_RULE_GROUP_FOUND, msg_args(p_workspace, p_app_alias));
       pit.leave_mandatory;
   end prepare_rule_group_import;
 
@@ -1643,7 +1643,7 @@ as
         if dbms_sql.is_open(l_ctx) then
           dbms_sql.close_cursor(l_ctx);
         end if;
-        pit.error(msg.ADC_INVALID_SQL, msg_args(substr(sqlerrm, 12)));
+        pit.raise_error(msg.ADC_INVALID_SQL, msg_args(substr(sqlerrm, 12)));
     end;
 
     pit.leave_mandatory;

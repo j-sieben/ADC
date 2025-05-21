@@ -102,16 +102,16 @@ begin
     p_pms_description => q'^^',
     p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'GERMAN',
-    p_error_number => -29471);    
+    p_error_number => -29471);
 
   pit_admin.merge_message(
     p_pms_name => 'ORA_INSTABLE_ROW_GROUP',
     p_pms_pmg_name => 'ORA',
-    p_pms_text => q'^In einer MERGE-Anweisung traten in der USING-Klausel doppelte Zeilen auf.^',
+    p_pms_text => q'^#1#^',
     p_pms_description => q'^^',
-    p_pms_pse_id => 30,
+    p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'GERMAN',
-    p_error_number => -30926);
+    p_error_number => -29471);
 
   commit;
   pit_admin.create_message_package;
