@@ -66,7 +66,6 @@ as
       not be pushed, resulting in no recursive rule evaluation
 
     Parameters:
-      p_crg_id - ID of the rule group.
       p_cpi_id - ID of the page item to push. May also be C_NO_FIRING_ITEM
       p_event - Event that was raised
       p_event_data - Optional event data for a given item. Is required when executing a command,
@@ -80,7 +79,6 @@ as
       p_recursive_depth - External recursion counter
    */
   procedure push_firing_item(
-    p_crg_id in adc_rule_groups.crg_id%type,
     p_cpi_id in adc_page_items.cpi_id%type,
     p_event in adc_page_item_types.cpit_cet_id%type,
     p_event_data in adc_util.max_char default null,
