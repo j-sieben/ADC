@@ -2,28 +2,25 @@ begin
   
   pit_admin.merge_message_group(
     p_pmg_name => 'ORA',
-    p_pmg_description => q'^Messages for Oracle errors^'
-  );
+    p_pmg_description => q'^messages for Oracle errors^');
 
   pit_admin.merge_message(
     p_pms_name => 'ORA_CHILD_RECORD_FOUND',
     p_pms_pmg_name => 'ORA',
-    p_pms_text => q'^The record could not be deleted, dependent records exist.^',
+    p_pms_text => q'^The data record could not be deleted, dependent data records exist.^',
     p_pms_description => q'^^',
     p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
-    p_error_number => -2292
-  );
+    p_error_number => -2292);
 
   pit_admin.merge_message(
     p_pms_name => 'ORA_CONVERSION_IMPOSSIBLE',
     p_pms_pmg_name => 'ORA',
-    p_pms_text => q'^A conversion could not be carried out^',
+    p_pms_text => q'^A conversion could not be performed^',
     p_pms_description => q'^^',
     p_pms_pse_id => pit.level_fatal,
     p_pms_pml_name => 'AMERICAN',
-    p_error_number => -20000
-  );
+    p_error_number => -20000);
 
   pit_admin.merge_message(
     p_pms_name => 'ORA_INVALID_DATE',
@@ -32,8 +29,7 @@ begin
     p_pms_description => q'^^',
     p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
-    p_error_number => -1858
-  );
+    p_error_number => -1858);
 
   pit_admin.merge_message(
     p_pms_name => 'ORA_INVALID_DATE_FORMAT',
@@ -42,18 +38,16 @@ begin
     p_pms_description => q'^^',
     p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
-    p_error_number => -1861
-  );
+    p_error_number => -1821);
 
   pit_admin.merge_message(
     p_pms_name => 'ORA_INVALID_DATE_LENGTH',
     p_pms_pmg_name => 'ORA',
-    p_pms_text => q'^Invalid length of the date: #1#^',
+    p_pms_text => q'^Invalid date length: #1#^',
     p_pms_description => q'^^',
     p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
-    p_error_number => -1840
-  );
+    p_error_number => -1840);
 
   pit_admin.merge_message(
     p_pms_name => 'ORA_INVALID_DAY',
@@ -62,8 +56,7 @@ begin
     p_pms_description => q'^^',
     p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
-    p_error_number => -1847
-  );
+    p_error_number => -1847);
 
   pit_admin.merge_message(
     p_pms_name => 'ORA_INVALID_DAY_FOR_MONTH',
@@ -72,8 +65,7 @@ begin
     p_pms_description => q'^^',
     p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
-    p_error_number => -1839
-  );
+    p_error_number => -1839);
 
   pit_admin.merge_message(
     p_pms_name => 'ORA_INVALID_MONTH',
@@ -82,18 +74,16 @@ begin
     p_pms_description => q'^^',
     p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
-    p_error_number => -1843
-  );
+    p_error_number => -1843);
 
   pit_admin.merge_message(
     p_pms_name => 'ORA_INVALID_NUMBER_FORMAT',
     p_pms_pmg_name => 'ORA',
-    p_pms_text => q'^Invalid payment format: #1#^',
+    p_pms_text => q'^Invalid number format: #1#^',
     p_pms_description => q'^^',
     p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
-    p_error_number => -1481
-  );
+    p_error_number => -1481);
 
   pit_admin.merge_message(
     p_pms_name => 'ORA_INVALID_YEAR',
@@ -102,8 +92,7 @@ begin
     p_pms_description => q'^^',
     p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
-    p_error_number => -1841
-  );
+    p_error_number => -1841);
 
   pit_admin.merge_message(
     p_pms_name => 'ORA_SQL_ACCESS_DENIED',
@@ -113,6 +102,15 @@ begin
     p_pms_pse_id => pit.level_error,
     p_pms_pml_name => 'AMERICAN',
     p_error_number => -29471);
+    
+  pit_admin.merge_message(
+    p_pms_name => 'ORA_INSTABLE_ROW_GROUP',
+    p_pms_pmg_name => 'ORA',
+    p_pms_text => q'^There were duplicate lines in the USING clause in a MERGE statement.^',
+    p_pms_description => q'^^',
+    p_pms_pse_id => 30,
+    p_pms_pml_name => 'AMERICAN',
+    p_error_number => -30926);
 
   commit;
   pit_admin.create_message_package;
