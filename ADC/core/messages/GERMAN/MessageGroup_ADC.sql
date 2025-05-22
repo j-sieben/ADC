@@ -1,6 +1,4 @@
 begin
-  EXECUTE IMMEDIATE 'ALTER PACKAGE pit COMPILE';
-  EXECUTE IMMEDIATE 'ALTER PACKAGE pit COMPILE BODY';
 
   pit_admin.merge_message_group(
     p_pmg_name => 'ADC',

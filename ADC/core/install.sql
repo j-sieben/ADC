@@ -27,6 +27,7 @@ prompt &h3.Create tables
 -- Migrationsskripte
 @&table_dir.alter_adc_page_items.sql
 @&table_dir.alter_adc_action_types.sql
+@&table_dir.alter_adc_action_param_types.sql
 
 prompt &h2.Predefine package ADC_UTIL for reference from views
 @&tool_dir.create_package adc_util
