@@ -195,7 +195,29 @@ q'{ order by pms_name}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
-
+    
+  adc_admin.merge_action_param_type(
+    p_capt_id => 'PROCEDURE',
+    p_capt_name => 'PL/SQL-Prozedur',
+    p_capt_display_name => '',
+    p_capt_description => q'{<p>Eine bestehende PL/SQL-Prozedur oder eine Package-Prozedur<br>Es muss kein abschliessendes Semikolon angegeben werden.</p>}',
+    p_capt_capvt_id => 'TEXT',
+    p_capt_select_list_query => q'{}',
+    p_capt_select_view_comment => q'{}',
+    p_capt_sort_seq => 10,
+    p_capt_active => adc_util.C_TRUE);
+    
+  adc_admin.merge_action_param_type(
+    p_capt_id => 'SQL_STATEMENT',
+    p_capt_name => 'SQL-Anweisung',
+    p_capt_display_name => '',
+    p_capt_description => q'{<p>Ausführbare SELECT-Anweisung, die Eingabe erfolgt, wie im SQL-Developer &uuml;blich, es ist keine Angabe eines Semikolons erforderlich.</p>}',
+    p_capt_capvt_id => 'TEXT_AREA',
+    p_capt_select_list_query => q'{}',
+    p_capt_select_view_comment => q'{}',
+    p_capt_sort_seq => 10,
+    p_capt_active => adc_util.C_TRUE);
+    
   adc_admin.merge_action_param_type(
     p_capt_id => 'SUBMIT_TYPE',
     p_capt_name => 'Submit und/oder Validierung',
