@@ -26,7 +26,7 @@ begin
   param_admin.edit_parameter(
     p_par_id => 'ADC_EXCLUDE_ACTION_TYPES',
     p_par_pgr_id => 'ADC',
-    p_par_description => ':-separated list of predefined action types which ust not be used in the local environment'
+    p_par_description => 'colon-separated list of predefined action types which ust not be used in the local environment'
   );
 
   param_admin.edit_parameter(
