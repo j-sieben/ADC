@@ -155,6 +155,37 @@ as
     pit.leave_mandatory;
   end exclusive_or;
   
+  
+  function exclusive_or(
+    p_item_list in varchar2)
+    return adc_util.flag_type
+  as
+    l_value_list char_table;
+    l_value_counter binary_integer := -1;
+    l_result adc_util.flag_type;
+  begin
+    pit.enter_mandatory(
+      p_params => msg_params(
+                    msg_param('p_item_list', p_item_list)));
+                    
+    -- Tracing done in ADC_API  
+    adc_page_state.get_item_values_as_char_table(p_item_list, l_value_list);
+    
+    select count(*)
+      into l_value_counter
+      from table(l_value_list)
+     where column_value is not null
+       and rownum < 3;
+      
+    l_result := case l_value_counter
+                when 0 then null
+                when 1 then adc_util.C_TRUE
+                else adc_util.C_FALSE end;      
+                    
+    pit.leave_mandatory;
+    return l_result;
+  end exclusive_or;
+  
 
   function get_date(
     p_cpi_id in adc_page_items.cpi_id%type,

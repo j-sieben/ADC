@@ -166,7 +166,26 @@ as
     p_item_list in varchar2,
     p_message in varchar2 default null,
     p_error_on_null in boolean default true);
+    
+    
+  /** 
+    Function: exclusive_or
+      Method to assure that exactly one or at most one page item of a selection of page items contains a value.
+      Is used to be able to utilize EXCLUSIVE_OR within an ADC rule condition (used in SQL).
 
+    Parameter:
+
+      p_item_list - colon-separated list of page item IDs to check
+   
+    Returns:
+      - adc_util.C_TRUE if rule is satisfied
+      - adc_util.C_FALSE if rule is not satisfied
+      - NULL if all page item values are null
+   */
+  function exclusive_or(
+    p_item_list in varchar2)
+    return adc_util.flag_type;
+    
 
   /**
     Function: get_date

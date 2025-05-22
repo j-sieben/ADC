@@ -167,7 +167,7 @@ as
     return boolean
   as
   begin
-    return pit_util.to_bool(adc_api.get_flag(p_cpi_id));
+    return pit_util.to_bool(adc_api.get_string(p_cpi_id));
   end get_flag;
   
   
