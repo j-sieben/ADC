@@ -5,7 +5,7 @@ create table adc_action_param_types(
   capt_capvt_id varchar2(50 char) default on null 'TEXT'constraint c_capt_capvt_id_nn not null,
   capt_select_list_query varchar2(1000 byte),
   capt_select_view_comment varchar2(200 byte),
-  capt_sor1t_seq number default on null 10 constraint c_capt_soprt_seq_nn not null,
+  capt_sort_seq number default on null 10 constraint c_capt_soprt_seq_nn not null,
   capt_active &FLAG_TYPE. default on null &C_TRUE. constraint c_capt_active_nn not null,
   constraint p_capt_id primary key(capt_id),
   constraint r_capt_pti_id foreign key(capt_pti_id, capt_pmg_name)
