@@ -438,6 +438,14 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cpit_init_template => q'{}');
 
   adc_admin.merge_page_item_type(
+    p_cpit_id => 'NOTIFICATION',
+    p_cpit_name => 'Benachrichtigung',
+    p_cpit_cpitg_id => 'EVENT',
+    p_cpit_cet_id => 'notification',
+    p_cpit_col_template => q'{}',
+    p_cpit_init_template => q'{}');
+
+  adc_admin.merge_page_item_type(
     p_cpit_id => 'DATE_ITEM',
     p_cpit_name => 'Element (Datum)',
     p_cpit_cpitg_id => 'ITEM',
