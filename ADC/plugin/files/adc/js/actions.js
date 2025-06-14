@@ -58,6 +58,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
   // Command constants
   const C_COMMAND = 'COMMAND';
   const C_COMMAND_NAME = 'command';
+  const C_NOTIFICATION = 'NOTIFICATION';
   
   // Visual State constants
   const C_HIDE = 'HIDE';
@@ -74,6 +75,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
   const C_APEX_AFTER_REFRESH = 'apexafterrefresh';
   const C_MODAL_DIALOG_CANCEL_EVENT = 'apexaftercanceldialog';
   const C_MODAL_DIALOG_CLOSE_EVENT = 'apexafterclosedialog';
+  const C_NOTIFICATION_EVENT = 'notification';
   
   const C_TABKEY = 9;
 
@@ -615,6 +617,19 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     actions.selectEntry(pReportId, '', pSetFocus, true);
   }; // getReportSelection
 
+  /**
+    Function: handleNotification
+      Method to inform ADC about a message that was passed in. Published to be used as a fallback for client side message handling
+
+    Parameter:
+      p_Event - Message that was passed in
+   */
+  actions.handleNotification = function(pMessage){
+    apex.debug.log(pMessage);
+    adc.controller.setTriggeringElement(C_NOTIFICATION, C_NOTIFICATION_EVENT, pMessage);
+    adc.controller.execute()
+  }
+
   
   /**
     Function: hideReportFilterPanel
@@ -958,6 +973,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
         break;
       case C_REGION_TREE:
         let idList;
+        $region = $(C_TREE_SELECTOR);
         let selectedNodes = $region.treeView('getSelectedNodes');
           idList = selectedNodes
                    .map(function(item){return item.id;})
@@ -997,12 +1013,11 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     const C_BUTTON_LABEL_CLASS = 't-Button-label';
 
     var re;
-    var $this;
-    var $label = $this.find(`.${C_BUTTON_LABEL_CLASS}`);
+    var $buttons = $(`[data-action='${pAction}']`);
+    var $label = $buttons.find(`.${C_BUTTON_LABEL_CLASS}`);
     var label = $label.html();
     var shortcut = re.exec(label);
 
-    var $buttons = $(`[data-action='${pAction}']`);
     var accesskey = apex.actions.lookup(pAction).shortcut;
 
     if (typeof accesskey == 'undefined'){
@@ -1024,8 +1039,8 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
             label.replace(re,
                           `<span class='${C_SHORTCUT_CLASS}'>${shortcut}>span>`));
 
-        $this.attr('accesskey', shortcut);
-        $this.attr('data-accesskey', label.search(re));
+        $this.attr(C_SHORTCUT_CLASS, shortcut);
+        $this.attr(C_DATA_SHORTCUT_CLASS, label.search(re));
       });
     }
   }; // setApexActionAccessKey
@@ -1251,9 +1266,11 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     Parameters:
       pRegionId - ID of the region
       pContent - HTML content of the region
-   */
-  actions.setRegionContent = function(pRegionId, pContent){
-    adc.renderer.setRegionContent(pRegionId, pContent);
+      pHeader - Header of the region
+      pCSS - Accents for the header region
+   */  
+  actions.setRegionContent = function(pRegionId, pContent, pHeader, pCSS){
+    adc.renderer.setRegionContent(pRegionId, pContent, pHeader, pCSS);
   }; // setRegionContent
   
   

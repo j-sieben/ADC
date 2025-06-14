@@ -422,9 +422,17 @@ de.condes.plugin.adc.apex_42_20_2 = {};
     Parameter:
       pRegionId - Static ID of the region to set the context of
       pContent - Content of the region
+      pHeader - Header of the region
+      pCSS - Accents for the header region
    */
-  renderer.setRegionContent = function(pRegionId, pContent){
-    $('#' + pRegionId + C_REGION_BODY_SELECTOR).html(pContent);
+  renderer.setRegionContent = function(pRegionId, pContent, pHeader, pCSS){
+    const $region = $(`#${pRegionId}`);
+    $region.find(C_REGION_BODY_SELECTOR).html(pContent);
+    $(`#${pRegionId}_heading`).html(pHeader);
+    $region.removeClass (function (index, className) {
+      return (className.match (/(^|\s)t-Region--accent\S+/g) || []).join(' ');
+    });
+    $region.addClass(pCSS);
   }; // setRegionContent
   
   

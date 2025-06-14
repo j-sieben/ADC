@@ -1,6 +1,6 @@
 create or replace force view adc_bl_bind_items as
 with params as (
-       select /*+ no_mere */ adc_util.c_true c_true,
+       select /*+ no_merge */ adc_util.c_true c_true,
               adc_util.c_false c_false
          from dual)
 select crg_id, cpi_id, cpit_cet_id, cpit_has_value, to_char(null) static_action

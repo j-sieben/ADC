@@ -58,8 +58,7 @@ as
    */
   C_INIT_TEMPLATE constant template_t := q'^action = apex.actions.lookup('#NAME#');^';
 
-  C_UPDATE_TEMPLATE constant template_t := q'^    apex.actions.update('#NAME#');
-    de.condes.plugin.adc.actions.setApexActionAccessKey('#NAME#');^';
+  C_UPDATE_TEMPLATE constant template_t := q'^    apex.actions.update('#NAME#');^';
   C_EXECUTE_IMMEDIATE constant template_t := q'^    apex.actions.invoke('#NAME#');^';
 
   C_HREF_TEMPLATE constant template_t := q'^    action.href="#JS##HREF#"; action.action='';^';
@@ -81,6 +80,7 @@ as
   C_JS_PLACEHOLDER constant adc_util.ora_name_type := 'ADC_PLUGIN';
   C_APEX_ACTION_NAMESPACE constant adc_util.ora_name_type := 'apex.actions';
   C_APEX_ACTION_PLACEHOLDER constant adc_util.ora_name_type := 'APEX_ACTION';
+
 
   /**
     Group: Private Methods
@@ -231,7 +231,7 @@ as
     select utl_text.generate_text(cursor(
              select uttm_text template,
                     adc_util.C_CR cr,
-                    pit.get_message_text(msg.ADC_APEX_ACTION_ORIGIN, msg_args()) apex_action_origin,
+                    pit.get_message_text(msg.ADC_APEX_ACTION_ORIGIN, msg_args('')) apex_action_origin,
                     utl_text.generate_text(cursor(
                       select uttm_text template,
                              cpi_id, caa_name

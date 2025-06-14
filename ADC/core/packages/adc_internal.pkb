@@ -302,7 +302,7 @@ as
     then
       -- attribute contains jQuery CSS- or ID-selector, search page items with corresponding CSS or ID
       with params as(
-             select g_param.crg_id P_crg_id,
+             select g_param.crg_id p_crg_id,
                     '|' || replace(column_value, '.') || '|' p_css,
                     replace(column_value, '#') p_cpi_id
                from table(utl_text.string_to_table(p_selector, adc_util.C_DELIMITER)))
@@ -930,7 +930,7 @@ as
                'action' value static_action absent on null))
       into l_json
       from adc_bl_bind_items
-     where crg_id = g_param.crg_id;
+     where crg_id = trim(g_param.crg_id);
      
     l_json := coalesce(l_json, '[]');
 
