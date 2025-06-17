@@ -61,23 +61,35 @@ de.condes.plugin.adc.apex_42_20_2 = {};
   const C_APEX_AFTER_REFRESH = 'apexafterrefresh';
   const C_CLICK = 'click';
   
-  /** 
-    Function: setFocus
-      Local method to securely set the focus to a requested item
+      
+                      
+                                                                
 
-    Parameter:
-      pSelector - Selector to set the focus to
-    */
-  setFocus = function(pSelector){
-      const anchors = ['.', '#'];
-      if ($.trim(pSelector).length !== 0) {
-          if (!anchors.includes($.trim(pSelector).charAt(0))){
-              p_selector = `#${pSelector}`;
-          }
-          $(pSelector).focus();
-      };
-  }; //setFocus
+    /** 
+      Function: setFocus
+        Local method to securely set the focus to a requested item
+                                 
+                                 
+                                           
+                                                              
+                                           
+           
+                               
+        
+               
 
+      Parameter:
+        pSelector - Selector to set the focus to
+     */
+    setFocus = function(pSelector){
+        const anchors = ['.', '#'];
+        if ($.trim(pSelector).length !== 0) {
+            if (!anchors.includes($.trim(pSelector).charAt(0))){
+                p_selector = `#${pSelector}`;
+            }
+            $(pSelector).focus();
+        };
+    }; //setFocus
 
   /**
     Function: alignReportVerticalTop
@@ -125,25 +137,26 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       pFocusItem - Item to set the focus to if no confirmation is given
    */
   renderer.confirmRequest = function(pEventOrMessage, pCallback, pFocusItem){
-    let message;
-    let dialogTitle;
+    let message = {};
+                    
     
     if(typeof(pEventOrMessage) === "string"){
-      message = pEventOrMessage;
+      message.data = {};
+      message.data.message = pEventOrMessage;
     }else{
-      message = pEventOrMessage.data.message;
-      dialogTitle = pEventOrMessage.data.title;
+      message = pEventOrMessage;
+                                               
 
     }
-    apex.message.confirm(message, function (pAnswer) {
+    apex.message.confirm(message.data.message, function (pAnswer) {
       if(pAnswer){
-        pCallback(pEventOrMessage);
+        pCallback(message);
       }
       else {
         setFocus(pFocusItem);
       };
-    });
-    renderer.setModalDialogTitle(dialogTitle);
+    }, message.data.options);
+    renderer.setModalDialogTitle(message.data.options.title);
   }; // clearNotification
   
 
@@ -209,9 +222,22 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       .removeClass(C_ADC_DISABLED)
       .removeAttr('tabindex');
 
+    if ($item.is('textarea')){
+      pItemId = `${pItemId}_CONTAINER`;
+    }
+
+    if ($item.is('input') && $item.attr('role') == 'switch'){
+      pItemId = `${pItemId}_CONTAINER`;
+    }
+
+    if ($item.hasClass('apex-item-group')){
+      pItemId = `${pItemId}_CONTAINER`;
+    }
+
     if ($item.is('select')){
       $(`#${pItemId}:not(:selected)`)
         .prop(C_READONLY_PROP, false);
+      pItemId = `${pItemId}_CONTAINER`;
     }
     apex.item(pItemId).show();
     apex.item(pItemId).enable();
@@ -425,7 +451,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       pHeader - Header of the region
       pCSS - Accents for the header region
    */
-  renderer.setRegionContent = function(pRegionId, pContent, pHeader, pCSS){
+  renderer.setRegionContent = function(pRegionId, pContent, pHeader, pCS){
     const $region = $(`#${pRegionId}`);
     $region.find(C_REGION_BODY_SELECTOR).html(pContent);
     $(`#${pRegionId}_heading`).html(pHeader);
