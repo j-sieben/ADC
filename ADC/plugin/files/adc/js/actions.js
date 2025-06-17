@@ -89,7 +89,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
   var gErrors = []; // Interim solution required until <code>apex.message</code> supports removing a single error
   var gWarnings = []; // Interim solution required until <code>apex.message</code> supports more error styles
   
-  var gFocusAfterRefresh ={};
+  var gFocusAfterRefresh = {};
 
   /*++++++++ HELPER START ++++++++++++*/
   /**
@@ -170,49 +170,8 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       adc.renderer.alignReportVerticalTop(pItemId);
     });
   }; // alignReportVerticalTop
-
-
-  /**
-     Function: bindConfirmationMessage
-       Binds a confirmation message based on the type of action requested:
-
-       SAVE - checks for changed items. If no item has changed, it shows a message that no save action is performed
-       DELETE - displays a confirmation message to aassure that the delete has to be performed.
-                This option does not check values before, so it can be used to show a message everytime a button is clicked
-       CANCEL - checks whether unsaved changes are on the page. If so, it shows a message to confirm that thos changes can be discarded
-
-     Parameters:
-       pButtonId - ID of the button to bind the event to
-       pMode - Mode of the check as described above (SAVE|DELETE|CANCEL)
-       pMessage - Optional message to show. If NULL, a standard message based on pMode is shown
-       pApexAction - Optional apex action to execute if the dialog is confirmed
-   */
-  actions.bindConfirmationMessage = function(pButtonId, pMode, pMessage, pApexAction){
-    const $button = $(`#${pButtonId}`);
-    let dialogTitle, message;
-
-    if ($button.length > 0){
-      switch (pMode){
-        case SAVE:
-          dialogTitle = `Hinweis`;
-          message = pMessage ?? `Es sind keine Änderungen auf der Seite vorhanden, es wird keine Aktion ausgeführt.`
-          adc.controller.bindUnchangedConfirmationHandler($button, message, dialogTitle);
-          break;
-        case DELETE:
-          dialogTitle = adc.controller.getStandardMessage('CSM_DIALOG_CONFIRM_TITLE');
-          message = pMessage ?? `Es sind keine Änderungen auf der Seite vorhanden, es wird keine Aktion ausgeführt.`
-          adc.controller.bindConfirmationHandler($button, message, dialogTitle, pApexAction);
-          break;
-        case CANCEL:
-          dialogTitle = `Hinweis`;
-          message = pMessage ?? `Es sind ungesicherte Änderungen auf der Seite vorhanden, sollen diese ignoriert werden?`
-          adc.controller.bindUnsavedConfirmationHandler($button, message, dialogTitle);
-          break;
-      }
-    }
-  } // bindConfirmationMessage
-
-
+  
+  
   /**
     Function: bindConfirmation
       Bind a confirmation dialog to a button to show a confirmation dialog before an event is raised
@@ -281,8 +240,13 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     };
     
     if (pCheckChanges && adc.controller.hasUnsavedChanges()){
-        const pCallback = function(){cancelDialog(pTriggeringItemId);};
-        adc.renderer.confirmRequest (adc.controller.getStandardMessage('CSM_CANCEL_HAS_CHANGES'), pCallback, pTriggeringItemId)
+        apex.message.confirm(
+          adc.controller.getStandardMessage('CSM_CANCEL_HAS_CHANGES'),
+          function(okPressed){
+            if(okPressed){
+                cancelDialog(pTriggeringItemId);
+            }
+          });
     }
     else{
       cancelDialog(pTriggeringItemId);
@@ -348,37 +312,6 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
   actions.confirmCommand = function(pMessage, pData, pFocusItem){
     adc.renderer.confirmRequest(pMessage, function(){actions.executeCommand(pData)}, pFocusItem);
   }; // confirmCommand
-
-
-  /**
-    Function: checkConfirmCommand
-      Method to confirm that a command has to be executed based on checks on the page.
-
-      Wrapper around actions.executeCommand that extends this functionality with a
-      confirmation dialog if needed.
-
-    Parameters:
-      pMessage - Message text for the confirmation dialog
-      pCheckHasChanges - Flag to control whether to check for changes on the page (true) or
-                         whether no changes are present on the page (false)
-      pData - Instance of type <commandData>, Name of the command to execute or a JSON
-              instance containing the command name and additional information.
-      
-   */
-  actions.checkConfirmCommand = function(pMessage, pCheckHasChanges, pData){
-    let hasChanges = (pData.monitorChanges && adc.controller.hasUnsavedChanges()) ||(!pData.monitorChanges && apex.page.isChanged());
-    
-    if (hasChanges && pCheckHasChanges){
-      adc.renderer.confirmRequest(
-        pMessage, 
-        function(){actions.executeCommand(pData)});
-    };
-    if (!hasChanges && !pCheckHasChanges){
-      actions.notify('WARNING', pMessage);
-      actions.executeCommand(pData);
-    }
-  }; // checkConfirmCommand
-
   
   /**
     Function: confirmRequest
@@ -489,14 +422,14 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     // generate callback: If a report item is present, store the selected row there, call ADC with the selected ID otherwise
     if(pItemId){
       callback = function(pValue){
-        if(reportType == C_REGION_TREE){
-          // Temporaerer Workaround: actions.selectEntry loest trotz gesetztem Flag selectionChange-Event aus, was zu eine Schleife fuehrt. 
-          // TODO: Eleganter loesen.
-          apex.item(pItemId).setValue(pValue);
-        }
-        else{
-          actions.selectEntry(pReportId, pValue, pSetFocus);
-        };
+                                        
+        actions.selectEntry(pReportId, pValue, pSetFocus);
+                                    
+        apex.item(pItemId).setValue(pValue);
+         
+             
+                                                            
+          
       };
       // connect target item to report to enable later reference of the selected node.
       // also, this items needs to be observered to harmonize its value with the page state.
@@ -507,7 +440,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       // No item present, submit ID with event C_SELECTION_CHANGE_EVENT
       callback = function(pValue){
         if (pValue){
-          actions.selectEntry(pReportId, pValue, pSetFocus);                                                  
+                                                                                                              
           adc.controller.setTriggeringElement(pReportId, C_SELECTION_CHANGE_EVENT, pValue);
           adc.controller.execute();
         }
@@ -518,11 +451,12 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     switch(reportType){
       case C_REGION_CR:
         $report.on(C_CLICK_EVENT, C_REGION_CR_SELECTOR, function(){
-          pkValue = $(this).find('td [data-id]').data('id');                                                          
+          pkValue = $(this).find('td [data-id]').data('id');
+          //adc.renderer.highlightRow($(this), pSetFocus);
           callback(pkValue);
-          if(pItemId){
-            apex.item(pItemId).setValue(pkValue);
-          };
+                      
+                                                
+            
         });
         break;
       case C_REGION_IG:
@@ -535,21 +469,20 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
             }else{
               pkValue = data.model.getRecordId(data.selectedRecords[0]);
             }
-            if(pItemId){
-              apex.item(pItemId).setValue(pkValue);
-            };
+            callback(pkValue);  
           };
         });
         break;
       case C_REGION_IR:
         $report
           .on(C_CLICK_EVENT, C_REGION_IR_SELECTOR, function(){
+            apex.debug.info(`${C_DATEI_NAME} - click detected`);
             pkValue = $(this).find('td [data-id]').data('id');
-            actions.selectEntry(pReportId, pkValue, true, false);
+            pSetFocus = true;
             callback(pkValue);
           })
           .on(C_DOUBLE_CLICK_EVENT, C_REGION_IR_SELECTOR, function(e){
-            apex.debug.log(`${C_DATEI_NAME} - doubleclick detected`);
+            apex.debug.info(`${C_DATEI_NAME} - doubleclick detected`);
             $(this).find('a')[0].click();
           })
           .on(C_KEYDOWN_EVENT, C_REGION_IR_ROW_SELECTOR, function(e){
@@ -583,18 +516,18 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
             apex.debug.log(`${C_DATEI_NAME} - adcselectionchange detected`);
             if(pkValue){
               if(apex.item(pItemId).getValue() != pkValue){
-                apex.item(pItemId).setValue(pkValue);
+              apex.item(pItemId).setValue(pkValue, null, false);
               };
             }
             else if(pItemId){
               if (apex.item(pItemId).getValue().length > 0){
-                apex.item(pItemId).setValue();
+              apex.item(pItemId).setValue();
               };
             };
           })
           .on(C_APEX_AFTER_REFRESH, function(e){
             apex.debug.log(`${C_DATEI_NAME} - apexafterrefresh detected`);
-            actions.selectEntry(pReportId, apex.item(pItemId).getValue(), gFocusAfterRefresh[pReportId]);
+            actions.selectEntry(pReportId, apex.item(pItemId).getValue(), pSetFocus, false);
             gFocusAfterRefresh[pReportId] = false;
           });
           // selecting a row after initializitaion
@@ -614,8 +547,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
         });
         break;
     }
-    actions.selectEntry(pReportId, '', pSetFocus, true);
-  }; // getReportSelection
+   }; // getReportSelection
 
   /**
     Function: handleNotification
@@ -630,7 +562,6 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     adc.controller.execute()
   }
 
-  
   /**
     Function: hideReportFilterPanel
       Hides filter panels from IR and IG. Delegates hiding the filter panel to <adc.renderer>.
@@ -711,7 +642,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       }
     }
     
-    adc.renderer.showDialog(pStyle, pMessage, pTitle, pFocusItem);
+    adc.renderer.showDialog(pStyle, pMessage, title, pFocusItem);
   }; // notify
 
 
@@ -723,22 +654,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
    */
   actions.clearErrors = function (){
     adc.renderer.showErrors([]);
-  }; // confirm
-
-
-  /**
-    Function: confirm
-      Method to show a confirmation dialog. Delegates implementation to <adc.renderer>.
-      A confirmation may be accepted or rejected by the user.
-
-    Parameter:
-      pMessage - Message that is shown to the user. Replaces any existing messages.
-      pTitle - Optional title of the dialog
-      pStyle - One of the predefined styles information|warning|sucess|error
-   */
-  actions.confirm = function (pMessage, pTitle, pStyle){
-    adc.renderer.showDialog(pMessage, pTitle, pStyle, true);
-  }; // confirm
+  }; // clearErrors
 
 
   /**
@@ -824,8 +740,35 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       pMessage - Optional message to show if unsaved changes exist on the page
       pTitle - Optional title of the dialog that is shown if unsaved changes are detected
    */
-  actions.rememberPageItemStatus = function(pPageItems){
-    adc.controller.setPageState(pPageItems);
+  actions.rememberPageItemStatus = function(pPageItems, pMessage, pTitle){
+    var itemList;
+    var itemValue;
+    var pageState;
+    
+    // Initialize
+    pageState = adc.controller.getPageState();
+    pageState.itemMap.clear();
+    pageState.message = pMessage;
+    pageState.title = pTitle;
+    itemList = $(C_INPUT_SELECTOR);
+    
+    if (Array.isArray(pPageItems)){
+      if (pPageItems.count > 0){
+        itemList = pPageItems;
+      }
+    }
+    
+    $.each(itemList, function(item){
+        item = itemList[item];
+        if(item.id){
+          item = item.id;
+        };
+        itemValue = apex.item(item).getValue();
+        pageState.itemMap.set(item, itemValue);
+        apex.debug.info(`Saving ${item} with value ${itemValue}`);
+      }
+   );
+    adc.controller.setPageState(pageState);
   }; // rememberPageItemStatus
 
 
@@ -837,10 +780,10 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       pItemId - ID of the page item to refresh
       pValue - Optional value to set the item to after refresh. If a region is refreshed, this represents the row to select
       pSetFocus - Optional item to set the focus to after refresh
-      pPreventChange - Suppresses the Change-Event for pItemId
+                                                              
    */
-  actions.refresh = function (pItemId, pValue, pSetFocus, pPreventChange){
-    // Don't refactor to apex.region().isRegion(), as this is no completely implemented yet
+  actions.refresh = function (pItemId, pValue, pSetFocus){
+                                                                                           
     if($(`div#${pItemId}.js-apex-region`).length > 0){
       const $region = $(`#${pItemId}`);
       let regionType = getRegionType(pItemId);
@@ -849,6 +792,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       if (regionItem.length > 0) {
         apex.item(regionItem.attr(`id`)).setValue(pValue, null, pPreventChange);
       }
+      
       
       // IG does not support apex_after_refresh
       if (regionType == C_REGION_IR || regionType == C_REGION_CR || regionType == C_REGION_TREE){
@@ -870,7 +814,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       apex.item(pItemId).enable();
       apex.item(pItemId).refresh();
     };
-  }; // refresh
+  }; // refresh 
 
 
   /**
@@ -906,10 +850,9 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     Parameters:
       pRegionId - ID of the region to select an entry in
       pEntryId - ID of the entry to select
-      pSetFocus - If truethe selected row will get focus
-      pNoinform - If true the treeView#event:selectionChange event will be suppressed.
+      pSetFocus - If true the selected row will get focus
    */
-  actions.selectEntry = function(pRegionId, pEntryId, pSetFocus, pNoinform){
+  actions.selectEntry = function(pRegionId, pEntryId, pSetFocus){
     let $region;
     let $entry;
     const C_CR_SELECTOR = `#report_table_${pRegionId}`;
@@ -918,38 +861,31 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     const C_TREE_SELECTOR = `#${pRegionId}_tree`;
     const C_IR_FIRST_ROW_SELECTOR = ' .a-IRR-table tbody tr:nth-child(2)';
     const C_CR_FIRST_ROW_SELECTOR = ' > tbody > tr:nth-child(1)';
-    const $reportDataItem = $(`input[${C_REGION_DATA_ITEM}=${pRegionId}]`);
-    
-    if(typeof pEntryId == 'undefined' || pEntryId == ''){
-      if ($reportDataItem.length > 0){
-        pEntryId = apex.item($reportDataItem.attr('id')).getValue();
-      };
-    };
     const C_DATA_ID_SELECTOR = ` span[data-id='${pEntryId}']`;
 
     switch(getRegionType(pRegionId)){
       case C_REGION_CR:
-        if(pEntryId == ''){
+        if(!pEntryId){
           $entry = $(C_CR_SELECTOR + C_CR_FIRST_ROW_SELECTOR);
         }
         else{
           $entry = $(C_CR_SELECTOR + C_DATA_ID_SELECTOR).parent('td').parent('tr');
         };
-        adc.renderer.highlightRow(entry, pSetFocus);
+        adc.renderer.highlightRow($entry, pSetFocus);
         break;
       case C_REGION_IG:
         $region = $(C_IG_SELECTOR);
-        if(pEntryId == ''){
+        if(!pEntryId){
           pEntryId = $region.find('tbody tr').data('id');
         };
-        if (pEntryId != undefined){
-            $entry = $region
-                    .interactiveGrid('getViews', 'grid')
-                    .model
-                    .getRecord(pEntryId);
-            if($entry){
-            $region.interactiveGrid('setSelectedRecords', $entry, pSetFocus, pNoinform);
-            };
+        if(pEntryId){
+          $entry = $region
+                  .interactiveGrid('getViews', 'grid')
+                  .model
+                  .getRecord(pEntryId);
+          if($entry){
+            $region.interactiveGrid('setSelectedRecords', $entry, pSetFocus, true);
+          };
         }
         break;
       case C_REGION_IR:
@@ -960,7 +896,6 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
           $entry = $(C_IR_SELECTOR + C_IR_FIRST_ROW_SELECTOR);
           if ($entry.length > 0){
             pEntryId = $entry.find('[data-id]').data('id');
-                                                                     
           };
         };
         adc.renderer.highlightRow(pRegionId, $entry, pSetFocus);
@@ -972,8 +907,9 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
         };
         break;
       case C_REGION_TREE:
-        let idList;
         $region = $(C_TREE_SELECTOR);
+        
+        let idList;
         let selectedNodes = $region.treeView('getSelectedNodes');
           idList = selectedNodes
                    .map(function(item){return item.id;})
@@ -1012,12 +948,10 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     const C_DATA_SHORTCUT_CLASS = 'data-accesskey';
     const C_BUTTON_LABEL_CLASS = 't-Button-label';
 
-    var re;
-    var $buttons = $(`[data-action='${pAction}']`);
-    var $label = $buttons.find(`.${C_BUTTON_LABEL_CLASS}`);
-    var label = $label.html();
-    var shortcut = re.exec(label);
+    var re, $label, label, shortcut;
+    var $this;
 
+    var $buttons = $(`[data-action='${pAction}']`);
     var accesskey = apex.actions.lookup(pAction).shortcut;
 
     if (typeof accesskey == 'undefined'){
@@ -1032,15 +966,21 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
         $this = $(this);
 
         if(!$this.find(`.${C_BUTTON_LABEL_CLASS}`)[0]){
-          $this.html(`<span class='${C_BUTTON_LABEL_CLASS}'>${$this.html()}>span>`);
+          $this.html(`<span class='${C_BUTTON_LABEL_CLASS}'>${$this.html()}</span>`);
         }
+        $label = $this.find(`.${C_BUTTON_LABEL_CLASS}`);
+        label = $label.html();
+        shortcut = re.exec(label);
 
         $label.html(
             label.replace(re,
-                          `<span class='${C_SHORTCUT_CLASS}'>${shortcut}>span>`));
+                          `<span class='${C_SHORTCUT_CLASS}'>${shortcut}</span>`));
 
-        $this.attr(C_SHORTCUT_CLASS, shortcut);
-        $this.attr(C_DATA_SHORTCUT_CLASS, label.search(re));
+        
+        //$this.removeAttr(C_SHORTCUT_CLASS);
+        //$this.removeAttr(C_DATA_SHORTCUT_CLASS);
+        $this.attr('accesskey', shortcut);
+        $this.attr('data-accesskey', label.search(re));
       });
     }
   }; // setApexActionAccessKey
@@ -1058,13 +998,10 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
   actions.setDisplayState = function (pSelector, pVisibleState, pLabel){
     forEach(pSelector, function (){
       var pItemId = $(this).attr('id');
-      const C_HIDE = 'HIDE';
-      const C_SHOW_DISABLE = 'SHOW_DISABLE';
-      const C_SHOW_ENABLE = 'SHOW_ENABLE';
       
       switch(pVisibleState){
         case C_HIDE:
-          adc.renderer.disableElement(pItemId);
+                                               
           apex.item(pItemId).hide();
           break;
         case C_SHOW_DISABLE:
@@ -1099,7 +1036,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       that APEX does not allow to remove a specific error but only clear all errors. This is not possible when validating the page
       dynamically, as errors of untouched, but still erroneus page items would disappear as well.
       As soon as APEX allows for this, the mechanism can be changed here.
-
+      
       This method will clear the event queue if an error is passed in. Reasoning behind this is:
       If a value is entered in an input field but the field is not left using a tab key or a mouse click, but instead you click on a button
       while the focus is still in the input field, two events will be raised: <change> on the input field and <click> on the button.
@@ -1117,7 +1054,6 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     if (pErrorList){
       if (pErrorList.count > 0){
         // If errors have occured, no further events must be processed.
-                                        
         $(C_BODY).clearQueue();
         errorListWillChange = true;
       }
@@ -1241,7 +1177,6 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       else{
         actions.setDisplayState(pSelector, pVisualState);
       }
-                                          
       adc.renderer.setItemMandatory(pItemId, pIsMandatory);
     });
   }; // setMandatory
