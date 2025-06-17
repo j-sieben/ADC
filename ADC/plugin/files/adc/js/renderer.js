@@ -451,7 +451,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       pHeader - Header of the region
       pCSS - Accents for the header region
    */
-  renderer.setRegionContent = function(pRegionId, pContent, pHeader, pCS){
+  renderer.setRegionContent = function(pRegionId, pContent, pHeader, pCSS){
     const $region = $(`#${pRegionId}`);
     $region.find(C_REGION_BODY_SELECTOR).html(pContent);
     $(`#${pRegionId}_heading`).html(pHeader);
