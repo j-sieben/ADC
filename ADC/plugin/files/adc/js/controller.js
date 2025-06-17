@@ -99,8 +99,9 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
    */
   const C_CHANGE_EVENT = 'change';
   const C_CLICK_EVENT = 'click';
-  const C_DBLCLICK_EVENT = 'dblclick';
   const C_COMMAND_EVENT = 'command';
+  const C_DBLCLICK_EVENT = 'dblclick';
+                                    
   const C_ENTER_EVENT = 'enter';
   const C_KEYPRESS_EVENT = 'keypress';
   const C_APEX_BEFORE_REFRESH = 'apexbeforerefresh';
@@ -165,10 +166,12 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   const changeCallback = function(pEvent, pEventData, pWait) {
     getTriggeringElement(pEvent, pEventData);
 
-    $(C_BODY).queue(function () {
-      adc.actions.showWaitSpinner(pWait);
-      ctl.execute();
-    });
+    if (props.triggeringElement.id){
+      $(C_BODY).queue(function () {
+        adc.actions.showWaitSpinner(pWait);
+        ctl.execute();
+      });
+    }
   }; // changeCallback
       
     
@@ -183,8 +186,9 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   const enterCallback = function (pEvent, pEventData, pWait){
     getTriggeringElement(pEvent, pEventData);
 
-    // Place request in queue to process multiple events in sequence
-    if (props.triggeringElement.event === C_ENTER_EVENT){
+    if (props.triggeringElement.event === C_ENTER_EVENT && props.triggeringElement.id){
+      // Place request in queue to process multiple events in sequence
+                                                         
       apex.debug.info(`Enqueueing Event '${C_ENTER_EVENT}'`);
       $('body').queue(function(){
         
@@ -201,13 +205,14 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       
     Parameters:
       pEvent - Event that occured
-      pEventData - <props.eventData> instance that goes along with the event
+      pWait - Flag to indicate whether a wait spinner should be shown during processing
     */
-  const unsavedCallback = function (pEvent, pEventData) {
+  const unsavedCallback = function (pEvent, pEventData, pWait) {
     getTriggeringElement(pEvent, pEventData);
 
     if (props.triggeringElement.id) {
-      $(C_BODY).queue(function () {                                  
+      $(C_BODY).queue(function () {
+        
         if(ctl.hasUnsavedChanges()){
           // Handle event only after confirmation from the user
           adc.renderer.confirmRequest(pEvent, changeCallback);
@@ -218,7 +223,8 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
         };
       });
     }
-  }; // unsavedCallback      
+  }; // unsavedCallback
+      
     
   /** 
     Function: unchangedCallback
@@ -282,7 +288,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
       // ADC unbinds event handlers bound to this item to prevent problems between the different handlers
       $this
-        .off(pEvent)
+        //.off(pEvent)
         .on(pEvent, props.eventData, callback);
       if (pEvent === C_CHANGE_EVENT) {
         // CHANGE event should not be called after APEXREFRESH, so pause it until apexafterrefresh
@@ -354,7 +360,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       $(C_BODY).append(pCode);
       ScriptSelector = '#' + $(pCode).attr('id');
       $(ScriptSelector).remove();
-    }
+    };
     
     setTimeout(
       function(){
@@ -377,14 +383,14 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pEvent - Event that occured
       pEventData - <props.eventData> instance that goes along with the event
    */
-  const getTriggeringElement =function (pEvent, pEventData) {
+  const getTriggeringElement = function (pEvent, pEventData) {
     var $element;
     var $button;
 
     // Copy event data to a local variable to allow for tayloring
     props.triggeringElement.id = C_NO_TRIGGERING_ITEM;
     props.triggeringElement.event = pEvent.type;
-    props.triggeringElement.data = pEvent.data;
+    props.triggeringElement.data = pEventData;
     props.triggeringElement.isClick = false; // reset status to known default
 
     if (typeof pEvent.target != 'undefined') {
@@ -504,28 +510,15 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
         // Put event on props.quarantineList to prevent double execution
         props.quarantineList.push(e.event);
         apex.debug.info(`Event '${e.event}' pushed on quarantine`);
-
-        // Pop event after C_LOCK_LENGTH from quarantine
-        setTimeout(
-          function(){
-           props.quarantineList = [];
-           apex.debug.info(`Event '${e.event}' popped from quarantine`);
-          },
-          C_LOCK_LENGTH
-        );
-
-        // Additionally disable button to prevent double click. Will be enabled by the response of ADC
-        if (e.isClick){
-          apex.debug.info(`Locking button '${e.id}'`);
-          apex.item(e.id).disable();
-        }
       }
     }
+/*
     else if(C_PROTECTED_EVENTS.indexOf(props.quarantineList[0]) > -1){
       // Check whether an event is actually in the queue that does not allow for any other event to be raised
       apex.debug.info(`Ignoring event '${e.event}', event '${props.quarantineList[0]}' is on quarantine list`);
       isOkToRaiseEvent = false;
     }
+*/
     return isOkToRaiseEvent;
   }; // maintainAndCheckEventLock
 
@@ -554,13 +547,9 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       },
       pCallback);
   }; // addButtonHandler
-
-
   /* +++++ END PRIVATE  ++++++++ */
 
   /* ++++++++++ CORE FUNCTIONALITY ++++++++++ */
-  
-
   /**
     Function: bindObserverItems
       Method identifies all elements whose values must be sent to the database with any request.
@@ -696,7 +685,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     let itemValue;
     props.pageState.itemMap.clear();
     
-    $.each(pPageItems, function(idx, item){
+    $.each(pPageItems.itemMap, function(idx, item){
         if(item.id){
           item = item.id;
         };
@@ -704,8 +693,8 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
         props.pageState.itemMap.set(item, itemValue);
         apex.debug.info(`Saving ${item} with value ${itemValue}`);
       }
-    );
-  }; // setPageState
+    );    
+  }; // getPageState
 
 
   /**
@@ -730,8 +719,8 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       Is used in conjunction with {@see: rememberprops.pageItemstatus} which has saved the initial page status before.
       Compares the actual values against props.pageState and returns true if at least one value has changed.
       
-    Parameter:
-      pPageItems - Optional array of all page item ids to capture. If empty, all page items are captured.
+              
+                                                                                                         
    */
   ctl.hasUnsavedChanges = function(){
     let isDifferent = false;
@@ -924,9 +913,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   }; // init
 
   /* +++++++++ END CORE FUNCTIONALITY +++++++++++ */
-
 }(de.condes.plugin.adc, apex.jQuery, apex.server));
-
 
 // Interface to APEX plugin mechanism.
 // For some reason I don"t really understand, it is impossible
