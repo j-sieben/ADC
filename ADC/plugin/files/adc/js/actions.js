@@ -898,7 +898,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
             pEntryId = $entry.find('[data-id]').data('id');
           };
         };
-        adc.renderer.highlightRow(pRegionId, $entry, pSetFocus);
+        adc.renderer.highlightRow($entry, pSetFocus);
         if ($entry.length != 0){
           $entry.trigger(C_SELECTION_CHANGE_EVENT, pEntryId);
         }
