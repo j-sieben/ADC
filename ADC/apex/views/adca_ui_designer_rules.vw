@@ -2,7 +2,7 @@ create or replace force view adca_ui_designer_rules
 as
 with session_state as (
        select /*+ no_merge */
-              adc_api.get_number('CRG_ID') g_crg_id,
+              utl_apex.get_number('P13_CRG_ID') g_crg_id,
               adc_util.c_true c_true,
               adc_util.c_false c_false
          from dual),
