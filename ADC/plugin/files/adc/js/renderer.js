@@ -3,7 +3,7 @@ var de = de || {};
 de.condes = de.condes || {};
 de.condes.plugin = de.condes.plugin || {};
 de.condes.plugin.adc = de.condes.plugin.adc || {};
-de.condes.plugin.adc.apex_42_20_2 = {};
+de.condes.plugin.adc.apex_theme_42 = {};
 
 /**
   Function: ADC Theme adapter
@@ -50,6 +50,9 @@ de.condes.plugin.adc.apex_42_20_2 = {};
   const C_REGION_TITLE_SELECTOR = ' .t-Region-title';
   const C_MODAL_DIALOG_TITLE_SELECTOR = ' .ui-dialog-title';
   const C_POPUP_LOV_SELECTOR = '.a-Button--popupLOV';
+  const C_BUTTON_FOCUS_SELECTOR = '.t-Body-main button.t-Button, .t-Dialog button.t-Button';
+  const C_BUTTON_SELECTOR = 't-Button';
+  const C_REGION_NO_DATA_MSG_SELECTOR = '.a-IRR-noDataMsg-text';
 
   // Attribute constants
   const C_READONLY_PROP = 'readonly';
@@ -61,22 +64,14 @@ de.condes.plugin.adc.apex_42_20_2 = {};
   const C_APEX_AFTER_REFRESH = 'apexafterrefresh';
   const C_CLICK = 'click';
   
-      
-                      
-                                                                
+  // private class selector
+  const C_REPORT_LAST_REFRESH_TIME_CLASS = 'adc-last-refresh-time';
+  const C_REPORT_LAST_REFRESH_TIME_CLASS_SELECTOR = `.${C_REPORT_LAST_REFRESH_TIME_CLASS}`;
+
 
     /** 
       Function: setFocus
         Local method to securely set the focus to a requested item
-                                 
-                                 
-                                           
-                                                              
-                                           
-           
-                               
-        
-               
 
       Parameter:
         pSelector - Selector to set the focus to
@@ -138,15 +133,12 @@ de.condes.plugin.adc.apex_42_20_2 = {};
    */
   renderer.confirmRequest = function(pEventOrMessage, pCallback, pFocusItem){
     let message = {};
-                    
     
     if(typeof(pEventOrMessage) === "string"){
       message.data = {};
       message.data.message = pEventOrMessage;
     }else{
       message = pEventOrMessage;
-                                               
-
     }
     apex.message.confirm(message.data.message, function (pAnswer) {
       if(pAnswer){
@@ -157,7 +149,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       };
     }, message.data.options);
     renderer.setModalDialogTitle(message.data.options.title);
-  }; // clearNotification
+  }; // confirmRequest
   
 
   /**
@@ -201,6 +193,16 @@ de.condes.plugin.adc.apex_42_20_2 = {};
     else if ($item.hasClass("hasDatepicker") || $item.hasClass("color_picker") || $item.hasClass("popup_lov")) {
       $item.parent().find("button").prop(C_DISABLED_PROP, true);
     }
+    
+    else if ($item.hasClass(C_BUTTON_SELECTOR)){
+      // Tastaturkuerzel deaktivieren
+      $item.prop(C_DISABLED_PROP, true);
+    }
+    
+    else if (($item.hasClass("radio_group")) || ($item.hasClass("checkbox_group"))){
+      // einzelne Radiobuttons von Bearbeitung mit Tastatur ausschliessen
+      $(`#${pItemId} input`).attr('disabled', '');
+    };
   }; // disableElement
 
   
@@ -220,6 +222,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
     $item
       .prop(C_READONLY_PROP, false)
       .removeClass(C_ADC_DISABLED)
+      .removeAttr('aria-disabled')
       .removeAttr('tabindex');
 
     if ($item.is('textarea')){
@@ -265,6 +268,16 @@ de.condes.plugin.adc.apex_42_20_2 = {};
         .prop(C_READONLY_PROP, false)
         .removeClass(C_ADC_DISABLED)
         .removeAttr('tabindex');
+    }
+    
+    else if ($item.hasClass(C_BUTTON_SELECTOR)){
+      // Tastaturkuerzel aktivieren
+      $item.prop(C_DISABLED_PROP, false);
+    }
+    
+    else if (($item.hasClass("radio_group")) || ($item.hasClass("checkbox_group"))){
+      // einzelne Radiobuttons zur Bearbeitung mit Tastatur freigeben
+      $(`#${pItemId} input`).removeAttr('disabled');
     };
   }; // enableElement
   
@@ -298,14 +311,35 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       Method to optically select a row in a report
      
     Parameters:
+      pRegionId - ID of the region to select an entry in
       pRow - jQuery object pointing to the data row to highlight
       pSetFocus - Flag to indicate whether the row has to be focussed
    */
-  renderer.highlightRow = function(pRow, pSetFocus){
+  renderer.highlightRow = function(pRegionId, pRow, pSetFocus){
     pRow.addClass("adc-selected-row").siblings().removeClass("adc-selected-row");
     
-    if (pSetFocus){
-      pRow.find('td:first-child a').focus();
+    if (pSetFocus) {
+      if (pRow.length > 0){
+        pRow.find('td:first-child a').focus();
+      }
+      else {
+        let lastTriggeringElement = de.condes.plugin.adc.controller.getLastTriggeringItem();
+        if (lastTriggeringElement != ''){
+          $(`#${lastTriggeringElement}`).focus();
+        }
+        else {
+          $(`${C_BUTTON_FOCUS_SELECTOR}`).first().focus();
+        };
+      };
+    };
+    
+    if (pRow.length == 0){
+      let actDate, actDay, actTime;
+      actDate = new Date();
+      actTime = ('0' + (actDate.getHours())).slice(-2) + ":" + ('0' + (actDate.getMinutes())).slice(-2) + ":" + ('0' + (actDate.getSeconds())).slice(-2) + " Uhr";
+      
+      $(`#${pRegionId} ${C_REGION_NO_DATA_MSG_SELECTOR} ${C_REPORT_LAST_REFRESH_TIME_CLASS_SELECTOR}`).remove();
+      $(`#${pRegionId} ${C_REGION_NO_DATA_MSG_SELECTOR}`).append(`<div class="${C_REPORT_LAST_REFRESH_TIME_CLASS}"><br>(letzte Aktualisierung um ${actTime})</div>`);
     };
   }; // highlightRow
 
@@ -395,7 +429,7 @@ de.condes.plugin.adc.apex_42_20_2 = {};
       pFocusItem - Flag to indicate whether this dialog is a confirmation dialog
    */
   renderer.showDialog = function(pStyle, pMessage, pTitle, pFocusItem){
-    if (pFocusItem === undefined){
+    if (pFocusItem === undefined || pFocusItem == ""){
       pFocusItem  = $('.t-Body').find('input, button').not(':hidden').first().attr('id');
     };
     const callback = function(){
@@ -521,4 +555,4 @@ de.condes.plugin.adc.apex_42_20_2 = {};
     }
   }; // submitPage
 
-})(de.condes.plugin.adc.apex_42_20_2, apex.message);
+})(de.condes.plugin.adc.apex_theme_42, apex.message);

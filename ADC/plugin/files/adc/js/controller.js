@@ -17,7 +17,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     <p>The controller works on the server side with a decision tree that computes a list of action instructions for a given situation.<br>
     During the calculation, the state of the application page can be changed by actions, which leads to a recursive check of the changed page state against the decision tree. The response includes all change instructions for the application page, including the recursive change instructions.</p>
     <p>The ADC response is delivered in the form of a script with an ID and inserted on the page by this component. Thus, all included actions are executed directly. Afterwards, the plugin removes the server's response, as it is no longer needed.</p>
-    <p>Change instructions to application page partly depend on APEX version used and especially on theme used. The plugin starts from Theme 42, however, all theme-specific implementations of the activities are swapped out into a separate file, which is linked as a namespace object when parameterizing the plugin as a component parameter. As per default, this is <de.condes.plugin.adc.apex_42_5_1>, implementent in file <adcApex.js>, but it can be easily replaced by a client specific implementation.</p>
+    <p>Change instructions to application page partly depend on APEX version used and especially on theme used. The plugin starts from Theme 42, however, all theme-specific implementations of the activities are swapped out into a separate file, which is linked as a namespace object when parameterizing the plugin as a component parameter. As per default, this is <de.condes.plugin.adc.apex_theme_42>, implementent in file <adcApex.js>, but it can be easily replaced by a client specific implementation.</p>
     <p>To work, this plugin must only be called during page load, no administration or parameterization is required.</p>
    */
 (function (adc, $, server) {
@@ -288,7 +288,6 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
       // ADC unbinds event handlers bound to this item to prevent problems between the different handlers
       $this
-        //.off(pEvent)
         .on(pEvent, props.eventData, callback);
       if (pEvent === C_CHANGE_EVENT) {
         // CHANGE event should not be called after APEXREFRESH, so pause it until apexafterrefresh
@@ -370,7 +369,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     );
     
     $(C_BODY).dequeue();
-    setTimeout(function(){$(C_BODY).dequeue();}, 5000)
+    //setTimeout(function(){$(C_BODY).dequeue();}, 5000)
     props.lastTriggeringElement = props.triggeringElement.id;
   }; // executeCode
   
@@ -547,9 +546,13 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       },
       pCallback);
   }; // addButtonHandler
+
+
   /* +++++ END PRIVATE  ++++++++ */
 
   /* ++++++++++ CORE FUNCTIONALITY ++++++++++ */
+  
+
   /**
     Function: bindObserverItems
       Method identifies all elements whose values must be sent to the database with any request.
@@ -681,20 +684,9 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     Parameter:
       pPageState - Instance of the actually valid page state
    */
-  ctl.setPageState = function(pPageItems) {
-    let itemValue;
-    props.pageState.itemMap.clear();
-    
-    $.each(pPageItems.itemMap, function(idx, item){
-        if(item.id){
-          item = item.id;
-        };
-        itemValue = apex.item(item).getValue();
-        props.pageState.itemMap.set(item, itemValue);
-        apex.debug.info(`Saving ${item} with value ${itemValue}`);
-      }
-    );    
-  }; // getPageState
+  ctl.setPageState = function(pPageState) {
+    props.pageState = pPageState;
+  }; // setPageState
 
 
   /**
@@ -718,23 +710,16 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       
       Is used in conjunction with {@see: rememberprops.pageItemstatus} which has saved the initial page status before.
       Compares the actual values against props.pageState and returns true if at least one value has changed.
-      
-              
-                                                                                                         
    */
   ctl.hasUnsavedChanges = function(){
     let isDifferent = false;
    
-    $.each(props.pageState.itemMap, function(item){
-      item = itemList[item];
-      if(item.id){
-        item = item.id;
-      };
+    props.pageState.itemMap.forEach(function(itemValue, item, map){
       apex.debug.info(`Comparing ${item}`);
-      if (props.pageState.itemMap.has(item) && props.pageState.itemMap.get(item) != apex.item(item).getValue()){
+      if (itemValue != apex.item(item).getValue()){
         isDifferent = true;
-        return false;
-      }
+        return true;
+      };
     });
     return isDifferent;
   }; // hasUnsavedChanges
@@ -913,7 +898,9 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   }; // init
 
   /* +++++++++ END CORE FUNCTIONALITY +++++++++++ */
+
 }(de.condes.plugin.adc, apex.jQuery, apex.server));
+
 
 // Interface to APEX plugin mechanism.
 // For some reason I don"t really understand, it is impossible
