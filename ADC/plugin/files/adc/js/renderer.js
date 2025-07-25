@@ -29,6 +29,7 @@ de.condes.plugin.adc.apex_theme_42 = {};
     msg - Message object provided by APEX, instance of apex.message
  */
 (function(renderer, msg){
+  const C_FILE_NAME = 'adc.js.renderer.js';
 
   const C_APEX_ERROR_CLASS_SEL = 'div.a-Notification--error';
   const C_VISIBLE = 'u-visible';
@@ -80,479 +81,514 @@ de.condes.plugin.adc.apex_theme_42 = {};
         const anchors = ['.', '#'];
         if ($.trim(pSelector).length !== 0) {
             if (!anchors.includes($.trim(pSelector).charAt(0))){
-                p_selector = `#${pSelector}`;
+                pSelector = `#${pSelector}`;
             }
             $(pSelector).focus();
         };
     }; //setFocus
 
-  /**
+    /**
     Function: alignReportVerticalTop
-      Method adjusts report cells vertically to top
+        Method adjusts report cells vertically to top
 
     Parameter:
-      pReportId - Static ID of the report to adjust
-   */
-  renderer.alignReportVerticalTop = function(pReportId){
-    var $report = $(`#${pReportId}`);
-	  $report.find('td').addClass('u-alignTop');
-	  
-	  $report.on(C_APEX_AFTER_REFRESH), function(){
-	    alignReportVerticalTop(pReportId);
-    }		
-  }; // alignReportVerticalTop
+        pReportId - Static ID of the report to adjust
+    */
+    renderer.alignReportVerticalTop = function(pReportId){
+        var $report = $(`#${pReportId}`);
+        if ($report.length > 0){
+            $report.find('td').addClass('u-alignTop');
+            // also add function call after refresh to keep the state
+            $report.on(C_APEX_AFTER_REFRESH), function(){
+                alignReportVerticalTop(pReportId);
+            }
+        }
+    }; // alignReportVerticalTop
 
-  
-  /**
+
+    /**
     Function: clearErrors
-      Removes all messages in the notification region
-   */
-  renderer.clearErrors = function(){
-    gErrors = [];
-    gWarnings = [];
-    msg.clearErrors();
-  }; //clearErrors
+        Removes all messages in the notification region
+    */
+    renderer.clearErrors = function(){
+        gErrors = [];
+        gWarnings = [];
+        msg.clearErrors();
+    }; //clearErrors
 
-  
-  /**
+
+    /**
     Function: clearNotification
-      Removes all messages in the notification region
-   */
-  renderer.clearNotification = function(){
-    msg.hidePageSuccess();
-  }; // clearNotification
+        Removes all messages in the notification region
+    */
+    renderer.clearNotification = function(){
+        msg.hidePageSuccess();
+    }; // clearNotification
 
-  /**
+
+    /**
     Function: confirmRequest
-      Shows a confirmation dialog to the user before calling the intended functionality.
+        Shows a confirmation dialog to the user before calling the intended functionality.
 
     Parameters:
-      pEventOrMessage - Event to extract the message text from or a plain message
-      pCallback - Method to be called if the user confirmes this dialog
-      pFocusItem - Item to set the focus to if no confirmation is given
-   */
-  renderer.confirmRequest = function(pEventOrMessage, pCallback, pFocusItem){
-    let message = {};
-    
-    if(typeof(pEventOrMessage) === "string"){
-      message.data = {};
-      message.data.message = pEventOrMessage;
-    }else{
-      message = pEventOrMessage;
-    }
-    apex.message.confirm(message.data.message, function (pAnswer) {
-      if(pAnswer){
-        pCallback(message);
-      }
-      else {
-        setFocus(pFocusItem);
-      };
-    }, message.data.options);
-    renderer.setModalDialogTitle(message.data.options.title);
-  }; // confirmRequest
-  
+        pEventOrMessage - Event to extract the message text from or a plain message
+        pCallback - Method to be called if the user confirmes this dialog
+        pFocusItem - Item to set the focus to if no confirmation is given
+    */
+    renderer.confirmRequest = function(pEventOrMessage, pCallback, pFocusItem){
+        let message = {};
 
-  /**
+        if (typeof(pEventOrMessage) === "string"){
+            message.data = {};
+            message.data.message = pEventOrMessage;
+        } else {
+            message = pEventOrMessage;
+        }
+        apex.message.confirm(message.data.message, function (pAnswer) {
+            if (pAnswer){
+                pCallback(message);
+            }
+            else {
+                setFocus(pFocusItem);
+            };
+        }, message.data.options);
+        renderer.setModalDialogTitle(message.data.options.title);
+    }; // confirmRequest
+
+
+    /**
     Function: disableElement
-      Disables a page item. Handles deactivation of 
+        Disables a page item. Handles deactivation of 
 
-      - page items with values to allow to include them in a submit
-      - select lists
-      - buttons
+        - page items with values to allow to include them in a submit
+        - select lists
+        - buttons
 
     Parameter
-      pItemId - ID of the page item to disable
-   */
-  renderer.disableElement = function (pItemId){
-    var $item = $('#' + pItemId);
-    var $itemLabel = $('#' + pItemId + '_LABEL');
-    apex.item(pItemId).show();
+        pItemId - ID of the page item to disable
+    */
+    renderer.disableElement = function (pItemId){
+        const $item = $(`#${pItemId}`);
 
-    // Normal element, do not disable, otherwise sessionstate will not be filled.
-    // Instead, set readonly and CSS class so that it looks like disabled.
-    $item
-      .prop(C_READONLY_PROP, true)
-      .addClass(C_APEX_DISABLED)
-      .attr('aria-disabled', 'true')
-      .attr('tabindex', "-1");
+        if ($item.length){
+            let $itemLabel = $(`#${pItemId}_LABEL`);
+            apex.item(pItemId).show();
 
-    // if the page element is a selection list, readonly must be added differently
-    if ($item.hasClass("selectlist")) {
-      $item.attr(C_READONLY_PROP, C_READONLY_PROP);
-      // in selection lists also provide the label with this class, so that when clicking on the label
-      // the selection list does not become active and another value can be selected via keyboard
-      $itemLabel.addClass(C_ADC_DISABLED);
-    }
+            // Normal element, do not disable, otherwise session state will not be filled.
+            // Instead, set readonly and CSS class so that it looks like disabled.
+            $item
+                .prop(C_READONLY_PROP, true)
+                .addClass(C_APEX_DISABLED)
+                .attr('aria-disabled', 'true')
+                .attr('tabindex', "-1");
 
-    // if the page item is a CKEDITOR, the built in APEX method can savely be used
-    else if ($item.parent('div').find('div.ck').length){
-      apex.item(pItemId).disable();
-    }
+            // if the page element is a selection list, readonly must be added differently
+            if ($item.hasClass("selectlist")) {
+                $item.attr(C_READONLY_PROP, C_READONLY_PROP);
+                // in selection lists also provide the label with this class, so that when clicking on the label
+                // the selection list does not become active and another value can be selected via keyboard
+                $itemLabel.addClass(C_ADC_DISABLED);
+            }
 
-    // if the page element is a date field, then also deactivate the button for the date selection
-    else if ($item.hasClass("hasDatepicker") || $item.hasClass("color_picker") || $item.hasClass("popup_lov")) {
-      $item.parent().find("button").prop(C_DISABLED_PROP, true);
-    }
-    
-    else if ($item.hasClass(C_BUTTON_SELECTOR)){
-      // Tastaturkuerzel deaktivieren
-      $item.prop(C_DISABLED_PROP, true);
-    }
-    
-    else if (($item.hasClass("radio_group")) || ($item.hasClass("checkbox_group"))){
-      // einzelne Radiobuttons von Bearbeitung mit Tastatur ausschliessen
-      $(`#${pItemId} input`).attr('disabled', '');
-    };
-  }; // disableElement
+            // if the page item is a CKEDITOR, the built in APEX method can savely be used
+            else if ($item.parent('div').find('div.ck').length){
+                apex.item(pItemId).disable();
+            }
 
-  
-  /**
-    Function: enableElement
-      Enables a page item. Handles activation of 
+            // if the page element is a date field, then also deactivate the button for the date selection
+            else if ($item.hasClass("hasDatepicker") || $item.hasClass("color_picker") || $item.hasClass("popup_lov")) {
+                $item.parent().find("button").prop(C_DISABLED_PROP, true);
+            }
 
-      - page items with values to allow to include them in a submit
-      - select lists
-      - buttons
+            else if ($item.hasClass(C_BUTTON_SELECTOR)){
+                // Tastaturkuerzel deaktivieren
+                $item.prop(C_DISABLED_PROP, true);
+            }
 
-    Parameter:
-      pItemId - ID of the page item to disable
-   */
-  renderer.enableElement = function (pItemId){
-    var $item = $(`#${pItemId}`);
-    $item
-      .prop(C_READONLY_PROP, false)
-      .removeClass(C_ADC_DISABLED)
-      .removeAttr('aria-disabled')
-      .removeAttr('tabindex');
-
-    if ($item.is('textarea')){
-      pItemId = `${pItemId}_CONTAINER`;
-    }
-
-    if ($item.is('input') && $item.attr('role') == 'switch'){
-      pItemId = `${pItemId}_CONTAINER`;
-    }
-
-    if ($item.hasClass('apex-item-group')){
-      pItemId = `${pItemId}_CONTAINER`;
-    }
-
-    if ($item.is('select')){
-      $(`#${pItemId}:not(:selected)`)
-        .prop(C_READONLY_PROP, false);
-      pItemId = `${pItemId}_CONTAINER`;
-    }
-    apex.item(pItemId).show();
-    apex.item(pItemId).enable();
-    
-    // if page item is a date picker, enable button as well
-    if ($item.hasClass("hasDatepicker") || $item.hasClass("color_picker") || $item.hasClass("popup_lov")) {
-      $item.parent().find("button")
-        .prop(C_DISABLED_PROP, false)
-        .removeClass(C_ADC_DISABLED)
-        .removeAttr('tabindex');
-    }
-
-    // if page item is a colour picker, enable button as well
-    else if ($item.hasClass("color_picker")) {
-      $('#' + pItemId + '_fieldset')
-        .prop(C_READONLY_PROP, false)
-        .removeClass(C_ADC_DISABLED)
-        .removeAttr('tabindex');
-    }
-
-    // if page item is a popup list, enable button as well
-    else if ($item.hasClass("popup_lov")) {
-      $item.closest('#' + pItemId + '_fieldset')
-        .find(C_POPUP_LOV_SELECTOR)
-        .prop(C_READONLY_PROP, false)
-        .removeClass(C_ADC_DISABLED)
-        .removeAttr('tabindex');
-    }
-    
-    else if ($item.hasClass(C_BUTTON_SELECTOR)){
-      // Tastaturkuerzel aktivieren
-      $item.prop(C_DISABLED_PROP, false);
-    }
-    
-    else if (($item.hasClass("radio_group")) || ($item.hasClass("checkbox_group"))){
-      // einzelne Radiobuttons zur Bearbeitung mit Tastatur freigeben
-      $(`#${pItemId} input`).removeAttr('disabled');
-    };
-  }; // enableElement
-  
-
-  /**
-    Function: hideReportFilterPanel
-      Removes filter area from interactive report or interactive grid.
-
-    Parameters:
-      pRegionId - Static id of the interactive report or grid
-      pRegionType - Type of the report
-   */
-  renderer.hideReportFilterPanel = function(pRegionId, pRegionType){
-    switch(pRegionType){
-      case C_REGION_IR:
-        $(`#${pRegionId}_conrol_panel`).hide(); // interactive report
-        break;
-      case C_REGION_IG:
-        $(`#${pRegionId} .a-MediaBlock`).hide(); // interactive grid
-        break;
-    }
-    
-    $(`#${pRegionId}`).on(C_APEX_AFTER_REFRESH, function(){
-      renderer.hideReportFilterPanel(pRegionId, pRegionType);
-    });
-  }; // hideReportFilterPanel
-  
-  
-  /**
-    Function: highlightRow
-      Method to optically select a row in a report
-     
-    Parameters:
-      pRegionId - ID of the region to select an entry in
-      pRow - jQuery object pointing to the data row to highlight
-      pSetFocus - Flag to indicate whether the row has to be focussed
-   */
-  renderer.highlightRow = function(pRegionId, pRow, pSetFocus){
-    pRow.addClass("adc-selected-row").siblings().removeClass("adc-selected-row");
-    
-    if (pSetFocus) {
-      if (pRow.length > 0){
-        pRow.find('td:first-child a').focus();
-      }
-      else {
-        let lastTriggeringElement = de.condes.plugin.adc.controller.getLastTriggeringItem();
-        if (lastTriggeringElement != ''){
-          $(`#${lastTriggeringElement}`).focus();
+            else if (($item.hasClass("radio_group")) || ($item.hasClass("checkbox_group"))){
+                // einzelne Radiobuttons von Bearbeitung mit Tastatur ausschliessen
+                $(`#${pItemId} input`).attr('disabled', '');
+            };
         }
-        else {
-          $(`${C_BUTTON_FOCUS_SELECTOR}`).first().focus();
-        };
-      };
-    };
-    
-    if (pRow.length == 0){
-      let actDate, actDay, actTime;
-      actDate = new Date();
-      actTime = ('0' + (actDate.getHours())).slice(-2) + ":" + ('0' + (actDate.getMinutes())).slice(-2) + ":" + ('0' + (actDate.getSeconds())).slice(-2) + " Uhr";
-      
-      $(`#${pRegionId} ${C_REGION_NO_DATA_MSG_SELECTOR} ${C_REPORT_LAST_REFRESH_TIME_CLASS_SELECTOR}`).remove();
-      $(`#${pRegionId} ${C_REGION_NO_DATA_MSG_SELECTOR}`).append(`<div class="${C_REPORT_LAST_REFRESH_TIME_CLASS}"><br>(letzte Aktualisierung um ${actTime})</div>`);
-    };
-  }; // highlightRow
+    }; // disableElement
 
   
-  /**
-    Function: showErrors
-      Maintains the error list on the page.
+    /**
+    Function: enableElement
+        Enables a page item. Handles activation of 
+
+        - page items with values to allow to include them in a submit
+        - select lists
+        - buttons
 
     Parameter:
-      pErrors - Array of errors, instances of <error>
-   */
-  renderer.showErrors = function(pErrors){
-      
-      msg.clearErrors();
-      // Remove warning markup
-      $('.t-Form-warning')
+        pItemId - ID of the page item to disable
+    */
+    renderer.enableElement = function (pItemId){
+        var $item = $(`#${pItemId}`);
+        $item
+            .prop(C_READONLY_PROP, false)
+            .removeClass(C_ADC_DISABLED)
+            .removeAttr('aria-disabled')
+            .removeAttr('tabindex');
+
+        if ($item.is('select')){
+            $(`#${pItemId}:not(:selected)`)
+            .prop(C_READONLY_PROP, false);
+        }
+        apex.item(pItemId).show();
+        apex.item(pItemId).enable();
+
+        // if page item is a date picker, enable button as well
+        if ($item.hasClass("hasDatepicker") || $item.hasClass("color_picker") || $item.hasClass("popup_lov")) {
+            $item.parent().find("button")
+            .prop(C_DISABLED_PROP, false)
+            .removeClass(C_ADC_DISABLED)
+            .removeAttr('tabindex');
+        }
+
+        // if page item is a colour picker, enable button as well
+        else if ($item.hasClass("color_picker")) {
+            $('#' + pItemId + '_fieldset')
+            .prop(C_READONLY_PROP, false)
+            .removeClass(C_ADC_DISABLED)
+            .removeAttr('tabindex');
+        }
+
+        // if page item is a popup list, enable button as well
+        else if ($item.hasClass("popup_lov")) {
+            $item.closest('#' + pItemId + '_fieldset')
+            .find(C_POPUP_LOV_SELECTOR)
+            .prop(C_READONLY_PROP, false)
+            .removeClass(C_ADC_DISABLED)
+            .removeAttr('tabindex');
+        }
+
+        else if ($item.hasClass(C_BUTTON_SELECTOR)){
+            // Tastaturkuerzel aktivieren
+            $item.prop(C_DISABLED_PROP, false);
+        }
+
+        else if (($item.hasClass("radio_group")) || ($item.hasClass("checkbox_group"))){
+            // einzelne Radiobuttons zur Bearbeitung mit Tastatur freigeben
+            $(`#${pItemId} input`).removeAttr('disabled');
+            $(`#${pItemId}`).removeClass(C_APEX_DISABLED);
+        };
+    }; // enableElement
+  
+
+    /**
+    Function: hideReportFilterPanel
+        Removes filter area from interactive report or interactive grid.
+
+    Parameters:
+        pRegionId - Static id of the interactive report or grid
+        pRegionType - Type of the report
+    */
+    renderer.hideReportFilterPanel = function(pRegionId, pRegionType){
+        switch(pRegionType){
+            case C_REGION_IR:
+                $(`#${pRegionId}_conrol_panel`).hide(); // interactive report
+                break;
+            case C_REGION_IG:
+                $(`#${pRegionId} .a-MediaBlock`).hide(); // interactive grid
+                break;
+        }
+
+        $(`#${pRegionId}`).on(C_APEX_AFTER_REFRESH, function(){
+            renderer.hideReportFilterPanel(pRegionId, pRegionType);
+        });
+    }; // hideReportFilterPanel
+
+
+    /**
+    Function: highlightButtonAccessKey
+        Makes a shortcut of a button visible
+
+    Parameters:
+        pButton - jQuery instance of the button to change
+        pShortcut - Shortcut letter to highlight
+    */
+    renderer.highlightButtonAccessKey = function(pButton, pShortcut){
+        const C_SHORTCUT_CLASS = 'accesskey',
+              C_DATA_SHORTCUT_CLASS = 'data-accesskey',
+              C_BUTTON_LABEL_CLASS = 't-Button-label';
+
+        let re, $label, label, shortcut;
+        re = new RegExp(pShortcut, 'i');
+
+        if(!pButton.find(`.${C_BUTTON_LABEL_CLASS}`)[0]){
+            pButton.html(`<span class='${C_BUTTON_LABEL_CLASS}'>${$this.html()}</span>`);
+        }
+        $label = pButton.find(`.${C_BUTTON_LABEL_CLASS}`);
+        label = $label.html();
+        shortcut = re.exec(label);
+
+        $label.html(
+            label.replace(re, `<span class='${C_SHORTCUT_CLASS}'>${shortcut}</span>`));
+
+        pButton.attr(C_SHORTCUT_CLASS, shortcut);
+        pButton.attr(C_DATA_SHORTCUT_CLASS, label.search(re) + 1);
+    }; // highlightButtonAccessKey
+
+
+    /**
+    Function: highlightRow
+        Method to optically select a row in a report
+        
+    Parameters:
+        pRegionId - ID of the region to select an entry in
+        pRow - jQuery object pointing to the data row to highlight
+        pSetFocus - Flag to indicate whether the row has to be focussed
+    */
+    renderer.highlightRow = function(pRegionId, pRow, pSetFocus){
+        if (pRow.length){
+            pRow.siblings().removeClass("adc-selected-row");
+            pRow.addClass("adc-selected-row");
+
+            if (pSetFocus) {
+                if (pRow.length > 0){
+                pRow.find('td:first-child a').focus();
+                }
+                else {
+                    let lastTriggeringElement = adc.controller.getLastTriggeringItem();
+                    if (lastTriggeringElement != ''){
+                        $(`#${lastTriggeringElement}`).focus();
+                    }
+                    else {
+                        $(`${C_BUTTON_FOCUS_SELECTOR}`).first().focus();
+                    };
+                };
+            }
+        } else {
+            const actTime = apex.date.format(new Date(), `HH24:MI:SS`);
+            
+            $(`#${pRegionId} ${C_REGION_NO_DATA_MSG_SELECTOR} ${C_REPORT_LAST_REFRESH_TIME_CLASS_SELECTOR}`).remove();
+            $(`#${pRegionId} ${C_REGION_NO_DATA_MSG_SELECTOR}`).append(`<div class="${C_REPORT_LAST_REFRESH_TIME_CLASS}"><br>(letzte Aktualisierung um ${actTime})</div>`);
+        };
+    }; // highlightRow
+
+  
+    /**
+    Function: showErrors
+        Maintains the error list on the page.
+
+    Parameter:
+        pErrors - Array of errors, instances of <error>
+    */
+    renderer.showErrors = function(pErrors){
+        
+        msg.clearErrors();
+        // Remove warning markup
+        $('.t-Form-warning')
         .removeClass('apex-page-item-warning')
         .parents('.t-Form-inputContainer').find('.t-Form-warning')
         .removeClass('t-Form-warning');
-          
-      msg.showErrors(pErrors);
-      // Change markup of warnings
-      $.each(pErrors, function(index, pError){
-        if (pError.type == 'warning'){
-          $(`#${pError.pageItem}`)
-            .removeClass('apex-page-item-error').addClass('apex-page-item-warning')
-            .parents('.t-Form-inputContainer').find('.t-Form-error')
-            .removeClass('t-Form-error').addClass('t-Form-warning');
-        }
-      });
-  }; // showErrors
-
-  
-  /**
-    Function: setItemLabel
-      Sets the label of a page item.
-
-    Parameters:
-      pItemId - ID of the page item to set the label of
-      pItemLabel - New item label
-   */
-  renderer.setItemLabel = function(pItemId, pItemLabel){
-	  $(`#${pItemId}_LABEL`).text(pItemLabel);
-  }; // setItemLabel
-
-    
-  /**
-    Function: setItemMandatory
-      Controls the mandatory status of a page item.
-
-    Parameters:
-      pItemId - Page item ID of the item to set mandatory or optional
-      pIsMandatory - Flag to set a page item mandatory (true) or optional (false)
-   */
-  renderer.setItemMandatory = function(pItemId, pIsMandatory){
-
-    var $mandatoryItem = $(`#${pItemId}_CONTAINER`);
-
-    $mandatoryItem.removeClass(C_REQUIRED_CLASS);
-    
-    if(pIsMandatory){
-      $mandatoryItem.addClass(C_REQUIRED_CLASS);
-    }
-  }; // setItemMandatory
-
-  
-  /**
-    Function: setModalDialogTitle
-      Sets the title of a modal dialog window.
-
-    Parameter:
-      pItemLabel - New item label
-   */
-  renderer.setModalDialogTitle = function(pTitle){
-    parent.$(C_MODAL_DIALOG_TITLE_SELECTOR).last().html(pTitle);
-  }; // setModalDialogTitle
-
-  
-  /**
-    Function: showDialog
-      Shows a message on the page
-
-    Parameter:
-      pStyle - One of the predefined styles information|warning|sucess|error
-      pMessage - Message of the dialog
-      pTitle - Optional title of the dialog
-      pFocusItem - Flag to indicate whether this dialog is a confirmation dialog
-   */
-  renderer.showDialog = function(pStyle, pMessage, pTitle, pFocusItem){
-    if (pFocusItem === undefined || pFocusItem == ""){
-      pFocusItem  = $('.t-Body').find('input, button').not(':hidden').first().attr('id');
-    };
-    const callback = function(){
-      setFocus(pFocusItem);
-    };
-    const options = {
-      "modern":true,
-      "title":pTitle,
-      "callback":callback};
-    switch (pStyle){
-      case 'ALERT':
-        options.style = 'error';
-        msg.showDialog("" + pMessage, options);
-        break;
-      case 'SUCCESS':
-        msg.showPageSuccess(pMessage);
-        $('.t-Button--closeAlert').one('click', function(){
-          setFocus(pFocusItem);
+            
+        msg.showErrors(pErrors);
+        // Change markup of warnings
+        $.each(pErrors, function(index, pError){
+            if (pError.type == 'warning'){
+                $(`#${pError.pageItem}`)
+                .removeClass('apex-page-item-error').addClass('apex-page-item-warning')
+                .parents('.t-Form-inputContainer').find('.t-Form-error')
+                .removeClass('t-Form-error').addClass('t-Form-warning');
+            }
         });
-        break;
-      case 'WARNING':
-        options.style = 'warning';
-        msg.showDialog("" + pMessage, options);
-        break;
-      case 'INFO':
-        options.style = 'information';
-        msg.showDialog("" + pMessage, options);
-        break;
-    };
+    }; // showErrors
+
+  
+    /**
+    Function: setItemLabel
+        Sets the label of a page item.
+
+    Parameters:
+        pItemId - ID of the page item to set the label of
+        pItemLabel - New item label
+    */
+    renderer.setItemLabel = function(pItemId, pItemLabel){
+        if (adc.utils.isNotEmpty(pItemId)){
+            $(`#${pItemId}_LABEL`).text(pItemLabel);
+        };
+    }; // setItemLabel
+
     
-  }; // showDialog
+    /**
+    Function: setItemMandatory
+        Controls the mandatory status of a page item.
 
-  
-  /**
-    Function: showSuccess
-      Shows a success message on the page
-
-    Parameter:
-      pMessage - Message to display
-   */
-  renderer.showSuccess = function(pMessage, pTitle, pStyle, pConfirm){
-    msg.showPageSuccess(pMessage);
-  }; // showSuccess
-
-
-  /**
-    Function setRegionContent
-      Method to set the content of a static region
-
-    Parameter:
-      pRegionId - Static ID of the region to set the context of
-      pContent - Content of the region
-      pHeader - Header of the region
-      pCSS - Accents for the header region
-   */
-  renderer.setRegionContent = function(pRegionId, pContent, pHeader, pCSS){
-    const $region = $(`#${pRegionId}`);
-    $region.find(C_REGION_BODY_SELECTOR).html(pContent);
-    $(`#${pRegionId}_heading`).html(pHeader);
-    $region.removeClass (function (index, className) {
-      return (className.match (/(^|\s)t-Region--accent\S+/g) || []).join(' ');
-    });
-    $region.addClass(pCSS);
-  }; // setRegionContent
-  
-  
-  /**
-    Function: setRegionHeader
-      Method to adjust the region header. Works with normal regions and tab regions.
-      
     Parameters:
-      pRegionId - ID of the region
-      pHeader - Header of the region
-      pRegionType - Type of the Region (Tab- or plain region)
-   */
-  renderer.setRegionHeader = function(pRegionId, pHeader, pRegionType){
-    switch(pRegionType){
-      case C_REGION_TAB:
-        $(`#SR_${pRegionId}_tab a span`).html(pHeader)
-        break;
-      default:
-        $('#' + pRegionId + C_REGION_TITLE_SELECTOR).html(pHeader);
-        break;
-    }
-  }; // setRegionHeader
+        pItemId - Page item ID of the item to set mandatory or optional
+        pIsMandatory - Flag to set a page item mandatory (true) or optional (false)
+    */
+    renderer.setItemMandatory = function(pItemId, pIsMandatory){
 
-  
-  /**
-    Function: showWaitSpinner
-      Shows a wait spinner on the page
+        var $mandatoryItem = $(`#${pItemId}_CONTAINER`);
+
+        if ($mandatoryItem.length){
+            $mandatoryItem.removeClass(C_REQUIRED_CLASS);
+
+            if(pIsMandatory){
+                $mandatoryItem.addClass(C_REQUIRED_CLASS);
+            }
+        }
+    }; // setItemMandatory
+
+
+    /**
+    Function: setModalDialogTitle
+        Sets the title of a modal dialog window.
 
     Parameter:
-      pFlag - Flag to indicate whether to show (true) a wait spinner or not (false)
-   */
-  renderer.showWaitSpinner = function(pFlag){
-    if(pFlag){
-      apex.util.showSpinner();
-    }
-    else{
-      $("#apex_wait_overlay").remove();
-      $(".u-Processing").remove();
+        pItemLabel - New item label
+    */
+    renderer.setModalDialogTitle = function(pTitle){
+        parent.$(C_MODAL_DIALOG_TITLE_SELECTOR).last().html(pTitle);
+    }; // setModalDialogTitle
+
+
+    /**
+    Function: showDialog
+        Shows a message on the page
+
+    Parameter:
+        pStyle - One of the predefined styles information|warning|sucess|error
+        pMessage - Message of the dialog
+        pTitle - Optional title of the dialog
+        pFocusItem - Flag to indicate whether this dialog is a confirmation dialog
+    */
+    renderer.showDialog = function(pStyle, pMessage, pTitle, pFocusItem){
+    if (adc.utils.isEmpty(pFocusItem)){
+        pFocusItem  = $('.t-Body').find('input, button').not(':hidden').first().attr('id');
     };
-  }; // showWaitSpinner
 
+    const callback = function(){
+        setFocus(pFocusItem);
+    };
+
+    const options = {
+        "modern":true,
+        "title":pTitle,
+        "okLabel": "Okay",
+        "returnFocusTo":pFocusItem,
+        "callback":callback};
+    switch (pStyle){
+        case 'ALERT':
+            options.style = 'error';
+            msg.showDialog("" + pMessage, options);
+            break;
+        case 'SUCCESS':
+            msg.showPageSuccess(pMessage);
+            $('.t-Button--closeAlert').one('click', function(){
+                setFocus(pFocusItem);
+            });
+            break;
+        case 'WARNING':
+            options.style = 'warning';
+            msg.showDialog("" + pMessage, options);
+            break;
+        case 'INFO':
+            options.style = 'information';
+            msg.showDialog("" + pMessage, options);
+            break;
+    };
+
+    }; // showDialog
+
+
+    /**
+    Function: showSuccess
+        Shows a success message on the page
+
+    Parameter:
+        pMessage - Message to display
+    */
+    renderer.showSuccess = function(pMessage, pTitle, pStyle, pConfirm){
+        msg.showPageSuccess(pMessage);
+    }; // showSuccess
+
+
+    /**
+    Function setRegionContent
+        Method to set the content of a static region
+
+    Parameter:
+        pRegionId - Static ID of the region to set the context of
+        pContent - Content of the region
+        pHeader - Header of the region
+        pCSS - Accents for the header region
+    */
+    renderer.setRegionContent = function(pRegionId, pContent, pHeader, pCSS){
+        const $region = $(`#${pRegionId}`);
+
+        if ($region.length){
+            $region.find(C_REGION_BODY_SELECTOR).html(pContent);
+            $(`#${pRegionId}_heading`).html(pHeader);
+            $region.removeClass (function (index, className) {
+                return (className.match (/(^|\s)t-Region--accent\S+/g) || []).join(' ');
+            });
+            $region.addClass(pCSS);
+        }
+    }; // setRegionContent
   
-  /** 
+  
+    /**
+    Function: setRegionHeader
+        Method to adjust the region header. Works with normal regions and tab regions.
+        
+    Parameters:
+        pRegionId - ID of the region
+        pHeader - Header of the region
+        pRegionType - Type of the Region (Tab- or plain region)
+    */
+    renderer.setRegionHeader = function(pRegionId, pHeader, pRegionType){
+    switch(pRegionType){
+        case C_REGION_TAB:
+            $(`#SR_${pRegionId}_tab a span`).html(pHeader)
+            break;
+        default:
+            $('#' + pRegionId + C_REGION_TITLE_SELECTOR).html(pHeader);
+            break;
+    }
+    }; // setRegionHeader
+
+
+    /**
+    Function: showWaitSpinner
+        Shows a wait spinner on the page
+
+    Parameter:
+        pFlag - Flag to indicate whether to show (true) a wait spinner or not (false)
+    */
+    renderer.showWaitSpinner = function(pFlag){
+        if(pFlag){
+            apex.util.showSpinner();
+        }
+        else{
+            $("#apex_wait_overlay").remove();
+            $(".u-Processing").remove();
+        };
+    }; // showWaitSpinner
+
+
+    /** 
     Function: submitPage
-      Method submits page with the given request if no errors are on the page.
+        Method submits page with the given request if no errors are on the page.
 
     Parameters:
-      pRequest - Request for the server
-      pMessage - Alert message warning the user if submit couldn't be executed due to errors on page
-   */
-  renderer.submitPage = function(pRequest, pMessage){
-    if ($(C_APEX_ERROR_CLASS_SEL).length == 0 && pMessage.length == 0) {
-      apex.page.submit({
-        "request" : pRequest,
-        "showWait" : false
-      });
-    }
-    else{
-      msg.alert(pMessage);
-    }
-  }; // submitPage
+        pRequest - Request for the server
+        pMessage - Alert message warning the user if submit couldn't be executed due to errors on page
+    */
+    renderer.submitPage = function(pRequest, pMessage){
+        if ($(C_APEX_ERROR_CLASS_SEL).length == 0 && adc.utils.isEmpty(pMessage)) {
+            apex.page.submit({
+                "request" : pRequest,
+                "showWait" : false
+            });
+        }
+        else{
+            msg.alert(pMessage);
+        }
+    }; // submitPage
 
 })(de.condes.plugin.adc.apex_theme_42, apex.message);

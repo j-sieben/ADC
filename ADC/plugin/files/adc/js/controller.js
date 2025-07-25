@@ -20,7 +20,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     <p>Change instructions to application page partly depend on APEX version used and especially on theme used. The plugin starts from Theme 42, however, all theme-specific implementations of the activities are swapped out into a separate file, which is linked as a namespace object when parameterizing the plugin as a component parameter. As per default, this is <de.condes.plugin.adc.apex_theme_42>, implementent in file <adcApex.js>, but it can be easily replaced by a client specific implementation.</p>
     <p>To work, this plugin must only be called during page load, no administration or parameterization is required.</p>
    */
-(function (adc, $, server) {
+(function (adc, $) {
   "use strict";
 
   /**
@@ -97,6 +97,8 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   /**
     Group: Constants
    */
+  const C_FILE_NAME = 'adc.js.controller.js';
+
   const C_CHANGE_EVENT = 'change';
   const C_CLICK_EVENT = 'click';
   const C_COMMAND_EVENT = 'command';
@@ -189,9 +191,8 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     if (props.triggeringElement.event === C_ENTER_EVENT && props.triggeringElement.id){
       // Place request in queue to process multiple events in sequence
                                                          
-      apex.debug.info(`Enqueueing Event '${C_ENTER_EVENT}'`);
-      $('body').queue(function(){
-        
+      apex.debug.info(`${C_FILE_NAME} - Enqueueing Event '${C_ENTER_EVENT}'`);
+      $('body').queue(function(){        
         adc.actions.showWaitSpinner(pWait);
         ctl.execute();
       });
@@ -279,7 +280,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       if (typeof pAction == 'function'){
         callback = pAction;
       }
-      else if(typeof pAction != 'undefined' && pAction.length > 0){
+      else if(adc.utils.isNotEmpty(pAction)){
         callback = new Function(pAction);
       }
       else {
@@ -294,11 +295,11 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
         $this
         .on(C_APEX_BEFORE_REFRESH, function (e) {
           $(this).off(C_CHANGE_EVENT);
-          apex.debug.info(`Event '${C_CHANGE_EVENT}' paused at ${pItemId}`);
+          apex.debug.info(`${C_FILE_NAME} - Event '${C_CHANGE_EVENT}' paused at ${pItemId}`);
         })
         .on(C_APEX_AFTER_REFRESH, function (e) {
           $(this).on(C_CHANGE_EVENT, props.eventData, callback);
-          apex.debug.info(`Event '${C_CHANGE_EVENT}' re-established at ${pItemId}`);
+          apex.debug.info(`${C_FILE_NAME} - Event '${C_CHANGE_EVENT}' re-established at ${pItemId}`);
         });
       }
     }
@@ -369,7 +370,6 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     );
     
     $(C_BODY).dequeue();
-    //setTimeout(function(){$(C_BODY).dequeue();}, 5000)
     props.lastTriggeringElement = props.triggeringElement.id;
   }; // executeCode
   
@@ -445,39 +445,12 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
           props.triggeringElement.id = pEvent.target.id;
       }
       if (props.triggeringElement.id){
-        apex.debug.info(`Event '${props.triggeringElement.event}' raised at Triggering element '${props.triggeringElement.id}'`);}
+        apex.debug.info(`${C_FILE_NAME} - Event '${props.triggeringElement.event}' raised at Triggering element '${props.triggeringElement.id}'`);}
       else {
         console.log(`Could not determine triggering element ID for ${pEvent.target}`);
       }
     }
   }; // getTriggeringElement
-
-
-  /**
-    Function: hexToChar
-      Method to cast a hex-string representation created with UTL_RAW.CAST_TO_RAW back to String.
-      
-      ADC submits its response as a hex string to circumvent escaping issues between JSON, JavaScript and JavaScript containing JSON.
-      As a consequence, the hex string must be converted back to a normal string in order to append it to the page.
-      
-    Parameter:
-      pRawString - Hex-encoded string to convert back to a normal string.
-      
-    Returns:
-      Converted String
-   */
-  const hexToChar = function (pRawString) {
-    var code = '';
-    var hexString;
-
-    if (pRawString) {
-      hexString = pRawString.toString();
-      for (let i = 0; i < hexString.length; i += 2) {
-        code += String.fromCharCode(parseInt(hexString.substr(i, 2), 16));
-      }
-    }
-    return code;
-  }; //hexToChar
   
 
   /** 
@@ -498,17 +471,17 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     if (C_PROTECTED_EVENTS.indexOf(e.event) > -1){
       if(props.quarantineList.indexOf(e.event) > -1){
         // Ignore event as it is on props.quarantineList
-        apex.debug.info(`Ignoring Event '${e.event}', on quarantine list`);
+        apex.debug.info(`${C_FILE_NAME} - Ignoring Event '${e.event}', on quarantine list`);
         isOkToRaiseEvent = false;
       }
       else{
         // Remove any existing events from the queue
-        apex.debug.info(`Clear event queue after locking an event`);
+        apex.debug.info(`${C_FILE_NAME} - Clear event queue after locking an event`);
         $('body').clearQueue();
 
         // Put event on props.quarantineList to prevent double execution
         props.quarantineList.push(e.event);
-        apex.debug.info(`Event '${e.event}' pushed on quarantine`);
+        apex.debug.info(`${C_FILE_NAME} - Event '${e.event}' pushed on quarantine`);
       }
     }
 /*
@@ -547,11 +520,9 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pCallback);
   }; // addButtonHandler
 
-
   /* +++++ END PRIVATE  ++++++++ */
 
-  /* ++++++++++ CORE FUNCTIONALITY ++++++++++ */
-  
+  /* ++++++++++ CORE FUNCTIONALITY ++++++++++ */  
 
   /**
     Function: bindObserverItems
@@ -582,7 +553,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
           }
         }
       });
-      apex.debug.info(`Additional page items: ${pSelector}`);
+      apex.debug.info(`${C_FILE_NAME} - Additional page items: ${pSelector}`);
     }
   }; // bindObserverItems
   
@@ -715,7 +686,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     let isDifferent = false;
    
     props.pageState.itemMap.forEach(function(itemValue, item, map){
-      apex.debug.info(`Comparing ${item}`);
+      apex.debug.info(`${C_FILE_NAME} - Comparing ${item}`);
       if (itemValue != apex.item(item).getValue()){
         isDifferent = true;
         return true;
@@ -735,19 +706,19 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pItemValue - Actual value of the page item
    */
   ctl.pauseChangeEventDuringRefresh = function(pItemId, pItemValue){
-    var $item = $(`#${pItemId}`);
-    var node = $item.get(0);
-    var itemEvents;
-    var temporalEvents;
+    const $item = $(`#${pItemId}`),
+          node = $item.get(0),
+          C_EVENTS = 'events';
+    let itemEvents, temporalEvents;
 
     if ($item.length > 0){
       // persist actually assigned event handlers
-      itemEvents = $._data(node, 'events');
+      itemEvents = $._data(node, C_EVENTS);
       
       // Make a deep copy of events, remove change and assign it to the item
       temporalEvents = $.extend(true, [], itemEvents);
       delete temporalEvents.change;
-      $._data(node, 'events', temporalEvents);
+      $._data(node, C_EVENTS, temporalEvents);
       
       $item
       .one(C_APEX_AFTER_REFRESH, function(e){
@@ -761,7 +732,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
           };
         }; 
         // restore original events
-        $._data(node, 'events', itemEvents);
+        $._data(node, C_EVENTS, itemEvents);
       });
     };
   }; // pauseChangeEventDuringRefresh
@@ -830,9 +801,9 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
         props.pageItems = Array.from(props.pageItems);
       }
       
-      apex.debug.info(`ADC handles event ${props.triggeringElement.event}`);
-      apex.debug.info(`ADC sends pageItems ${props.pageItems.join()}`);
-      server.plugin(
+      apex.debug.info(`${C_FILE_NAME} - ADC handles event ${props.triggeringElement.event}`);
+      apex.debug.info(`${C_FILE_NAME} - ADC sends pageItems ${props.pageItems.join()}`);
+      apex.server.plugin(
         props.ajaxIdentifier,
         {
           "x01": props.triggeringElement.id,
@@ -879,7 +850,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     props.eventData.pageItems = props.pageItems;
 
     if (pAction.attribute02) {
-      apex.debug.info('Required pageItems: ' + pAction.attribute02);
+      apex.debug.info(`${C_FILE_NAME} - Required pageItems: ${pAction.attribute02}`);
       props.pageItems = pAction.attribute02.split(',');
     }
     
@@ -891,15 +862,15 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
     // Prepare page for ADC usage
     bindEvents();
-    apex.debug.info('ADC initialized');
+    apex.debug.info(`${C_FILE_NAME} - ADC initialized`);
 
     // execute initial JavaScript code passed in from the server
-    executeCode(hexToChar(pAction.attribute04));
+    executeCode(adc.utils.hexToChar(pAction.attribute04));
   }; // init
 
   /* +++++++++ END CORE FUNCTIONALITY +++++++++++ */
 
-}(de.condes.plugin.adc, apex.jQuery, apex.server));
+}(de.condes.plugin.adc, apex.jQuery));
 
 
 // Interface to APEX plugin mechanism.

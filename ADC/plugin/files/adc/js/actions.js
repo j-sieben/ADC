@@ -38,7 +38,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
   const C_BODY = 'body';
   const C_INPUT_SELECTOR = ':input:visible:not(button)';
   const C_DOCUMENT = 'DOCUMENT';
-  const C_DATEI_NAME = 'de.condes.plugin.adc.actions.js';
+  const C_FILE_NAME = 'adc.js.actions.js';
 
   // Region Type constants
   const C_REGION_CR = 'ClassicReport';
@@ -51,9 +51,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
   // Selector constants
   const C_REGION_CR_SELECTOR = '.t-Report-report tbody tr';
   const C_REGION_IR_SELECTOR = '.a-IRR-table tr:not(:first-child)';
-  const C_REGION_IR_ROW_SELECTOR = '.t-fht-tbody .a-IRR-table tr';
-  const C_REGION_IR_FIRST_ROW_SELECTOR = `${C_REGION_IR_ROW_SELECTOR}:nth-child(2)`;
-  const C_ACTION_LINK_SELECTOR = 'a[data-action]';
+  const C_REGION_IR_ROW_SELECTOR = '.t-fht-tbody .a-IRR-table tr:not(:first-child)';
   
   // Command constants
   const C_COMMAND = 'COMMAND';
@@ -80,6 +78,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
   // Modal dialog constants
   const C_MODAL_DIALOG_CLASS = 'ui-dialog';
   const C_MODAL_DIALOG_SELECTOR = '.ui-dialog-content';
+
 
   // Global vars
   adc.actions = adc.actions ||{};
@@ -260,11 +259,11 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
    */
   actions.cancelModalDialog = function(pTriggeringItemId, pCheckChanges){
     const cancelDialog = function(pTriggeringItemId){
-      if (typeof pTriggeringItemId != 'undefined' && pTriggeringItemId != ''){
+      if (adc.utils.isNotEmpty(pTriggeringItemId)){
         parent.$('#' + pTriggeringItemId).trigger(C_MODAL_DIALOG_CANCEL_EVENT);
       }
       else{
-        if (pTriggeringItemId == ''){
+        if (adc.utils.isEmpty(pTriggeringItemId)){
           pTriggeringItemId = parent.$(C_MODAL_DIALOG_SELECTOR).data(C_MODAL_DIALOG_CLASS).opener.attr('id');
           parent.$(C_MODAL_DIALOG_SELECTOR).data(C_MODAL_DIALOG_CLASS).opener.trigger(C_MODAL_DIALOG_CANCEL_EVENT);
         }
@@ -274,7 +273,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
         };
       };
     
-      apex.debug.info('cancelModalDialog - triggeringElement:' + pTriggeringItemId);
+      apex.debug.info(`${C_FILE_NAME} - cancelModalDialog - triggeringElement: ${pTriggeringItemId}`);
       apex.navigation.dialog.cancel(true);
     };
     
@@ -312,7 +311,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
         };
       };
 */    
-      apex.debug.info('closeModalDialog - triggeringElement:' + pTriggeringItemId);
+      apex.debug.info(`${C_FILE_NAME} - closeModalDialog - triggeringElement: ${pTriggeringItemId}`);
       apex.navigation.dialog.close(true, pPageItems);
     };
       
@@ -449,10 +448,10 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       pSetFocus - Flag to indicate whether selecting a row upon initializitaion or refresh also sets the focus to the selected row.
    */
   actions.getReportSelection = function(pReportId, pItemId, pColumn, pSetFocus){
-    const $report = $(`#${pReportId}`);
-    const reportType = getRegionType(pReportId);
-    let callback;
-    let pkValue;
+    const $report = $(`#${pReportId}`),
+          reportType = getRegionType(pReportId);
+    let callback,
+        pkValue;
     
     // generate callback: If a report item is present, store the selected row there, call ADC with the selected ID otherwise
     if(pItemId){
@@ -513,17 +512,37 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       case C_REGION_IR:
         $report
           .on(C_CLICK_EVENT, C_REGION_IR_SELECTOR, function(){
-            apex.debug.info(`${C_DATEI_NAME} - click detected`);
+            apex.debug.info(`${C_FILE_NAME} - ${C_CLICK_EVENT} detected`);
             pkValue = $(this).find('td [data-id]').data('id');
             pSetFocus = true;
             callback(pkValue);
           })
           .on(C_DOUBLE_CLICK_EVENT, C_REGION_IR_SELECTOR, function(e){
-            apex.debug.info(`${C_DATEI_NAME} - doubleclick detected`);
+            apex.debug.info(`${C_FILE_NAME} - ${C_DOUBLE_CLICK_EVENT} detected`);
             $(this).find('a')[0].click();
           })
+          .on(C_KEYDOWN_EVENT, C_REGION_IR_ROW_SELECTOR, function(e){
+              // tab forward
+              if (e.which === C_TABKEY && e.shiftKey === false){
+                $(this).next().click();
+                if ($(this).is(':last-child')){
+                  apex.debug.log(`${C_FILE_NAME} - tab key from last row leaves IR`);
+                } else{
+                  return false;
+                };
+             }
+              else if (e.which === C_TABKEY && e.shiftKey === true){
+                // tab backwards
+                $(this).prev().click();
+                if ($(this).is(':nth-child(2)')){
+                  apex.debug.log(`${C_FILE_NAME} - tab key backwards from first row leaves IR`);
+                } else{
+                  return false;
+                };
+              };
+          })
           .on(C_SELECTION_CHANGE_EVENT, function(e, pkValue){
-            apex.debug.log(`${C_DATEI_NAME} - adcselectionchange detected`);
+            apex.debug.log(`${C_FILE_NAME} - ${C_SELECTION_CHANGE_EVENT} detected`);
             if(pkValue){
               if(apex.item(pItemId).getValue() != pkValue){
               apex.item(pItemId).setValue(pkValue);
@@ -536,7 +555,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
             };
           })
           .on(C_APEX_AFTER_REFRESH, function(e){
-            apex.debug.log(`${C_DATEI_NAME} - apexafterrefresh detected`);
+            apex.debug.log(`${C_FILE_NAME} - ${C_APEX_AFTER_REFRESH} detected`);
             actions.selectEntry(pReportId, apex.item(pItemId).getValue(), gFocusAfterRefresh[pReportId]);
             gFocusAfterRefresh[pReportId] = false;
           });
@@ -692,7 +711,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
         };
         itemValue = apex.item(item).getValue();
         pageState.itemMap.set(item, itemValue);
-        apex.debug.info(`Saving ${item} with value ${itemValue}`);
+        apex.debug.info(`${C_FILE_NAME} - Saving ${item} with value ${itemValue}`);
       }
    );
     adc.controller.setPageState(pageState);
@@ -806,10 +825,9 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
         }
         break;
       case C_REGION_IR:
-        if(pEntryId){
+        if(adc.utils.isNotEmpty(pEntryId)){
           $entry = $(C_IR_SELECTOR + C_DATA_ID_SELECTOR).parent('td').parent('tr');
-        }
-        if(pEntryId == '' || $entry.length == 0){
+        } else {
           $entry = $(C_IR_SELECTOR + C_IR_FIRST_ROW_SELECTOR);
           if ($entry.length > 0){
             pEntryId = $entry.find('[data-id]').data('id');
@@ -861,43 +879,17 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       pAction - Name of the APEX action on the page
    */
   actions.setApexActionAccessKey = function (pAction){
-    const C_SHORTCUT_CLASS = 'accesskey';
-    const C_DATA_SHORTCUT_CLASS = 'data-accesskey';
-    const C_BUTTON_LABEL_CLASS = 't-Button-label';
+    const $buttons = $(`[data-action='${pAction}']`);
+    let $this,
+        accesskey = apex.actions.lookup(pAction).shortcut;
 
-    var re, $label, label, shortcut;
-    var $this;
-
-    var $buttons = $(`[data-action='${pAction}']`);
-    var accesskey = apex.actions.lookup(pAction).shortcut;
-
-    if (typeof accesskey == 'undefined'){
-      accesskey = '';
-    };
-    if(accesskey !== ''){
+    if (adc.utils.isNotEmpty(accesskey)){
       accesskey = accesskey.slice(-1);
     }
     if(accesskey.length > 0){
-      re = new RegExp(accesskey, 'i');
       $buttons.each(function(){
         $this = $(this);
-
-        if(!$this.find(`.${C_BUTTON_LABEL_CLASS}`)[0]){
-          $this.html(`<span class='${C_BUTTON_LABEL_CLASS}'>${$this.html()}</span>`);
-        }
-        $label = $this.find(`.${C_BUTTON_LABEL_CLASS}`);
-        label = $label.html();
-        shortcut = re.exec(label);
-
-        $label.html(
-            label.replace(re,
-                          `<span class='${C_SHORTCUT_CLASS}'>${shortcut}</span>`));
-
-        
-        //$this.removeAttr(C_SHORTCUT_CLASS);
-        //$this.removeAttr(C_DATA_SHORTCUT_CLASS);
-        $this.attr('accesskey', shortcut);
-        $this.attr('data-accesskey', label.search(re));
+        adc.renderer.highlightButtonShortcut($this, accesskey);
       });
     }
   }; // setApexActionAccessKey
@@ -924,6 +916,8 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
         case C_SHOW_DISABLE:
           apex.item(pItemId).show();
           adc.renderer.disableElement(pItemId);
+          //setTimeout(function(){adc.renderer.disableElement(pItemId);}, 500);
+          
           // Beside disabling the item, all events from the queue must be removed
           // to assure that a disabled button can not raise a click event
           $(C_BODY).clearQueue();
@@ -933,7 +927,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
           adc.renderer.enableElement(pItemId);
           break;
         default:
-          apex.debug.info(`Visual State ${pVisibleState} not supported`);
+          apex.debug.info(`${C_FILE_NAME} - Visual State ${pVisibleState} not supported`);
       }
 
       if(pLabel){
@@ -1019,12 +1013,19 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
        pItemId - ID of the item to set the focus to
    */
   actions.setFocus = function(pItemId){
-    if (pItemId){        
-     if($(`div#${pItemId}.js-apex-region`).length > 0){
-        $(`#${pItemId}_ir .adc-selected-row a`).focus();
+    if (adc.utils.isNotEmpty(pItemId)){    
+      const selector = `#${pItemId}`;
+      if($(`div${selector}.js-apex-region`).length > 0){
+        $(`${selector}_ir .adc-selected-row a`).focus();
+      }
+      // wait for the register content to load
+      else if ($(`.t-TabsRegion ${selector}`).length > 0){
+        setTimeout(function(){
+            $(selector).focus();
+        }, 300);
       }
       else{
-        $(`#${pItemId}`).focus();
+        $(selector).focus();
       }
     }
   }; // setFocus
@@ -1041,8 +1042,10 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
    */
   actions.setItemValue = function (pSelector, pValue){
     forEach(pSelector, function (){
-      var pItemId = $(this).attr('id');
-      apex.item(pItemId).setValue(pValue, pValue, true);
+      const pItemId = $(this).attr('id');
+      if (adc.utils.isNotEmpty(pItemId)){
+        apex.item(pItemId).setValue(pValue, pValue, true);
+      };
     });
   }; // setItemValue
 
@@ -1062,8 +1065,8 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     $.each(pPageItems, function (){
       if ((this.value || 'FOO') !== (apex.item(this.id).getValue() || 'FOO')){
         // third attribute surpresses the change event if set to true
-        apex.item(this.id).setValue(this.value, this.value, true);
-        apex.debug.info(`Item '${this.id}' set to '${this.value}'`);
+        apex.item(this.id).setValue(this.value, null, true);
+        apex.debug.info(`${C_FILE_NAME} - Item '${this.id}' set to '${this.value}'`);
       }
     });
   }; // setItemValues
@@ -1087,14 +1090,16 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
   actions.setMandatory = function (pSelector, pIsMandatory, pVisualState){
     forEach(pSelector, function (){
       var pItemId = $(this).attr('id').replace('_CONTAINER', '');
-      if (pIsMandatory){
-        adc.controller.pushPageItem(pItemId);
-        actions.setDisplayState(pSelector, C_SHOW_ENABLE);
-      } 
-      else{
-        actions.setDisplayState(pSelector, pVisualState);
+      if (adc.utils.isNotEmpty(pItemId)){
+        if (pIsMandatory){
+            adc.controller.pushPageItem(pItemId);
+            actions.setDisplayState(pSelector, C_SHOW_ENABLE);
+        } 
+        else{
+            actions.setDisplayState(pSelector, pVisualState);
+        }
+        adc.renderer.setItemMandatory(pItemId, pIsMandatory);
       }
-      adc.renderer.setItemMandatory(pItemId, pIsMandatory);
     });
   }; // setMandatory
 
