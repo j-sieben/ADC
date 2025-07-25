@@ -310,7 +310,7 @@ de.condes.plugin.adc.apex_theme_42 = {};
         pShortcut - Shortcut letter to highlight
     */
     renderer.highlightButtonAccessKey = function(pButton, pShortcut){
-        const C_SHORTCUT_CLASS = 'accesskey',
+        const C_SHORTCUT_CLASS = 'adc-accesskey',
               C_DATA_SHORTCUT_CLASS = 'data-accesskey',
               C_BUTTON_LABEL_CLASS = 't-Button-label';
 
