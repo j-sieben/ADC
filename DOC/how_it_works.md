@@ -10,7 +10,7 @@ Plus, it's by no means easy to decide which DA causes what behaviour on the page
 
 Other required options are not avaiable at all. As an example, it is impossible to change a page item from mandatory to optional using a Dynamic Action. The only workaround is to create to identical input items and show or hide one or the other. As a mandatory field must be validated and an optional field must not be validated for non-null values, this also has to be taken into account when processing the page. This all is very cumbersome and hard to achieve.
 
-This all leads to the best practice to try and avoid overly complex forms in APEX and, should this not be possible, avoid DA in favour of a specialized JavaScript file implementing the necessary logic in JavaScript.
+This all leads to the best practice to try and avoid overly complex forms in APEX and, should this not be possible, avoid DA in favour of a specialized JavaScript file implementing the necessary logic in JavaScript. As an example, I have found a publicy available sample application consisting of around 10 Apex pages, accompanied by a JavaScript file with more than 15K lines of code. This for certain is not low code anymore.
 
 ## The approach of ADC
 Here, ADC steps in with a new approach. Rather than trying to control many DA on a page, all of them are replaced by a single DA, controlling a greater number of items in one go. Despite the DA approach of implementing logic outside the server in JavaScript, ADC implements the logic within the database, moving case trees to a SQL expression.
