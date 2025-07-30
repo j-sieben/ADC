@@ -157,6 +157,29 @@ de.condes.plugin.adc.apex_theme_42 = {};
 
 
     /**
+    Function: decorateAccessKey
+        Decorates an access key for a button that is maintained by an apex.action
+
+    Parameter
+        pAction - APEX action object as defined by apex.actions interface
+        pArgs - Optional arguments passed in by APEX
+    */
+    renderer.disableElement = function (pAction, pArgs){
+        let $buttons, accesskey;
+        if (adc_util.isNotEmpty(pAction.shortcut)){
+            // Try to find buttons that are connected to this action
+            $buttons = $(`[data-action='${pAction.name}']`);
+            accesskey = pAction.shortcut.slice(-1);
+            if(accesskey.length > 0){
+                $($buttons).each(function(idx, button){
+                    renderer.highlightButtonAccessKey(pAction.name, accesskey);
+                });
+            }
+        }
+    }
+
+
+    /**
     Function: disableElement
         Disables a page item. Handles deactivation of 
 
@@ -311,7 +334,7 @@ de.condes.plugin.adc.apex_theme_42 = {};
     */
     renderer.highlightButtonAccessKey = function(pButton, pShortcut){
         const C_SHORTCUT_CLASS = 'adc-accesskey',
-              C_DATA_SHORTCUT_CLASS = 'data-accesskey',
+              C_ACCESSKEY_ATTRIBUTE = 'accesskey',
               C_BUTTON_LABEL_CLASS = 't-Button-label';
 
         let re, $label, label, shortcut;
@@ -321,14 +344,14 @@ de.condes.plugin.adc.apex_theme_42 = {};
             pButton.html(`<span class='${C_BUTTON_LABEL_CLASS}'>${$this.html()}</span>`);
         }
         $label = pButton.find(`.${C_BUTTON_LABEL_CLASS}`);
-        label = $label.html();
+        label = $label.text();
         shortcut = re.exec(label);
 
         $label.html(
             label.replace(re, `<span class='${C_SHORTCUT_CLASS}'>${shortcut}</span>`));
 
         pButton.attr(C_SHORTCUT_CLASS, shortcut);
-        pButton.attr(C_DATA_SHORTCUT_CLASS, label.search(re) + 1);
+        pButton.attr(C_ACCESSKEY_ATTRIBUTE, pShortcut);
     }; // highlightButtonAccessKey
 
 

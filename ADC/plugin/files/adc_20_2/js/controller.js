@@ -1,3 +1,4 @@
+@ -1,923 +1,910 @@
 var de = de || {};
 de.condes = de.condes || {};
 de.condes.plugin = de.condes.plugin || {};
@@ -17,10 +18,10 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     <p>The controller works on the server side with a decision tree that computes a list of action instructions for a given situation.<br>
     During the calculation, the state of the application page can be changed by actions, which leads to a recursive check of the changed page state against the decision tree. The response includes all change instructions for the application page, including the recursive change instructions.</p>
     <p>The ADC response is delivered in the form of a script with an ID and inserted on the page by this component. Thus, all included actions are executed directly. Afterwards, the plugin removes the server's response, as it is no longer needed.</p>
-    <p>Change instructions to application page partly depend on APEX version used and especially on theme used. The plugin starts from Theme 42, however, all theme-specific implementations of the activities are swapped out into a separate file, which is linked as a namespace object when parameterizing the plugin as a component parameter. As per default, this is <de.condes.plugin.adc.apex_theme_42>, implementent in file <adcApex.js>, but it can be easily replaced by a client specific implementation.</p>
+    <p>Change instructions to application page partly depend on APEX version used and especially on theme used. The plugin starts from Theme 42, however, all theme-specific implementations of the activities are swapped out into a separate file, which is linked as a namespace object when parameterizing the plugin as a component parameter. As per default, this is <de.condes.plugin.adc.apex_42_5_1>, implementent in file <adcApex.js>, but it can be easily replaced by a client specific implementation.</p>
     <p>To work, this plugin must only be called during page load, no administration or parameterization is required.</p>
    */
-(function (adc, $) {
+(function (adc, $, server) {
   "use strict";
 
   /**
@@ -97,8 +98,6 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   /**
     Group: Constants
    */
-  const C_FILE_NAME = 'adc.js.controller.js';
-
   const C_CHANGE_EVENT = 'change';
   const C_CLICK_EVENT = 'click';
   const C_COMMAND_EVENT = 'command';
@@ -191,8 +190,9 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     if (props.triggeringElement.event === C_ENTER_EVENT && props.triggeringElement.id){
       // Place request in queue to process multiple events in sequence
                                                          
-      apex.debug.info(`${C_FILE_NAME} - Enqueueing Event '${C_ENTER_EVENT}'`);
-      $('body').queue(function(){        
+      apex.debug.info(`Enqueueing Event '${C_ENTER_EVENT}'`);
+      $('body').queue(function(){
+        
         adc.actions.showWaitSpinner(pWait);
         ctl.execute();
       });
@@ -280,7 +280,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       if (typeof pAction == 'function'){
         callback = pAction;
       }
-      else if(adc.utils.isNotEmpty(pAction)){
+      else if(typeof pAction != 'undefined' && pAction.length > 0){
         callback = new Function(pAction);
       }
       else {
@@ -289,17 +289,18 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
       // ADC unbinds event handlers bound to this item to prevent problems between the different handlers
       $this
+        //.off(pEvent)
         .on(pEvent, props.eventData, callback);
       if (pEvent === C_CHANGE_EVENT) {
         // CHANGE event should not be called after APEXREFRESH, so pause it until apexafterrefresh
         $this
         .on(C_APEX_BEFORE_REFRESH, function (e) {
           $(this).off(C_CHANGE_EVENT);
-          apex.debug.info(`${C_FILE_NAME} - Event '${C_CHANGE_EVENT}' paused at ${pItemId}`);
+          apex.debug.info(`Event '${C_CHANGE_EVENT}' paused at ${pItemId}`);
         })
         .on(C_APEX_AFTER_REFRESH, function (e) {
           $(this).on(C_CHANGE_EVENT, props.eventData, callback);
-          apex.debug.info(`${C_FILE_NAME} - Event '${C_CHANGE_EVENT}' re-established at ${pItemId}`);
+          apex.debug.info(`Event '${C_CHANGE_EVENT}' re-established at ${pItemId}`);
         });
       }
     }
@@ -370,6 +371,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     );
     
     $(C_BODY).dequeue();
+    setTimeout(function(){$(C_BODY).dequeue();}, 5000)
     props.lastTriggeringElement = props.triggeringElement.id;
   }; // executeCode
   
@@ -445,12 +447,39 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
           props.triggeringElement.id = pEvent.target.id;
       }
       if (props.triggeringElement.id){
-        apex.debug.info(`${C_FILE_NAME} - Event '${props.triggeringElement.event}' raised at Triggering element '${props.triggeringElement.id}'`);}
+        apex.debug.info(`Event '${props.triggeringElement.event}' raised at Triggering element '${props.triggeringElement.id}'`);}
       else {
         console.log(`Could not determine triggering element ID for ${pEvent.target}`);
       }
     }
   }; // getTriggeringElement
+
+
+  /**
+    Function: hexToChar
+      Method to cast a hex-string representation created with UTL_RAW.CAST_TO_RAW back to String.
+      
+      ADC submits its response as a hex string to circumvent escaping issues between JSON, JavaScript and JavaScript containing JSON.
+      As a consequence, the hex string must be converted back to a normal string in order to append it to the page.
+      
+    Parameter:
+      pRawString - Hex-encoded string to convert back to a normal string.
+      
+    Returns:
+      Converted String
+   */
+  const hexToChar = function (pRawString) {
+    var code = '';
+    var hexString;
+
+    if (pRawString) {
+      hexString = pRawString.toString();
+      for (let i = 0; i < hexString.length; i += 2) {
+        code += String.fromCharCode(parseInt(hexString.substr(i, 2), 16));
+      }
+    }
+    return code;
+  }; //hexToChar
   
 
   /** 
@@ -471,17 +500,17 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     if (C_PROTECTED_EVENTS.indexOf(e.event) > -1){
       if(props.quarantineList.indexOf(e.event) > -1){
         // Ignore event as it is on props.quarantineList
-        apex.debug.info(`${C_FILE_NAME} - Ignoring Event '${e.event}', on quarantine list`);
+        apex.debug.info(`Ignoring Event '${e.event}', on quarantine list`);
         isOkToRaiseEvent = false;
       }
       else{
         // Remove any existing events from the queue
-        apex.debug.info(`${C_FILE_NAME} - Clear event queue after locking an event`);
+        apex.debug.info(`Clear event queue after locking an event`);
         $('body').clearQueue();
 
         // Put event on props.quarantineList to prevent double execution
         props.quarantineList.push(e.event);
-        apex.debug.info(`${C_FILE_NAME} - Event '${e.event}' pushed on quarantine`);
+        apex.debug.info(`Event '${e.event}' pushed on quarantine`);
       }
     }
 /*
@@ -519,11 +548,9 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       },
       pCallback);
   }; // addButtonHandler
-
   /* +++++ END PRIVATE  ++++++++ */
 
-  /* ++++++++++ CORE FUNCTIONALITY ++++++++++ */  
-
+  /* ++++++++++ CORE FUNCTIONALITY ++++++++++ */
   /**
     Function: bindObserverItems
       Method identifies all elements whose values must be sent to the database with any request.
@@ -553,7 +580,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
           }
         }
       });
-      apex.debug.info(`${C_FILE_NAME} - Additional page items: ${pSelector}`);
+      apex.debug.info(`Additional page items: ${pSelector}`);
     }
   }; // bindObserverItems
   
@@ -655,9 +682,20 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     Parameter:
       pPageState - Instance of the actually valid page state
    */
-  ctl.setPageState = function(pPageState) {
-    props.pageState = pPageState;
-  }; // setPageState
+  ctl.setPageState = function(pPageItems) {
+    let itemValue;
+    props.pageState.itemMap.clear();
+    
+    $.each(pPageItems.itemMap, function(idx, item){
+        if(item.id){
+          item = item.id;
+        };
+        itemValue = apex.item(item).getValue();
+        props.pageState.itemMap.set(item, itemValue);
+        apex.debug.info(`Saving ${item} with value ${itemValue}`);
+      }
+    );    
+  }; // getPageState
 
 
   /**
@@ -681,16 +719,23 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       
       Is used in conjunction with {@see: rememberprops.pageItemstatus} which has saved the initial page status before.
       Compares the actual values against props.pageState and returns true if at least one value has changed.
+      
+              
+                                                                                                         
    */
   ctl.hasUnsavedChanges = function(){
     let isDifferent = false;
    
-    props.pageState.itemMap.forEach(function(itemValue, item, map){
-      apex.debug.info(`${C_FILE_NAME} - Comparing ${item}`);
-      if (itemValue != apex.item(item).getValue()){
-        isDifferent = true;
-        return true;
+    $.each(props.pageState.itemMap, function(item){
+      item = itemList[item];
+      if(item.id){
+        item = item.id;
       };
+      apex.debug.info(`Comparing ${item}`);
+      if (props.pageState.itemMap.has(item) && props.pageState.itemMap.get(item) != apex.item(item).getValue()){
+        isDifferent = true;
+        return false;
+      }
     });
     return isDifferent;
   }; // hasUnsavedChanges
@@ -706,19 +751,19 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       pItemValue - Actual value of the page item
    */
   ctl.pauseChangeEventDuringRefresh = function(pItemId, pItemValue){
-    const $item = $(`#${pItemId}`),
-          node = $item.get(0),
-          C_EVENTS = 'events';
-    let itemEvents, temporalEvents;
+    var $item = $(`#${pItemId}`);
+    var node = $item.get(0);
+    var itemEvents;
+    var temporalEvents;
 
     if ($item.length > 0){
       // persist actually assigned event handlers
-      itemEvents = $._data(node, C_EVENTS);
+      itemEvents = $._data(node, 'events');
       
       // Make a deep copy of events, remove change and assign it to the item
       temporalEvents = $.extend(true, [], itemEvents);
       delete temporalEvents.change;
-      $._data(node, C_EVENTS, temporalEvents);
+      $._data(node, 'events', temporalEvents);
       
       $item
       .one(C_APEX_AFTER_REFRESH, function(e){
@@ -732,7 +777,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
           };
         }; 
         // restore original events
-        $._data(node, C_EVENTS, itemEvents);
+        $._data(node, 'events', itemEvents);
       });
     };
   }; // pauseChangeEventDuringRefresh
@@ -801,9 +846,9 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
         props.pageItems = Array.from(props.pageItems);
       }
       
-      apex.debug.info(`${C_FILE_NAME} - ADC handles event ${props.triggeringElement.event}`);
-      apex.debug.info(`${C_FILE_NAME} - ADC sends pageItems ${props.pageItems.join()}`);
-      apex.server.plugin(
+      apex.debug.info(`ADC handles event ${props.triggeringElement.event}`);
+      apex.debug.info(`ADC sends pageItems ${props.pageItems.join()}`);
+      server.plugin(
         props.ajaxIdentifier,
         {
           "x01": props.triggeringElement.id,
@@ -850,7 +895,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     props.eventData.pageItems = props.pageItems;
 
     if (pAction.attribute02) {
-      apex.debug.info(`${C_FILE_NAME} - Required pageItems: ${pAction.attribute02}`);
+      apex.debug.info('Required pageItems: ' + pAction.attribute02);
       props.pageItems = pAction.attribute02.split(',');
     }
     
@@ -862,16 +907,14 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
     // Prepare page for ADC usage
     bindEvents();
-    apex.debug.info(`${C_FILE_NAME} - ADC initialized`);
+    apex.debug.info('ADC initialized');
 
     // execute initial JavaScript code passed in from the server
-    executeCode(adc.utils.hexToChar(pAction.attribute04));
+    executeCode(hexToChar(pAction.attribute04));
   }; // init
 
   /* +++++++++ END CORE FUNCTIONALITY +++++++++++ */
-
-}(de.condes.plugin.adc, apex.jQuery));
-
+}(de.condes.plugin.adc, apex.jQuery, apex.server));
 
 // Interface to APEX plugin mechanism.
 // For some reason I don"t really understand, it is impossible
