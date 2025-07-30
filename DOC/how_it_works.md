@@ -80,7 +80,7 @@ If an event handler of any of the monitored page items fires, all actual element
 The plugin does its best to read the default values of the relevant page items during the render phase. If it is succesful in reading the default values, all initial rules are applied before the page shows for the first time, leading to immediate initialization of the form according to the initalization rules. no additional roundtrip is required.
 
 ### Upon occurence of a relevant event
-If an event is raised (`change` event on items of interes or `click` event of bound buttons), the firing element is defined and all relevant field values are collected and sent to the session state. Based on that information, the database limits the rules that get evaluated in order to calculate the response.
+If an event is raised (`change` event on items of interes or `click` event of bound buttons), the firing element is defined and all relevant field values are collected and combined into the actual page state. Based on that information, the database limits the rules that get evaluated in order to calculate the response.
 
 ### At the database
 
