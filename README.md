@@ -2,11 +2,11 @@
 
 ## Motivation
 
-ADC is an implementation proposal for a dynamic controller for APEX applications. It extends and partially replaces the more static controller functionality of APEX by supporting controler activities on the rendered page dynamically.
+ADC is an implementation proposal for a dynamic controller for APEX applications. It extends and partially replaces the more static controller functionality of APEX by supporting controller activities on the rendered page dynamically.
 
-"Static" in this context means the stored calculations, validations, processes and branches offered by APEX-IDE within the scope of the normal request-response lifecycle. Server side conditions and authorization schemes are also part of the static controler functionality.
+"Static" in this context means the stored calculations, validations, processes and branches offered by APEX-IDE within the scope of the normal request-response lifecycle. Server side conditions and authorization schemes are also part of the static controller functionality.
 
-"Dynamic" on the other hand refers to anything that is processed while the page is shown to the user. The only declarative option available for this functionality has been Dynamic Actions so far. DA were meant as a declarative wrapper around JavaScript code on the page to enable the developer to declaratively define common tasks such as hiding or showing page items. Another focus is partial page refresh for regions which support it or select lists and the like. It was not meant to form a fully functional controler though.
+"Dynamic" on the other hand refers to anything that is processed while the page is shown to the user. The only declarative option available for this functionality has been Dynamic Actions so far. DA were meant as a declarative wrapper around JavaScript code on the page to enable the developer to declaratively define common tasks such as hiding or showing page items. Another focus is partial page refresh for regions which support it or select lists and the like. It was not meant to form a fully functional controller though.
 
 As form pages become complex, this becomes a severe drawback. The amount of DAs on the page quickly raises beyond easily manageable numbers. The resulting page faces the same problems as the well known "trigger hell" in PL/SQL database programming.
 
