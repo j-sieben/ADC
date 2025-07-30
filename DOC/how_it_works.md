@@ -91,18 +91,23 @@ Any error that occurred during execution is collected at an error object and pas
 The rules are evaluated using plain SQL. To allow for this, all rules get converted to a decision table that is stored within the meta data tables of ADC. As an example of the SQL created, review the following query the plugin created based on the rule of our example (code is for database version 12c, 11g is supported as well):
 
 ```
-  with session_state as(
+  with page_state as(
        select /*+ no_merge */
-              adc_admin.get_firing_item firing_item,
-              adc_api.get_number('P1_PARENT') P1_PARENT
+              ...
+              adc_api.get_event p_event,
+              adc_api.get_event_data p_event_data,
+              adc_api.get_firing_item p_firing_item,
+              adc_api.get_number('P1_PARENT') P1_PARENT,
+              1234 p_crg_id
          from dual)
 select cru_id, cru_name, cru_firing_items,
        cra_cpi_id, cra_cat_id, cra_attribute
   from adc_bl_rules
-  join session_state
-    on instr(cru_firing_items, firing_item) > 0
- where (cru_id = 98 and (has_children(p1_parent) = adc_util.C_TRUE))
-    or (cru_id = 99 and (has_children(p1_parent) = adc_util.C_FALSE))
+  join page_state
+    on crg_ID 0 P_CRG_ID
+   and instr(cru_firing_items, firing_item) > 0
+ where (cru_id = 98 and (has_children(P1_PARENT) = adc_util.C_TRUE))
+    or (cru_id = 99 and (has_children(P1_PARENT) = adc_util.C_FALSE))
  order by cru_sort_seq
  fetch first 1 row only
 ```
@@ -164,6 +169,8 @@ Any call to the plugin results in a response from the database that includes the
 
 ### Automatic type detection
 If you compare values entered on the page, it's hard to do so because you need to treat date values different than number values and these different to string values. Based on the fact, that each page item is allowed to have a format mask to define the item's appearance on the page, ADC converts the item value to the respective data type using this format mask. Whether a page item is a number or date is either detected based on meta data of APEX (such as with a page item in a form region) or based on a format mask you apply to the given page item. If neither of this is possible, the page item is treated as string.
+
+In contrast to the newly added functionality to access item values in their respective format from the APEX functionality, conversion errors are captured and shown on the page.
 
 ## Downsides of this approach
 There are some disadvantages you should be aware of before taking ADC into account for your page
