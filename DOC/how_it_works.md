@@ -8,6 +8,8 @@ If many page items need to be deactivated, hidden, validated or refreshed based 
 
 Plus, it's by no means easy to decide which DA causes what behaviour on the page, nor is it easy to debug or test complex DA constructs
 
+Other required options are not avaiable at all. As an example, it is impossible to change a page item from mandatory to optional using a Dynamic Action. The only workaround is to create to identical input items and show or hide one or the other. As a mandatory field must be validated and an optional field must not be validated for non-null values, this also has to be taken into account when processing the page. This all is very cumbersome and hard to achieve.
+
 This all leads to the best practice to try and avoid overly complex forms in APEX and, should this not be possible, avoid DA in favour of a specialized JavaScript file implementing the necessary logic in JavaScript.
 
 ## The approach of ADC
