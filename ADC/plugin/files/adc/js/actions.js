@@ -827,7 +827,9 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       case C_REGION_IR:
         if(adc.utils.isNotEmpty(pEntryId)){
           $entry = $(C_IR_SELECTOR + C_DATA_ID_SELECTOR).parent('td').parent('tr');
-        } else {
+        };
+
+        if(adc.utils.isEmpty(pEntryId) || $entry.length == 0){
           $entry = $(C_IR_SELECTOR + C_IR_FIRST_ROW_SELECTOR);
           if ($entry.length > 0){
             pEntryId = $entry.find('[data-id]').data('id');
@@ -877,20 +879,23 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
 
     Paramter:
       pAction - Name of the APEX action on the page
+      pShortcut - Sortcut to set
    */
-  actions.setApexActionAccessKey = function (pAction){
-    const $buttons = $(`[data-action='${pAction}']`);
-    let $this,
-        accesskey = apex.actions.lookup(pAction).shortcut;
+  actions.setApexActionAccessKey = function (pAction, pShortcut){
+    let shortcuts = apex.actions.listShortcuts();
 
-    if (adc.utils.isNotEmpty(accesskey)){
-      accesskey = accesskey.slice(-1);
-    }
-    if(accesskey.length > 0){
-      $buttons.each(function(){
-        $this = $(this);
-        adc.renderer.highlightButtonShortcut($this, accesskey);
-      });
+    shortcuts = shortcuts.filter(function(shortcut){
+        return shortcut.actionName.indexOf(pAction) > -1;
+    });
+    $(shortcuts).each(function(idx, shortcut){
+        apex.actions.removeShortcut(shortcut.shortcut, pAction);
+    });
+    const $buttons = $(`[data-action='${pAction}']`);
+    if ($buttons.length > 0){
+        $buttons.each(function(){
+            apex.actions.addShortcut(pShortcut, pAction);
+            apex.actions.update(pAction);
+        });
     }
   }; // setApexActionAccessKey
 
