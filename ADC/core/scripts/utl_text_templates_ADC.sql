@@ -82,7 +82,7 @@ q'[]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
-
+  
   utl_text_admin.merge_template(
     p_uttm_name => 'APEX_ACTION',
     p_uttm_type => 'ADC',
@@ -285,7 +285,7 @@ q'[              max(decode(cap_sort_seq, 2, cap_capt_id)) cra_param_2_type,\CR\
 q'[              max(decode(cap_sort_seq, 3, cap_capt_id)) cra_param_3_type\CR\]' || 
 q'[         from adc_action_parameters\CR\]' || 
 q'[        group by cap_cat_id),\CR\]' || 
-q'[     page_state as(\CR\]' || 
+q'[     session_state as(\CR\]' || 
 q'[       select /*+ no_merge */\CR\]' || 
 q'[              p_event event,\CR\]' || 
 q'[              p_event_data event_data,\CR\]' || 
@@ -319,7 +319,7 @@ q'[              firing_item, c_true, c_false,\CR\]' ||
 q'[              msg_params(\CR\]' || 
 q'[                #ACTUAL_STATUS#) actual_status\CR\]' || 
 q'[         from rules r\CR\]' || 
-q'[         join page_state s\CR\]' || 
+q'[         join session_state s\CR\]' || 
 q'[           on instr(',' || r.cru_firing_items || ',', ',' || s.firing_item || ',') > 0\CR\]' || 
 q'[           or (cru_fire_on_page_load = initializing\CR\]' || 
 q'[          and initializing = C_TRUE)\CR\]' || 
@@ -360,13 +360,13 @@ q'[              adc_api.get_event_data p_event_data,\CR\]' ||
 q'[              adc_api.get_firing_item p_firing_item,\CR\]' || 
 q'[              #CRG_ID# p_crg_id\CR\]' || 
 q'[         from dual),\CR\]' || 
-q'[     page_state as(\CR\]' || 
+q'[     session_state as(\CR\]' || 
 q'[       select #EVENT_LIST#,\CR\]' || 
 q'[              #COLUMN_LIST#,\CR\]' || 
 q'[              c_true, c_false\CR\]' || 
 q'[         from params)\CR\]' || 
 q'[select *\CR\]' || 
-q'[  from page_state\CR\]' || 
+q'[  from session_state\CR\]' || 
 q'[ where #CONDITION#]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
@@ -956,7 +956,8 @@ q'[#BIND_ACTION_ITEMS#\CR\]' ||
 q'[\CR\]' || 
 q'[apex.actions.add(\CR\]' || 
 q'[  [#ACTION_LIST#\CR\]' || 
-q'[  ]);]',
+q'[  ]);\CR\]' ||
+q'[  aa.observe(de.condes.plugin.adc.renderer.decorateApexAction);]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
@@ -974,12 +975,12 @@ q'[  ]);]',
     p_uttm_name => 'INITIALIZE_FORM',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
-    p_uttm_text => q'[ with page_state as(\CR\]' || 
+    p_uttm_text => q'[ with session_state as(\CR\]' || 
 q'[        select /*+ no_merge */ #SESSION_STATE#\CR\]' || 
 q'[          from dual)\CR\]' || 
 q'[ select #COLUMN_LIST#\CR\]' || 
 q'[   from #TABLE_NAME#\CR\]' || 
-q'[natural join page_state]',
+q'[natural join session_state]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
@@ -1083,15 +1084,6 @@ q'[    p_cet_is_custom_event => #CET_IS_CUSTOM_EVENT#);\CR\]',
     p_uttm_mode => 'INITIALIZE',
     p_uttm_text => q'[case p_event when '#CET_ID#' then c_true else c_false end #CET_COLUMN_NAME#]',
     p_uttm_log_text => q'[]',
-    p_uttm_log_severity => 70
-  );
-  
-  utl_text_admin.merge_template(
-    p_uttm_name => 'RULE_VIEW',
-    p_uttm_type => 'ADC',
-    p_uttm_mode => 'NOTIFICATION',
-    p_uttm_text => q'^case p_event when '#CET_ID#' then adc_api.get_event_data('event') end #CET_COLUMN_NAME#^',
-    p_uttm_log_text => q'^^',
     p_uttm_log_severity => 70
   );
 

@@ -19,8 +19,8 @@ as
       
     Properties:
       action_name - Name of the APEX Action
-      needs_update - Flag to indicate whether a call to apex.actions.update is required
-      execute_immediate - Flag to indicate wheter a call to apex.actions.invoke is required
+      needs_update - Flag to indicate whether a call to aa.update is required
+      execute_immediate - Flag to indicate wheter a call to aa.invoke is required
       javascript_stack - Stack of JavaScrip snippets to form the resulting JavaScript code
       additional_javascript - JavaScript function to integrate into the JavaScript answer.
    */      
@@ -56,10 +56,10 @@ as
       C_HIDE_TEMPLATE - Template to hide an APEX Action
       C_JAVA_SCRIPT_TAG - javascript prefix
    */
-  C_INIT_TEMPLATE constant template_t := q'^action = apex.actions.lookup('#NAME#');^';
+  C_INIT_TEMPLATE constant template_t := q'^action = aa.lookup('#NAME#');^';
 
-  C_UPDATE_TEMPLATE constant template_t := q'^    apex.actions.update('#NAME#');^';
-  C_EXECUTE_IMMEDIATE constant template_t := q'^    apex.actions.invoke('#NAME#');^';
+  C_UPDATE_TEMPLATE constant template_t := q'^    aa.update('#NAME#');^';
+  C_EXECUTE_IMMEDIATE constant template_t := q'^    aa.invoke('#NAME#');^';
 
   C_HREF_TEMPLATE constant template_t := q'^    action.href="#JS##HREF#"; action.action='';^';
   C_ACTION_TEMPLATE constant template_t := q'^    action.action = function(){#ACTION#}; action.href='';^';
@@ -71,7 +71,14 @@ as
   C_ENABLE_TEMPLATE constant template_t := q'^    action.disabled = false;^';
   C_SHOW_TEMPLATE constant template_t := q'^    action.hide = false;^';
   C_HIDE_TEMPLATE constant template_t := q'^    action.hide = true;^';
+  -- Shortcut template is not used at the moment, as APEX treats a shortcut passed in at creation time
+  -- as the "primary shortcut" which can't be changed or removed.
   C_SHORTCUT_TEMPLATE CONSTANT template_t := q'^    action.shortcut = 'Alt+#SHORTCUT#';^';
+  -- Instead of C_SHORTCUT_TEMPLATE this template is used that adds the shortcut after having
+  -- created the action. This way, APEX does not treat the shortcut as a primary shortcut which allows
+  -- for later changes
+  C_HIGHLIGHT_SHORTCUT_TEMPLATE CONSTANT template_t := q'^aa.addShortcut('#CAA_SHORTCUT#', '#CAA_NAME#'); 
+  aa.update('#CAA_NAME#');^';
 
   C_JAVA_SCRIPT_TAG constant adc_util.ora_name_type := 'javascript:';
   -- The following constants are used to prevent ADC_RESPONSE from escaping these namespace objects
@@ -80,7 +87,6 @@ as
   C_JS_PLACEHOLDER constant adc_util.ora_name_type := 'ADC_PLUGIN';
   C_APEX_ACTION_NAMESPACE constant adc_util.ora_name_type := 'apex.actions';
   C_APEX_ACTION_PLACEHOLDER constant adc_util.ora_name_type := 'APEX_ACTION';
-
 
   /**
     Group: Private Methods
@@ -206,8 +212,11 @@ as
     return varchar2
   as
     l_actions_js adc_util.max_char;
+    l_decoration_js adc_util.max_char;
     l_default_action adc_util.max_char;
     l_confirm_action adc_util.max_char;
+    l_highlight_shortcut adc_util.max_char;
+    C_DELIMITER constant adc_util.tiny_char := chr(10) || '  ';
     l_cur sys_refcursor;
   begin
     pit.enter_optional('get_crg_apex_actions');
@@ -231,7 +240,7 @@ as
     select utl_text.generate_text(cursor(
              select uttm_text template,
                     adc_util.C_CR cr,
-                    pit.get_message_text(msg.ADC_APEX_ACTION_ORIGIN, msg_args('')) apex_action_origin,
+                    pit.get_message_text(msg.ADC_APEX_ACTION_ORIGIN) apex_action_origin,
                     utl_text.generate_text(cursor(
                       select uttm_text template,
                              cpi_id, caa_name
@@ -250,7 +259,7 @@ as
                     ) bind_action_items,
                     utl_text.generate_text(cursor(
                       select uttm_text template, adc_util.C_CR || '    ' cr,
-                             caa_crg_id, caa_caat_id, caa_name, caa_icon, caa_icon_type, caa_shortcut, caa_href,
+                             caa_crg_id, caa_caat_id, caa_name, caa_icon, caa_icon_type, null caa_shortcut, caa_href,
                              apex_escape.json(caa_label) caa_label,
                              apex_escape.json(caa_label) caa_label_key, 
                              apex_escape.json(caa_context_label) caa_context_label, 
@@ -259,7 +268,7 @@ as
                              case caa_initially_disabled when adc_util.c_true then 'true' else 'false' end caa_initially_disabled,
                              case caa_initially_hidden when adc_util.c_true then 'true' else 'false' end caa_initially_hidden,
                              case when caa_confirm_message_name is not null 
-                                  then apex_escape.json(pit.get_message_text(replace(caa_confirm_message_name, 'msg.'), msg_args())) 
+                                  then apex_escape.json(pit.get_message_text(replace(caa_confirm_message_name, 'msg.'))) 
                              end confirm_message,
                              -- Default is to inform ADC about invoking an APEX action on the page
                              case 
@@ -273,7 +282,7 @@ as
                         join templates t
                           on t.crg_id = cgr.crg_id
                          and uttm_mode = caa_caat_id),
-                      p_delimiter => adc_util.C_DELIMITER || adc_util.C_CR || '   ',
+                      p_delimiter => adc_util.C_DELIMITER || chr(10)/*adc_util.C_CR*/ || '   ',
                       p_enable_second_level => adc_util.C_TRUE
                     ) action_list
                from templates
@@ -281,6 +290,17 @@ as
            ) resultat
       into l_actions_js
       from dual;
+      
+    select utl_text.generate_text(cursor(
+             select C_HIGHLIGHT_SHORTCUT_TEMPLATE template, caa_name, caa_shortcut
+               from adc_apex_actions_v
+              where caa_crg_id = p_crg_id
+                and caa_shortcut is not null),
+              C_DELIMITER) script
+      into l_confirm_action
+      from dual;
+       
+    l_actions_js := l_actions_js || C_DELIMITER || l_confirm_action;
 
     pit.leave_optional;
     return l_actions_js;
@@ -308,6 +328,7 @@ as
     if not regexp_like(p_href, '^http|^f?p') then
       l_js_flag := 'Javascript:';
     end if;
+    
     append(adc_util.bulk_replace(C_HREF_TEMPLATE, adc_util.string_table(
              '#HREF#', p_href, 
              '#JS#', l_js_flag,
@@ -354,6 +375,7 @@ as
 
 
     append(replace(C_SHORTCUT_TEMPLATE, '#SHORTCUT#', p_shortcut));
+    append(replace(C_HIGHLIGHT_SHORTCUT_TEMPLATE, '#CAA_NAME#', g_action.action_name));
     g_action.needs_update := true;
 
     pit.leave_optional;
@@ -370,7 +392,7 @@ as
   begin
     pit.enter_optional(
       p_params => msg_params(
-                    msg_param('p_inline', utl_apex.get_bool(p_inline))));
+                    msg_param('p_inline', p_inline)));
 
     if p_inline then
       append(C_EXECUTE_IMMEDIATE);
@@ -396,7 +418,7 @@ as
     pit.enter_optional(
       p_params => msg_params(
                     msg_param('p_label', p_label),
-                    msg_param('p_is_key', utl_apex.get_bool(p_is_key))));
+                    msg_param('p_is_key', p_is_key)));
                     
     if p_is_key then
       l_template := C_LABEL_KEY_TEMPLATE;
@@ -427,7 +449,7 @@ as
     pit.enter_optional(
       p_params => msg_params(
                     msg_param('p_title', p_title),
-                    msg_param('p_is_key', utl_apex.get_bool(p_is_key))));
+                    msg_param('p_is_key', p_is_key)));
 
     if p_is_key then
       l_template := C_TITLE_KEY_TEMPLATE;
@@ -454,7 +476,7 @@ as
   begin
     pit.enter_optional(
       p_params => msg_params(
-                    msg_param('p_disabled', utl_apex.get_bool(p_disabled))));
+                    msg_param('p_disabled', p_disabled)));
 
     if p_disabled then
       append(C_DISABLE_TEMPLATE);
@@ -477,7 +499,7 @@ as
   begin
     pit.enter_optional(
       p_params => msg_params(
-                    msg_param('p_visible', utl_apex.get_bool(p_visible))));
+                    msg_param('p_visible', p_visible)));
 
     if p_visible then
       append(C_SHOW_TEMPLATE);

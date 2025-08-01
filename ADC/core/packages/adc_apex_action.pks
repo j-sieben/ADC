@@ -35,7 +35,8 @@ as
     
   /**
     Procedure: register_action_script
-      Method registers the action script with ADC. This is a shortcut for adc.add_javascript(adc_apex_action.get_action_script));
+      Method registers the action script with ADC. 
+      This is a shortcut for adc.add_javascript(adc_apex_action.get_action_script));
    */
   procedure register_action_script;
     
@@ -56,7 +57,8 @@ as
   /**
     Procedure: set_href
       Method to set the HREF param in an ACTION type APEX-Action and resets the
-      ACTION attribute to NULL.
+      ACTION attribute to NULL. It is meant to overwrite the globally defined
+      link but can be used to change an action parameter to an href parameter as well.
    
     Parameter:
       p_href  Link that is set within the action
@@ -68,7 +70,11 @@ as
   /**
     Procedure: set_action
       Method to set the ACTION param in an ACTION type APEX-Action and resets the
-      HREF attribute to NULL.
+      HREF attribute to NULL. It is meant to overwrite the globally defined action
+      attribute but can be used to change a href attribute to an action attribute
+      as well. 
+      If set to NULL, ADC will fall back to its default behaviour which is informing
+      ADC about a raised command.
    
     Parameter:
       p_href - Link that is set within the action
@@ -79,7 +85,10 @@ as
 
   /**
     Procedure: set_shortcut
-      Method to set the SHORTCUT param in an ACTION type APEX-Action.
+      Method to set the SHORTCUT param in an ACTION type APEX-Action. It is meant to change
+      a given shortcut defined at the ADC designer UI (attribute shortcut) but can also be
+      used to create a new shortcut for an action that didn't have a shortcut before.
+      It will call the decorateApexAction method to adjust title and underlining features.
    
     Parameter:
       p_shortcut - Shortcut to execute the action
@@ -112,7 +121,7 @@ as
                 
     Parameter:
       p_label - Label that is to be set for this action
-      p_is_key - Flag to distinguish plain label text (false) from reference to APEX_MESSAGE (true). Default to true.
+      p_is_key - Flag to distinguish plain label text (false) from reference to APEX_MESSAGE (true). Defaults to true.
    */
   procedure set_label(
     p_label in adc_apex_actions_v.caa_label%type,
@@ -125,7 +134,7 @@ as
 
     Parameters:
       p_title - Title that is to be set for this action
-      p_is_key - Flag to distinguish plain label text (false) from reference to APEX_MESSAGE (true). Default to true.
+      p_is_key - Flag to distinguish plain label text (false) from reference to APEX_MESSAGE (true). Defaults to true.
    */
   procedure set_title(
     p_title in adc_apex_actions_v.caa_title%type,

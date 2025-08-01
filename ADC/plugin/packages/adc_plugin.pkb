@@ -122,8 +122,6 @@ as
     l_result apex_plugin.t_dynamic_action_ajax_result;
     l_java_script adc_util.max_char;
   begin
-    
-    
     if wwv_flow.g_debug then
       apex_plugin_util.debug_dynamic_action(
         p_plugin => p_plugin,
