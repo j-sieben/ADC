@@ -595,6 +595,43 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
 
 
   /**
+    Function: initWebsocket
+      Method to upgrade a http connection to websocket protocol
+    
+    Parameters:
+      pRoom - Room of the page. Is used to filter messages
+      pURL - URL of the websocket server to connect to
+      pAction - Optional callback method to execute if a websocket message is retrieved. If NULL, ADC is informed and the message is passed as event data
+   */
+  actions.initWebsocket = function(pRoom, pURL, pAction){
+    const sessionId = apex.item('pInstance').getValue();
+    const params = `id=${sessionId}&rooms=${pRoom}`;
+    const socket = new WebSocket(`${pURL}?${params}`);
+    let callback;
+    
+    if (typeof(pAction) == 'function'){
+      callback = pAction;
+    } else {
+      callback = actions.handleNotification;
+    };
+
+    socket.onopen = function(pEvent){
+      apex.debug.log('Websocket connection established')
+    };
+
+    socket.onclose = function(pEvent){
+      apex.debug.log('Websocket connection terminated')
+    }
+
+    socket.onmessage = function(pEvent){
+      let message = JSON.parse(pEvent.data);
+      apex.debug.log(message);
+      callback(message);
+    }
+  }
+
+
+  /**
     Function: notify
       Method to show a notification. Delegates implementation to <adc.renderer>.
       A notification is a message that is shown to the user in a small dialog.
