@@ -1,5 +1,3 @@
-@ -1,1265 +1,1182 @@
-
 var de = de ||{};
 de.condes = de.condes ||{};
 de.condes.plugin = de.condes.plugin ||{};
@@ -92,29 +90,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
   
   var gFocusAfterRefresh = {};
 
-  /*++++++++ HELPER START ++++++++++++*/
-  /**
-    Function: forEach
-      Helper to identify page items to apply <pAction> to
-      
-    Parameters: 
-      pSelector - jQuery selector to identify page items
-      pAction - Action to execute on the found page items
-   */
-  const forEach = function (pSelector, pAction){
-    if (!($.isArray(pSelector) || pSelector.search(/[\.#\u0020:\[\]]+/) >= 0)){
-      // passed ITEM is element name, extend by #.
-      pSelector = `#${pSelector}`;
-    }
-
-    if (pSelector.match(/oj.*/)){
-      // item is Oracle Jet item group, traverse up
-      pSelector = $(`#${pSelector}`).closest('div.apex-item-group').attr('id');
-    }
-    $(pSelector).each(pAction);
-  }; // forEach
-
-  
+  /*++++++++ HELPER START ++++++++++++*/  
   /** 
     Function: getRegionType
       Method to determine the type a region has

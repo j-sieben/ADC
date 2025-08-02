@@ -3,7 +3,7 @@ var de = de || {};
 de.condes = de.condes || {};
 de.condes.plugin = de.condes.plugin || {};
 de.condes.plugin.adc = de.condes.plugin.adc || {};
-de.condes.plugin.adc.apex_theme_42 = {};
+de.condes.plugin.adc.apex_24_24_01 = {};
 
 /**
   Function: ADC Theme adapter
@@ -29,6 +29,8 @@ de.condes.plugin.adc.apex_theme_42 = {};
     msg - Message object provided by APEX, instance of apex.message
  */
 (function(adc, renderer, msg){
+  'use strict';
+  
   const C_FILE_NAME = 'adc.js.renderer.js';
 
   const C_APEX_ERROR_CLASS_SEL = 'div.a-Notification--error';
@@ -644,4 +646,4 @@ de.condes.plugin.adc.apex_theme_42 = {};
         }
     }; // submitPage
 
-})(de.condes.plugin.adc, de.condes.plugin.adc.apex_theme_42, apex.message);
+})(de.condes.plugin.adc, de.condes.plugin.adc.apex_24_24_01, apex.message);

@@ -56,6 +56,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
   // Command constants
   const C_COMMAND = 'COMMAND';
   const C_COMMAND_NAME = 'command';
+  const C_NOTIFICATION = 'NOTIFICATION';
   
   // Visual State constants
   const C_HIDE = 'HIDE';
@@ -72,6 +73,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
   const C_APEX_AFTER_REFRESH = 'apexafterrefresh';
   const C_MODAL_DIALOG_CANCEL_EVENT = 'apexaftercanceldialog';
   const C_MODAL_DIALOG_CLOSE_EVENT = 'apexafterclosedialog';
+  const C_NOTIFICATION_EVENT = 'notification';
   
   const C_TABKEY = 9;
 
@@ -88,29 +90,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
   
   var gFocusAfterRefresh = {};
 
-  /*++++++++ HELPER START ++++++++++++*/
-  /**
-    Function: forEach
-      Helper to identify page items to apply <pAction> to
-      
-    Parameters: 
-      pSelector - jQuery selector to identify page items
-      pAction - Action to execute on the found page items
-   */
-  const forEach = function (pSelector, pAction){
-    if (!($.isArray(pSelector) || pSelector.search(/[\.#\u0020:\[\]]+/) >= 0)){
-      // passed ITEM is element name, extend by #.
-      pSelector = `#${pSelector}`;
-    }
-
-    if (pSelector.match(/oj.*/)){
-      // item is Oracle Jet item group, traverse up
-      pSelector = $(`#${pSelector}`).closest('div.apex-item-group').attr('id');
-    }
-    $(pSelector).each(pAction);
-  }; // forEach
-
-  
+  /*++++++++ HELPER START ++++++++++++*/ 
   /** 
     Function: getRegionType
       Method to determine the type a region has
@@ -162,7 +142,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       pSelector - jQuery selector of the regions to adjust vertical alignment
    */
   actions.alignReportVerticalTop = function (pSelector){
-    forEach(pSelector, function (){
+    adc.utils.forEach(pSelector, function (){
       var pItemId = $(this).attr('id');
       adc.renderer.alignReportVerticalTop(pItemId);
     });
@@ -578,6 +558,20 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     }
    }; // getReportSelection
 
+   
+  /**
+    Function: handleNotification
+      Method to inform ADC about a message that was passed in. Published to be used as a fallback for client side message handling
+
+    Parameter:
+      p_Event - Message that was passed in
+   */
+  actions.handleNotification = function(pMessage){
+    apex.debug.log(pMessage);
+    adc.controller.setTriggeringElement(C_NOTIFICATION, C_NOTIFICATION_EVENT, pMessage);
+    adc.controller.execute()
+  }
+
   
   /**
     Function: hideReportFilterPanel
@@ -587,11 +581,48 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       pSelector jQuery selector of the regions that contain a filter panel to hide.
    */
   actions.hideReportFilterPanel = function (pSelector){
-    forEach(pSelector, function (){
+    adc.utils.forEach(pSelector, function (){
       var pItemId = $(this).attr('id');
       adc.renderer.hideReportFilterPanel(pItemId, getRegionType(pItemId));
     });
   }; // hideReportFilterPanel
+
+
+  /**
+    Function: initWebsocket
+      Method to upgrade a http connection to websocket protocol
+    
+    Parameters:
+      pRoom - Room of the page. Is used to filter messages
+      pURL - URL of the websocket server to connect to
+      pAction - Optional callback method to execute if a websocket message is retrieved. If NULL, ADC is informed and the message is passed as event data
+   */
+  actions.initWebsocket = function(pRoom, pURL, pAction){
+    const sessionId = apex.item('pInstance').getValue();
+    const params = `id=${sessionId}&rooms=${pRoom}`;
+    const socket = new WebSocket(`${pURL}?${params}`);
+    let callback;
+    
+    if (typeof(pAction) == 'function'){
+      callback = pAction;
+    } else {
+      callback = actions.handleNotification;
+    };
+
+    socket.onopen = function(pEvent){
+      apex.debug.log('Websocket connection established')
+    };
+
+    socket.onclose = function(pEvent){
+      apex.debug.log('Websocket connection terminated')
+    }
+
+    socket.onmessage = function(pEvent){
+      let message = JSON.parse(pEvent.data);
+      apex.debug.log(message);
+      callback(message);
+    }
+  }
 
 
   /**
@@ -827,7 +858,9 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       case C_REGION_IR:
         if(adc.utils.isNotEmpty(pEntryId)){
           $entry = $(C_IR_SELECTOR + C_DATA_ID_SELECTOR).parent('td').parent('tr');
-        } else {
+        };
+
+        if(adc.utils.isEmpty(pEntryId) || $entry.length == 0){
           $entry = $(C_IR_SELECTOR + C_IR_FIRST_ROW_SELECTOR);
           if ($entry.length > 0){
             pEntryId = $entry.find('[data-id]').data('id');
@@ -877,20 +910,23 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
 
     Paramter:
       pAction - Name of the APEX action on the page
+      pShortcut - Sortcut to set
    */
-  actions.setApexActionAccessKey = function (pAction){
-    const $buttons = $(`[data-action='${pAction}']`);
-    let $this,
-        accesskey = apex.actions.lookup(pAction).shortcut;
+  actions.setApexActionAccessKey = function (pAction, pShortcut){
+    let shortcuts = apex.actions.listShortcuts();
 
-    if (adc.utils.isNotEmpty(accesskey)){
-      accesskey = accesskey.slice(-1);
-    }
-    if(accesskey.length > 0){
-      $buttons.each(function(){
-        $this = $(this);
-        adc.renderer.highlightButtonShortcut($this, accesskey);
-      });
+    shortcuts = shortcuts.filter(function(shortcut){
+        return shortcut.actionName.indexOf(pAction) > -1;
+    });
+    $(shortcuts).each(function(idx, shortcut){
+        apex.actions.removeShortcut(shortcut.shortcut, pAction);
+    });
+    const $buttons = $(`[data-action='${pAction}']`);
+    if ($buttons.length > 0){
+        $buttons.each(function(){
+            apex.actions.addShortcut(pShortcut, pAction);
+            apex.actions.update(pAction);
+        });
     }
   }; // setApexActionAccessKey
 
@@ -905,7 +941,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       pLabel - If set, controls the label of the page items
    */
   actions.setDisplayState = function (pSelector, pVisibleState, pLabel){
-    forEach(pSelector, function (){
+    adc.utils.forEach(pSelector, function (){
       var pItemId = $(this).attr('id');
       
       switch(pVisibleState){
@@ -1041,7 +1077,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       pValue - Value of the page item
    */
   actions.setItemValue = function (pSelector, pValue){
-    forEach(pSelector, function (){
+    adc.utils.forEach(pSelector, function (){
       const pItemId = $(this).attr('id');
       if (adc.utils.isNotEmpty(pItemId)){
         apex.item(pItemId).setValue(pValue, pValue, true);
@@ -1088,7 +1124,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
                      whereas if an item is mandatory, it will allways be visible and active.
    */
   actions.setMandatory = function (pSelector, pIsMandatory, pVisualState){
-    forEach(pSelector, function (){
+    adc.utils.forEach(pSelector, function (){
       var pItemId = $(this).attr('id').replace('_CONTAINER', '');
       if (adc.utils.isNotEmpty(pItemId)){
         if (pIsMandatory){

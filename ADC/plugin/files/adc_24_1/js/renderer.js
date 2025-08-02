@@ -3,7 +3,7 @@ var de = de || {};
 de.condes = de.condes || {};
 de.condes.plugin = de.condes.plugin || {};
 de.condes.plugin.adc = de.condes.plugin.adc || {};
-de.condes.plugin.adc.apex_theme_42 = {};
+de.condes.plugin.adc.apex_24_24_01 = {};
 
 /**
   Function: ADC Theme adapter
@@ -28,7 +28,9 @@ de.condes.plugin.adc.apex_theme_42 = {};
     adc - Namespace object to adopt ADC to the given APEX version and theme
     msg - Message object provided by APEX, instance of apex.message
  */
-(function(renderer, msg){
+(function(adc, renderer, msg){
+  'use strict';
+  
   const C_FILE_NAME = 'adc.js.renderer.js';
 
   const C_APEX_ERROR_CLASS_SEL = 'div.a-Notification--error';
@@ -69,15 +71,67 @@ de.condes.plugin.adc.apex_theme_42 = {};
   const C_REPORT_LAST_REFRESH_TIME_CLASS = 'adc-last-refresh-time';
   const C_REPORT_LAST_REFRESH_TIME_CLASS_SELECTOR = `.${C_REPORT_LAST_REFRESH_TIME_CLASS}`;
 
+    /*** PRIVATE FUNCTIONS */
+    /**
+    Function: highlightButtonAccessKey
+        Makes a shortcut of a button visible
+
+    Parameters:
+        pButton - jQuery instance of the button to change
+        pShortcut - Shortcut letter to highlight
+    */
+    function highlightButtonAccessKey(pButton, pShortcut){
+        const C_SHORTCUT_CLASS = 'adc-accesskey',
+              C_BUTTON_LABEL_CLASS = 't-Button-label';
+
+        let label, accesskey, re;
+        const $label = pButton.find(`.${C_BUTTON_LABEL_CLASS}`);
+
+        if(!pButton.find(`.${C_BUTTON_LABEL_CLASS}`)[0]){
+            pButton.html(`<span class='${C_BUTTON_LABEL_CLASS}'>${$this.html()}</span>`);
+        }
+
+        label = $label.text();
+        re = new RegExp(`(^| )${pShortcut}`, 'i')
+        accesskey = re.exec(label);
+        if (adc.utils.isEmpty(accesskey)){
+            re = new RegExp(pShortcut, 'i');
+            accesskey = re.exec(label);
+        }
+        if (adc.utils.isNotEmpty(accesskey)){
+            label = label.replace(re, ` <span class='${C_SHORTCUT_CLASS}'>${accesskey[0].trim()}</span>`);
+            pButton.attr('accesskey', pShortcut);
+            $label.html(label);
+        }
+    }; // highlightButtonAccessKey
+
 
     /** 
-      Function: setFocus
+    Function: maintainButtonAccessTitle
+        Shows the access key in the title of a button, adds consistency to the APEX behaviour
+
+    Parameters:
+        pButton - jQuery instance of the button to change
+        pShortcut - Shortcut letter to highlight
+    */
+    function maintainButtonAccessTitle(pButton, pShortcut){
+        // initially, set a data-title attribute to the title without any shortcut information
+        if (adc.utils.isEmpty(pButton.attr('data-title'))){
+            const label = pButton.attr('title');
+            pButton.attr('data-title', label.slice(0, label.indexOf(`, ${pShortcut}`)));
+        }
+        pButton.attr('title', `${pButton.attr('data-title')}, (${pShortcut})`);
+    }; // maintainButtonAccessTitle
+
+
+    /** 
+         Function: setFocus
         Local method to securely set the focus to a requested item
 
-      Parameter:
+        Parameter:
         pSelector - Selector to set the focus to
-     */
-    setFocus = function(pSelector){
+        */
+    function setFocus(pSelector){
         const anchors = ['.', '#'];
         if ($.trim(pSelector).length !== 0) {
             if (!anchors.includes($.trim(pSelector).charAt(0))){
@@ -87,6 +141,7 @@ de.condes.plugin.adc.apex_theme_42 = {};
         };
     }; //setFocus
 
+    /*** INTERFACE */
     /**
     Function: alignReportVerticalTop
         Method adjusts report cells vertically to top
@@ -154,6 +209,39 @@ de.condes.plugin.adc.apex_theme_42 = {};
         }, message.data.options);
         renderer.setModalDialogTitle(message.data.options.title);
     }; // confirmRequest
+
+
+    /**
+    Function: decorateApexAction
+        Decorates a button or other UI control that is maintained by an apex.action
+
+    Parameter
+        pAction - APEX action object as defined by apex.actions interface
+        pArgs - Optional arguments passed in by APEX
+    */
+    renderer.decorateApexAction = function (pAction, pArgs){
+        let $buttons, accesskey, shortcuts, shortcut;
+
+        // decorate button access key
+        shortcuts = apex.actions.listShortcuts();
+        shortcut = shortcuts.filter(function(shortcut){
+            return shortcut.actionName.indexOf(pAction.name) > -1;
+        });
+        if (shortcut.length > 0){
+            shortcut = shortcut[0].shortcut;
+            accesskey = shortcut.slice(-1);
+            if (adc.utils.isNotEmpty(accesskey)){
+                // Try to find buttons that are connected to this action
+                $buttons = $(`[data-action='${pAction.name}']`);
+                if(accesskey.length > 0){
+                    $($buttons).each(function(){
+                        highlightButtonAccessKey($(this), accesskey);
+                        maintainButtonAccessTitle($(this), shortcut);
+                    });
+                }
+            }
+        }
+    }
 
 
     /**
@@ -288,7 +376,7 @@ de.condes.plugin.adc.apex_theme_42 = {};
     renderer.hideReportFilterPanel = function(pRegionId, pRegionType){
         switch(pRegionType){
             case C_REGION_IR:
-                $(`#${pRegionId}_conrol_panel`).hide(); // interactive report
+                $(`#${pRegionId}_control_panel`).hide(); // interactive report
                 break;
             case C_REGION_IG:
                 $(`#${pRegionId} .a-MediaBlock`).hide(); // interactive grid
@@ -299,37 +387,6 @@ de.condes.plugin.adc.apex_theme_42 = {};
             renderer.hideReportFilterPanel(pRegionId, pRegionType);
         });
     }; // hideReportFilterPanel
-
-
-    /**
-    Function: highlightButtonAccessKey
-        Makes a shortcut of a button visible
-
-    Parameters:
-        pButton - jQuery instance of the button to change
-        pShortcut - Shortcut letter to highlight
-    */
-    renderer.highlightButtonAccessKey = function(pButton, pShortcut){
-        const C_SHORTCUT_CLASS = 'adc-accesskey',
-              C_DATA_SHORTCUT_CLASS = 'data-accesskey',
-              C_BUTTON_LABEL_CLASS = 't-Button-label';
-
-        let re, $label, label, shortcut;
-        re = new RegExp(pShortcut, 'i');
-
-        if(!pButton.find(`.${C_BUTTON_LABEL_CLASS}`)[0]){
-            pButton.html(`<span class='${C_BUTTON_LABEL_CLASS}'>${$this.html()}</span>`);
-        }
-        $label = pButton.find(`.${C_BUTTON_LABEL_CLASS}`);
-        label = $label.html();
-        shortcut = re.exec(label);
-
-        $label.html(
-            label.replace(re, `<span class='${C_SHORTCUT_CLASS}'>${shortcut}</span>`));
-
-        pButton.attr(C_SHORTCUT_CLASS, shortcut);
-        pButton.attr(C_DATA_SHORTCUT_CLASS, label.search(re) + 1);
-    }; // highlightButtonAccessKey
 
 
     /**
@@ -591,4 +648,4 @@ de.condes.plugin.adc.apex_theme_42 = {};
         }
     }; // submitPage
 
-})(de.condes.plugin.adc.apex_theme_42, apex.message);
+})(de.condes.plugin.adc, de.condes.plugin.adc.apex_24_24_01, apex.message);

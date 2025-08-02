@@ -163,7 +163,8 @@ q'[}]',
     p_uttm_name => 'JSON_ERRORS',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'ERROR',
-    p_uttm_text => q'[{"type":"#ERROR_TYPE#","pageItem":"#PAGE_ITEM#","message":#MESSAGE#,"location":#LOCATION#,"additionalInfo":"#ADDITIONAL_INFO#","unsafe":"false"}]',
+    p_uttm_text => q'[
+    {"type":"#ERROR_TYPE#","pageItem":"#PAGE_ITEM#","message":#MESSAGE#,"location":#LOCATION#,"additionalInfo":"#ADDITIONAL_INFO#","unsafe":"false"}]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
@@ -954,10 +955,10 @@ q'[#RULE_ACTION_PARAMS|||#\CR\]',
 q'[/** #APEX_ACTION_ORIGIN# */\CR\]' || 
 q'[#BIND_ACTION_ITEMS#\CR\]' || 
 q'[\CR\]' || 
-q'[apex.actions.add(\CR\]' || 
+q'[aa.add(\CR\]' || 
 q'[  [#ACTION_LIST#\CR\]' || 
 q'[  ]);\CR\]' ||
-q'[  aa.observe(de.condes.plugin.adc.renderer.decorateApexAction);]',
+q'[aa.observe(de.condes.plugin.adc.renderer.decorateApexAction);]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );

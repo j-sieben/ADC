@@ -216,7 +216,7 @@ as
     l_default_action adc_util.max_char;
     l_confirm_action adc_util.max_char;
     l_highlight_shortcut adc_util.max_char;
-    C_DELIMITER constant adc_util.tiny_char := chr(10) || '  ';
+    C_DELIMITER constant adc_util.tiny_char := chr(13) || '  ';
     l_cur sys_refcursor;
   begin
     pit.enter_optional('get_crg_apex_actions');
@@ -282,7 +282,7 @@ as
                         join templates t
                           on t.crg_id = cgr.crg_id
                          and uttm_mode = caa_caat_id),
-                      p_delimiter => adc_util.C_DELIMITER || chr(10)/*adc_util.C_CR*/ || '   ',
+                      p_delimiter => adc_util.C_DELIMITER || adc_util.C_CR || '   ',
                       p_enable_second_level => adc_util.C_TRUE
                     ) action_list
                from templates
@@ -297,10 +297,10 @@ as
               where caa_crg_id = p_crg_id
                 and caa_shortcut is not null),
               C_DELIMITER) script
-      into l_confirm_action
+      into l_highlight_shortcut
       from dual;
        
-    l_actions_js := l_actions_js || C_DELIMITER || l_confirm_action;
+    l_actions_js := l_actions_js || C_DELIMITER || l_highlight_shortcut;
 
     pit.leave_optional;
     return l_actions_js;

@@ -56,6 +56,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
   // Command constants
   const C_COMMAND = 'COMMAND';
   const C_COMMAND_NAME = 'command';
+  const C_NOTIFICATION = 'NOTIFICATION';
   
   // Visual State constants
   const C_HIDE = 'HIDE';
@@ -72,6 +73,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
   const C_APEX_AFTER_REFRESH = 'apexafterrefresh';
   const C_MODAL_DIALOG_CANCEL_EVENT = 'apexaftercanceldialog';
   const C_MODAL_DIALOG_CLOSE_EVENT = 'apexafterclosedialog';
+  const C_NOTIFICATION_EVENT = 'notification';
   
   const C_TABKEY = 9;
 
@@ -88,29 +90,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
   
   var gFocusAfterRefresh = {};
 
-  /*++++++++ HELPER START ++++++++++++*/
-  /**
-    Function: forEach
-      Helper to identify page items to apply <pAction> to
-      
-    Parameters: 
-      pSelector - jQuery selector to identify page items
-      pAction - Action to execute on the found page items
-   */
-  const forEach = function (pSelector, pAction){
-    if (!($.isArray(pSelector) || pSelector.search(/[\.#\u0020:\[\]]+/) >= 0)){
-      // passed ITEM is element name, extend by #.
-      pSelector = `#${pSelector}`;
-    }
-
-    if (pSelector.match(/oj.*/)){
-      // item is Oracle Jet item group, traverse up
-      pSelector = $(`#${pSelector}`).closest('div.apex-item-group').attr('id');
-    }
-    $(pSelector).each(pAction);
-  }; // forEach
-
-  
+  /*++++++++ HELPER START ++++++++++++*/ 
   /** 
     Function: getRegionType
       Method to determine the type a region has
@@ -162,7 +142,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       pSelector - jQuery selector of the regions to adjust vertical alignment
    */
   actions.alignReportVerticalTop = function (pSelector){
-    forEach(pSelector, function (){
+    adc.utils.forEach(pSelector, function (){
       var pItemId = $(this).attr('id');
       adc.renderer.alignReportVerticalTop(pItemId);
     });
@@ -578,6 +558,20 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     }
    }; // getReportSelection
 
+   
+  /**
+    Function: handleNotification
+      Method to inform ADC about a message that was passed in. Published to be used as a fallback for client side message handling
+
+    Parameter:
+      p_Event - Message that was passed in
+   */
+  actions.handleNotification = function(pMessage){
+    apex.debug.log(pMessage);
+    adc.controller.setTriggeringElement(C_NOTIFICATION, C_NOTIFICATION_EVENT, pMessage);
+    adc.controller.execute()
+  }
+
   
   /**
     Function: hideReportFilterPanel
@@ -587,7 +581,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       pSelector jQuery selector of the regions that contain a filter panel to hide.
    */
   actions.hideReportFilterPanel = function (pSelector){
-    forEach(pSelector, function (){
+    adc.utils.forEach(pSelector, function (){
       var pItemId = $(this).attr('id');
       adc.renderer.hideReportFilterPanel(pItemId, getRegionType(pItemId));
     });
@@ -947,7 +941,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       pLabel - If set, controls the label of the page items
    */
   actions.setDisplayState = function (pSelector, pVisibleState, pLabel){
-    forEach(pSelector, function (){
+    adc.utils.forEach(pSelector, function (){
       var pItemId = $(this).attr('id');
       
       switch(pVisibleState){
@@ -1083,7 +1077,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       pValue - Value of the page item
    */
   actions.setItemValue = function (pSelector, pValue){
-    forEach(pSelector, function (){
+    adc.utils.forEach(pSelector, function (){
       const pItemId = $(this).attr('id');
       if (adc.utils.isNotEmpty(pItemId)){
         apex.item(pItemId).setValue(pValue, pValue, true);
@@ -1130,7 +1124,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
                      whereas if an item is mandatory, it will allways be visible and active.
    */
   actions.setMandatory = function (pSelector, pIsMandatory, pVisualState){
-    forEach(pSelector, function (){
+    adc.utils.forEach(pSelector, function (){
       var pItemId = $(this).attr('id').replace('_CONTAINER', '');
       if (adc.utils.isNotEmpty(pItemId)){
         if (pIsMandatory){
