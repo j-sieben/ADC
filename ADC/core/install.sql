@@ -115,6 +115,7 @@ prompt &h3.Access type bodies
 @&tool_dir.create_type_body adc_basic
 
 prompt &h2.Merge initial data
+@&tool_dir.run_script rename_event_type
 @&tool_dir.run_script action_types_system
 
 -- Additional installation for pecific APEX versions

@@ -3292,7 +3292,12 @@ as
     p_row in adc_event_types_v%rowtype)
   as
   begin
-    null;
+    pit.enter_mandatory;
+    
+    delete from adc_event_types
+     where cet_id = p_row.cet_id;
+     
+    pit.leave_mandatory;
   end delete_event_type;
 
   /**

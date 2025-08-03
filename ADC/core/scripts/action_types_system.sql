@@ -344,7 +344,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cet_is_custom_event => adc_util.C_TRUE);
 
   adc_admin.merge_event_type(
-    p_cet_id => 'apexaftercanceldialog',
+    p_cet_id => 'apexafterclosecanceldialog',
     p_cet_name => 'Dialog abgebrochen',
     p_cet_column_name => 'DIALOG_CANCELLED',
     p_cet_is_custom_event => adc_util.C_TRUE);
