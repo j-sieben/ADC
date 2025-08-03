@@ -122,6 +122,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   var props = {
     "ajaxIdentifier":"",
     "quarantineList":[],
+    "lastTriggeringElement":"",
     "triggeringElement":{
       "id": "",
       "data": "",

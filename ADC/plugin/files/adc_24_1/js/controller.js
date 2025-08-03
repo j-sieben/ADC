@@ -124,6 +124,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   var props = {
     "ajaxIdentifier":"",
     "quarantineList":[],
+    "lastTriggeringElement":"",
     "triggeringElement":{
       "id": "",
       "data": "",
@@ -396,6 +397,10 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       switch (props.triggeringElement.event) {
         case C_APEX_AFTER_CLOSE_DIALOG:
           // CloseDialog is bound to currentTarget to allow for delegated events.
+          props.triggeringElement.id = pEvent.currentTarget.id;
+          break;
+        case C_APEX_AFTER_CANCEL_DIALOG:
+          // CancelDialog is bound to currentTarget to allow for delegated events.
           props.triggeringElement.id = pEvent.currentTarget.id;
           break;
         case C_CHANGE_EVENT:

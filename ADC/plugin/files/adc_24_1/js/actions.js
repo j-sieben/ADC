@@ -71,8 +71,8 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
   const C_IG_SELECTION_CHANGE = 'interactivegridselectionchange';
   const C_TREE_SELECTION_CHANGE = 'treeviewselectionchange';
   const C_APEX_AFTER_REFRESH = 'apexafterrefresh';
-  const C_MODAL_DIALOG_CANCEL_EVENT = 'apexaftercanceldialog';
-  const C_MODAL_DIALOG_CLOSE_EVENT = 'apexafterclosedialog';
+  /*const C_MODAL_DIALOG_CANCEL_EVENT = 'apexafterclosecanceldialog';
+  const C_MODAL_DIALOG_CLOSE_EVENT = 'apexafterclosedialog';*/
   const C_NOTIFICATION_EVENT = 'notification';
   
   const C_TABKEY = 9;
@@ -239,6 +239,8 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
    */
   actions.cancelModalDialog = function(pTriggeringItemId, pCheckChanges){
     const cancelDialog = function(pTriggeringItemId){
+      /*
+      // TODO: Assert that this is not needed anymore in 24.1
       if (adc.utils.isNotEmpty(pTriggeringItemId)){
         parent.$('#' + pTriggeringItemId).trigger(C_MODAL_DIALOG_CANCEL_EVENT);
       }
@@ -252,7 +254,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
           parent.$('#' + pTriggeringItemId).trigger(C_MODAL_DIALOG_CANCEL_EVENT);
         };
       };
-    
+    */
       apex.debug.info(`${C_FILE_NAME} - cancelModalDialog - triggeringElement: ${pTriggeringItemId}`);
       apex.navigation.dialog.cancel(true);
     };
