@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("hig",["Function"],[["highlightRow",,[[,,,,0,"File:plugin/files/adc/js/renderer.js:highlightRow"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("hig",["Function"],[["highlightButtonAccessKey",,[[,,,,0,"File:plugin/files/adc/js/renderer.js:highlightButtonAccessKey"]]],["highlightRow",,[[,,,,0,"File:plugin/files/adc/js/renderer.js:highlightRow"]]]]);

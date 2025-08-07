@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("bul",["Function"],[["bulk_replace",,[["ADC_UTIL Body",,,,0,"File:core/packages/adc_util.pkb:ADC_UTIL_Body.bulk_replace","SQLClass:ADC_UTIL_Body:bulk_replace"],["ADC_UTIL",,,,0,"File:core/packages/adc_util.pks:ADC_UTIL.bulk_replace","SQLClass:ADC_UTIL:bulk_replace"]]]]);

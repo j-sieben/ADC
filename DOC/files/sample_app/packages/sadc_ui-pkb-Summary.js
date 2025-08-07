@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("File:sample_app/packages/sadc_ui.pkb","sadc_ui.pkb");NDSummary.OnSummaryLoaded("File:sample_app/packages/sadc_ui.pkb",[["SQL","SQL"]],[["Functions","Function"],["Groups","Group"]],[[1,0,1,"Functions","Functions"],[2,0,0,"copy_*app_alias*","copy_*app_alias*"]]);

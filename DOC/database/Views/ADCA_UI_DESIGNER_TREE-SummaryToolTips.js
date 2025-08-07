@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADCA_UI_DESIGNER_TREE",{347:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Hierarchical representation of rule groups with their related rules and rule actions</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Views.ADCA_UI_DESIGNER_TREE",{275:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Hierarchical representation of rule groups with their related rules and rule actions</div></div>"});

@@ -1,1 +1,1 @@
-﻿NDContentPage.OnToolTipsLoaded({329:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Tabel to store different action types as template for actions</div></div>"});
+﻿NDContentPage.OnToolTipsLoaded({257:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Tabel to store different action types as template for actions</div></div>"});

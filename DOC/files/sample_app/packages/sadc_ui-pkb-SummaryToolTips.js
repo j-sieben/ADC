@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("File:sample_app/packages/sadc_ui.pkb",{2:"<div class=\"NDToolTip TFunction LSQL\"><div class=\"TTSummary\">Helper method to copy session state values from the respective APEX page identified by APEX_ALIAS</div></div>"});

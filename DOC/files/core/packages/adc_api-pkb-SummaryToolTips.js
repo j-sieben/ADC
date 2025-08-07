@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("File:core/packages/adc_api.pkb",{});

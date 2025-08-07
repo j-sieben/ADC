@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("File:core/packages/adc_api.pkb","adc_api.pkb");NDSummary.OnSummaryLoaded("File:core/packages/adc_api.pkb",[["SQL","SQL"]],[["Groups","Group"]],[[914,0,0,"CORE FUNCTIONALITY wrapper around ADC_INTERNAL","CORE_FUNCTIONALITY_wrapper_around_ADC_INTERNAL"]]);

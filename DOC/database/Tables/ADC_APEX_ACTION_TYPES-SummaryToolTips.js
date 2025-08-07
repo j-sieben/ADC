@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Tables.ADC_APEX_ACTION_TYPES",{325:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store the allowed apex action types (ACTION|TOGGLE|RADIO_GROUP)</div></div>"});
+﻿NDSummary.OnToolTipsLoaded("Database:Tables.ADC_APEX_ACTION_TYPES",{253:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store the allowed apex action types (ACTION|TOGGLE|RADIO_GROUP)</div></div>"});

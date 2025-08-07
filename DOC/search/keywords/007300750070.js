@@ -1,1 +1,0 @@
-﻿NDSearch.OnPrefixDataLoaded("sup",["Function"],[["support_flows",,[["ADCA_UI_DESIGNER Body",,,,0,"File:apex/packages/adca_ui_designer.pkb:ADCA_UI_DESIGNER_Body.support_flows","SQLClass:ADCA_UI_DESIGNER_Body:support_flows"],["ADCA_UI_DESIGNER",,,,0,"File:apex/packages/adca_ui_designer.pks:ADCA_UI_DESIGNER.support_flows","SQLClass:ADCA_UI_DESIGNER:support_flows"]]]]);
