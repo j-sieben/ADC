@@ -1363,7 +1363,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cat_display_name => q'{<p><strong>aktualisiere Seitenelement </strong>“#ITEM#”</p>}',
     p_cat_description => q'{<p>Löst auf dem referenzierten Seitenelement einen APEX-Refresh aus.</p>}',
     p_cat_pl_sql => q'{}',
-    p_cat_js => q'{a.refresh('#ITEM#'#PARAM_1|, '|'|##PARAM_2|, ||##PARAM_3|, ||#);}',
+    p_cat_js => q'{a.refresh('#ITEM#', '#PARAM_1#', #PARAM_2|||false#, #PARAM_3|||false#);}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
