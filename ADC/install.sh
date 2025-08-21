@@ -2,8 +2,9 @@
 echo -n "Enter APEX workspace schema for ADC [ENTER] "
 read OWNER
 
-echo -n "Enter password for ${OWNER} [ENTER] "
-read -s PWD
+
+read -s -p "Enter password for ${OWNER} [ENTER] " PWD
+echo 
 
 echo -n "Enter service name for the database or PDB [ENTER] "
 read SERVICE
