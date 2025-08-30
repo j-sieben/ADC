@@ -6,8 +6,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
 (function(adc){
   'use strict';
 
-  adc.utils = adc.utils ||{};
-  let util = adc.utils;
+  adc.utils = adc.utils || {};
 
   /**
     Function: isEmpty
@@ -20,7 +19,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     Returns:
       TRUE, if pValue is empty according to the above definition
    */
-  util.isEmpty = function(pValue){
+  adc.utils.isEmpty = function(pValue){
     if (typeof pValue == 'undefined' || pValue === '' || pValue === null){
         return true;
     } else if (typeof pValue == 'string' && pValue.trim().length == 0) {
@@ -42,8 +41,8 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     Returns:
       TRUE, if pValue is not empty according to the above definition
    */
-  util.isNotEmpty = function(pValue){
-      return !util.isEmpty(pValue);
+  adc.utils.isNotEmpty = function(pValue){
+      return !adc.utils.isEmpty(pValue);
   } // isNotEmpty
 
 
@@ -57,10 +56,10 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     Returns:
       The first non empty value. If all values are NULL the last element of pValues is returned
    */
-  util.coalesce = function(pValues){
+  adc.utils.coalesce = function(pValues){
     if (pValues instanceof Array){
       for (let arg of pValues) {
-        if (util.isNotEmpty(arg)) {
+        if (adc.utils.isNotEmpty(arg)) {
             return arg;
         }
       }
@@ -82,7 +81,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
   Returns:
     Converted String
   */
-  util.hexToChar = function (pRawString) {
+  adc.utils.hexToChar = function (pRawString) {
     var code = '';
     var hexString;
 
@@ -104,7 +103,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       pSelector - jQuery selector to identify page items
       pAction - Action to execute on the found page items
    */
-  const forEach = function (pSelector, pAction){
+  adc.utils.forEach = function (pSelector, pAction){
     if (!($.isArray(pSelector) || pSelector.search(/[\.#\u0020:\[\]]+/) >= 0)){
       // passed ITEM is element name, extend by #.
       pSelector = `#${pSelector}`;

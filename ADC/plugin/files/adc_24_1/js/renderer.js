@@ -3,7 +3,7 @@ var de = de || {};
 de.condes = de.condes || {};
 de.condes.plugin = de.condes.plugin || {};
 de.condes.plugin.adc = de.condes.plugin.adc || {};
-de.condes.plugin.adc.apex_24_24_01 = {};
+de.condes.plugin.adc.apex_42_24_01 = {};
 
 /**
   Function: ADC Theme adapter
@@ -70,6 +70,8 @@ de.condes.plugin.adc.apex_24_24_01 = {};
   // private class selector
   const C_REPORT_LAST_REFRESH_TIME_CLASS = 'adc-last-refresh-time';
   const C_REPORT_LAST_REFRESH_TIME_CLASS_SELECTOR = `.${C_REPORT_LAST_REFRESH_TIME_CLASS}`;
+
+  adc.renderer = renderer;
 
     /*** PRIVATE FUNCTIONS */
     /**
@@ -149,7 +151,7 @@ de.condes.plugin.adc.apex_24_24_01 = {};
     Parameter:
         pReportId - Static ID of the report to adjust
     */
-    renderer.alignReportVerticalTop = function(pReportId){
+    adc.renderer.alignReportVerticalTop = function(pReportId){
         var $report = $(`#${pReportId}`);
         if ($report.length > 0){
             $report.find('td').addClass('u-alignTop');
@@ -165,7 +167,7 @@ de.condes.plugin.adc.apex_24_24_01 = {};
     Function: clearErrors
         Removes all messages in the notification region
     */
-    renderer.clearErrors = function(){
+    adc.renderer.clearErrors = function(){
         gErrors = [];
         gWarnings = [];
         msg.clearErrors();
@@ -176,7 +178,7 @@ de.condes.plugin.adc.apex_24_24_01 = {};
     Function: clearNotification
         Removes all messages in the notification region
     */
-    renderer.clearNotification = function(){
+    adc.renderer.clearNotification = function(){
         msg.hidePageSuccess();
     }; // clearNotification
 
@@ -190,7 +192,7 @@ de.condes.plugin.adc.apex_24_24_01 = {};
         pCallback - Method to be called if the user confirmes this dialog
         pFocusItem - Item to set the focus to if no confirmation is given
     */
-    renderer.confirmRequest = function(pEventOrMessage, pCallback, pFocusItem){
+    adc.renderer.confirmRequest = function(pEventOrMessage, pCallback, pFocusItem){
         let message = {};
 
         if (typeof(pEventOrMessage) === "string"){
@@ -219,7 +221,7 @@ de.condes.plugin.adc.apex_24_24_01 = {};
         pAction - APEX action object as defined by apex.actions interface
         pArgs - Optional arguments passed in by APEX
     */
-    renderer.decorateApexAction = function (pAction, pArgs){
+    adc.renderer.decorateApexAction = function (pAction, pArgs){
         let $buttons, accesskey, shortcuts, shortcut;
 
         // decorate button access key
@@ -255,7 +257,7 @@ de.condes.plugin.adc.apex_24_24_01 = {};
     Parameter
         pItemId - ID of the page item to disable
     */
-    renderer.disableElement = function (pItemId){
+    adc.renderer.disableElement = function (pItemId){
         const $item = $(`#${pItemId}`);
 
         if ($item.length){
@@ -312,7 +314,7 @@ de.condes.plugin.adc.apex_24_24_01 = {};
     Parameter:
         pItemId - ID of the page item to disable
     */
-    renderer.enableElement = function (pItemId){
+    adc.renderer.enableElement = function (pItemId){
         var $item = $(`#${pItemId}`);
         $item
             .prop(C_READONLY_PROP, false)
@@ -373,7 +375,7 @@ de.condes.plugin.adc.apex_24_24_01 = {};
         pRegionId - Static id of the interactive report or grid
         pRegionType - Type of the report
     */
-    renderer.hideReportFilterPanel = function(pRegionId, pRegionType){
+    adc.renderer.hideReportFilterPanel = function(pRegionId, pRegionType){
         switch(pRegionType){
             case C_REGION_IR:
                 $(`#${pRegionId}_control_panel`).hide(); // interactive report
@@ -398,7 +400,7 @@ de.condes.plugin.adc.apex_24_24_01 = {};
         pRow - jQuery object pointing to the data row to highlight
         pSetFocus - Flag to indicate whether the row has to be focussed
     */
-    renderer.highlightRow = function(pRegionId, pRow, pSetFocus){
+    adc.renderer.highlightRow = function(pRegionId, pRow, pSetFocus){
         if (pRow.length){
             pRow.siblings().removeClass("adc-selected-row");
             pRow.addClass("adc-selected-row");
@@ -433,7 +435,7 @@ de.condes.plugin.adc.apex_24_24_01 = {};
     Parameter:
         pErrors - Array of errors, instances of <error>
     */
-    renderer.showErrors = function(pErrors){
+    adc.renderer.showErrors = function(pErrors){
         
         msg.clearErrors();
         // Remove warning markup
@@ -463,7 +465,7 @@ de.condes.plugin.adc.apex_24_24_01 = {};
         pItemId - ID of the page item to set the label of
         pItemLabel - New item label
     */
-    renderer.setItemLabel = function(pItemId, pItemLabel){
+    adc.renderer.setItemLabel = function(pItemId, pItemLabel){
         if (adc.utils.isNotEmpty(pItemId)){
             $(`#${pItemId}_LABEL`).text(pItemLabel);
         };
@@ -478,7 +480,7 @@ de.condes.plugin.adc.apex_24_24_01 = {};
         pItemId - Page item ID of the item to set mandatory or optional
         pIsMandatory - Flag to set a page item mandatory (true) or optional (false)
     */
-    renderer.setItemMandatory = function(pItemId, pIsMandatory){
+    adc.renderer.setItemMandatory = function(pItemId, pIsMandatory){
 
         var $mandatoryItem = $(`#${pItemId}_CONTAINER`);
 
@@ -499,7 +501,7 @@ de.condes.plugin.adc.apex_24_24_01 = {};
     Parameter:
         pItemLabel - New item label
     */
-    renderer.setModalDialogTitle = function(pTitle){
+    adc.renderer.setModalDialogTitle = function(pTitle){
         parent.$(C_MODAL_DIALOG_TITLE_SELECTOR).last().html(pTitle);
     }; // setModalDialogTitle
 
@@ -514,7 +516,7 @@ de.condes.plugin.adc.apex_24_24_01 = {};
         pTitle - Optional title of the dialog
         pFocusItem - Flag to indicate whether this dialog is a confirmation dialog
     */
-    renderer.showDialog = function(pStyle, pMessage, pTitle, pFocusItem){
+    adc.renderer.showDialog = function(pStyle, pMessage, pTitle, pFocusItem){
     if (adc.utils.isEmpty(pFocusItem)){
         pFocusItem  = $('.t-Body').find('input, button').not(':hidden').first().attr('id');
     };
@@ -560,7 +562,7 @@ de.condes.plugin.adc.apex_24_24_01 = {};
     Parameter:
         pMessage - Message to display
     */
-    renderer.showSuccess = function(pMessage, pTitle, pStyle, pConfirm){
+    adc.renderer.showSuccess = function(pMessage, pTitle, pStyle, pConfirm){
         msg.showPageSuccess(pMessage);
     }; // showSuccess
 
@@ -575,7 +577,7 @@ de.condes.plugin.adc.apex_24_24_01 = {};
         pHeader - Header of the region
         pCSS - Accents for the header region
     */
-    renderer.setRegionContent = function(pRegionId, pContent, pHeader, pCSS){
+    adc.renderer.setRegionContent = function(pRegionId, pContent, pHeader, pCSS){
         const $region = $(`#${pRegionId}`);
 
         if ($region.length){
@@ -598,7 +600,7 @@ de.condes.plugin.adc.apex_24_24_01 = {};
         pHeader - Header of the region
         pRegionType - Type of the Region (Tab- or plain region)
     */
-    renderer.setRegionHeader = function(pRegionId, pHeader, pRegionType){
+    adc.renderer.setRegionHeader = function(pRegionId, pHeader, pRegionType){
     switch(pRegionType){
         case C_REGION_TAB:
             $(`#SR_${pRegionId}_tab a span`).html(pHeader)
@@ -617,7 +619,7 @@ de.condes.plugin.adc.apex_24_24_01 = {};
     Parameter:
         pFlag - Flag to indicate whether to show (true) a wait spinner or not (false)
     */
-    renderer.showWaitSpinner = function(pFlag){
+    adc.renderer.showWaitSpinner = function(pFlag){
         if(pFlag){
             apex.util.showSpinner();
         }
@@ -636,7 +638,7 @@ de.condes.plugin.adc.apex_24_24_01 = {};
         pRequest - Request for the server
         pMessage - Alert message warning the user if submit couldn't be executed due to errors on page
     */
-    renderer.submitPage = function(pRequest, pMessage){
+    adc.renderer.submitPage = function(pRequest, pMessage){
         if ($(C_APEX_ERROR_CLASS_SEL).length == 0 && adc.utils.isEmpty(pMessage)) {
             apex.page.submit({
                 "request" : pRequest,
@@ -648,4 +650,4 @@ de.condes.plugin.adc.apex_24_24_01 = {};
         }
     }; // submitPage
 
-})(de.condes.plugin.adc, de.condes.plugin.adc.apex_24_24_01, apex.message);
+})(de.condes.plugin.adc, de.condes.plugin.adc.apex_42_24_01, apex.message);

@@ -401,7 +401,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cet_id => 'notification',
     p_cet_name => 'Benachrichtigung',
     p_cet_column_name => 'NOTIFICATION',
-    p_cet_is_custom_event => adc_util.C_FALSE);
+    p_cet_is_custom_event => adc_util.C_TRUE);
 
 
   -- PAGE_ITEM_TYPES
