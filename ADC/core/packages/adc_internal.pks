@@ -323,7 +323,6 @@ as
    */
   procedure register_mandatory(
     p_cpi_id in adc_page_items.cpi_id%type,
-    p_cpi_mandatory_message in varchar2,
     p_is_mandatory in adc_util.flag_type,
     p_jquery_selector in adc_rule_actions.cra_param_2%type default null,
     p_visual_state in adc_rule_actions.cra_param_3%type default null);

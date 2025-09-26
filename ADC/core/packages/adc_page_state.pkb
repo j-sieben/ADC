@@ -35,7 +35,6 @@ as
     Type: session_value_rec
     
     Properties:
-                                                                                                     
       string_value - Actual value of the item as VARCHAR2
       date_value - Actual value of the item as DATE, if possible
       number_value  - Actual value of the item as NUMBER, if possible
@@ -44,7 +43,6 @@ as
   type session_value_rec is record(
     cpi_id adc_page_items.cpi_id%type,
     cpi_conversion adc_page_items.cpi_conversion%type,
-                               
     string_value adc_util.max_char,
     date_value date,
     number_value number);
@@ -65,14 +63,12 @@ as
       Is used to retrieve the default value if a mandatory item is NULL and  a default value was defined.
       
     Parameters:
-                                                                                         
       p_cpi_id - ID of the page item
       
     Returns:
       Default value for that page item.
    */
   function get_mandatory_default_value(
-                                             
     p_cpi_id in adc_page_items.cpi_id%type)
     return varchar2
   as
@@ -80,7 +76,6 @@ as
   begin
     pit.enter_optional('get_mandatory_default_value',
       p_params => msg_params(
-                                                    
                     msg_param('p_cpi_id', p_cpi_id)));
                     
     select cpi_item_default
@@ -119,7 +114,6 @@ as
       Error message for missing value
    */
   function get_mandatory_message(
-                                             
     p_cpi_id in adc_page_items.cpi_id%type)
     return varchar2
   as
@@ -156,7 +150,6 @@ as
       p_throw_error -Flag to indicate whether being unable to convert is treated as an error or ignore
    */
   procedure convert_session_value(
-                                             
     p_value in out nocopy session_value_rec,
     p_throw_error in adc_util.flag_type)
   as
@@ -187,9 +180,6 @@ as
         -- then persist number value, either directly or by converting the string value
         g_session_values(p_value.cpi_id).number_value := coalesce(p_value.number_value, to_number(p_value.string_value, l_to_number_mask));
         g_session_values(p_value.cpi_id).string_value := to_char(g_session_values(p_value.cpi_id).number_value, l_format_mask);
-                       
-                                                    
-                                                                                                                                                                                                                                                                                
       when C_DATE_ITEM then
         -- first, get string value from parameter values
         l_format_mask := coalesce(p_value.cpi_conversion, l_cpi_conversion, apex_application.g_date_format);
@@ -198,9 +188,6 @@ as
         -- then persist date value, either directly or by converting the string value
         g_session_values(p_value.cpi_id).date_value := coalesce(p_value.date_value, to_date(p_value.string_value, l_format_mask));
         g_session_values(p_value.cpi_id).string_value := to_char(g_session_values(p_value.cpi_id).date_value, l_format_mask);
-                       
-                                                   
-                                                                                                                                                       
       else
         null;
     end case;
@@ -213,12 +200,12 @@ as
                       msg_param('Result', g_session_values(p_value.cpi_id).string_value)));
       if p_throw_error = adc_util.C_TRUE then
         if l_cpi_cpit_id = C_NUMBER_ITEM then
-          pit.raise_error(
+          pit.error(
             p_message_name => msg.ADC_INVALID_NUMBER, 
             p_msg_args => msg_args(
                             replace(lower(l_format_mask), 'fm')));
         else
-          pit.raise_error(
+          pit.error(
             p_message_name => msg.ADC_INVALID_DATE, 
             p_msg_args => msg_args(
                             replace(lower(l_format_mask), 'fm')));
@@ -233,12 +220,12 @@ as
         when sqlcode in (-1858) 
           or sqlcode between -1866 and -1800 then
           if l_cpi_cpit_id = C_NUMBER_ITEM then
-            pit.raise_error(
+            pit.error(
               p_message_name => msg.ADC_INVALID_NUMBER, 
               p_msg_args => msg_args(
                               replace(lower(l_format_mask), 'fm')));
           else
-            pit.raise_error(
+            pit.error(
               p_message_name => msg.ADC_INVALID_DATE, 
               p_msg_args => msg_args(
                               replace(lower(l_format_mask), 'fm')));
@@ -263,13 +250,11 @@ as
     p_cpi_id in adc_page_items.cpi_id%type,
     p_value in varchar2)
   as
-                                  
   begin
     if coalesce(apex_util.get_session_state(p_cpi_id), 'foo') != coalesce(p_value, 'foo') then
       apex_util.set_session_state(p_cpi_id, p_value);
       adc_recursion_stack.register_touched_item(p_cpi_id);
     end if;
-           
   end set_session_value;
   
   
@@ -278,14 +263,12 @@ as
       Method checks whether an item is allowed to have a page state value.
       
     Parameters:g_crg_id
-                                      
       p_cpi_id - ID of the page item
       
     Returns:
       Flag to indicate whether this item is allowed to have a value (TRUE) or not (FALSE).
    */
   function item_may_have_value(
-                                             
     p_cpi_id in adc_page_items.cpi_id%type)
     return boolean
   as
@@ -294,22 +277,15 @@ as
   begin
     pit.enter_optional('item_may_have_value',
       p_params => msg_params(
-                                                    
                     msg_param('p_cpi_id', p_cpi_id)));
     
     select cpi_may_have_value
       into l_cpi_may_have_value
-                    
-                 
-                    
-                        
       from adc_page_items
      where cpi_crg_id = g_crg_id
        and cpi_id = p_cpi_id;
               
     if l_cpi_may_have_value = adc_util.C_FALSE and g_session_values.exists(p_cpi_id) then
-                                         
-                                                        
       g_session_values.delete(p_cpi_id);
     end if;
   
@@ -332,7 +308,6 @@ as
       See <ADC_PAGE_STATE.check_mandatory>
    */
   procedure check_mandatory(
-                                             
     p_cpi_id in adc_page_items.cpi_id%type)
   as
     l_is_mandatory pls_integer;
@@ -341,7 +316,6 @@ as
   begin
     pit.enter_optional('check_mandatory',
       p_params => msg_params(
-                                                    
                     msg_param('p_cpi_id', p_cpi_id)));
                     
     l_cpi_id := adc_util.harmonize_page_item_name(p_cpi_id);
@@ -364,9 +338,7 @@ as
       See <ADC_PAGE_STATE.register_mandatory>
    */
   procedure register_mandatory(
-                                             
     p_cpi_id in adc_page_items.cpi_id%type,
-    p_cpi_mandatory_message in varchar2,
     p_is_mandatory in adc_util.flag_type)
   as
     l_collection_name adc_util.ora_name_type;
@@ -380,9 +352,7 @@ as
   begin
     pit.enter_optional(
       p_params => msg_params(
-                                                    
                     msg_param('p_cpi_id', p_cpi_id),
-                    msg_param('p_cpi_mandatory_message', p_cpi_mandatory_message),
                     msg_param('p_is_mandatory', p_is_mandatory)));
     
     l_collection_name := C_COLLECTION_NAME || g_crg_id;
@@ -421,21 +391,21 @@ as
          and cpi_id = l_cpi_id;
          
       case when p_is_mandatory = adc_util.C_TRUE and l_cgs_row.cgs_id is null then
-        pit.raise_info(msg.ADC_ITEM_SET_MANDATORY, msg_args(l_cpi_id));
+        pit.info(msg.ADC_ITEM_SET_MANDATORY, msg_args(l_cpi_id));
         apex_collection.add_member(
           p_collection_name => l_collection_name,
           p_c001 => l_cgs_row.cgs_cpi_id,
           p_c002 => l_cgs_row.cgs_cpi_label,
-          p_c003 => coalesce(p_cpi_mandatory_message, get_mandatory_message(l_cgs_row.cgs_cpi_id), 'null'),
+          p_c003 => coalesce(get_mandatory_message(l_cgs_row.cgs_cpi_id), 'null'),
           p_n001 => g_crg_id,
           p_generate_md5 => 'NO');
       when p_is_mandatory = adc_util.C_FALSE and l_cgs_row.cgs_id is not null then
-        pit.raise_info(msg.ADC_ITEM_SET_OPTIONAL, msg_args(l_cpi_id));
+        pit.info(msg.ADC_ITEM_SET_OPTIONAL, msg_args(l_cpi_id));
         apex_collection.delete_member(
           p_seq => l_cgs_row.cgs_id,
           p_collection_name => l_collection_name);
       else
-        pit.raise_info(msg.ADC_ITEM_UNCHANGED, msg_args(l_cpi_id));
+        pit.info(msg.ADC_ITEM_UNCHANGED, msg_args(l_cpi_id));
       end case;
     end if;
     
@@ -492,7 +462,9 @@ as
   /**
     Procedure: initialize_page_state
       Method to retrieve all relevant page item values prior to evaluating
-      the ADC rule to prevent ora-014551 Cannot perform DML inside a query
+      the ADC rule to prevent ora-014551 Cannot perform DML inside a query.
+      Use SET_VALUE to convert the values to react on possibly unconvertable
+      field values.
     
     Parameter:
       p_crg_id - ID of the rule group
@@ -502,41 +474,19 @@ as
     cursor required_item_cur(
       p_crg_id in adc_rule_groups.crg_id%type)
       is
-        with params as (
-               select /*+ no_merge */
-                      pit_util.C_TRUE c_true,
-                      pit_util.C_FALSE c_false
-                 from dual),
-             data as (    
-               select cpi_id, cpi_conversion, apex_util.get_session_state(cpi_id) string_value, cpi_cpit_id,
-                      case cpi_cpit_id when 'NUMBER_ITEM' then
-                        replace(replace(cpi_conversion, 'FM'), 'G')
-                      end to_number_mask
-                 from adc_page_items
-                 join params 
-                   on cpi_is_required = C_TRUE
-                  and cpi_may_have_value = C_TRUE
-                where cpi_crg_id = p_crg_id)
-        select cpi_id, cpi_conversion, 
-               case cpi_cpit_id when 'NUMBER_ITEM' then
-                 to_char(to_number(string_value, to_number_mask), cpi_conversion)
-               else 
-                 string_value
-               end string_value,
-               case cpi_cpit_id when 'NUMBER_ITEM' then
-                 to_number(string_value, to_number_mask)
-               end number_value,
-               case when cpi_cpit_id in ('DATE_ITEM', 'TIMESTAMP_ITEM') then
-                 to_date(string_value, cpi_conversion)
-               end date_value
-          from data;
-    l_session_value_rec session_value_rec;
+        select cpi_id, cpi_conversion
+          from adc_page_items
+         where cpi_is_required = 1
+           and cpi_may_have_value = 1
+           and cpi_crg_id = p_crg_id;
   begin
     pit.enter_optional('initialize_page_state');
     
     for cpi in required_item_cur(g_crg_id) loop
-      g_session_values(cpi.cpi_id) := session_value_rec(
-        cpi.cpi_id, cpi.cpi_conversion, cpi.string_value, cpi.date_value, cpi.number_value);  
+      set_value(
+        p_cpi_id => cpi.cpi_id,
+        p_value => C_FROM_SESSION_STATE, 
+        p_format_mask => cpi.cpi_conversion);
     end loop;
     
     pit.leave_optional;
@@ -572,7 +522,6 @@ as
       See <ADC_PAGE_STATE.set_value>
    */
   procedure set_value(
-                                             
     p_cpi_id in adc_page_items.cpi_id%type,
     p_value in varchar2 default null,
     p_number_value in number default null,
@@ -585,7 +534,6 @@ as
   begin
     pit.enter_optional('set_value',
       p_params => msg_params(
-                                                    
                     msg_param('p_cpi_id', p_cpi_id),
                     msg_param('p_value', p_value),
                     msg_param('p_number_value', p_number_value),
@@ -598,7 +546,6 @@ as
     l_value.number_value := p_number_value;
     l_value.date_value := p_date_value;
     l_value.cpi_conversion := p_format_mask;
-                                                                                
     
     if item_may_have_value(l_value.cpi_id) then    
       -- If requested, get the value from the session state
@@ -612,7 +559,6 @@ as
       if l_value.string_value is not null then
         -- Explicitly set the value and harmonize with the session state (fi when changing a session values during rule execution)
         convert_session_value(l_value, p_throw_error);                
-                
       else
         if p_throw_error = adc_util.C_TRUE then
           check_mandatory(l_value.cpi_id);
@@ -627,14 +573,6 @@ as
     
     pit.leave_optional;
   exception
-                           
-                                        
-                                                                      
-                                               
-                         
-                                                                            
-                         
-            
     when others then
       pit.leave_optional;
       raise;
@@ -646,7 +584,6 @@ as
       See <ADC_PAGE_STATE.get_string>
    */
   function get_string(
-                                            
     p_cpi_id in adc_page_items.cpi_id%type)
     return varchar2
   as
@@ -655,7 +592,6 @@ as
   begin
     pit.enter_optional('get_string',
       p_params => msg_params(
-                                                    
                     msg_param('p_cpi_id', p_cpi_id)));
     
     l_cpi_id := adc_util.harmonize_page_item_name(p_cpi_id);
@@ -664,7 +600,6 @@ as
         l_string_value := g_session_values(l_cpi_id).string_value;
       when item_may_have_value(l_cpi_id) then
         set_value(
-                               
           p_cpi_id => l_cpi_id,
           p_value => C_FROM_SESSION_STATE);
         l_string_value := g_session_values(l_cpi_id).string_value;
@@ -676,10 +611,6 @@ as
       p_params => msg_params(
                     msg_param('Result', l_string_value)));
     return l_string_value;
-           
-                           
-                         
-                  
   end get_string;
   
     
@@ -688,7 +619,6 @@ as
       See <ADC_PAGE_STATE.get_date>
    */
   function get_date(
-                                            
     p_cpi_id in adc_page_items.cpi_id%type,
     p_format_mask in varchar2)
     return date
@@ -698,7 +628,6 @@ as
   begin
     pit.enter_optional('get_date',
       p_params => msg_params(
-                                                    
                     msg_param('p_cpi_id', p_cpi_id),
                     msg_param('p_format_mask', p_format_mask)));
                     
@@ -708,7 +637,6 @@ as
         l_date_value := g_session_values(l_cpi_id).date_value;
       when item_may_have_value(l_cpi_id) then
         set_value(
-                               
           p_cpi_id => l_cpi_id,
           p_value => C_FROM_SESSION_STATE, 
           p_format_mask => p_format_mask);
@@ -721,10 +649,6 @@ as
       p_params => msg_params(
                     msg_param('Result', l_date_value)));
     return l_date_value;
-           
-                           
-                         
-                  
   end get_date;
   
       
@@ -733,7 +657,6 @@ as
       See <ADC_PAGE_STATE.get_number>
    */
   function get_number(
-                                            
     p_cpi_id in adc_page_items.cpi_id%type,
     p_format_mask in varchar2)
     return number
@@ -743,7 +666,6 @@ as
   begin
     pit.enter_optional('get_number',
       p_params => msg_params(
-                                                    
                     msg_param('p_cpi_id', p_cpi_id),
                     msg_param('p_format_mask', p_format_mask)));
     
@@ -753,7 +675,6 @@ as
         l_number_value := g_session_values(l_cpi_id).number_value;
       when item_may_have_value(l_cpi_id) then
         set_value(
-                               
           p_cpi_id => l_cpi_id,
           p_value => C_FROM_SESSION_STATE, 
           p_format_mask => p_format_mask);
@@ -766,10 +687,6 @@ as
       p_params => msg_params(
                     msg_param('Result', l_number_value)));
     return l_number_value;
-           
-                           
-                         
-                  
   end get_number;
   
   
@@ -778,7 +695,6 @@ as
       See <ADC_PAGE_STATE.dynamically_validate_value>
    */
   procedure dynamically_validate_value(
-                                             
     p_cpi_id in adc_page_items.cpi_id%type)
   as
     C_VALIDATION_TEMPLATE constant adc_util.sql_char := 'begin #CODE#; end;';
@@ -787,7 +703,6 @@ as
   begin
     pit.enter_detailed('dynamically_validate_value',
       p_params => msg_params(
-                                                     
                     msg_param ('p_cpi_id', p_cpi_id)));
     
     -- Check whether page item is allowed to have a value and get the item type and format mask
@@ -848,7 +763,6 @@ as
       See <ADC_PAGE_STATE.get_item_values_as_char_table>
    */
   procedure get_item_values_as_char_table(
-                                            
     p_cpi_list in varchar2,
     p_value_list out nocopy char_table)
   as

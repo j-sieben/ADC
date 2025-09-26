@@ -3,7 +3,7 @@ var de = de || {};
 de.condes = de.condes || {};
 de.condes.plugin = de.condes.plugin || {};
 de.condes.plugin.adc = de.condes.plugin.adc || {};
-de.condes.plugin.adc.apex_42_24_01 = {};
+de.condes.plugin.adc.apex_42_24_1 = {};
 
 /**
   Function: ADC Theme adapter
@@ -29,8 +29,6 @@ de.condes.plugin.adc.apex_42_24_01 = {};
     msg - Message object provided by APEX, instance of apex.message
  */
 (function(adc, renderer, msg){
-  'use strict';
-  
   const C_FILE_NAME = 'adc.js.renderer.js';
 
   const C_APEX_ERROR_CLASS_SEL = 'div.a-Notification--error';
@@ -71,69 +69,15 @@ de.condes.plugin.adc.apex_42_24_01 = {};
   const C_REPORT_LAST_REFRESH_TIME_CLASS = 'adc-last-refresh-time';
   const C_REPORT_LAST_REFRESH_TIME_CLASS_SELECTOR = `.${C_REPORT_LAST_REFRESH_TIME_CLASS}`;
 
-  adc.renderer = renderer;
-
-    /*** PRIVATE FUNCTIONS */
-    /**
-    Function: highlightButtonAccessKey
-        Makes a shortcut of a button visible
-
-    Parameters:
-        pButton - jQuery instance of the button to change
-        pShortcut - Shortcut letter to highlight
-    */
-    function highlightButtonAccessKey(pButton, pShortcut){
-        const C_SHORTCUT_CLASS = 'adc-accesskey',
-              C_BUTTON_LABEL_CLASS = 't-Button-label';
-
-        let label, accesskey, re;
-        const $label = pButton.find(`.${C_BUTTON_LABEL_CLASS}`);
-
-        if(!pButton.find(`.${C_BUTTON_LABEL_CLASS}`)[0]){
-            pButton.html(`<span class='${C_BUTTON_LABEL_CLASS}'>${$this.html()}</span>`);
-        }
-
-        label = $label.text();
-        re = new RegExp(`(^| )${pShortcut}`, 'i')
-        accesskey = re.exec(label);
-        if (adc.utils.isEmpty(accesskey)){
-            re = new RegExp(pShortcut, 'i');
-            accesskey = re.exec(label);
-        }
-        if (adc.utils.isNotEmpty(accesskey)){
-            label = label.replace(re, ` <span class='${C_SHORTCUT_CLASS}'>${accesskey[0].trim()}</span>`);
-            pButton.attr('accesskey', pShortcut);
-            $label.html(label);
-        }
-    }; // highlightButtonAccessKey
-
 
     /** 
-    Function: maintainButtonAccessTitle
-        Shows the access key in the title of a button, adds consistency to the APEX behaviour
-
-    Parameters:
-        pButton - jQuery instance of the button to change
-        pShortcut - Shortcut letter to highlight
-    */
-    function maintainButtonAccessTitle(pButton, pShortcut){
-        // initially, set a data-title attribute to the title without any shortcut information
-        if (adc.utils.isEmpty(pButton.attr('data-title'))){
-            const label = pButton.attr('title');
-            pButton.attr('data-title', label.slice(0, label.indexOf(`, ${pShortcut}`)));
-        }
-        pButton.attr('title', `${pButton.attr('data-title')}, (${pShortcut})`);
-    }; // maintainButtonAccessTitle
-
-
-    /** 
-         Function: setFocus
+      Function: setFocus
         Local method to securely set the focus to a requested item
 
-        Parameter:
+      Parameter:
         pSelector - Selector to set the focus to
-        */
-    function setFocus(pSelector){
+     */
+    setFocus = function(pSelector){
         const anchors = ['.', '#'];
         if ($.trim(pSelector).length !== 0) {
             if (!anchors.includes($.trim(pSelector).charAt(0))){
@@ -143,7 +87,6 @@ de.condes.plugin.adc.apex_42_24_01 = {};
         };
     }; //setFocus
 
-    /*** INTERFACE */
     /**
     Function: alignReportVerticalTop
         Method adjusts report cells vertically to top
@@ -151,7 +94,7 @@ de.condes.plugin.adc.apex_42_24_01 = {};
     Parameter:
         pReportId - Static ID of the report to adjust
     */
-    adc.renderer.alignReportVerticalTop = function(pReportId){
+    renderer.alignReportVerticalTop = function(pReportId){
         var $report = $(`#${pReportId}`);
         if ($report.length > 0){
             $report.find('td').addClass('u-alignTop');
@@ -161,13 +104,28 @@ de.condes.plugin.adc.apex_42_24_01 = {};
             }
         }
     }; // alignReportVerticalTop
+    
+    
+    /**
+      Function: getOptions
+        extracts the options object
+    */
+    function getOptions(pOptions){
+      let options;
+      if (adc.utils.isNotEmpty(pOptions.data)){
+        options = pOptions.data.options;
+      } else {
+        options = pOptions;
+      }
+      return options;
+    }
 
 
     /**
     Function: clearErrors
         Removes all messages in the notification region
     */
-    adc.renderer.clearErrors = function(){
+    renderer.clearErrors = function(){
         gErrors = [];
         gWarnings = [];
         msg.clearErrors();
@@ -178,7 +136,7 @@ de.condes.plugin.adc.apex_42_24_01 = {};
     Function: clearNotification
         Removes all messages in the notification region
     */
-    adc.renderer.clearNotification = function(){
+    renderer.clearNotification = function(){
         msg.hidePageSuccess();
     }; // clearNotification
 
@@ -188,40 +146,34 @@ de.condes.plugin.adc.apex_42_24_01 = {};
         Shows a confirmation dialog to the user before calling the intended functionality.
 
     Parameters:
-        pEventOrMessage - Event to extract the message text from or a plain message
+        pEvent - Event object with options containing the message, title and other
         pCallback - Method to be called if the user confirmes this dialog
         pFocusItem - Item to set the focus to if no confirmation is given
     */
-    adc.renderer.confirmRequest = function(pEventOrMessage, pCallback, pFocusItem){
-        let message = {};
+    renderer.confirmRequest = function(pEvent, pCallback, pFocusItem){
+      const options = getOptions(pEvent);
 
-        if (typeof(pEventOrMessage) === "string"){
-            message.data = {};
-            message.data.message = pEventOrMessage;
-        } else {
-            message = pEventOrMessage;
-        }
-        apex.message.confirm(message.data.message, function (pAnswer) {
-            if (pAnswer){
-                pCallback(message);
-            }
-            else {
-                setFocus(pFocusItem);
-            };
-        }, message.data.options);
-        renderer.setModalDialogTitle(message.data.options.title);
+      apex.message.confirm(options.message, function (pAnswer) {
+          if (pAnswer){
+              pCallback(pEvent);
+          }
+          else {
+              setFocus(pFocusItem);
+          };
+      }, options);
+      renderer.setModalDialogTitle(options.title);
     }; // confirmRequest
 
 
     /**
-    Function: decorateApexAction
+      Function: decorateApexAction
         Decorates a button or other UI control that is maintained by an apex.action
 
-    Parameter
+      Parameter
         pAction - APEX action object as defined by apex.actions interface
         pArgs - Optional arguments passed in by APEX
     */
-    adc.renderer.decorateApexAction = function (pAction, pArgs){
+    renderer.decorateApexAction = function (pAction, pArgs){
         let $buttons, accesskey, shortcuts, shortcut;
 
         // decorate button access key
@@ -243,7 +195,7 @@ de.condes.plugin.adc.apex_42_24_01 = {};
                 }
             }
         }
-    }
+    }; // decorateApexAction
 
 
     /**
@@ -257,8 +209,13 @@ de.condes.plugin.adc.apex_42_24_01 = {};
     Parameter
         pItemId - ID of the page item to disable
     */
-    adc.renderer.disableElement = function (pItemId){
+    renderer.disableElement = function (pItemId){
         const $item = $(`#${pItemId}`);
+        const $container = $(`#${pItemId}_CONTAINER`);
+
+        if ($container.length){
+            $container.removeClass(C_APEX_DISABLED)
+        };
 
         if ($item.length){
             let $itemLabel = $(`#${pItemId}_LABEL`);
@@ -314,8 +271,14 @@ de.condes.plugin.adc.apex_42_24_01 = {};
     Parameter:
         pItemId - ID of the page item to disable
     */
-    adc.renderer.enableElement = function (pItemId){
+    renderer.enableElement = function (pItemId){
         var $item = $(`#${pItemId}`);
+        const $container = $(`#${pItemId}_CONTAINER`);
+
+        if ($container.length){
+            $container.removeClass(C_APEX_DISABLED)
+        };
+        
         $item
             .prop(C_READONLY_PROP, false)
             .removeClass(C_ADC_DISABLED)
@@ -375,7 +338,7 @@ de.condes.plugin.adc.apex_42_24_01 = {};
         pRegionId - Static id of the interactive report or grid
         pRegionType - Type of the report
     */
-    adc.renderer.hideReportFilterPanel = function(pRegionId, pRegionType){
+    renderer.hideReportFilterPanel = function(pRegionId, pRegionType){
         switch(pRegionType){
             case C_REGION_IR:
                 $(`#${pRegionId}_control_panel`).hide(); // interactive report
@@ -392,6 +355,44 @@ de.condes.plugin.adc.apex_42_24_01 = {};
 
 
     /**
+    Function: highlightButtonAccessKey
+        Makes a shortcut of a button visible
+
+    Parameters:
+        pButton - jQuery instance of the button to change
+        pShortcut - Shortcut letter to highlight
+    */
+    function highlightButtonAccessKey(pButton, pShortcut){
+        const C_SHORTCUT_CLASS = 'adc-accesskey',
+              C_BUTTON_LABEL_CLASS = 't-Button-label';
+
+        let label, accesskey, re;
+        const $label = pButton.find(`.${C_BUTTON_LABEL_CLASS}`);
+
+        if(!pButton.find(`.${C_BUTTON_LABEL_CLASS}`)[0]){
+            pButton.html(`<span class='${C_BUTTON_LABEL_CLASS}'>${$this.html()}</span>`);
+        }
+
+        label = $label.text();
+        re = new RegExp(`(^| )${pShortcut}`, 'i')
+        accesskey = re.exec(label);
+        if (adc.utils.isEmpty(accesskey)){
+            re = new RegExp(pShortcut, 'i');
+            accesskey = re.exec(label);
+        }
+        if (adc.utils.isNotEmpty(accesskey)){
+          if (accesskey.length > 1){
+            label = label.replace(re, ` <span class='${C_SHORTCUT_CLASS}'>${accesskey[0].trim()}</span>`);
+          }else {
+            label = label.replace(re, `<span class='${C_SHORTCUT_CLASS}'>${accesskey[0]}</span>`);
+          }
+          pButton.attr('accesskey', pShortcut);
+          $label.html(label);
+        }
+    }; // highlightButtonAccessKey
+    
+
+    /**
     Function: highlightRow
         Method to optically select a row in a report
         
@@ -400,7 +401,7 @@ de.condes.plugin.adc.apex_42_24_01 = {};
         pRow - jQuery object pointing to the data row to highlight
         pSetFocus - Flag to indicate whether the row has to be focussed
     */
-    adc.renderer.highlightRow = function(pRegionId, pRow, pSetFocus){
+    renderer.highlightRow = function(pRegionId, pRow, pSetFocus){
         if (pRow.length){
             pRow.siblings().removeClass("adc-selected-row");
             pRow.addClass("adc-selected-row");
@@ -426,6 +427,55 @@ de.condes.plugin.adc.apex_42_24_01 = {};
             $(`#${pRegionId} ${C_REGION_NO_DATA_MSG_SELECTOR}`).append(`<div class="${C_REPORT_LAST_REFRESH_TIME_CLASS}"><br>(letzte Aktualisierung um ${actTime})</div>`);
         };
     }; // highlightRow
+    
+    
+    /**
+    Fucntion: informUnchanged
+      Determines whether an unchanged notification is shown in the vicinity of a modal dialog or not.
+      If a modal dialog is present, a confirmation is shown and the dialog is closed if not cancelled.
+      It a normal page is shown, a dialog message is shown and nothing happens after confirmation.
+      
+    Parameters:
+      pEventOrMessage - Event to extract the message text from or a plain message
+      pCallback - Method to be called if the user confirmes this dialog
+      pFocusItem - Item to set the focus to if no confirmation is given
+    */
+    renderer.informUnchanged = function (pOptions, pFocusItem){
+        const isModalDialog = parent.$('.ui-dialog').length > 0;
+        const options = getOptions(pOptions);
+        let message  = options.message;
+        if(isModalDialog){
+            if(!message.includes(adc.controller.getStandardMessage('CSM_CLOSE_MODAL_DIALOG'))){
+                options.message = message + adc.controller.getStandardMessage('CSM_CLOSE_MODAL_DIALOG');
+            };
+            const callback = function(){apex.navigation.dialog.cancel(true);};
+            renderer.confirmRequest(pOptions, callback, pFocusItem);
+        } else {
+            renderer.showDialog('WARNING', options, pFocusItem);
+        };      
+    }; // informUnchanged
+
+
+    /** 
+    Function: maintainButtonAccessTitle
+        Shows the access key in the title of a button, adds consistency to the APEX behaviour
+
+    Parameters:
+        pButton - jQuery instance of the button to change
+        pShortcut - Shortcut letter to highlight
+    */
+    function maintainButtonAccessTitle(pButton, pShortcut){
+        // initially, set a data-title attribute to the title without any shortcut information
+        if (adc.utils.isEmpty(pButton.attr('data-title'))){
+            const label = pButton.attr('title');
+            const end = label.indexOf(`, ${pShortcut}`);
+            if (end > 0){
+              label = label.substring(0, end);
+            }
+            pButton.attr('data-title', label);
+        }
+        pButton.attr('title', `${pButton.attr('data-title')}, (${pShortcut})`);
+    }; // maintainButtonAccessTitle
 
   
     /**
@@ -435,7 +485,7 @@ de.condes.plugin.adc.apex_42_24_01 = {};
     Parameter:
         pErrors - Array of errors, instances of <error>
     */
-    adc.renderer.showErrors = function(pErrors){
+    renderer.showErrors = function(pErrors){
         
         msg.clearErrors();
         // Remove warning markup
@@ -465,7 +515,7 @@ de.condes.plugin.adc.apex_42_24_01 = {};
         pItemId - ID of the page item to set the label of
         pItemLabel - New item label
     */
-    adc.renderer.setItemLabel = function(pItemId, pItemLabel){
+    renderer.setItemLabel = function(pItemId, pItemLabel){
         if (adc.utils.isNotEmpty(pItemId)){
             $(`#${pItemId}_LABEL`).text(pItemLabel);
         };
@@ -480,7 +530,7 @@ de.condes.plugin.adc.apex_42_24_01 = {};
         pItemId - Page item ID of the item to set mandatory or optional
         pIsMandatory - Flag to set a page item mandatory (true) or optional (false)
     */
-    adc.renderer.setItemMandatory = function(pItemId, pIsMandatory){
+    renderer.setItemMandatory = function(pItemId, pIsMandatory){
 
         var $mandatoryItem = $(`#${pItemId}_CONTAINER`);
 
@@ -501,7 +551,7 @@ de.condes.plugin.adc.apex_42_24_01 = {};
     Parameter:
         pItemLabel - New item label
     */
-    adc.renderer.setModalDialogTitle = function(pTitle){
+    renderer.setModalDialogTitle = function(pTitle){
         parent.$(C_MODAL_DIALOG_TITLE_SELECTOR).last().html(pTitle);
     }; // setModalDialogTitle
 
@@ -512,46 +562,42 @@ de.condes.plugin.adc.apex_42_24_01 = {};
 
     Parameter:
         pStyle - One of the predefined styles information|warning|sucess|error
-        pMessage - Message of the dialog
-        pTitle - Optional title of the dialog
+        pOptions - Option object for the dialog
         pFocusItem - Flag to indicate whether this dialog is a confirmation dialog
     */
-    adc.renderer.showDialog = function(pStyle, pMessage, pTitle, pFocusItem){
-    if (adc.utils.isEmpty(pFocusItem)){
+    renderer.showDialog = function(pStyle, pOptions, pFocusItem){
+      let options = getOptions(pOptions);
+      
+      if (adc.utils.isEmpty(pFocusItem)){
         pFocusItem  = $('.t-Body').find('input, button').not(':hidden').first().attr('id');
-    };
+      };
 
-    const callback = function(){
+      const callback = function(){
         setFocus(pFocusItem);
-    };
+      };
 
-    const options = {
-        "modern":true,
-        "title":pTitle,
-        "okLabel": "Okay",
-        "returnFocusTo":pFocusItem,
-        "callback":callback};
-    switch (pStyle){
+      options.returnFocusTo = pFocusItem;
+      options.callback = callback;
+      switch (pStyle){
         case 'ALERT':
-            options.style = 'error';
-            msg.showDialog("" + pMessage, options);
-            break;
+          options.style = 'error';
+          msg.showDialog("" + options.message, options);
+          break;
         case 'SUCCESS':
-            msg.showPageSuccess(pMessage);
-            $('.t-Button--closeAlert').one('click', function(){
-                setFocus(pFocusItem);
-            });
-            break;
+          msg.showPageSuccess(options.message);
+          $('.t-Button--closeAlert').one('click', function(){
+              setFocus(pFocusItem);
+          });
+          break;
         case 'WARNING':
-            options.style = 'warning';
-            msg.showDialog("" + pMessage, options);
-            break;
+          options.style = 'warning';
+          msg.showDialog("" + options.message, options);
+          break;
         case 'INFO':
-            options.style = 'information';
-            msg.showDialog("" + pMessage, options);
-            break;
-    };
-
+          options.style = 'information';
+          msg.showDialog("" + options.message, options);
+          break;
+      };
     }; // showDialog
 
 
@@ -562,7 +608,7 @@ de.condes.plugin.adc.apex_42_24_01 = {};
     Parameter:
         pMessage - Message to display
     */
-    adc.renderer.showSuccess = function(pMessage, pTitle, pStyle, pConfirm){
+    renderer.showSuccess = function(pMessage){
         msg.showPageSuccess(pMessage);
     }; // showSuccess
 
@@ -577,7 +623,7 @@ de.condes.plugin.adc.apex_42_24_01 = {};
         pHeader - Header of the region
         pCSS - Accents for the header region
     */
-    adc.renderer.setRegionContent = function(pRegionId, pContent, pHeader, pCSS){
+    renderer.setRegionContent = function(pRegionId, pContent, pHeader, pCSS){
         const $region = $(`#${pRegionId}`);
 
         if ($region.length){
@@ -600,7 +646,7 @@ de.condes.plugin.adc.apex_42_24_01 = {};
         pHeader - Header of the region
         pRegionType - Type of the Region (Tab- or plain region)
     */
-    adc.renderer.setRegionHeader = function(pRegionId, pHeader, pRegionType){
+    renderer.setRegionHeader = function(pRegionId, pHeader, pRegionType){
     switch(pRegionType){
         case C_REGION_TAB:
             $(`#SR_${pRegionId}_tab a span`).html(pHeader)
@@ -619,7 +665,7 @@ de.condes.plugin.adc.apex_42_24_01 = {};
     Parameter:
         pFlag - Flag to indicate whether to show (true) a wait spinner or not (false)
     */
-    adc.renderer.showWaitSpinner = function(pFlag){
+    renderer.showWaitSpinner = function(pFlag){
         if(pFlag){
             apex.util.showSpinner();
         }
@@ -638,7 +684,7 @@ de.condes.plugin.adc.apex_42_24_01 = {};
         pRequest - Request for the server
         pMessage - Alert message warning the user if submit couldn't be executed due to errors on page
     */
-    adc.renderer.submitPage = function(pRequest, pMessage){
+    renderer.submitPage = function(pRequest, pMessage){
         if ($(C_APEX_ERROR_CLASS_SEL).length == 0 && adc.utils.isEmpty(pMessage)) {
             apex.page.submit({
                 "request" : pRequest,
@@ -650,4 +696,4 @@ de.condes.plugin.adc.apex_42_24_01 = {};
         }
     }; // submitPage
 
-})(de.condes.plugin.adc, de.condes.plugin.adc.apex_42_24_01, apex.message);
+})(de.condes.plugin.adc, de.condes.plugin.adc.apex_theme_42, apex.message);

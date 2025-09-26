@@ -15,6 +15,7 @@ as
   /**
     Group: Public Methods
    */
+  
   /**
     Function: C_CR
       See <ADC_UTIL.C_CR>
@@ -23,20 +24,8 @@ as
     return varchar2
   as
   begin
-    return chr(10);
+    return chr(13) || chr(10);
   end c_cr;
-  
-  
-  /**
-    Function: C_DELIMITER
-      See <ADC_UTIL.C_DELIMITER>
-   */
-  function c_delimiter
-    return varchar2
-  as
-  begin
-    return ',';
-  end c_delimiter;
   
   
   /**
@@ -58,7 +47,7 @@ as
     return flag_type
   as
   begin
-    return pit_util.c_true;
+    return 1;
   end c_true;
 
   
@@ -70,7 +59,7 @@ as
     return flag_type
   as
   begin
-    return pit_util.c_false;
+    return 0;
   end c_false;
 
   
@@ -168,39 +157,12 @@ as
     return varchar2
   as
     l_text max_char;
-    l_prefix max_char;
-    l_postfix max_char;
-    l_null_value max_char;
-    l_start binary_integer;
-    l_length binary_integer;
-    l_anchor max_char;
   begin
     l_text := p_text;
     if p_text is not null and p_string_table is not null then
       for i in 1 .. p_string_table.count loop
         if mod(i, 2) = 1 then
-          if instr(l_text, substr(p_string_table(i), 1, length(p_string_table(i)) - 1) || '|') = 0 then
-            l_text := replace(l_text, p_string_table(i), p_string_table(i + 1));
-          else
-            -- replacement anchor has |-enhanced syntax. Extract complete anchor and parts
-            l_start := instr(l_text, substr(p_string_table(i), 1, length(p_string_table(i)) - 1));
-            l_length := instr(l_text, '#', l_start + 1) - l_start + 1;
-            l_anchor := substr(l_text, l_start, l_length); 
-            l_start := instr(l_anchor, '|', 1, 1) + 1;
-            l_length := instr(l_anchor, '|', 1, 2) - l_start;
-            l_prefix := substr(l_anchor, l_start, l_length);
-            l_start := instr(l_anchor, '|', 1, 2) + 1;
-            l_length := instr(l_anchor, '|', 1, 3) - l_start;
-            l_postfix := substr(l_anchor, l_start, l_length);
-            l_start := instr(l_anchor, '|', 1, 3) + 1;
-            l_length := length(l_anchor) - l_start;
-            l_null_value := substr(l_anchor, l_start, l_length);
-            if p_string_table(i + 1) is not null then
-              l_text := replace(l_text, l_anchor, l_prefix || p_string_table(i + 1) || l_postfix);
-            else
-              l_text := replace(l_text, l_anchor, l_null_value);
-            end if;
-          end if;
+          l_text := replace(l_text, p_string_table(i), p_string_table(i + 1));
         end if;
       end loop;
     end if;
@@ -237,9 +199,7 @@ as
     l_button_prefix adc_util.ora_name_type;
     l_region_prefix adc_util.ora_name_type;
   begin
-    pit.enter_detailed('harmonize_page_item_name',
-      p_params => msg_params(msg_param('p_cpi_id', p_cpi_id)));
-      
+  
     l_item_name := upper(p_cpi_id);
     
     if l_item_name != adc_util.C_NO_FIRING_ITEM and p_cpi_id is not null then
@@ -252,8 +212,6 @@ as
       end if;
     end if;
       
-    pit.leave_detailed(
-      p_params => msg_params(msg_param('item_name', l_item_name)));
     return l_item_name;
   end harmonize_page_item_name;
 
@@ -324,7 +282,7 @@ as
     g_loop_counter := coalesce(p_counter, 0) + 1;
     
     if g_loop_counter > 100 then
-      pit.raise_error(msg.ADC_INFINITE_LOOP, msg_args(p_loop_name));
+      pit.error(msg.ADC_INFINITE_LOOP, msg_args(p_loop_name));
     end if;
   end monitor_loop;
   

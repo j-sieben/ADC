@@ -51,6 +51,16 @@ as
     p_id in number default null)
     return number;
     
+  /**
+    Function: get_crg_id
+      Getter for the actually relevant crg_id, is used in views to speed up
+      processing
+    
+    Returns:
+      CRG_ID that is actually worked on
+   */
+  function get_crg_id
+    return adc_rule_groups.crg_id%type;
     
   /**
     Procedure: add_translation

@@ -257,9 +257,9 @@ as
         from dual;
       
       l_response.script := adc_util.bulk_replace(p_java_script, adc_util.string_table(
-                             '#JS_FILE#', C_JS_SHORTCUT,/*
+                             '#JS_FILE#', C_JS_SHORTCUT,
                              C_JS_NAMESPACE, C_JS_SHORTCUT,
-                             C_APEX_ACTION_NAMESPACE, C_APEX_ACTION_SHORTCUT,*/
+                             C_APEX_ACTION_NAMESPACE, C_APEX_ACTION_SHORTCUT,
                              C_JS_PLACEHOLDER, C_JS_NAMESPACE,
                              C_APEX_ACTION_PLACEHOLDER, C_APEX_ACTION_NAMESPACE)); 
         
@@ -420,7 +420,7 @@ as
           and coalesce(length(l_response), 0) + length(g_param.js_action_stack(i).script) < adc_util.C_MAX_LENGTH
           and length(replace(replace(g_param.js_action_stack(i).script, ' '), adc_util.C_CR)) > 0
         then
-          utl_text.append(l_response, g_param.js_action_stack(i).script || adc_util.C_CR);
+          utl_text.append(l_response, replace(g_param.js_action_stack(i).script, adc_util.C_CR) || adc_util.C_CR);
         end if;
       end loop;
     end if;

@@ -12,11 +12,11 @@ as
   /**
     Group: Type definitions
    */
-  
+
   /**
     Type: action_rec
       Record to store controlling properties to put toghether a working JavaScript
-      
+
     Properties:
       action_name - Name of the APEX Action
       needs_update - Flag to indicate whether a call to aa.update is required
@@ -77,8 +77,9 @@ as
   -- Instead of C_SHORTCUT_TEMPLATE this template is used that adds the shortcut after having
   -- created the action. This way, APEX does not treat the shortcut as a primary shortcut which allows
   -- for later changes
-  C_HIGHLIGHT_SHORTCUT_TEMPLATE CONSTANT template_t := q'^aa.addShortcut('#CAA_SHORTCUT#', '#CAA_NAME#'); 
-  aa.update('#CAA_NAME#');^';
+  /*C_HIGHLIGHT_SHORTCUT_TEMPLATE CONSTANT template_t := q'^aa.addShortcut('#CAA_SHORTCUT#', '#CAA_NAME#'); 
+  aa.update('#CAA_NAME#');^';*/
+  C_HIGHLIGHT_SHORTCUT_TEMPLATE CONSTANT template_t := q'^a.setApexActionAccessKey( '#CAA_NAME#', '#CAA_SHORTCUT#'); ^';
 
   C_JAVA_SCRIPT_TAG constant adc_util.ora_name_type := 'javascript:';
   -- The following constants are used to prevent ADC_RESPONSE from escaping these namespace objects
@@ -94,12 +95,12 @@ as
   /**
     Procedure: append
       Helper method to append a chunk to the JavaScript stack. Replaces #ACTION# with action name.
-      
+
       Is used to collect a JacaScript instance performing the requested operations client side.
       Normal usage is to collect JavaScript to the G_ACTION.JAVASCRIPT_STACK. If you need additional
       JavaScript code, add it to G_ACTION.ADDITIONAL_JAVASCRIPT to make sure this code gets executed
       after G_ACTION.JAVASCRIPT_STACK.
-      
+
     Parameters:
       p_text - Text to append to the JavaScript stack
       p_for_action - Optional flag to indicate where to append P_TEXT to
@@ -190,7 +191,7 @@ as
     pit.leave_optional;
     return l_script;
   end get_action_script;
-  
+
 
   /**
     Procedure: register_action_script
@@ -201,8 +202,8 @@ as
   begin
     adc_api.add_javascript(get_action_script);
   end register_action_script;
-  
-  
+
+
   /**  
     Procedure: append_apex_actions
       See <ADC_APEX_ACTIONS.get_crg_apex_actions>
@@ -216,21 +217,21 @@ as
     l_default_action adc_util.max_char;
     l_confirm_action adc_util.max_char;
     l_highlight_shortcut adc_util.max_char;
-    C_DELIMITER constant adc_util.tiny_char := chr(13) || '  ';
+    C_DELIMITER constant adc_util.tiny_char := chr(10) || '  ';
     l_cur sys_refcursor;
   begin
     pit.enter_optional('get_crg_apex_actions');
-    
+
     -- check whether APEX actions exist
     open l_cur for
       select null
         from adc_apex_actions
        where caa_crg_id = p_crg_id;
     pit.assert_exists(l_cur);
-                
+
     l_default_action := utl_text.get_text_template(adc_util.C_PARAM_GROUP, 'DEFAULT_APEX_ACTION', 'FRAME');
     l_confirm_action := utl_text.get_text_template(adc_util.C_PARAM_GROUP, 'CONFIRM_APEX_ACTION', 'FRAME');
-    
+
     -- Generate initalization JavaScript for APEX actions based on UTL_TEXT templates of name APEX_ACTION
     with templates as (
            select uttm_name, uttm_mode, uttm_text, p_crg_id crg_id
@@ -290,7 +291,7 @@ as
            ) resultat
       into l_actions_js
       from dual;
-      
+
     select utl_text.generate_text(cursor(
              select C_HIGHLIGHT_SHORTCUT_TEMPLATE template, caa_name, caa_shortcut
                from adc_apex_actions_v
@@ -299,7 +300,7 @@ as
               C_DELIMITER) script
       into l_highlight_shortcut
       from dual;
-       
+
     l_actions_js := l_actions_js || C_DELIMITER || l_highlight_shortcut;
 
     pit.leave_optional;
@@ -328,7 +329,7 @@ as
     if not regexp_like(p_href, '^http|^f?p') then
       l_js_flag := 'Javascript:';
     end if;
-    
+
     append(adc_util.bulk_replace(C_HREF_TEMPLATE, adc_util.string_table(
              '#HREF#', p_href, 
              '#JS#', l_js_flag,
@@ -373,9 +374,7 @@ as
       p_params => msg_params(
                     msg_param('p_shortcut', p_shortcut)));
 
-
-    append(replace(C_SHORTCUT_TEMPLATE, '#SHORTCUT#', p_shortcut));
-    append(replace(C_HIGHLIGHT_SHORTCUT_TEMPLATE, '#CAA_NAME#', g_action.action_name));
+    append(replace(replace(C_HIGHLIGHT_SHORTCUT_TEMPLATE, '#CAA_NAME#', g_action.action_name), '#CAA_SHORTCUT#', p_shortcut));
     g_action.needs_update := true;
 
     pit.leave_optional;
@@ -419,7 +418,7 @@ as
       p_params => msg_params(
                     msg_param('p_label', p_label),
                     msg_param('p_is_key', p_is_key)));
-                    
+
     if p_is_key then
       l_template := C_LABEL_KEY_TEMPLATE;
       l_anchor := '#LABEL_KEY#';
@@ -528,6 +527,6 @@ as
 
     pit.leave_optional;
   end add_script;
-  
+
 end adc_apex_action;
 /

@@ -166,26 +166,7 @@ as
     p_item_list in varchar2,
     p_message in varchar2 default null,
     p_error_on_null in boolean default true);
-    
-    
-  /** 
-    Function: exclusive_or
-      Method to assure that exactly one or at most one page item of a selection of page items contains a value.
-      Is used to be able to utilize EXCLUSIVE_OR within an ADC rule condition (used in SQL).
 
-    Parameter:
-
-      p_item_list - colon-separated list of page item IDs to check
-   
-    Returns:
-      - adc_util.C_TRUE if rule is satisfied
-      - adc_util.C_FALSE if rule is not satisfied
-      - NULL if all page item values are null
-   */
-  function exclusive_or(
-    p_item_list in varchar2)
-    return adc_util.flag_type;
-    
 
   /**
     Function: get_date
@@ -506,7 +487,6 @@ as
     Parameters:
       p_cpi_id - Page item to set mandatory or optional
       p_is_mandatory - Flag that indicates whether a page item is mandatory (adc_util.C_TRUE) or not (adc_util.C_FALSE)
-      p_cpi_mandatory_message - Optional message that is shown if a mandatory page item is null
       p_jquery_selector - Optional selector to set the mandatory status of many items at once
       p_visual_state - Optional indicator for the visual state. Only applicable if p_is_mandatory is adc_util.C_FALSE, 
                        mandatory items are always visible and editable. If the visual state is HIDE, this will also
@@ -515,7 +495,6 @@ as
   procedure register_mandatory(
     p_cpi_id in adc_page_items.cpi_id%type,
     p_is_mandatory in adc_util.flag_type,
-    p_cpi_mandatory_message in varchar2,
     p_jquery_selector in adc_rule_actions.cra_param_1%type default null,
     p_visual_state in varchar2 default null);
     

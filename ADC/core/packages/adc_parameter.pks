@@ -133,6 +133,7 @@ as
       p_capt_id - Type of the parameter
       p_param_value - Actual parameter value
       p_cpi_id - ID of the page item
+      p_mode - Mode (PL&/SQL or Javascript), used to decide upon different evaluation options
       
     Returns:
       Evaluated parameter value.
@@ -140,7 +141,8 @@ as
   function evaluate_parameter(
     p_capt_id adc_action_param_types.capt_id%type,
     p_param_value adc_rule_actions.cra_param_1%type,
-    p_cpi_id in adc_page_items.cpi_id%type)
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_mode in varchar2)
     return varchar2;
   
   

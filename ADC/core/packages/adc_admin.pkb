@@ -14,7 +14,6 @@ as
   /**
     Group: Private constants
    */
-
   /**
     Constants:
       C_ADC - UTL_TEXT template group for ADC
@@ -37,8 +36,6 @@ as
   C_REGISTER_ADDITIONAL_ITEMS constant adc_util.ora_name_type := 'REGISTER_ADDITIONAL_ITEM';
 
   /* Globale Variablen */
-  
-  g_explicit_event_list char_table := char_table('initialize', 'command', 'notification');
 
   /**
     Group: Type definitions
@@ -51,6 +48,7 @@ as
   type id_map_t is table of binary_integer index by binary_integer;
   g_id_map id_map_t;
 
+  g_crg_id adc_rule_groups.crg_id%type;
   /**
     Group: Private Methods
    */
@@ -90,7 +88,7 @@ as
                         join params
                           on uttm_mode = case cet_is_custom_event when c_true then 'EVENT' else upper(cet_id) end
                        where (cet_is_custom_event = c_true
-                          or cet_id member of g_explicit_event_list)
+                          or cet_id in ('initialize', 'command', 'notification'))
                        order by case cet_is_custom_event when c_true then 1 else 0 end, cet_id), ',' || CR, 14) event_list,
                     -- Spaltenliste im SessionState
                     utl_text.generate_text(cursor(
@@ -180,6 +178,8 @@ as
     l_cpi_id adc_page_items.cpi_id%type;
   begin
     pit.enter_detailed('mark_number_date_required_fields');
+    
+    g_crg_id := p_crg_id;
 
     merge into adc_page_items t
     using (select cpi_crg_id,
@@ -193,7 +193,8 @@ as
                   adc_util.C_FALSE cpi_has_error,
                   cpi_is_required,
                   cpi_is_mandatory,
-                  cpi_may_have_value
+                  cpi_may_have_value,
+                  cpi_form_region_id
              from adc_bl_page_targets
             where cpi_crg_id = p_crg_id
               and cpi_id is not null) s
@@ -208,16 +209,18 @@ as
           t.cpi_has_error = s.cpi_has_error,
           t.cpi_is_required = s.cpi_is_required,
           t.cpi_is_mandatory = s.cpi_is_mandatory,
-          t.cpi_may_have_value = s.cpi_may_have_value
+          t.cpi_may_have_value = s.cpi_may_have_value,
+          t.cpi_form_region_id = s.cpi_form_region_id
      when not matched then insert(
             cpi_id, cpi_cpit_id, cpi_caat_id, cpi_label, cpi_crg_id,
             cpi_conversion, cpi_item_default, cpi_css, cpi_is_required,
-            cpi_is_mandatory, cpi_may_have_value)
+            cpi_is_mandatory, cpi_may_have_value, cpi_form_region_id)
           values(
             s.cpi_id, s.cpi_cpit_id, s.cpi_caat_id, s.cpi_label, s.cpi_crg_id,
             s.cpi_conversion, s.cpi_item_default, s.cpi_css, s.cpi_is_required,
-            s.cpi_is_mandatory, s.cpi_may_have_value);
-
+            s.cpi_is_mandatory, s.cpi_may_have_value, s.cpi_form_region_id);
+            
+    g_crg_id := null;
     pit.leave_detailed;
   exception
     when msg.ORA_INSTABLE_ROW_GROUP_ERR then
@@ -227,7 +230,8 @@ as
        where cpi_crg_id = p_crg_id
        group by cpi_id
       having count(*) > 1;
-    pit.raise_error(msg.ADC_NON_UNIQUE_STATIC_ID, msg_args(to_char(p_crg_id), l_cpi_id));
+    g_crg_id := null;
+    pit.error(msg.ADC_NON_UNIQUE_STATIC_ID, msg_args(to_char(p_crg_id), l_cpi_id));
   end mark_number_date_required_fields;
 
 
@@ -855,7 +859,6 @@ as
   /**
     Group: Public Methods - Helper Functions
    */
-
   /**
     Function: map_id
       See <ADC_ADMIN.map_id>
@@ -880,6 +883,18 @@ as
     pit.leave_mandatory(p_params => msg_params(msg_param('Return', l_new_id)));
     return l_new_id;
   end map_id;
+  
+
+  /**
+    Function: map_id
+      See <ADC_ADMIN.map_id>
+   */
+  function get_crg_id
+    return adc_rule_groups.crg_id%type
+  as
+  begin
+    return g_crg_id;
+  end get_crg_id;
 
 
   /**
@@ -1401,7 +1416,7 @@ as
     pit.leave_mandatory;
   exception
     when no_data_found then
-      pit.raise_warn(msg.ADC_NO_RULE_GROUP_FOUND, msg_args(p_workspace, p_app_alias));
+      pit.warn(msg.ADC_NO_RULE_GROUP_FOUND, msg_args(p_workspace, p_app_alias));
       pit.leave_mandatory;
   end prepare_rule_group_import;
 
@@ -1613,7 +1628,7 @@ as
                         join params
                           on uttm_mode = case cet_is_custom_event when c_true then 'EVENT' else upper(cet_id) end
                        where (cet_is_custom_event = c_true
-                          or cet_id member of g_explicit_event_list)
+                          or cet_id in ('initialize', 'command'))
                        order by case cet_is_custom_event when c_true then 1 else 0 end, cet_id), ',' || CR, 14) event_list,
                     -- Column List
                     utl_text.generate_text(cursor(
@@ -1645,7 +1660,7 @@ as
         if dbms_sql.is_open(l_ctx) then
           dbms_sql.close_cursor(l_ctx);
         end if;
-        pit.raise_error(msg.ADC_INVALID_SQL, msg_args(substr(sqlerrm, 12)));
+        pit.error(msg.ADC_INVALID_SQL, msg_args(substr(sqlerrm, 12)));
     end;
 
     pit.leave_mandatory;
@@ -3292,12 +3307,7 @@ as
     p_row in adc_event_types_v%rowtype)
   as
   begin
-    pit.enter_mandatory;
-    
-    delete from adc_event_types
-     where cet_id = p_row.cet_id;
-     
-    pit.leave_mandatory;
+    null;
   end delete_event_type;
 
   /**

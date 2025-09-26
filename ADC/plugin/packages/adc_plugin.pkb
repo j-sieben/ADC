@@ -25,9 +25,9 @@ as
     pit.enter_detailed('print_to_stream');
     
     while l_length >= l_offset loop
-        l_temp:= dbms_lob.substr(p_script, l_amount, l_offset);
-        htp.prn(l_temp);
-        l_offset := l_offset + length(l_temp);
+      l_temp:= dbms_lob.substr(p_script, l_amount, l_offset);
+      htp.prn(l_temp);
+      l_offset := l_offset + length(l_temp);
     end loop;
     
     pit.leave_detailed;
@@ -45,7 +45,7 @@ as
   as
     l_cs adc_util.ora_name_type;
   begin
-    select value
+    select value nls_charset
       into l_cs
       from nls_database_parameters 
      where parameter='NLS_CHARACTERSET';
@@ -85,7 +85,7 @@ as
     
       -- Process initialization rules of ADC for that page. 
       -- Response is a JavaScript that is executed on the page, converted to C_CS_ISO if necessary.
-      -- The respoonse gets converted to a hex representation to circumvent JSON formatting problems
+      -- The response gets converted to a hex representation to circumvent JSON formatting problems
       l_java_script := adc_internal.process_request;
       if get_database_character_set != C_CS_ISO then
         l_java_script := convert(l_java_script, C_CS_ISO);
@@ -122,17 +122,19 @@ as
     l_result apex_plugin.t_dynamic_action_ajax_result;
     l_java_script adc_util.max_char;
   begin
+    
     if wwv_flow.g_debug then
       apex_plugin_util.debug_dynamic_action(
         p_plugin => p_plugin,
         p_dynamic_action => p_dynamic_action);
     end if;
     pit.enter_mandatory;
+    
     -- Initialize
     if adc_internal.read_settings(
-         p_firing_item => apex_application.g_x01,
-         p_event => apex_application.g_x02,
-         p_event_data => apex_application.g_x03) then
+      p_firing_item => apex_application.g_x01,
+      p_event => apex_application.g_x02,
+      p_event_data => apex_application.g_x03) then
     
       -- Process best matching rule of ADC for the actual page state. Response is a JavaScript that is executed on the page
       l_java_script := adc_internal.process_request;

@@ -124,7 +124,6 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   var props = {
     "ajaxIdentifier":"",
     "quarantineList":[],
-    "lastTriggeringElement":"",
     "triggeringElement":{
       "id": "",
       "data": "",
@@ -207,23 +206,19 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       
     Parameters:
       pEvent - Event that occured
-      pWait - Flag to indicate whether a wait spinner should be shown during processing
     */
-  const unsavedCallback = function (pEvent, pEventData, pWait) {
+  const unsavedCallback = function (pEvent, pEventData) {
     getTriggeringElement(pEvent, pEventData);
 
     if (props.triggeringElement.id) {
-      $(C_BODY).queue(function () {
-        
         if(ctl.hasUnsavedChanges()){
           // Handle event only after confirmation from the user
-          adc.renderer.confirmRequest(pEvent, changeCallback);
+          adc.renderer.confirmRequest(pEvent, changeCallback, props.triggeringElement.id);
         }
         else{
           // No changes on the page, continue
           changeCallback(pEvent);
         };
-      });
     }
   }; // unsavedCallback
       
@@ -239,18 +234,15 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   const unchangedCallback = function (pEvent, pEventData) {
     getTriggeringElement(pEvent, pEventData);
 
-    if (props.triggeringElement.id) {
-      $(C_BODY).queue(function () {
-        
+    if (props.triggeringElement.id) {        
         if(! ctl.hasUnsavedChanges()){
           // Show message that no change exists on the page
-          adc.renderer.showDialog('INFO', pEvent.message, pEvent.title);
+          adc.renderer.informUnchanged(pEvent, props.triggeringElement.id);
         }
         else{
           // Changes exist on the page, continue
           changeCallback(pEvent);
         };
-      });
     }
   }; // unchangedCallback
 
@@ -399,10 +391,6 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
           // CloseDialog is bound to currentTarget to allow for delegated events.
           props.triggeringElement.id = pEvent.currentTarget.id;
           break;
-        case C_APEX_AFTER_CANCEL_DIALOG:
-          // CancelDialog is bound to currentTarget to allow for delegated events.
-          props.triggeringElement.id = pEvent.currentTarget.id;
-          break;
         case C_CHANGE_EVENT:
           props.triggeringElement.id = pEvent.target.id;
 
@@ -506,10 +494,9 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
 
     Parameters:
       pTarget - jQuery item representing the page item to bind to
-      pMessage - Message to show within the confirmation
-      pDialogTitle - Title of the dialog
+      pOptions - Options object for the dialog
    */
-  const addButtonHandler = function (pTarget, pMessage, pDialogTitle, pCallback){
+  const addButtonHandler = function (pTarget, pOptions, pCallback){
     let eventList;
     // Element is also present on page (could be missing due to condition)
     eventList = $._data(pTarget.get(0), 'events');
@@ -518,9 +505,8 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     }
     pTarget.on(C_CLICK_EVENT,
       { "ajaxIdentifier": props.ajaxIdentifier,
-        "message": pMessage,
         "props.pageItems": props.pageItems,
-        "title": pDialogTitle
+        "options": pOptions
       },
       pCallback);
   }; // addButtonHandler
@@ -568,21 +554,23 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       
     Parameters:
       pTarget - jQuery item representing the page item to bind to
-      pMessage - Message to show within the confirmation
-      pDialogTitle - Title of the dialog
-      pApexAction - Optional Apex action command name
+      pOptions - Options for the dialog
+      pIdItem - Optional page item with the PK of the data to process
    */
-  ctl.bindConfirmationHandler = function(pTarget, pMessage, pDialogTitle, pApexAction){
-    let innerCallback;
-    let callback;
-    // Handle event only after confirmation from the user
-    if (pApexAction){
-      innerCallback = function() {apex.actions.invoke(pApexAction);};
-    } else {
-      innerCallback = changeCallback;
-    }
-    callback = function(pEvent) {adc.renderer.confirmRequest(pEvent, innerCallback, pTarget.attr('id'));};
-    addButtonHandler(pTarget, pMessage, pDialogTitle, callback);
+  ctl.bindConfirmationHandler = function(pTarget, pOptions, pIdItem){
+    const innerCallback = changeCallback;
+    const targetId = pTarget.attr('id');
+    
+    const callback = function(pEvent) {
+      if(adc.utils.isNotEmpty(pIdItem) && adc.utils.isEmpty(apex.item(pIdItem).getValue())){
+        pOptions.message = pOptions.noDataMessage;
+        pOptions.title = adc.controller.getStandardMessage(`CSM_DIALOG_TYPE_INFO`);
+        adc.renderer.showDialog('INFO', pOptions, targetId);
+      } else {
+        adc.renderer.confirmRequest(pEvent, innerCallback, targetId);
+      };
+   };
+    addButtonHandler(pTarget, pOptions, callback);
   }; // bindConfirmationHandler
 
   
@@ -592,11 +580,10 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       
     Parameters:
       pTarget - jQuery item representing the page item to bind to
-      pMessage - Message to show within the confirmation
-      pDialogTitle - Title of the dialog
+      pOptions - Options for the dialog
    */
-  ctl.bindUnsavedConfirmationHandler = function(pTarget, pMessage, pDialogTitle){
-    addButtonHandler(pTarget, pMessage, pDialogTitle, unsavedCallback);
+  ctl.bindUnsavedConfirmationHandler = function(pTarget, pOptions){
+    addButtonHandler(pTarget, pOptions, unsavedCallback);
   }; // bindUnsavedConfirmationHandler
 
   
@@ -606,11 +593,10 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       
     Parameters:
       pTarget - jQuery item representing the page item to bind to
-      pMessage - Message to show within the confirmation
-      pDialogTitle - Title of the dialog
+      pOptions - Options for the dialog
    */
-  ctl.bindUnchangedConfirmationHandler = function(pTarget, pMessage, pDialogTitle){
-    addButtonHandler(pTarget, pMessage, pDialogTitle, unchangedCallback);
+  ctl.bindUnchangedConfirmationHandler = function(pTarget, pOptions){
+    addButtonHandler(pTarget, pOptions, unchangedCallback);
   }; // bindUnchangedConfirmationHandler
   
 

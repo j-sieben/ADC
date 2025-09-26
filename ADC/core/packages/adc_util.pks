@@ -23,7 +23,7 @@ as
   subtype ora_name_type is varchar2(128 byte);
   subtype sql_char is varchar2(4000 byte);
   subtype max_char is varchar2(32767 byte);
-  subtype flag_type is pit_util.flag_type;
+  subtype flag_type is number(1, 0);
   subtype tiny_char is varchar2(5 byte);
   type string_table is table of max_char;
    
@@ -91,7 +91,8 @@ as
   C_PARAM_EVENT_DATA constant adc_util.ora_name_type := 'EVENT_DATA';
   C_PARAM_METHOD constant adc_util.ora_name_type := '#METHOD#';
   C_PARAM_SELECTOR constant adc_util.ora_name_type := '#SELECTOR#';
-
+  
+  C_DELIMITER constant varchar2(1 byte) := ',';
   
   /**
     Group: Public methods
@@ -101,14 +102,6 @@ as
       Getter method to retrive a operation system aware return character
    */
   function C_CR
-    return varchar2;
-    
-    
-  /**
-    Function: C_DELIMITER
-      Getter method to retrive a operation system aware return character
-   */
-  function C_DELIMITER
     return varchar2;
     
     
@@ -204,15 +197,7 @@ as
   /**
     Function: bulk_replace
       Minimalistic bulk replace-Method. Replaces odd entries as anchors in 
-      p_string with their following even entries of p_string_table.
-      This method supports a pipe-enhanced syntax within the anchors as follows:
-      
-      #ANCHOR|PREFIX_IF_NOT_NULL|POSTFIX_IF_NOT_NULL|NULL_VALUE#
-      
-      As an example, anchor ABC is surrounded with brackets, if the replacement
-      is not null and skipped otherwise:
-      
-      #ABC|(|)|#
+      p_string with their following even entries of p_string_table
       
     Parameter:
       p_text - Text with the replacement anchors

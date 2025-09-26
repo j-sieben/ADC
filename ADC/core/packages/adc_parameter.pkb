@@ -354,9 +354,16 @@ end;~';
     p_value in out nocopy varchar2,
     p_target in varchar2)
   as
-    l_message clob;
+    l_pms_name adc_util.ora_name_type;
+    l_message adc_util.max_char;
   begin
-    l_message := pit.get_message_text(upper(p_value), msg_args());
+    pit.enter_detailed('get_pit_message');
+
+    select pms_name
+      into l_pms_name
+      from pit_message_v
+     where pms_name = replace(upper(p_value), 'MSG.');
+    l_message := pit.get_message_text(l_pms_name);
   end validate_is_pit_message;
 
 
@@ -682,7 +689,7 @@ end;~';
       into l_pms_name
       from pit_message_v
      where pms_name = replace(upper(p_message_name), 'MSG.');
-    l_message := pit.get_message_text(l_pms_name, msg_args());
+    l_message := pit.get_message_text(l_pms_name, p_msg_args);
 
     pit.leave_optional;
     return l_message;
@@ -1027,7 +1034,8 @@ end;~';
   function evaluate_parameter(
     p_capt_id adc_action_param_types.capt_id%type,
     p_param_value adc_rule_actions.cra_param_1%type,
-    p_cpi_id in adc_page_items.cpi_id%type)
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_mode in varchar2)
     return varchar2
   as
     l_value adc_util.max_char;
@@ -1062,6 +1070,10 @@ end;~';
                 l_value := get_pit_message(l_value, null);
               else
                 l_value := trim(adc_util.C_APOS from l_value);
+              end if;
+            when C_PIT_MESSAGE then
+              if p_mode = 'JAVASCRIPT' then
+                l_value := get_pit_message(l_value, null);
               end if;
             when C_STRING_ON_PARAMETER then
               l_value := param.get_string(C_ADC, l_value);

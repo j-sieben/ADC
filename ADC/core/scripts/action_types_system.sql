@@ -53,12 +53,13 @@ begin
   -- ACTION_PARAM_TYPES
   adc_admin.merge_action_param_type(
     p_capt_id => 'APEX_ACTION',
-    p_capt_name => 'APEX-Aktion',
+    p_capt_name => 'Seitenkommando',
     p_capt_display_name => '',
-    p_capt_description => q'{<p>Existierende APEX-Aktion der Regelgruppe.</p>}',
+    p_capt_description => q'{<p>Seitenkommandos der aktuellen Anwendungsseite.</p>}',
     p_capt_capvt_id => 'SELECT_LIST',
-    p_capt_select_list_query => q'{select caa_name d, caa_id r, caa_crg_id crg_id  from adc_apex_actions_v}',
-    p_capt_select_view_comment => q'{}',
+    p_capt_select_list_query => q'{select caa_name d, caa_name r, caa_crg_id crg_id\CR\}' || 
+q'{  from adc_apex_actions_v}',
+    p_capt_select_view_comment => q'{List of page commands, groupt by CRG_ID}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
 
@@ -68,7 +69,11 @@ begin
     p_capt_display_name => '',
     p_capt_description => q'{<p>Legt fest, welchen Typ die Meldung besitzen soll</p>}',
     p_capt_capvt_id => 'STATIC_LIST',
-    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 13) r, null crg_id    from pit_translatable_item_v   where pti_pmg_name = 'ADC'     and pti_id like 'DIALOG_TYPE%'}',
+    p_capt_select_list_query => q'{\CR\}' || 
+q'{  select pti_name d, replace(pti_id, 'DIALOG_TYPE_') r, null crg_id\CR\}' || 
+q'{    from pit_translatable_item_v\CR\}' || 
+q'{   where pti_pmg_name = 'ADC'\CR\}' || 
+q'{     and pti_id like 'DIALOG_TYPE_%'}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
@@ -123,9 +128,13 @@ q'{}',
     p_capt_name => 'Anzeigestatus',
     p_capt_display_name => '',
     p_capt_description => q'{<p>Option zur Anzeige eines Seitenelements auf der Seite</p>}',
-    p_capt_capvt_id => 'STATIC_LIST',
-    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id    from pit_translatable_item_v   where pti_pmg_name = 'ADC'     and pti_id like 'ITEM_STATUS%'}',
-    p_capt_select_view_comment => q'{List of translatable items of for that parameter type}',
+    p_capt_capvt_id => 'SELECT_LIST',
+    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id\CR\}' || 
+q'{  from pit_translatable_item_v\CR\}' || 
+q'{ where pti_pmg_name = 'ADC'\CR\}' || 
+q'{   and pti_id like 'ITEM_STATUS_%'}',
+    p_capt_select_view_comment => q'{List of translatable items of for that parameter type\CR\}' || 
+q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
 
@@ -190,12 +199,13 @@ q'{}',
     p_capt_display_name => '',
     p_capt_description => q'{<p>Bezeichner einer PIT-Meldung in der Form msg.NAME oder 'NAME', muss eine existierende Meldung sein.</p>}',
     p_capt_capvt_id => 'SELECT_LIST',
-    p_capt_select_list_query => q'{select pms_name d, 'msg.' || pms_name r, null crg_id  from pit_message_v\CR\}' || 
+    p_capt_select_list_query => q'{select pms_name d, 'msg.' || pms_name r, null crg_id\CR\}' || 
+q'{  from pit_message_v\CR\}' || 
 q'{ order by pms_name}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
-    
+
   adc_admin.merge_action_param_type(
     p_capt_id => 'PROCEDURE',
     p_capt_name => 'PL/SQL-Prozedur',
@@ -206,35 +216,13 @@ q'{ order by pms_name}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
-    
+
   adc_admin.merge_action_param_type(
     p_capt_id => 'SQL_STATEMENT',
     p_capt_name => 'SQL-Anweisung',
     p_capt_display_name => '',
     p_capt_description => q'{<p>Ausführbare SELECT-Anweisung, die Eingabe erfolgt, wie im SQL-Developer &uuml;blich, es ist keine Angabe eines Semikolons erforderlich.</p>}',
     p_capt_capvt_id => 'TEXT_AREA',
-    p_capt_select_list_query => q'{}',
-    p_capt_select_view_comment => q'{}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-    
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'SUBMIT_TYPE',
-    p_capt_name => 'Submit und/oder Validierung',
-    p_capt_display_name => '',
-    p_capt_description => q'{<p>Typen der Seitenweiterleitung</p>}',
-    p_capt_capvt_id => 'STATIC_LIST',
-    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id    from pit_translatable_item_v   where pti_pmg_name = 'ADC'     and pti_id like 'SUBMIT_TYPE%'}',
-    p_capt_select_view_comment => q'{List of translatable items of for that parameter type}',
-    p_capt_sort_seq => 10,
-    p_capt_active => adc_util.C_TRUE);
-
-  adc_admin.merge_action_param_type(
-    p_capt_id => 'STRING_OR_JAVASCRIPT',
-    p_capt_name => 'Zeichenkette oder JS-Ausdruck',
-    p_capt_display_name => '',
-    p_capt_description => q'{Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein JavaScript-Ausdruck, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>}',
-    p_capt_capvt_id => 'TEXT',
     p_capt_select_list_query => q'{}',
     p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
@@ -285,16 +273,32 @@ q'{ order by pms_name}',
     p_capt_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_param_type(
+    p_capt_id => 'SUBMIT_MODE',
+    p_capt_name => 'Verarbeitungstyp',
+    p_capt_display_name => '',
+    p_capt_description => q'{<p>Art der Verarbeitung der Daten eines Formulars:</p><ul><li>Änderungen speichern</li><li>Datensatz löschen</li><li>Bearbeitung abbrechen</li></ul>}',
+    p_capt_capvt_id => 'SELECT_LIST',
+    p_capt_select_list_query => q'{\CR\}' || 
+q'{  select pti_name d, replace(pti_id, 'SUBMIT_MODE_') r, null crg_id\CR\}' || 
+q'{    from pit_translatable_item_v\CR\}' || 
+q'{   where pti_pmg_name = 'ADC'\CR\}' || 
+q'{     and pti_id like 'SUBMIT_MODE_%'}',
+    p_capt_select_view_comment => q'{}',
+    p_capt_sort_seq => 10,
+    p_capt_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_param_type(
     p_capt_id => 'SUBMIT_TYPE',
     p_capt_name => 'Submit und/oder Validierung',
     p_capt_display_name => '',
     p_capt_description => q'{<p>Typen der Seitenweiterleitung</p>}',
     p_capt_capvt_id => 'SELECT_LIST',
-    p_capt_select_list_query => q'{select pti_name d, substr(pti_id, 15) r, null crg_id\CR\}' || 
-q'{  from pit_translatable_item_v\CR\}' || 
-q'{ where pti_pmg_name = 'ADC'\CR\}' || 
-q'{   and pti_id like 'SUBMIT_TYPE_%'}',
-    p_capt_select_view_comment => q'{List of translatable items of for that parameter type}',
+    p_capt_select_list_query => q'{\CR\}' || 
+q'{  select pti_name d, replace(pti_id, 'SUBMIT_TYPE_') r, null crg_id\CR\}' || 
+q'{    from pit_translatable_item_v\CR\}' || 
+q'{   where pti_pmg_name = 'ADC'\CR\}' || 
+q'{     and pti_id like 'SUBMIT_TYPE_%'}',
+    p_capt_select_view_comment => q'{}',
     p_capt_sort_seq => 10,
     p_capt_active => adc_util.C_TRUE);
 
@@ -315,20 +319,24 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cpitg_has_value => adc_util.C_FALSE,
     p_cpitg_include_in_view => adc_util.C_FALSE);
 
+
   adc_admin.merge_page_item_type_group(
     p_cpitg_id => 'EVENT',
     p_cpitg_has_value => adc_util.C_FALSE,
     p_cpitg_include_in_view => adc_util.C_TRUE);
+
 
   adc_admin.merge_page_item_type_group(
     p_cpitg_id => 'FRAMEWORK',
     p_cpitg_has_value => adc_util.C_FALSE,
     p_cpitg_include_in_view => adc_util.C_FALSE);
 
+
   adc_admin.merge_page_item_type_group(
     p_cpitg_id => 'ITEM',
     p_cpitg_has_value => adc_util.C_TRUE,
     p_cpitg_include_in_view => adc_util.C_FALSE);
+
 
   adc_admin.merge_page_item_type_group(
     p_cpitg_id => 'REGION',
@@ -343,11 +351,13 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cet_column_name => 'SELECTION_CHANGED',
     p_cet_is_custom_event => adc_util.C_TRUE);
 
+
   adc_admin.merge_event_type(
     p_cet_id => 'apexafterclosecanceldialog',
     p_cet_name => 'Dialog abgebrochen',
     p_cet_column_name => 'DIALOG_CANCELLED',
     p_cet_is_custom_event => adc_util.C_TRUE);
+
 
   adc_admin.merge_event_type(
     p_cet_id => 'apexafterclosedialog',
@@ -355,11 +365,13 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cet_column_name => 'DIALOG_CLOSED',
     p_cet_is_custom_event => adc_util.C_TRUE);
 
+
   adc_admin.merge_event_type(
     p_cet_id => 'apexafterrefresh',
     p_cet_name => 'Refresh abgeschlossen',
     p_cet_column_name => 'AFTER_REFRESH',
     p_cet_is_custom_event => adc_util.C_TRUE);
+
 
   adc_admin.merge_event_type(
     p_cet_id => 'change',
@@ -367,11 +379,13 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cet_column_name => 'CHANGE',
     p_cet_is_custom_event => adc_util.C_FALSE);
 
+
   adc_admin.merge_event_type(
     p_cet_id => 'click',
     p_cet_name => 'Klick',
     p_cet_column_name => 'CLICK',
     p_cet_is_custom_event => adc_util.C_FALSE);
+
 
   adc_admin.merge_event_type(
     p_cet_id => 'command',
@@ -379,17 +393,20 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cet_column_name => 'COMMAND',
     p_cet_is_custom_event => adc_util.C_FALSE);
 
+
   adc_admin.merge_event_type(
     p_cet_id => 'dblclick',
     p_cet_name => 'Doppelklick',
     p_cet_column_name => 'DOUBLE_CLICK',
     p_cet_is_custom_event => adc_util.C_TRUE);
 
+
   adc_admin.merge_event_type(
     p_cet_id => 'enter',
     p_cet_name => 'Eingabetaste',
     p_cet_column_name => 'ENTER',
     p_cet_is_custom_event => adc_util.C_TRUE);
+
 
   adc_admin.merge_event_type(
     p_cet_id => 'initialize',
@@ -413,6 +430,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cpit_col_template => q'{}',
     p_cpit_init_template => q'{}');
 
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'APP_ITEM',
     p_cpit_name => 'Anwendungselement',
@@ -421,6 +439,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cpit_col_template => q'{adc_api.get_string('#ITEM#') #ITEM#}',
     p_cpit_init_template => q'{itm.#ITEM#}');
 
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'BUTTON',
     p_cpit_name => 'Schaltfläche',
@@ -428,6 +447,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cpit_cet_id => 'click',
     p_cpit_col_template => q'{case p_firing_item when '#ITEM#' then c_true else c_false end #ITEM#}',
     p_cpit_init_template => q'{}');
+
 
   adc_admin.merge_page_item_type(
     p_cpit_id => 'COMMAND',
@@ -445,6 +465,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cpit_col_template => q'{}',
     p_cpit_init_template => q'{}');
 
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'DATE_ITEM',
     p_cpit_name => 'Element (Datum)',
@@ -452,6 +473,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cpit_cet_id => 'change',
     p_cpit_col_template => q'{adc_api.get_date('#ITEM#', '#CONVERSION#', c_false) #ITEM#}',
     p_cpit_init_template => q'{to_char(to_date(itm.#ITEM#), '#CONVERSION#')}');
+
 
   adc_admin.merge_page_item_type(
     p_cpit_id => 'DOCUMENT',
@@ -461,6 +483,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cpit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cpit_init_template => q'{}');
 
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'DOCUMENT_MODAL',
     p_cpit_name => 'Modaler Dialog',
@@ -468,6 +491,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cpit_cet_id => '',
     p_cpit_col_template => q'{}',
     p_cpit_init_template => q'{}');
+
 
   adc_admin.merge_page_item_type(
     p_cpit_id => 'EVENT',
@@ -477,6 +501,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cpit_col_template => q'{}',
     p_cpit_init_template => q'{}');
 
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'FIRING_ITEM',
     p_cpit_name => 'Firing Item',
@@ -484,6 +509,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cpit_cet_id => '',
     p_cpit_col_template => q'{p_firing_item firing_item}',
     p_cpit_init_template => q'{}');
+
 
   adc_admin.merge_page_item_type(
     p_cpit_id => 'FORM_REGION',
@@ -493,6 +519,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cpit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cpit_init_template => q'{}');
 
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'INTERACTIVE_GRID_REGION',
     p_cpit_name => 'Interaktives Grid',
@@ -500,6 +527,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cpit_cet_id => '',
     p_cpit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cpit_init_template => q'{}');
+
 
   adc_admin.merge_page_item_type(
     p_cpit_id => 'INTERACTIVE_REPORT_REGION',
@@ -509,6 +537,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cpit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cpit_init_template => q'{}');
 
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'ITEM',
     p_cpit_name => 'Element',
@@ -516,6 +545,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cpit_cet_id => 'change',
     p_cpit_col_template => q'{adc_api.get_string('#ITEM#') #ITEM#}',
     p_cpit_init_template => q'{itm.#ITEM#}');
+
 
   adc_admin.merge_page_item_type(
     p_cpit_id => 'NUMBER_ITEM',
@@ -525,6 +555,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cpit_col_template => q'{adc_api.get_number('#ITEM#', '#CONVERSION#', c_false) #ITEM#}',
     p_cpit_init_template => q'{to_char(itm.#ITEM#, '#CONVERSION#')}');
 
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'REGION',
     p_cpit_name => 'Region',
@@ -532,6 +563,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cpit_cet_id => '',
     p_cpit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cpit_init_template => q'{}');
+
 
   adc_admin.merge_page_item_type(
     p_cpit_id => 'REPORT_REGION',
@@ -541,6 +573,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cpit_col_template => q'{'#ITEM#' #ITEM#}',
     p_cpit_init_template => q'{}');
 
+
   adc_admin.merge_page_item_type(
     p_cpit_id => 'ROWID_ITEM',
     p_cpit_name => 'Zeilen-ID (RowID)',
@@ -548,6 +581,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cpit_cet_id => 'change',
     p_cpit_col_template => q'{adc_api.get_string('#ITEM#') #ITEM#}',
     p_cpit_init_template => q'{to_char(itm.#ITEM#, '#CONVERSION#')}');
+
 
   adc_admin.merge_page_item_type(
     p_cpit_id => 'TREE_REGION',
@@ -570,11 +604,11 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
 
   adc_admin.merge_action_item_focus(
     p_caif_id => 'COMMAND',
-    p_caif_name => 'Seitenkommandos einer Anwendungsseite',
+    p_caif_name => 'Seitenkommandos',
     p_caif_description => q'{Es werden nur vorhandene Seitenkommandos angezeigt}',
     p_caif_actual_page_only => adc_util.C_TRUE,
     p_caif_item_types => 'COMMAND',
-    p_caif_default => '',
+    p_caif_default => 'DOCUMENT',
     p_caif_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_item_focus(
@@ -609,7 +643,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_caif_name => 'Seitenelemente, die einen Focus erhalten können',
     p_caif_description => q'{Alle Seitenelemente, die einen Fokus erhalten können}',
     p_caif_actual_page_only => adc_util.C_TRUE,
-    p_caif_item_types => 'BUTTON:ITEM',
+    p_caif_item_types => 'BUTTON:ITEM:INTERACTIVE_REPORT_REGION:INTERACTIVE_GRID_REGION:REPORT_REGION:TREE_REGION',
     p_caif_default => '',
     p_caif_active => adc_util.C_TRUE);
 
@@ -723,6 +757,12 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_catg_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_type_group(
+    p_catg_id => 'INITIALIZE',
+    p_catg_name => 'Initialisierung',
+    p_catg_description => q'{Aktionstypen, die nur während der Initialisierung ausgeführt werden können}',
+    p_catg_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_type_group(
     p_catg_id => 'ITEM',
     p_catg_name => 'Seitenelemente',
     p_catg_description => q'{Aktionen für allgemeine Seitenelemente}',
@@ -792,17 +832,16 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_display_name => 'Aktualisierungsintervall',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
-
   adc_admin.merge_action_type(
     p_cat_id => 'CANCEL_MODAL_DIALOG',
     p_cat_catg_id => 'ADC',
-    p_cat_caif_id => 'DOCUMENT',
+    p_cat_caif_id => 'MODAL_DIALOG',
     p_cat_cato_id => 'ADC',
     p_cat_name => 'brich modalen Dialog ab',
     p_cat_display_name => q'{<p><strong>brich Dialog</strong> <strong>ab</strong>#PARAM_1| und löse Ereignis auf "|" aus|#.</p>}',
     p_cat_description => q'{<p>Bricht die Anzeige des modalen Dialogs ab. Falls mehrere modale Fenster überlappend eingesetzt werden, muss das auslösende Element angegeben werden.</p>}',
     p_cat_pl_sql => q'{}',
-    p_cat_js => q'{a.cancelModalDialog('#PARAM_1#'#PARAM_2|, ||#);}',
+    p_cat_js => q'{a.cancelModalDialog('#PARAM_1#', #PARAM_2#);}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_FALSE);
@@ -812,31 +851,22 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_capt_id => 'STRING',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
-    p_cap_description => q'{<p>Optionale Angabe eines Seitenelements, dass das Ereignis apexaftercanceldialog erhalten soll. Muss nur gesetzt werden, falls mehrere modale Dialoge geöffnet oder das Element beim Aufruf nicht definiert wurde.</p>}',
+    p_cap_description => q'{<p>Optionale Angabe eines Seitenelements, dass das Ereignis apexafterclosecanceldialog erhalten soll. Muss nur gesetzt werden, falls mehrere modale Dialoge geöffnet oder das Element beim Aufruf nicht definiert wurde.</p>}',
     p_cap_display_name => 'auslösendes Element',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
-  adc_admin.merge_action_parameter(
-    p_cap_cat_id => 'CANCEL_MODAL_DIALOG',
-    p_cap_capt_id => 'SWITCH',
-    p_cap_sort_seq => 2,
-    p_cap_default => q'{0}',
-    p_cap_description => q'{<p>Falls gesetzt, prüft dieser Parameter, ob auf der Seite ungesicherte Änderungen vorhanden sind. Falls ja, wird ein Bestätigungsdialog gezeigt, um dennoch den Dialog zu schließen&nbsp;</p>}',
-    p_cap_display_name => 'auf Änderung prüfen',
-    p_cap_mandatory => adc_util.C_TRUE,
-    p_cap_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_type(
     p_cat_id => 'CLOSE_MODAL_DIALOG',
     p_cat_catg_id => 'ADC',
-    p_cat_caif_id => 'DOCUMENT',
+    p_cat_caif_id => 'MODAL_DIALOG',
     p_cat_cato_id => 'ADC',
     p_cat_name => 'schließe modalen Dialog',
     p_cat_display_name => q'{<p><strong>schließe den modalen Dialog</strong></p>}',
     p_cat_description => q'{<p>Schließt den modalen Dialog und löst das Ereignis <span style="font-family:'Courier New', Courier, monospace;">apexafterclosedialog </span>aus.</p>}',
     p_cat_pl_sql => q'{}',
-    p_cat_js => q'{a.closeModalDialog('#PARAM_1#', [#PARAM_2#]#PARAM_3|, ||#);}',
+    p_cat_js => q'{a.closeModalDialog('#PARAM_1#', [#PARAM_2#]);}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_FALSE);
@@ -861,59 +891,96 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
+
+  adc_admin.merge_action_type(
+    p_cat_id => 'CONFIRM_COMMAND',
+    p_cat_catg_id => 'APEX_ACTION',
+    p_cat_caif_id => 'COMMAND',
+    p_cat_cato_id => 'ADC',
+    p_cat_name => 'binde Seitenkommando an Bestätigungsabfrage',
+    p_cat_display_name => q'{<p><strong>führe </strong>Seitenkommando #ITEM#<strong> nach Bestätigungsabfrage</strong> aus</p>}',
+    p_cat_description => q'{<p>Zeigt eine Bestätigungsmeldung, bevor das verbundende Seitenkommando ausgeführt wird. Nur, wenn die Bestätigungsmeldung bestätigt wird, wird das Seitenkommando ausgeführt, ansonsten geschieht nichts.</p>}',
+    p_cat_pl_sql => q'{}',
+    p_cat_js => q'{a.confirmCommand('#PARAM_1#', '#ITEM#', '#PARAM_2#', '#PARAM_3#')}',
+    p_cat_is_editable => adc_util.C_TRUE,
+    p_cat_active => adc_util.C_TRUE,
+    p_cat_raise_recursive => adc_util.C_FALSE);
+
   adc_admin.merge_action_parameter(
-    p_cap_cat_id => 'CLOSE_MODAL_DIALOG',
-    p_cap_capt_id => 'SWITCH',
-    p_cap_sort_seq => 3,
-    p_cap_default => q'{1}',
-    p_cap_description => q'{<p>Falls gesetzt, prüft der Aktionstyp, ob auf der Anwendungsseite Eingabefelder geändert wurden. Falls nicht, wird ein Hinweis gezeigt und die Seite ohne Speicherung geschlossen.</p>}',
-    p_cap_display_name => 'auf Änderung prüfen',
+    p_cap_cat_id => 'CONFIRM_COMMAND',
+    p_cap_capt_id => 'FREE_PAGE_ITEMS',
+    p_cap_sort_seq => 2,
+    p_cap_default => q'{}',
+    p_cap_description => q'{<p>Seitenelement, das nach der Ausführung des Seitenkommandos den Fokus erhalten soll</p>}',
+    p_cap_display_name => 'Fokus setzen auf',
+    p_cap_mandatory => adc_util.C_FALSE,
+    p_cap_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'CONFIRM_COMMAND',
+    p_cap_capt_id => 'PIT_MESSAGE',
+    p_cap_sort_seq => 1,
+    p_cap_default => q'{}',
+    p_cap_description => q'{<p>Meldung, die als Bestätigungsabfrage ausgegeben werden. Standardmäßig wird eine Meldung verwendet, die nachfragt, ob ein Datensatz gelöscht werden soll.</p>}',
+    p_cap_display_name => 'Bestätigungsmeldung',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'CONFIRM_COMMAND',
+    p_cap_capt_id => 'SUBMIT_MODE',
+    p_cap_sort_seq => 3,
+    p_cap_default => q'{B_DELETE}',
+    p_cap_description => q'{}',
+    p_cap_display_name => '',
+    p_cap_mandatory => adc_util.C_TRUE,
+    p_cap_active => adc_util.C_TRUE);
+
+
   adc_admin.merge_action_type(
-    p_cat_id => 'CONFIRM_CLICK',
+    p_cat_id => 'CONFIRM_PROCESSING',
     p_cat_catg_id => 'BUTTON',
     p_cat_caif_id => 'PAGE_BUTTON',
     p_cat_cato_id => 'ADC',
-    p_cat_name => 'Schaltfläche an Bestätigungsfrage binden',
-    p_cat_display_name => q'{<p><strong>binde</strong> Schaltfläche “#ITEM#” and <strong>Bestätigungsabfrage</strong></p>}',
-    p_cat_description => q'{<p>Sorgt dafür, dass bei einem Klick auf eine Schaltfläche eine Bestätigungsmeldung gezeigt wird.<br>Nur, wenn diese Nachfrage bestätigt wird, wird das Ereignis an ADC gemeldet.</p>}',
+    p_cat_name => 'zeige Meldug bei Seitenverarbeitung',
+    p_cat_display_name => q'{<p><strong>zeige Sicherheitsabfrage</strong> nach Klick auf #ITEM#, falls nötig</p>}',
+    p_cat_description => q'{<p>erlaubt es, eine Warn- oder Hinweismeldung anzuzeigen, bevor eine Aktion ausgeführt wird. Dies Funktion prüft, ob die jeweilige Bedingung vorliegt und zeigt in diesem Fall die Meldung. &nbsp;Setzt voraus, dass der aktuelle Seitenstatus vorab mit “speichere aktuellen Seitenstatus” gesichert wurde.</p><p>Implementiert sind derzeit:</p><ul><li>Speichern: Sind keine Änderungen auf der Seite vorgenommen worden, wird eine Meldung gezeigt und keine Speicheraktion ausgeführt. Setzt voraus, dass der Seitenstatus vorab gespeichert wurde.</li><li>Abbrechen: Gibt eine Warnmeldung aus, falls ungesicherte Änderungen auf der Seite vorhanden sind. Setzt voraus, dass der Seitenstatus vorab gespeichert wurde.</li><li>Löschen: Zeigt einen Warnhinweis zur Bestätigung vor dem Löschen. Diese Meldung wird stets angezeigt, eine Prüfung findet nicht statt.</li></ul>}',
     p_cat_pl_sql => q'{}',
-    p_cat_js => q'{a.bindConfirmation('#ITEM#', '#PARAM_1#', '#PARAM_2#', '#PARAM_3#');}',
-    p_cat_is_editable => adc_util.C_FALSE,
+    p_cat_js => q'{a.bindConfirmationMessage('#ITEM#', '#PARAM_1#', '#PARAM_2#', #PARAM_3#);}',
+    p_cat_is_editable => adc_util.C_TRUE,
     p_cat_active => adc_util.C_TRUE,
-    p_cat_raise_recursive => adc_util.C_TRUE);
+    p_cat_raise_recursive => adc_util.C_FALSE);
 
   adc_admin.merge_action_parameter(
-    p_cap_cat_id => 'CONFIRM_CLICK',
+    p_cap_cat_id => 'CONFIRM_PROCESSING',
     p_cap_capt_id => 'APEX_ACTION',
     p_cap_sort_seq => 3,
     p_cap_default => q'{}',
-    p_cap_description => q'{<p>Optionale Angabe eines Seitenkommandos. Falls ein Eintrag gewählt wird, wird nach positiver Bestätigung dieses Kommando ausgeführt.</p>}',
+    p_cap_description => q'{<p>Name eines Seitenkommandos, das ausgeführt werden soll, falls dies angefordert wird. Ist dieser Parameter leer, wird ADC über das Auslösen der verbundenen Schaltfläche informiert, ansonsten wird das Seitenkommando ausgeführt.</p>}',
     p_cap_display_name => '',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_parameter(
-    p_cap_cat_id => 'CONFIRM_CLICK',
-    p_cap_capt_id => 'STRING',
+    p_cap_cat_id => 'CONFIRM_PROCESSING',
+    p_cap_capt_id => 'PIT_MESSAGE',
     p_cap_sort_seq => 2,
-    p_cap_default => q'{Hinweis}',
-    p_cap_description => q'{<p>Legen Sie fest, welcher Titel im Dialogfenster der Bestätgungsanfrage angezeigt werden soll.</p>}',
-    p_cap_display_name => 'Titel des Dialogfensters',
-    p_cap_mandatory => adc_util.C_TRUE,
+    p_cap_default => q'{}',
+    p_cap_description => q'{<p>Falls gesetzt, wird diese Meldung angezeigt. Wenn dieser Parameter leer bleibt, wird eine Standardmeldung für den gewählten Verarbeitungstyp gezeigt.</p>}',
+    p_cap_display_name => '',
+    p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_parameter(
-    p_cap_cat_id => 'CONFIRM_CLICK',
-    p_cap_capt_id => 'STRING_OR_PIT_MESSAGE',
+    p_cap_cat_id => 'CONFIRM_PROCESSING',
+    p_cap_capt_id => 'SUBMIT_MODE',
     p_cap_sort_seq => 1,
-    p_cap_default => q'{}',
-    p_cap_description => q'{<p>Geben Sie die Bestätigungsabfrage, die vor Ausführen der Schaltfläche angezeigt werden soll, ein. Hochkommata müssen nicht mit angegeben werden.</p>}',
-    p_cap_display_name => 'Bestätigungsabfrage',
+    p_cap_default => q'{A_SAVE}',
+    p_cap_description => q'{<p>Legt fest, bei welcher Art der Seitenverarbeitung die Meldung gezeigt werden soll. Nur, falls die hinterlegten Prüfungen das Anzeigen erforderlich machen, wird die Meldung tatsächlich gezeigt.</p><p>Der Verarbeitungstyp “Datensatz löschen” hat keine hinterlegte Prüfung, die Meldung wird immer gezeigt. Dies kann genutzt werden, falls eine Meldung in jedem Fall gezeigt werden soll.</p>}',
+    p_cap_display_name => 'Art der Seitenverarbeitung',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
+
 
   adc_admin.merge_action_type(
     p_cat_id => 'DYNAMIC_JAVASCRIPT',
@@ -953,7 +1020,6 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
 
-
   adc_admin.merge_action_type(
     p_cat_id => 'EXECUTE_JAVASCRIPT',
     p_cat_catg_id => 'JAVA_SCRIPT',
@@ -978,6 +1044,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'GET_REPORT_SELECTION',
     p_cat_catg_id => 'REPORT',
@@ -987,7 +1054,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cat_display_name => q'{<p>#PARAM_2|<strong>Spalte </strong>||<strong>Primärschlüssel</strong># aus Bericht “#ITEM#” #PARAM_1|<strong>in Feld</strong> “|” ablegen|an ADC melden#</p>}',
     p_cat_description => q'{<p>Legt die aktuell ausgewählten Zeilen-IDs im angegebenen Feld ab, falls ein Element angegeben wird, oder meldet den Schlüsselwert an ADC.</p>}',
     p_cat_pl_sql => q'{}',
-    p_cat_js => q'{a.getReportSelection('#ITEM#'#PARAM_1|, '|'|##PARAM_2|, '|'|##PARAM_3|, '|'|#);}',
+    p_cat_js => q'{a.getReportSelection('#ITEM#', '#PARAM_1#', '#PARAM_2#', #PARAM_3#);}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_FALSE);
@@ -1021,6 +1088,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_display_name => 'setze Fokus',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
+
 
   adc_admin.merge_action_type(
     p_cat_id => 'HIDE_IR_REPORT_FILTER',
@@ -1096,6 +1164,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'IS_MANDATORY',
     p_cat_catg_id => 'PAGE_ITEM',
@@ -1120,15 +1189,6 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
-  adc_admin.merge_action_parameter(
-    p_cap_cat_id => 'IS_MANDATORY',
-    p_cap_capt_id => 'STRING_OR_PIT_MESSAGE',
-    p_cap_sort_seq => 1,
-    p_cap_default => q'{}',
-    p_cap_description => q'{<p>Fehlermeldung kann optional übergeben werden, ansonsten wird eine Standardmeldung verwendet.</p>}',
-    p_cap_display_name => '',
-    p_cap_mandatory => adc_util.C_FALSE,
-    p_cap_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_type(
     p_cat_id => 'IS_OPTIONAL',
@@ -1139,7 +1199,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cat_display_name => q'{<p><strong>mache </strong>#PARAM_2|<strong>Selektor </strong>“||<strong>Feld </strong>“^ITEM^#” <strong>optional</strong></p>}',
     p_cat_description => q'{<p>Macht ein Seitenelement zu einem optionalen Element und setzt Pflichtfeld-Validierung aus.</p>}',
     p_cat_pl_sql => q'{adc_api.register_mandatory('#ITEM#', adc_util.C_FALSE, null, '#PARAM_2#');}',
-    p_cat_js => q'{a.setMandatory('#SELECTOR#',false);}',
+    p_cat_js => q'{a.setMandatory('#SELECTOR#', false, '#PARAM_3#');}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
@@ -1163,6 +1223,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_display_name => '',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
+
 
   adc_admin.merge_action_type(
     p_cat_id => 'MONITOR_EVENT',
@@ -1198,6 +1259,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'NOOP',
     p_cat_catg_id => 'ADC',
@@ -1211,6 +1273,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
+
 
 
   adc_admin.merge_action_type(
@@ -1257,6 +1320,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'NOT_NULL',
     p_cat_catg_id => 'ITEM',
@@ -1291,6 +1355,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'PLSQL_CODE',
     p_cat_catg_id => 'ADC',
@@ -1315,6 +1380,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'RAISE_ITEM_EVENT',
     p_cat_catg_id => 'PAGE_ITEM',
@@ -1330,6 +1396,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cat_raise_recursive => adc_util.C_TRUE);
 
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'REFRESH_AND_SET_VALUE',
     p_cat_catg_id => 'PAGE_ITEM',
@@ -1337,11 +1404,11 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cat_cato_id => 'ADC',
     p_cat_name => 'Feld aktualisieren und Wert setzen',
     p_cat_display_name => q'{<p><strong>aktualisiere</strong> Feld “#ITEM#” und <strong>setze Feldwert </strong>auf #PARAM_1|Wert “|”|aktuellen Sessionstatus#</p>}',
-    p_cat_description => q'{<p>Aktualisiert ein Seitenelement und setzt das Feld auf den Sessionstatus</p>}',
+    p_cat_description => q'{<p>Aktualisiert ein Seitenelement und setzt das Feld auf den Sessionstatus</p><p>Deprecated: Bitte stattdessen “Ziel aktualisieren” verwenden und Wert setzen.</p>}',
     p_cat_pl_sql => q'{}',
     p_cat_js => q'{a.refreshAndSetValue('#ITEM#', '#PARAM_1#');}',
     p_cat_is_editable => adc_util.C_FALSE,
-    p_cat_active => adc_util.C_TRUE,
+    p_cat_active => adc_util.C_FALSE,
     p_cat_raise_recursive => adc_util.C_TRUE);
 
   adc_admin.merge_action_parameter(
@@ -1353,6 +1420,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_display_name => '',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
+
 
   adc_admin.merge_action_type(
     p_cat_id => 'REFRESH_ITEM',
@@ -1398,19 +1466,30 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
-    p_cat_id => 'REGISTER_OBSERVER',
+    p_cat_id => 'REGISTER_ADDITIONAL_ITEM',
     p_cat_catg_id => 'PAGE_ITEM',
-    p_cat_caif_id => 'ELEMENT_AND_FORM',
+    p_cat_caif_id => 'DOCUMENT',
     p_cat_cato_id => 'ADC',
-    p_cat_name => 'Feld beobachten',
-    p_cat_display_name => q'{<p><strong>beobachte Feld </strong>“#ITEM#”</p>}',
-    p_cat_description => q'{<p>Beobachtet ein Feld, auch wenn kein Anwendungsfall es in der technischen Bedingung referenziert. So wird dessen aktueller Wert in den Session State übernommen.</p>}',
+    p_cat_name => 'melde Feldwert',
+    p_cat_display_name => q'{<p><strong>melde Feldwert der Elemente </strong>“#PARAM_1#”</p>}',
+    p_cat_description => q'{<p>meldet den Feldwert von Feldern, auf die kein Anwendungsfall in der technischen Bedingung referenziert. So wird dessen aktueller Wert in den Session State übernommen.</p>}',
     p_cat_pl_sql => q'{}',
     p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'REGISTER_ADDITIONAL_ITEM',
+    p_cap_capt_id => 'FREE_PAGE_ITEMS',
+    p_cap_sort_seq => 1,
+    p_cap_default => q'{}',
+    p_cap_description => q'{<p>Liste der Seitenelemente, deren aktuelle Werte zusätzlich zu den ohnehin beobachteten Element an die Datenbank gemeldet werden sollen.</p><p>Wird ein Seitenelement, das hier angewäühlt wurde, durch einen neuen Anwendungsfall verpflichtend, entfernt ADC dieses Element aus der Liste der zu meldenden Elemente. Ist kein Element mehr vorhanden, wird diese Aktion gelöscht.</p>}',
+    p_cap_display_name => '',
+    p_cap_mandatory => adc_util.C_TRUE,
+    p_cap_active => adc_util.C_TRUE);
 
 
   adc_admin.merge_action_type(
@@ -1421,7 +1500,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cat_name => 'speichere aktuellen Seitenstatus',
     p_cat_display_name => q'{<p><strong>speichere</strong> den aktuellen <strong>Seitenstatus</strong></p>}',
     p_cat_description => q'{<p>Merkt sich den aktuellen Wert der zu überwachenden Eingabefelder. Dieser Aktionstyp wird benötigt, um dynamisch Änderungen an der Seite zu erkennen und eine Warnmeldung beim Verlassen oder Überschreiben der aktuell erfassten Werte zu geben.</p><p>Als Elementfokus stehen zur Verfügung:</p><ul><li>Dokument: Die zu beobachtenden Seitenelemente werden im Parameter “JSON oder jQuery-Ausdruck” näher bestimmt</li><li>Seitenelement: Nur das ausgewählte Seitenelement wird überwacht</li><li>Formularregion: Alle Seitenelemente der Formularregion werden überwacht.</li></ul>}',
-    p_cat_pl_sql => q'{adc_api.remember_page_state('#ITEM#', '#PARAM_1');}',
+    p_cat_pl_sql => q'{adc_api.remember_page_state('#ITEM#', '#PARAM_1#');}',
     p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_active => adc_util.C_TRUE,
@@ -1437,6 +1516,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'REMOVE_ALL_ERRORS',
     p_cat_catg_id => 'JAVA_SCRIPT',
@@ -1450,6 +1530,52 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_FALSE);
+
+
+
+  adc_admin.merge_action_type(
+    p_cat_id => 'RESET_MANDATORY',
+    p_cat_catg_id => 'PAGE_ITEM',
+    p_cat_caif_id => 'PAGE_ITEM_OR_DOCUMENT',
+    p_cat_cato_id => 'ADC',
+    p_cat_name => 'Pflichtfeld zurücksetzen',
+    p_cat_display_name => q'{<p><strong>leere </strong>#PARAM_2|<strong>Pflichtfeld-Selektor </strong>“||<strong>Pflichtfeld </strong>“^ITEM^#</p>}',
+    p_cat_description => q'{<p>Setzt den Wert eines Pflichtfeldes auf NULL zurück, ohne die weitere Verarbeitung der Regel durch eine Fehlermeldung zu unterbrechen.</p>}',
+    p_cat_pl_sql => q'{adc_api.reset_mandatory_item(p_cpi_id => '#ITEM#', p_throw_error => #PARAM_1#, p_jquery_selector => '#PARAM_2#', p_allow_recursion => '#ALLOW_RECURSION#', p_visual_state => '#PARAM_3#');}',
+    p_cat_js => q'{}',
+    p_cat_is_editable => adc_util.C_FALSE,
+    p_cat_active => adc_util.C_TRUE,
+    p_cat_raise_recursive => adc_util.C_TRUE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'RESET_MANDATORY',
+    p_cap_capt_id => 'ITEM_STATUS',
+    p_cap_sort_seq => 3,
+    p_cap_default => q'{A_SHOW_ENABLE}',
+    p_cap_description => q'{<p>Kontrolliert, wie das Seitenelement dargestellt werden soll.</p>}',
+    p_cap_display_name => '',
+    p_cap_mandatory => adc_util.C_TRUE,
+    p_cap_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'RESET_MANDATORY',
+    p_cap_capt_id => 'JQUERY_SELECTOR',
+    p_cap_sort_seq => 2,
+    p_cap_default => q'{}',
+    p_cap_description => q'{}',
+    p_cap_display_name => '',
+    p_cap_mandatory => adc_util.C_FALSE,
+    p_cap_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'RESET_MANDATORY',
+    p_cap_capt_id => 'SWITCH',
+    p_cap_sort_seq => 1,
+    p_cap_default => q'{1}',
+    p_cap_description => q'{<p>Gibt eine Fehlermeldung aus, um anzuzeigen, dass dieses Element einen Eingabewert benötigt. Falls abgeschaltet, wird der Wert ohne Fehler geleert, ähnlich dem Verhalten beim Initialisieren einer Seite.</p>}',
+    p_cap_display_name => 'Fehlermeldung ausgeben',
+    p_cap_mandatory => adc_util.C_TRUE,
+    p_cap_active => adc_util.C_TRUE);
 
 
   adc_admin.merge_action_type(
@@ -1486,6 +1612,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'SELECT_TAB',
     p_cat_catg_id => 'ADC',
@@ -1510,6 +1637,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'SEND_VALIDATE_PAGE',
     p_cat_catg_id => 'ADC',
@@ -1518,8 +1646,8 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cat_name => 'fordere Verarbeitung der Seite an',
     p_cat_display_name => q'{<p><strong>fordere Verarbeitung</strong> der Seite im Modus “#PARAM_1#” <strong>an.</strong> #PARAM_2| Request: ||#</p>}',
     p_cat_description => q'{<p>Validiert und/oder sendet die Seite ab.</p><p>Der Modus bestimmt, welche Aktionen durchgeführt werden. Soll die Seite validiert werden, kann ein Meldungstext definiert werden, der im Fall einer nicht erfolgreichen Validierung angezeigt wird. Wird diese Meldung weggelassen, werden nur die Fehlermeldungen der Validierungslogik angezeigt.</p>}',
-    p_cat_pl_sql => q'{adc_api.validate_page('#PARAM_1#');}',
-    p_cat_js => q'{a.submit('#PARAM_2#', '#PARAM_3#');}',
+    p_cat_pl_sql => q'{adc_api.validate_page('#PARAM_1#', '#PARAM_2#', '#PARAM_3#');}',
+    p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_TRUE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
@@ -1578,6 +1706,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'SET_ELEMENT_FROM_STMT',
     p_cat_catg_id => 'PAGE_ITEM',
@@ -1585,7 +1714,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cat_cato_id => 'ADC',
     p_cat_name => 'Elementwert mit SQL-Anweisung setzen',
     p_cat_display_name => q'{<p><strong>setze Feldwert</strong>#ITEM| von Element ||<strong>e</strong># aus SQL-Anweisung</p>}',
-    p_cat_description => q'{<p>Setzt einen Elementwert basierend auf einer SQL-Anweisung, die einen einzelnen Wert zurückgibt, der eine Reihe von Elementen, falls als Element DOKUMENT gewählt wird. In diesem Fall müssen die Spaltenbezeichner der SQL-Abfrage den Namen der Elemente entsprechen, deren Werte gesetzt werden sollen.</p>}',
+    p_cat_description => q'{<p>Setzt einen Elementwert basierend auf einer SQL-Anweisung, die einen einzelnen Wert zurückgibt, oder eine Reihe von Elementen, falls als Element DOCUMENT gewählt wird. In diesem Fall müssen die Spaltenbezeichner der SQL-Abfrage den Namen der Elemente entsprechen, deren Werte gesetzt werden sollen.</p>}',
     p_cat_pl_sql => q'{adc_api.set_value_from_statement('#ITEM#', q'|#PARAM_1#|', '#ALLOW_RECURSION#');}',
     p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
@@ -1597,9 +1726,11 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_capt_id => 'SQL_STATEMENT',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
-    p_cap_description => q'{<p>SQL-Anweisung, die einen oder mehrere Werte zurückgibt.</p><p>Wird ein konkretes Element gesetzt, ist der Spaltenbezeichner egal, der erste Spaltenwert wird für das angegebene Element verwendet.</p><p>Wird kein Element angegeben, müssen die Spaltenbezeichner Elementnamen entsprechen, die Abfrageergebnisse werden in den zugehörigen Seitenelementen gesetzt.</p>}',    p_cap_display_name => '',
+    p_cap_description => q'{<p>SQL-Anweisung, die einen oder mehrere Werte zurückgibt.</p><p>Wird ein konkretes Element gesetzt, ist der Spaltenbezeichner egal, der erste Spaltenwert wird für das angegebene Element verwendet.</p><p>Wird kein Element angegeben, müssen die Spaltenbezeichner Elementnamen entsprechen, die Abfrageergebnisse werden in den zugehörigen Seitenelementen gesetzt.</p>}',
+    p_cap_display_name => '',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
+
 
   adc_admin.merge_action_type(
     p_cat_id => 'SET_FOCUS',
@@ -1614,6 +1745,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
+
 
 
   adc_admin.merge_action_type(
@@ -1660,6 +1792,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'SET_ITEM_LABEL',
     p_cat_catg_id => 'PAGE_ITEM',
@@ -1673,6 +1806,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_FALSE);
+
 
 
   adc_admin.merge_action_type(
@@ -1695,7 +1829,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_sort_seq => 1,
     p_cap_default => q'{}',
     p_cap_description => q'{<p>Titel, der auf dem modalen Dialog angezeigt werden soll.</p>}',
-    p_cap_display_name => 'Tiel',
+    p_cap_display_name => 'Titel',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
@@ -1743,6 +1877,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'SET_VISUAL_STATE',
     p_cat_catg_id => 'ITEM',
@@ -1777,6 +1912,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_mandatory => adc_util.C_FALSE,
     p_cap_active => adc_util.C_TRUE);
 
+
   adc_admin.merge_action_type(
     p_cat_id => 'SHOW_ERROR',
     p_cat_catg_id => 'JAVA_SCRIPT',
@@ -1800,6 +1936,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_display_name => 'Fehlermeldung',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
+
 
   adc_admin.merge_action_type(
     p_cat_id => 'SHOW_HIDE_ITEMS',
@@ -1835,29 +1972,6 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
-  adc_admin.merge_action_type(
-    p_cat_id => 'SHOW_SUCCESS',
-    p_cat_catg_id => 'JAVA_SCRIPT',
-    p_cat_caif_id => 'DOCUMENT',
-    p_cat_cato_id => 'ADC',
-    p_cat_name => 'zeige Erfolgsmeldung',
-    p_cat_display_name => q'{<p><strong>zeige Erfolgsmeldung</strong> #PARAM_1#</p>}',
-    p_cat_description => q'{<p>zeigt eine Erfolgsmeldung.</p><p>DEPRECATED: Stattdessen &nbsp;“zeige Meldung” verwenden und Typ “Erfolgsmeldung” wählen.</p>}',
-    p_cat_pl_sql => q'{}',
-    p_cat_js => q'{a.showSuccess('#PARAM_1#');}',
-    p_cat_is_editable => adc_util.C_TRUE,
-    p_cat_active => adc_util.C_TRUE,
-    p_cat_raise_recursive => adc_util.C_FALSE);
-
-  adc_admin.merge_action_parameter(
-    p_cap_cat_id => 'SHOW_SUCCESS',
-    p_cap_capt_id => 'STRING_OR_PIT_MESSAGE',
-    p_cap_sort_seq => 1,
-    p_cap_default => q'{}',
-    p_cap_description => q'{}',
-    p_cap_display_name => '',
-    p_cap_mandatory => adc_util.C_TRUE,
-    p_cap_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_type(
     p_cat_id => 'STOP_RULE',
@@ -1872,6 +1986,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
     p_cat_raise_recursive => adc_util.C_TRUE);
+
 
 
   adc_admin.merge_action_type(
@@ -1908,29 +2023,6 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cap_mandatory => adc_util.C_TRUE,
     p_cap_active => adc_util.C_TRUE);
 
-  adc_admin.merge_action_type(
-    p_cat_id => 'WARN_BEFORE_CLICK',
-    p_cat_catg_id => 'BUTTON',
-    p_cat_caif_id => 'PAGE_BUTTON',
-    p_cat_cato_id => 'ADC',
-    p_cat_name => 'Bestätigungsnachricht ausgeben, falls Änderungen vorliegen',
-    p_cat_display_name => q'{<p><strong>zeige eine Warnmeldung</strong>, falls <strong>ungesicherte Änderungen</strong> existieren, bevor die Schaltfläche auslöst</p>}',
-    p_cat_description => q'{<p>Stellt eine Prüfung vor dem Auslösen einer Schaltfläche bereit, die einen Warnhinweis zeigt, falls ungesicherte Änderungen auf der Seite existieren. Setzt voraus, dass der aktuelle Seitenstatus vorab mit “speichere aktuellen Seitenstatus” gesichert wurde.</p>}',
-    p_cat_pl_sql => q'{}',
-    p_cat_js => q'{}',
-    p_cat_is_editable => adc_util.C_TRUE,
-    p_cat_active => adc_util.C_TRUE,
-    p_cat_raise_recursive => adc_util.C_TRUE);
-
-  adc_admin.merge_action_parameter(
-    p_cap_cat_id => 'WARN_BEFORE_CLICK',
-    p_cap_capt_id => 'STRING',
-    p_cap_sort_seq => 1,
-    p_cap_default => q'{Es existieren ungesicherte Änderungen auf der Seite.}',
-    p_cap_description => q'{<p>Meldungstext, der angezeigt wird, falls ungesicherte Änderungen auf der Seite existieren.</p>}',
-    p_cap_display_name => 'Warnhinweis',
-    p_cap_mandatory => adc_util.C_FALSE,
-    p_cap_active => adc_util.C_TRUE);
 
   adc_admin.merge_action_type(
     p_cat_id => 'XOR',
@@ -1940,7 +2032,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_cat_name => 'Genau einen Wert wählen',
     p_cat_display_name => q'{<p>wähle <strong>genau einen Wert</strong> aus “#PARAM_1#”</p>}',
     p_cat_description => q'{<p>Stellt sicher, dass genau eines der Elemente aus Attribut “<i>Liste der Elemente</i>” einen Wert enthält.</p>}',
-    p_cat_pl_sql => q'{adc.exclusive_or('#ITEM#', '#PARAM_1#', #PARAM_2#, #PARAM_3#);}',
+    p_cat_pl_sql => q'{adc_api.exclusive_or('#ITEM#', '#PARAM_1#', #PARAM_2#, #PARAM_3#);}',
     p_cat_js => q'{}',
     p_cat_is_editable => adc_util.C_FALSE,
     p_cat_active => adc_util.C_TRUE,
@@ -1997,6 +2089,7 @@ q'{   and pti_id like 'SUBMIT_TYPE_%'}',
     p_caat_name => 'Schalter',
     p_caat_description => q'{Wahlschalter (JA|NEIN)}',
     p_caat_active  => adc_util.C_FALSE);
+
 
   commit;
 end;
