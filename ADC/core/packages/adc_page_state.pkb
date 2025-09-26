@@ -200,12 +200,12 @@ as
                       msg_param('Result', g_session_values(p_value.cpi_id).string_value)));
       if p_throw_error = adc_util.C_TRUE then
         if l_cpi_cpit_id = C_NUMBER_ITEM then
-          pit.error(
+          pit.raise_error(
             p_message_name => msg.ADC_INVALID_NUMBER, 
             p_msg_args => msg_args(
                             replace(lower(l_format_mask), 'fm')));
         else
-          pit.error(
+          pit.raise_error(
             p_message_name => msg.ADC_INVALID_DATE, 
             p_msg_args => msg_args(
                             replace(lower(l_format_mask), 'fm')));
@@ -220,12 +220,12 @@ as
         when sqlcode in (-1858) 
           or sqlcode between -1866 and -1800 then
           if l_cpi_cpit_id = C_NUMBER_ITEM then
-            pit.error(
+            pit.raise_error(
               p_message_name => msg.ADC_INVALID_NUMBER, 
               p_msg_args => msg_args(
                               replace(lower(l_format_mask), 'fm')));
           else
-            pit.error(
+            pit.raise_error(
               p_message_name => msg.ADC_INVALID_DATE, 
               p_msg_args => msg_args(
                               replace(lower(l_format_mask), 'fm')));
@@ -391,7 +391,7 @@ as
          and cpi_id = l_cpi_id;
          
       case when p_is_mandatory = adc_util.C_TRUE and l_cgs_row.cgs_id is null then
-        pit.info(msg.ADC_ITEM_SET_MANDATORY, msg_args(l_cpi_id));
+        pit.raise_info(msg.ADC_ITEM_SET_MANDATORY, msg_args(l_cpi_id));
         apex_collection.add_member(
           p_collection_name => l_collection_name,
           p_c001 => l_cgs_row.cgs_cpi_id,
@@ -400,12 +400,12 @@ as
           p_n001 => g_crg_id,
           p_generate_md5 => 'NO');
       when p_is_mandatory = adc_util.C_FALSE and l_cgs_row.cgs_id is not null then
-        pit.info(msg.ADC_ITEM_SET_OPTIONAL, msg_args(l_cpi_id));
+        pit.raise_info(msg.ADC_ITEM_SET_OPTIONAL, msg_args(l_cpi_id));
         apex_collection.delete_member(
           p_seq => l_cgs_row.cgs_id,
           p_collection_name => l_collection_name);
       else
-        pit.info(msg.ADC_ITEM_UNCHANGED, msg_args(l_cpi_id));
+        pit.raise_info(msg.ADC_ITEM_UNCHANGED, msg_args(l_cpi_id));
       end case;
     end if;
     
