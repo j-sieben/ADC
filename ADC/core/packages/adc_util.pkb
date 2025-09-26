@@ -47,7 +47,7 @@ as
     return flag_type
   as
   begin
-    return 1;
+    return pit_util.c_true;
   end c_true;
 
   
@@ -59,7 +59,7 @@ as
     return flag_type
   as
   begin
-    return 0;
+    return pit_util.c_false;
   end c_false;
 
   

@@ -1715,7 +1715,7 @@ as
 
       if g_param.has_errors then
         if p_msg_name is not null then
-          l_error_message := pit.get_message_text(p_msg_name);
+          l_error_message := pit.get_message_text(p_msg_name, msg_args());
         else
           l_error_message := adc_util.get_standard_message('CSM_PAGE_HAS_ERROR');
         end if;
