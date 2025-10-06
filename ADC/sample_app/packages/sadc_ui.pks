@@ -3,7 +3,7 @@ create or replace package sadc_ui
 as
 
   /** 
-    Package: ADC_UI
+    Package: SADC_UI
       This package implements the methods required for the ADC Sample Application
    
     Author:: Juergen Sieben, ConDeS GmbH

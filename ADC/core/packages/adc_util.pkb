@@ -73,6 +73,18 @@ as
   begin
     return '\u0023';
   end c_hash;
+  
+  
+  /**
+    Function: C_DELIMITER
+      See <ADC_UTIL.C_DELIMITER>
+   */
+  function c_delimiter
+    return varchar2
+  as
+  begin
+    return ',';
+  end c_delimiter;
 
   
   /**
@@ -157,12 +169,39 @@ as
     return varchar2
   as
     l_text max_char;
+    l_prefix max_char;
+    l_postfix max_char;
+    l_null_value max_char;
+    l_start binary_integer;
+    l_length binary_integer;
+    l_anchor max_char;
   begin
     l_text := p_text;
     if p_text is not null and p_string_table is not null then
       for i in 1 .. p_string_table.count loop
         if mod(i, 2) = 1 then
+          if instr(l_text, substr(p_string_table(i), 1, length(p_string_table(i)) - 1) || '|') = 0 then
           l_text := replace(l_text, p_string_table(i), p_string_table(i + 1));
+          else
+            -- replacement anchor has |-enhanced syntax. Extract complete anchor and parts
+            l_start := instr(l_text, substr(p_string_table(i), 1, length(p_string_table(i)) - 1));
+            l_length := instr(l_text, '#', l_start + 1) - l_start + 1;
+            l_anchor := substr(l_text, l_start, l_length); 
+            l_start := instr(l_anchor, '|', 1, 1) + 1;
+            l_length := instr(l_anchor, '|', 1, 2) - l_start;
+            l_prefix := substr(l_anchor, l_start, l_length);
+            l_start := instr(l_anchor, '|', 1, 2) + 1;
+            l_length := instr(l_anchor, '|', 1, 3) - l_start;
+            l_postfix := substr(l_anchor, l_start, l_length);
+            l_start := instr(l_anchor, '|', 1, 3) + 1;
+            l_length := length(l_anchor) - l_start;
+            l_null_value := substr(l_anchor, l_start, l_length);
+            if p_string_table(i + 1) is not null then
+              l_text := replace(l_text, l_anchor, l_prefix || p_string_table(i + 1) || l_postfix);
+            else
+              l_text := replace(l_text, l_anchor, l_null_value);
+            end if;
+          end if;
         end if;
       end loop;
     end if;

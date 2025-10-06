@@ -1,6 +1,13 @@
 create or replace package body sadc_ui
 as
 
+
+  /** 
+    Package: SADC_UI Body
+      This package implements the methods required for the ADC Sample Application
+   
+    Author:: Juergen Sieben, ConDeS GmbH
+   */
   /* Package constants */
   C_PMG_NAME constant adc_util.ora_name_type := 'SADC';
 

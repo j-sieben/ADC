@@ -1,6 +1,14 @@
 create or replace package body adc_plugin 
 as
 
+
+  /**
+    Package: ADC_PLUGIN Body
+      Implements the dynamic action plugin inteface for ADC.
+   
+    Author::
+      Juergen Sieben, ConDeS GmbH
+   */
   /**  Package constants */
   C_CS_ISO constant adc_util.ora_name_type := 'WE8ISO8859P1';
   C_EVENT_INITIALIZE constant adc_util.ora_name_type := 'initialize';

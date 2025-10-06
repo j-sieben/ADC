@@ -2,6 +2,13 @@ create or replace package body adc_api
 as
 
   /**
+    Package: ADC_API Body
+
+    Author::
+      Juergen Sieben, ConDeS GmbH
+   */
+
+  /**
     Group: CORE FUNCTIONALITY wrapper around ADC_INTERNAL
    */
   procedure add_javascript(
