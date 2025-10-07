@@ -1,5 +1,6 @@
 create or replace package body adc_internal
 as
+  pragma SERIALLY_REUSABLE;
 
   /**
     Package: ADC_INTERNAL Body
@@ -58,7 +59,6 @@ as
   );
 
   type rule_list_t is table of binary_integer;
-  g_rule_list rule_list_t;
 
   /**
     Type: param_rec
@@ -422,9 +422,11 @@ as
 
     Parameter:
       p_rule_stmt - SQL statment of the decision rule. Cached from the metadata and passed in as parameter
+      p_rule_list - Distinct list of all rules which were executed. Assures that no rule is executed twice, preventing loops
    */
   procedure evaluate_and_execute_rule_action(
-    p_rule_stmt in adc_util.max_char)
+    p_rule_stmt in adc_util.max_char,
+    p_rule_list in out nocopy rule_list_t)
   as
     l_action_rec rule_action_rec;
     l_action_cur sys_refcursor;
@@ -442,10 +444,10 @@ as
     fetch l_action_cur into l_action_rec;
     pit.raise_info(msg.ADC_PROCESSING_RULE, msg_args(to_char(l_action_rec.cru_sort_seq), l_action_rec.cru_name));
 
-    if not l_action_rec.cru_id member of g_rule_list then
+    if not l_action_rec.cru_id member of p_rule_list then
       -- Process rule actions
-      g_rule_list.extend;
-      g_rule_list(g_rule_list.last) := l_action_rec.cru_id;
+      p_rule_list.extend;
+      p_rule_list(p_rule_list.last) := l_action_rec.cru_id;
 
       adc_util.monitor_loop;
       while l_action_cur%FOUND loop
@@ -526,12 +528,17 @@ as
 
       - Create a JavaScript script to execute on the page
       - analyzes whether changes the rule initiates causes other rules to be recursively called
+      
+    Parameters:
+      p_rule_stmt - SQL statment of the decision rule. Cached from the metadata and passed in as parameter
+      p_rule_list - Distinct list of all rules which were executed. Assures that no rule is executed twice, preventing loops
 
     Returns:
       HTML script element with a JavaScript code containing the answer of the rule.
    */
   procedure process_rule(
-    p_rule_stmt in adc_util.max_char)
+    p_rule_stmt in adc_util.max_char,
+    p_rule_list in out nocopy rule_list_t)
   as
   begin
     pit.enter_mandatory('process_rule');
@@ -539,7 +546,7 @@ as
     g_param.recursive_depth := adc_recursion_stack.get_level + 1;
 
     if g_param.stop_flag = adc_util.C_FALSE then
-      evaluate_and_execute_rule_action(p_rule_stmt);
+      evaluate_and_execute_rule_action(p_rule_stmt, p_rule_list);
     end if;
 
     -- remove processed item from recursive stack (or all, if requested)
@@ -549,7 +556,7 @@ as
     -- If a rule action changes the session state, the changed item will be pushed onto the recursive stack
     adc_recursion_stack.get_next(g_param.firing_item, g_param.firing_event, g_param.event_data);
     if g_param.firing_item is not null then
-      process_rule(p_rule_stmt);
+      process_rule(p_rule_stmt, p_rule_list);
     end if;
 
     pit.leave_mandatory;
@@ -785,6 +792,7 @@ as
 
     pit.leave_optional;
   end check_firing_item;
+  
 
   /**
     Group: Public methods - Getter
@@ -1027,11 +1035,13 @@ as
   as
     l_js_script adc_util.max_char;
     l_rule_stmt adc_util.max_char;
+    l_rule_list rule_list_t;
   begin
     pit.enter_mandatory;
 
     if g_param.crg_is_active then
-      if not g_param.stop_flag = adc_util.C_TRUE then
+      l_rule_list := rule_list_t();
+      if g_param.stop_flag = adc_util.C_FALSE then
         if g_param.firing_event = adc_util.C_INITIALIZE_EVENT then
           -- Register all predefined mandatory items
           register_mandatory(
@@ -1048,7 +1058,7 @@ as
          where crg_id = g_param.crg_id;
 
         -- recursively evaluate all applicable rules and execute them
-        process_rule(l_rule_stmt);
+        process_rule(l_rule_stmt, l_rule_list);
 
       end if;
 
@@ -1102,7 +1112,6 @@ as
 
     g_param.crg_id := get_crg_id;
     pit.assert_not_null(g_param.crg_id);
-    g_rule_list := rule_list_t();
 
     if g_param.crg_is_active then
       pit.assert_not_null(p_firing_item);
@@ -1120,7 +1129,6 @@ as
       adc_recursion_stack.reset(g_param.crg_id, g_param.firing_item, g_param.firing_event);
       adc_page_state.reset(g_param.crg_id, g_param.firing_item);
       adc_response.initialize_response(g_param.initialize_mode, g_param.crg_id);
-
       check_firing_item;
     end if;
 
@@ -1132,22 +1140,21 @@ as
       create_initial_rule_group_and_rule;
       l_dummy_result := read_settings(p_firing_item, p_event, p_event_data);
       pit.leave_mandatory;
-      return true;
+      return g_param.crg_is_active;
     when msg.ADC_ITEM_IS_MANDATORY_ERR then
       -- firing item is mandatory and contains NULL
       l_message := pit.get_active_message;
       register_error(g_param.firing_item, msg.ADC_ITEM_IS_MANDATORY);
-      -- nach der Erzeugung des Fehlers die ADC-Regel trotzdem ausfuehren
-      -- stop_rule;
+      -- execute rule regardless of this error
       pit.leave_mandatory;
-      return true;
+      return g_param.crg_is_active;
     when msg.ADC_INVALID_NUMBER_ERR or msg.ADC_INVALID_DATE_ERR then
       -- conversion could not be applied. Raise exception and stop rule
       l_message := pit.get_active_message;
       register_error(g_param.firing_item, l_message.message_name, l_message.message_args);
       stop_rule;
       pit.leave_mandatory;
-      return true;
+      return g_param.crg_is_active;
   end read_settings;
 
 
@@ -1715,7 +1722,7 @@ as
 
       if g_param.has_errors then
         if p_msg_name is not null then
-          l_error_message := pit.get_message_text(p_msg_name, msg_args());
+          l_error_message := pit.get_message_text(p_msg_name);
         else
           l_error_message := adc_util.get_standard_message('CSM_PAGE_HAS_ERROR');
         end if;
