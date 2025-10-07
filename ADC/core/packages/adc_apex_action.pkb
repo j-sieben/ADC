@@ -1,5 +1,7 @@
 create or replace package body adc_apex_action
 as
+  pragma SERIALLY_REUSABLE;
+  
   /**
     Package: ADC_APEX_ACTIONS Body
       Implementation of the helper package to maintain APEX Actions
@@ -33,8 +35,6 @@ as
   );
   g_action action_rec;
 
-  subtype template_t is utl_apex.max_sql_char;
-
 
   /**
     Group: Private Constants
@@ -56,30 +56,28 @@ as
       C_HIDE_TEMPLATE - Template to hide an APEX Action
       C_JAVA_SCRIPT_TAG - javascript prefix
    */
-  C_INIT_TEMPLATE constant template_t := q'^action = aa.lookup('#NAME#');^';
+  C_INIT_TEMPLATE constant utl_apex.max_sql_char := q'^action = aa.lookup('#NAME#');^';
 
-  C_UPDATE_TEMPLATE constant template_t := q'^    aa.update('#NAME#');^';
-  C_EXECUTE_IMMEDIATE constant template_t := q'^    aa.invoke('#NAME#');^';
+  C_UPDATE_TEMPLATE constant utl_apex.max_sql_char := q'^    aa.update('#NAME#');^';
+  C_EXECUTE_IMMEDIATE constant utl_apex.max_sql_char := q'^    aa.invoke('#NAME#');^';
 
-  C_HREF_TEMPLATE constant template_t := q'^    action.href="#JS##HREF#"; action.action='';^';
-  C_ACTION_TEMPLATE constant template_t := q'^    action.action = function(){#ACTION#}; action.href='';^';
-  C_LABEL_TEMPLATE constant template_t := q'^    action.label = #LABEL#;^';
-  C_LABEL_KEY_TEMPLATE constant template_t := q'^    action.labelKey = #LABEL_KEY#;^';
-  C_TITLE_TEMPLATE constant template_t := q'^    action.title = #TITLE#;^';
-  C_TITLE_KEY_TEMPLATE constant template_t := q'^    action.titleKey = #TITLE_KEY#;^';
-  C_DISABLE_TEMPLATE constant template_t := q'^    action.disabled = true;^';
-  C_ENABLE_TEMPLATE constant template_t := q'^    action.disabled = false;^';
-  C_SHOW_TEMPLATE constant template_t := q'^    action.hide = false;^';
-  C_HIDE_TEMPLATE constant template_t := q'^    action.hide = true;^';
-  -- Shortcut template is not used at the moment, as APEX treats a shortcut passed in at creation time
+  C_HREF_TEMPLATE constant utl_apex.max_sql_char := q'^    action.href="#JS##HREF#"; action.action='';^';
+  C_ACTION_TEMPLATE constant utl_apex.max_sql_char := q'^    action.action = function(){#ACTION#}; action.href='';^';
+  C_LABEL_TEMPLATE constant utl_apex.max_sql_char := q'^    action.label = #LABEL#;^';
+  C_LABEL_KEY_TEMPLATE constant utl_apex.max_sql_char := q'^    action.labelKey = #LABEL_KEY#;^';
+  C_TITLE_TEMPLATE constant utl_apex.max_sql_char := q'^    action.title = #TITLE#;^';
+  C_TITLE_KEY_TEMPLATE constant utl_apex.max_sql_char := q'^    action.titleKey = #TITLE_KEY#;^';
+  C_DISABLE_TEMPLATE constant utl_apex.max_sql_char := q'^    action.disabled = true;^';
+  C_ENABLE_TEMPLATE constant utl_apex.max_sql_char := q'^    action.disabled = false;^';
+  C_SHOW_TEMPLATE constant utl_apex.max_sql_char := q'^    action.hide = false;^';
+  C_HIDE_TEMPLATE constant utl_apex.max_sql_char := q'^    action.hide = true;^';
+  -- Shortcut template is not used, as APEX treats a shortcut passed in at creation time
   -- as the "primary shortcut" which can't be changed or removed.
-  C_SHORTCUT_TEMPLATE CONSTANT template_t := q'^    action.shortcut = 'Alt+#SHORTCUT#';^';
+  C_SHORTCUT_TEMPLATE CONSTANT utl_apex.max_sql_char := q'^    action.shortcut = 'Alt+#SHORTCUT#';^';
   -- Instead of C_SHORTCUT_TEMPLATE this template is used that adds the shortcut after having
   -- created the action. This way, APEX does not treat the shortcut as a primary shortcut which allows
   -- for later changes
-  /*C_HIGHLIGHT_SHORTCUT_TEMPLATE CONSTANT template_t := q'^aa.addShortcut('#CAA_SHORTCUT#', '#CAA_NAME#'); 
-  aa.update('#CAA_NAME#');^';*/
-  C_HIGHLIGHT_SHORTCUT_TEMPLATE CONSTANT template_t := q'^a.setApexActionAccessKey( '#CAA_NAME#', '#CAA_SHORTCUT#'); ^';
+  C_HIGHLIGHT_SHORTCUT_TEMPLATE CONSTANT utl_apex.max_sql_char := q'^a.setApexActionAccessKey( '#CAA_NAME#', '#CAA_SHORTCUT#'); ^';
 
   C_JAVA_SCRIPT_TAG constant adc_util.ora_name_type := 'javascript:';
   -- The following constants are used to prevent ADC_RESPONSE from escaping these namespace objects
@@ -162,6 +160,46 @@ as
 
 
   /**
+    Procedure: add_script
+      See <ADC_APEX_ACTIONS.add_script>
+   */
+  procedure add_script(
+    p_script in varchar2)
+  is
+  begin
+    pit.enter_optional(
+      p_params => msg_params(
+                    msg_param('p_script', p_script)));
+
+    append(p_script, FALSE);
+
+    pit.leave_optional;
+  end add_script;
+
+
+  /**
+    Procedure: execute_immediate
+      See <ADC_APEX_ACTIONS.execute_immediate>
+   */
+  procedure execute_immediate(
+    p_inline in boolean default FALSE)
+  is
+  begin
+    pit.enter_optional(
+      p_params => msg_params(
+                    msg_param('p_inline', p_inline)));
+
+    if p_inline then
+      append(C_EXECUTE_IMMEDIATE);
+    else
+      g_action.execute_immediate := TRUE;
+    end if;
+
+    pit.leave_optional;
+  end execute_immediate;
+
+
+  /**
     Procedure: get_action_script
       See <ADC_APEX_ACTIONS.get_action_script>
    */
@@ -170,7 +208,7 @@ as
   is
     l_script utl_apex.max_char;
   begin
-    pit.enter_optional;
+    pit.enter_optional('get_action_script');
 
     -- Request update of the UI elements of the action, if necessary.
     if g_action.needs_update then
@@ -193,17 +231,6 @@ as
   end get_action_script;
 
 
-  /**
-    Procedure: register_action_script
-      See <ADC_APEX_ACTIONS.register_action_script>
-   */
-  procedure register_action_script
-  is
-  begin
-    adc_api.add_javascript(get_action_script);
-  end register_action_script;
-
-
   /**  
     Procedure: append_apex_actions
       See <ADC_APEX_ACTIONS.get_crg_apex_actions>
@@ -224,7 +251,7 @@ as
 
     -- check whether APEX actions exist
     open l_cur for
-      select null
+      select ''
         from adc_apex_actions
        where caa_crg_id = p_crg_id;
     pit.assert_exists(l_cur);
@@ -313,31 +340,14 @@ as
 
 
   /**
-    Procedure: set_href
-      See <ADC_APEX_ACTIONS.set_href>
+    Procedure: register_action_script
+      See <ADC_APEX_ACTIONS.register_action_script>
    */
-  procedure set_href(
-    p_href in adc_apex_actions_v.caa_href%type)
+  procedure register_action_script
   is
-    l_js_flag varchar2(30);
-    l_href adc_util.max_char;
   begin
-    pit.enter_optional(
-      p_params => msg_params(
-                    msg_param('p_href', p_href)));
-
-    if not regexp_like(p_href, '^http|^f?p') then
-      l_js_flag := 'Javascript:';
-    end if;
-
-    append(adc_util.bulk_replace(C_HREF_TEMPLATE, adc_util.string_table(
-             '#HREF#', p_href, 
-             '#JS#', l_js_flag,
-             C_JS_NAMESPACE, C_JS_PLACEHOLDER,
-             C_APEX_ACTION_NAMESPACE, C_APEX_ACTION_PLACEHOLDER)));
-
-    pit.leave_optional;
-  end set_href;
+    adc_api.add_javascript(get_action_script);
+  end register_action_script;
 
 
   /**
@@ -363,44 +373,54 @@ as
 
 
   /**
-    Procedure: set_shortcut
-      See <ADC_APEX_ACTIONS.set_shortcut>
+    Procedure: set_disabled
+      See <ADC_APEX_ACTIONS.set_disabled>
    */
-  procedure set_shortcut(
-    p_shortcut in adc_apex_actions_v.caa_shortcut%type)
+  procedure set_disabled(
+    p_disabled in boolean)
   is
   begin
     pit.enter_optional(
       p_params => msg_params(
-                    msg_param('p_shortcut', p_shortcut)));
+                    msg_param('p_disabled', p_disabled)));
 
-    append(replace(replace(C_HIGHLIGHT_SHORTCUT_TEMPLATE, '#CAA_NAME#', g_action.action_name), '#CAA_SHORTCUT#', p_shortcut));
-    g_action.needs_update := true;
+    if p_disabled then
+      append(C_DISABLE_TEMPLATE);
+    else
+      append(C_ENABLE_TEMPLATE);
+    end if;
+    g_action.needs_update := TRUE;
 
     pit.leave_optional;
-  end set_shortcut;
+  end set_disabled;
 
 
   /**
-    Procedure: execute_immediate
-      See <ADC_APEX_ACTIONS.execute_immediate>
+    Procedure: set_href
+      See <ADC_APEX_ACTIONS.set_href>
    */
-  procedure execute_immediate(
-    p_inline in boolean default FALSE)
+  procedure set_href(
+    p_href in adc_apex_actions_v.caa_href%type)
   is
+    l_js_flag varchar2(30);
+    l_href adc_util.max_char;
   begin
     pit.enter_optional(
       p_params => msg_params(
-                    msg_param('p_inline', p_inline)));
+                    msg_param('p_href', p_href)));
 
-    if p_inline then
-      append(C_EXECUTE_IMMEDIATE);
-    else
-      g_action.execute_immediate := TRUE;
+    if not regexp_like(p_href, '^http|^f?p') then
+      l_js_flag := 'Javascript:';
     end if;
 
+    append(adc_util.bulk_replace(C_HREF_TEMPLATE, adc_util.string_table(
+             '#HREF#', p_href, 
+             '#JS#', l_js_flag,
+             C_JS_NAMESPACE, C_JS_PLACEHOLDER,
+             C_APEX_ACTION_NAMESPACE, C_APEX_ACTION_PLACEHOLDER)));
+
     pit.leave_optional;
-  end execute_immediate;
+  end set_href;
 
 
   /**
@@ -432,6 +452,25 @@ as
 
     pit.leave_optional;
   end set_label;
+  
+
+  /**
+    Procedure: set_shortcut
+      See <ADC_APEX_ACTIONS.set_shortcut>
+   */
+  procedure set_shortcut(
+    p_shortcut in adc_apex_actions_v.caa_shortcut%type)
+  is
+  begin
+    pit.enter_optional(
+      p_params => msg_params(
+                    msg_param('p_shortcut', p_shortcut)));
+
+    append(replace(replace(C_HIGHLIGHT_SHORTCUT_TEMPLATE, '#CAA_NAME#', g_action.action_name), '#CAA_SHORTCUT#', p_shortcut));
+    g_action.needs_update := true;
+
+    pit.leave_optional;
+  end set_shortcut;
 
 
   /**
@@ -466,29 +505,6 @@ as
 
 
   /**
-    Procedure: set_disabled
-      See <ADC_APEX_ACTIONS.set_disabled>
-   */
-  procedure set_disabled(
-    p_disabled in boolean)
-  is
-  begin
-    pit.enter_optional(
-      p_params => msg_params(
-                    msg_param('p_disabled', p_disabled)));
-
-    if p_disabled then
-      append(C_DISABLE_TEMPLATE);
-    else
-      append(C_ENABLE_TEMPLATE);
-    end if;
-    g_action.needs_update := TRUE;
-
-    pit.leave_optional;
-  end set_disabled;
-
-
-  /**
     Procedure: set_visible
       See <ADC_APEX_ACTIONS.set_visible>
    */
@@ -509,24 +525,6 @@ as
 
     pit.leave_optional;
   end set_visible;
-
-
-  /**
-    Procedure: add_script
-      See <ADC_APEX_ACTIONS.add_script>
-   */
-  procedure add_script(
-    p_script in varchar2)
-  is
-  begin
-    pit.enter_optional(
-      p_params => msg_params(
-                    msg_param('p_script', p_script)));
-
-    append(p_script, FALSE);
-
-    pit.leave_optional;
-  end add_script;
 
 end adc_apex_action;
 /
