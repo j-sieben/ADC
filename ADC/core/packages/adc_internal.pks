@@ -2,7 +2,7 @@ create or replace package adc_internal
   authid definer
   accessible by (package adc_plugin, package adc_api, package adc_actions, package ut_adc_internal)
 as
-  
+  pragma SERIALLY_REUSABLE;
   
   /** 
     Package: ADC_INTERNAL 
