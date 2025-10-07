@@ -1,5 +1,6 @@
 create or replace package body adc_recursion_stack 
 as
+  pragma SERIALLY_REUSABLE;
 
   /** 
     Package: ADC_RECURSION_STACK Body

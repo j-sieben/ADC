@@ -1,5 +1,6 @@
 create or replace package body adc_page_state
 as
+  pragma SERIALLY_REUSABLE;
   
   /** 
     Package: ADC_PAGE_STATE Body

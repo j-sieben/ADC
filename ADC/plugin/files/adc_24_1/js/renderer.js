@@ -3,7 +3,7 @@ var de = de || {};
 de.condes = de.condes || {};
 de.condes.plugin = de.condes.plugin || {};
 de.condes.plugin.adc = de.condes.plugin.adc || {};
-de.condes.plugin.adc.apex_42_24_1 = {};
+de.condes.plugin.adc.apex_theme_42 = {};
 
 /**
   Function: ADC Theme adapter

@@ -1,415 +1,359 @@
-create or replace package body adc_util
+create or replace package adc_util
+  authid definer
 as
 
   /**
-    Package: ADC_UTIL Body
+    Package: ADC_UTIL
       Provides data types, constants and generic helper functions for ADC.
 
     Author::
       Juergen Sieben, ConDeS GmbH
    */
-   
-  g_loop_counter binary_integer;
-  g_test_mode boolean;
 
   /**
-    Group: Public Methods
+    Group: Public types
    */
+  /**
+    Types: Package types
+      ora_name_type - Varchar2 with the same length as an Oracle name (varying between 30 byte in Oracle until version 11 and 128 byte starting with version 12)
+      sql_char - Max length of a sql varchar2.
+      max_char - Max length of a PL/SQL varchar2
+      flag_type - Persistable representation of a boolean flag. May be defined upon installation of ADC.
+  */
+  subtype ora_name_type is varchar2(128 byte);
+  subtype sql_char is varchar2(4000 byte);
+  subtype max_char is varchar2(32767 byte);
+  subtype flag_type is number(1, 0);
+  subtype tiny_char is varchar2(5 byte);
+  type string_table is table of max_char;
+   
+   
+  /**
+    Type: environment_rec
+      Record that defines environmental information about the actually executed rule
+      Is used in adc_validation for checks against the meta data of ADC
+      
+    Properties:
+      crg_id - ID of the rule group actually in use
+      app_id - APEX application ID
+      page_id - APEX application page ID
+   */
+  type environment_rec is record(
+    crg_id adc_rule_groups.crg_id%type,
+    app_id adc_rule_groups.crg_app_id%type,
+    page_id adc_rule_groups.crg_page_id%type);
   
+
+  /**
+    Group: Public constants
+   */
+  /**
+    Constants: Public constants
+      C_PARAM_GROUP - Name of the parameter group used to bundle the ADC parameters;
+      C_ADC - Name of the UI message group name used for translatable items
+      
+      C_WITH_UNIT_TESTS - Flag to indicate whether utPLSQL is installed in a sufficient version;
+      
+      C_MAX_LENGTH - Integer value to indicate a length limit for certain operations;
+      C_NO_FIRING_ITEM - Name of the firing item that is used if no firing item is present, required when initializing a page;
+      C_INITIALIZE_EVENT - Event that is used if the page initializes;
+        
+      C_JS_CODE - Output level for JavaScript executable scripts. All levels are used to decide whether the respective information is to be integrated into the answer of ADC
+      C_JS_RULE_ORIGIN - Output level for Rule origin messages
+      C_JS_DEBUG - Output level for debug informations
+      C_JS_COMMENT - Output level for additional comments
+      C_JS_DETAIL - Output level for detailed comments
+      C_JS_VERBOSE - Output level for verbose comments
+      
+      C_PARAM_ITEM_VALUE - Constant used in parameter values to indicate that the actual item value should be inserted.
+      
+      C_DELIMITER - Limiter used for certain text operations
+      C_CR - Carriage return 
+  */
+  C_PARAM_GROUP constant adc_util.ora_name_type := 'ADC';
+  C_ADC constant ora_name_type := 'ADC';
+  C_ADCA constant ora_name_type := 'ADCA';
+  
+  C_WITH_UNIT_TESTS constant boolean := false;
+  
+  C_MAX_LENGTH constant binary_integer := 24000;
+  C_NO_FIRING_ITEM constant varchar2(30 byte) := 'DOCUMENT';
+  C_INITIALIZE_EVENT constant varchar2(25) := 'initialize';
+    
+  C_JS_CODE constant binary_integer := pit.LEVEL_FATAL;
+  C_JS_RULE_ORIGIN constant binary_integer := pit.LEVEL_ERROR;
+  C_JS_DEBUG constant binary_integer := pit.LEVEL_WARN;
+  C_JS_COMMENT constant binary_integer := pit.LEVEL_INFO;
+  C_JS_DETAIL constant binary_integer := pit.LEVEL_DEBUG;
+  C_JS_VERBOSE constant binary_integer := pit.LEVEL_ALL;
+  
+  C_PARAM_ITEM_VALUE constant adc_util.ora_name_type := 'ITEM_VALUE';
+  C_PARAM_EVENT_DATA constant adc_util.ora_name_type := 'EVENT_DATA';
+  C_PARAM_METHOD constant adc_util.ora_name_type := '#METHOD#';
+  C_PARAM_SELECTOR constant adc_util.ora_name_type := '#SELECTOR#';
+  
+  C_DELIMITER constant varchar2(1 byte) := ',';
+  
+  /**
+    Group: Public methods
+   */
   /**
     Function: C_CR
-      See <ADC_UTIL.C_CR>
+      Getter method to retrive a operation system aware return character
    */
-  function c_cr
-    return varchar2
-  as
-  begin
-    return chr(13) || chr(10);
-  end c_cr;
-  
-  
+  function C_CR
+    return varchar2;
+    
+    
   /**
     Function: C_APOS
-      See <ADC_UTIL.C_APOS>
+      Getter method to retrive an apostrophe character
    */
-  function c_apos
-    return varchar2
-  as
-  begin
-    return chr(39);
-  end c_apos;
-  
-  /**
+  function C_APOS
+    return varchar2;
+    
+    
+  /** 
     Function: C_TRUE
-      See <ADC_UTIL.C_TRUE>
+      Getter method to retrieve a TRUE value as a flag_type
    */
-  function c_true
-    return flag_type
-  as
-  begin
-    return pit_util.c_true;
-  end c_true;
-
+  function C_TRUE
+    return flag_type;    
   
-  /**
+  /** 
     Function: C_FALSE
-      See <ADC_UTIL.C_FALSE>
+      Getter method to retrieve a FALSE value as a flag_type
    */
-  function c_false
-    return flag_type
-  as
-  begin
-    return pit_util.c_false;
-  end c_false;
-
+  function C_FALSE
+    return flag_type;
+    
   
-  /**
+  /** 
     Function: C_HASH
-      See <ADC_UTIL.C_HASH>
+      Method to retrieve a replacement char for # character
+      Used to mask the # character to avoid page effects in UTL_TEXT.
+      When delivering the JavaScript code, the character will be replaced by the # character again
    */
-  function c_hash
-    return varchar2
-  as
-  begin
-    return '\u0023';
-  end c_hash;
+  function C_HASH
+    return varchar2;
   
-  
-  /**
-    Function: C_DELIMITER
-      See <ADC_UTIL.C_DELIMITER>
-   */
-  function c_delimiter
-    return varchar2
-  as
-  begin
-    return ',';
-  end c_delimiter;
-
   
   /**
     Function: get_boolean
-      See <ADC_UTIL.get_boolean>
+      Helper to map different boolean values to TRUE or FALSE.
+      Is used to map "TRUTHY" values to true and "FALSY" value to false.
+      Used to stabilize im- and export of meta data between versions of ADC
+                
+    Parameter:
+      p_bool - Boolean value that is to be converted
+      
+    Returns: adc_util.C_TRUE | adc_util.C_TRUE
    */
   function get_boolean(
     p_bool in varchar2)
-    return adc_util.flag_type
-  as
-  begin
-    if p_bool in ('J', 'Y', '1') then
-      return adc_util.C_TRUE;
-    else
-      return adc_util.C_FALSE;
-    end if;
-  end get_boolean;
-
-  
-  /**
-    Function: to_bool
-      See <ADC_UTIL.to_bool>
-   */
-  function to_bool(
-    p_bool in flag_type)
-    return varchar2
-  as
-  begin
-    return case p_bool when C_TRUE then 'adc_util.C_TRUE' else 'adc_util.C_FALSE' end;
-  end to_bool;
-  
-  
-  /**
-    Function: to_javascript_boolean
-      See <ADC_UTIL.to_javascript_boolean>
-   */
-  function to_javascript_boolean(
-    p_flag in adc_util.flag_type)
-    return varchar2
-  as
-    l_result adc_util.tiny_char;
-  begin
-    pit.enter_detailed('to_javascript_boolean',
-      p_params => msg_params(msg_param('p_flag', p_flag)));
-
-    if p_flag = adc_util.C_TRUE then
-      l_result := 'true';
-    else
-      l_result := 'false';
-    end if;
+    return adc_util.flag_type;
     
-    pit.leave_detailed(
-      p_params => msg_params(msg_param('Result', l_result)));
-    return l_result;
-  end to_javascript_boolean;
-
   
-  /**
+  /** 
     Function: bool_to_flag
-      See <ADC_UTIL.bool_to_flag>
+      Method to cast a boolean value to it's flag_type representation
+                  
+    Parameter: 
+      p_bool - Boolean value to convert
    */
   function bool_to_flag(
     p_bool in boolean)
-    return adc_util.flag_type
-  as
-  begin
-    if p_bool then
-      return C_TRUE;
-    else
-      return C_FALSE;
-    end if;
-  end bool_to_flag;
-
+    return adc_util.flag_type;
   
   /**
+    Function: to_bool
+      Helper to create a string adc_util.C_TRUE/FALSE based upon parameter value.
+      Is used in export scripts to replace the actual boolean value with a reference to this package.
+      This is required to make the export scripts eligible for any FLAG_TYPE.
+                
+    Parameter:
+      p_bool - Flag to indicate which string is required
+   */
+  function to_bool(
+    p_bool in flag_type)
+    return varchar2;
+
+
+  /**
+    Function: to_javascript_boolean
+      Method to retrieve a JavaScript boolean value from a adc_util.FLAG_TYPE.
+      
+    Parameter: 
+      p_flag - Flag to convert
+      
+    Returns:
+      String containing true or false
+   */
+  function to_javascript_boolean(
+    p_flag in adc_util.flag_type)
+    return varchar2;
+    
+    
+  /**
     Function: bulk_replace
-      See <ADC_UTIL.bulk_replace>
+      Minimalistic bulk replace-Method. Replaces odd entries as anchors in 
+      p_string with their following even entries of p_string_table
+      
+    Parameter:
+      p_text - Text with the replacement anchors
+      p_string_table - Table of varchar2 snippets.
+    
+    Returns:
+      Replaced text
    */
   function bulk_replace(
     p_text in varchar2,
     p_string_table in string_table)
-    return varchar2
-  as
-    l_text max_char;
-    l_prefix max_char;
-    l_postfix max_char;
-    l_null_value max_char;
-    l_start binary_integer;
-    l_length binary_integer;
-    l_anchor max_char;
-  begin
-    l_text := p_text;
-    if p_text is not null and p_string_table is not null then
-      for i in 1 .. p_string_table.count loop
-        if mod(i, 2) = 1 then
-          if instr(l_text, substr(p_string_table(i), 1, length(p_string_table(i)) - 1) || '|') = 0 then
-          l_text := replace(l_text, p_string_table(i), p_string_table(i + 1));
-          else
-            -- replacement anchor has |-enhanced syntax. Extract complete anchor and parts
-            l_start := instr(l_text, substr(p_string_table(i), 1, length(p_string_table(i)) - 1));
-            l_length := instr(l_text, '#', l_start + 1) - l_start + 1;
-            l_anchor := substr(l_text, l_start, l_length); 
-            l_start := instr(l_anchor, '|', 1, 1) + 1;
-            l_length := instr(l_anchor, '|', 1, 2) - l_start;
-            l_prefix := substr(l_anchor, l_start, l_length);
-            l_start := instr(l_anchor, '|', 1, 2) + 1;
-            l_length := instr(l_anchor, '|', 1, 3) - l_start;
-            l_postfix := substr(l_anchor, l_start, l_length);
-            l_start := instr(l_anchor, '|', 1, 3) + 1;
-            l_length := length(l_anchor) - l_start;
-            l_null_value := substr(l_anchor, l_start, l_length);
-            if p_string_table(i + 1) is not null then
-              l_text := replace(l_text, l_anchor, l_prefix || p_string_table(i + 1) || l_postfix);
-            else
-              l_text := replace(l_text, l_anchor, l_null_value);
-            end if;
-          end if;
-        end if;
-      end loop;
-    end if;
-    return l_text;
-  end bulk_replace;
+    return varchar2;
+    
 
-  
-  /**
+  /** 
     Function: clean_adc_name
-      See <ADC_UTIL.clean_adc_name>
+      Helper to sanitize any ADC name to comply with internal naming rules
+      Name that adheres to the following naming conventions:
+      - no quotes
+      - no blanks (replaced by underscores)
+      - all uppercase
+      - length limit 50
+    
+    Parameter:
+      p_name - Name to sanitize
+      
+    Returns:
+      sanitized name
    */
   function clean_adc_name(
     p_name in varchar2)
-    return varchar2
-  as
-    l_name ora_name_type;
-  begin
-    l_name := replace(replace(p_name, '"'), ' ', '_');
-    l_name := upper(substr(l_name, 1, 50));
-    return l_name;
-  end clean_adc_name;
-
-  
+    return varchar2;
+    
+    
   /**
     Function: harmonize_page_item_name
-      See <ADC_UTIL.harmonize_page_item_name>
+      Method to assure that a page item has got a page prefix
+      
+    Parameter:
+      p_cpi_id - Name of the page item to harmonize
+      
+    Returns: Page item name with page prefix
    */
   function harmonize_page_item_name(
     p_cpi_id in adc_page_items.cpi_id%type)
-    return varchar2
-  as
-    l_item_name adc_util.ora_name_type;
-    l_page_prefix adc_util.ora_name_type;
-    l_button_prefix adc_util.ora_name_type;
-    l_region_prefix adc_util.ora_name_type;
-  begin
-  
-    l_item_name := upper(p_cpi_id);
+    return varchar2;
     
-    if l_item_name != adc_util.C_NO_FIRING_ITEM and p_cpi_id is not null then
-      l_page_prefix := utl_apex.get_page_prefix;
-      l_button_prefix := replace(l_page_prefix, 'P', 'B');
-      l_region_prefix := replace(l_page_prefix, 'P', 'R');
-        
-      if substr(l_item_name, 1, length(l_page_prefix)) not in (l_page_prefix, l_button_prefix, l_region_prefix) then
-        l_item_name := l_page_prefix || l_item_name;
-      end if;
-    end if;
-      
-    return l_item_name;
-  end harmonize_page_item_name;
-
   
-  /**
+  /** 
     Function: get_trans_item_name
-      See <ADC_UTIL.get_trans_item_name>
+      Wrapper around PIT.get_trans_item_name that sets the trans item group to ADC
+                
+    Parameters:
+      p_item - Item to translate
+      p_msg_args - Optional list of arguments to incorporate into the translated item name
+      p_pmg_name - Optional message group name to enable switching betwwen C_ADC and C_ADCA
+      
+    Returns:
+      Translated item name
    */
   function get_trans_item_name(
     p_item in varchar2,
     p_msg_args in msg_args default null,
     p_pmg_name in varchar2 default C_ADC)
-    return varchar2
-  as
-  begin
-    return pit.get_trans_item_name(p_pmg_name, p_item, p_msg_args);
-  end get_trans_item_name;
-
-  
+    return varchar2;
+    
+    
   /**
     Function: get_standard_message
-      See <ADC_UTIL.get_standard_message>
+      Method to retrieve a standard message
+      
+    Parameter:
+      p_msg_name - Name of the message to retrieve
+      
+    Returns:
+      Translated standard message
    */
   function get_standard_message(
     p_msg_name in varchar2)
-    return varchar2
-  as
-    l_message adc_standard_messages_v.csm_message%type;
-  begin
-    select csm_message
-      into l_message
-      from adc_standard_messages_v
-     where csm_id = p_msg_name;
-    return l_message;
-  exception
-    when NO_DATA_FOUND then
-      return null;
-  end get_standard_message;
-
+    return varchar2;
+  
   
   /**
-    Function: close_cursor
-      See <ADC_UTIL.close_cursor>
+    Procedure: close_cursor
+      Method to savely close a cursor
+      The method checks whether the cursor is still open and closes it in this case.
+      
+    Parameter:
+      p_cur - Cursor which may still be open
    */
   procedure close_cursor(
-    p_cur in sys_refcursor)
-  as
-  begin
-    pit.enter_detailed('close_cursor');
-    
-    if p_cur%ISOPEN then
-      close p_cur;
-    end if;
-    
-    pit.leave_detailed;
-  end close_cursor;
-
+    p_cur in sys_refcursor);
+  
   
   /**
     Procedure: monitor_loop
-      See <ADC_UTIL.monitor_loop>
+      Method to monitor that loops can't go into infinite loop mode.
+      If the parameters are NULL, a new monitor is instantiated. Within the 
+      loop this method is called with a variable holding the amount of loops so far
+      The method increments this variable and checks it against the maximally allowed
+      loop operations. If it exceeds this limit, an exception is thrown
+      
+    Parameters:
+      p_counter - Optional variable that holds the amount of loops
+      p_loop_name - Optional name of the the loop to monitor
    */
   procedure monitor_loop(
     p_counter in number default null,
-    p_loop_name in varchar2 default null)
-  as
-  begin
-    g_loop_counter := coalesce(p_counter, 0) + 1;
+    p_loop_name in varchar2 default null);
     
-    if g_loop_counter > 100 then
-      pit.raise_error(msg.ADC_INFINITE_LOOP, msg_args(p_loop_name));
-    end if;
-  end monitor_loop;
-  
-  
+    
   /**
     Function: get_additional_nd_comments
-      See <ADC_UTIL.get_additional_nd_comments>
+      Method collects additional comments in NaturalDocs syntax and returns them
+      as CLOB. The content of the comments describes tables and views and picks up
+      their comments and column names.
+      
+      Add the resulting comments to a sql file that is not executed or commented out
+      to make these available for NaturalDocs.
    */
   function get_additional_nd_comments
-    return clob
-  as
-    l_comments clob;
-  begin
-    with params as (
-           select /*+ no_merge */
-                  adc_util.C_CR C_CR
-             from dual)
-    select utl_text.generate_text(cursor(
-             select '#OBJECT_TYPE#: #OBJECT_TYPE#s.#OBJECT_NAME##CR#  #COMMENTS##CR##CR#Fields:#CR#  #COLUMNS#' template, initcap(object_type) object_type, object_name, comments, C_CR cr,
-                    utl_text.generate_text(cursor(
-                      select '#COLUMN_NAME# - #COMMENTS#' template, lower(t.column_name) column_name, 
-                             coalesce(c.comments, case t.column_name when 'D' then 'Display value' when 'R' then 'Return value' else 'no comment available' end) comments, C_CR cr
-                        from user_tab_columns t
-                        join user_col_comments c
-                          on t.table_name = c.table_name
-                         and t.column_name = c.column_name
-                       where t.table_name = o.object_name
-                       order by t.table_name, t.column_id
-                    ), adc_util.C_CR, 2) columns
-               from user_objects o
-               join user_tab_comments
-                 on object_name = table_name
-              where object_type in ('TABLE', 'VIEW')
-                and object_name like 'ADC%'
-              order by 1, 2), C_CR || C_CR) resultat
-      into l_comments
-      from params;
-      
-    return l_comments;
-  end get_additional_nd_comments;
-  
-  
+    return clob;
+
+
   /**
     Function: get_test_mode
-      See <ADC_UTIL.get_test_mode>
+      Method to retrieve the actual test mode state
+      
+    Returns:
+      - TRUE, if package is in test mode
+      - FALSE otherwise
    */
   function get_test_mode
-    return boolean
-  as
-  begin
-    return g_test_mode;
-  end get_test_mode;
-  
-  
+    return boolean;
+    
+    
   /**
-    Proceude: set_test_mode
-      See <ADC_UTIL.set_test_mode>
+    Procedure: set_test_mode
+      Method to set the actual test mode state
+    
+    Parameters:
+      p_flag - Flag to indicate whether test mode is set to TRUE or FALSE
    */
   procedure set_test_mode(
-    p_flag in boolean)
-  as
-  begin
-    g_test_mode := p_flag;
-  end set_test_mode;
+    p_flag in boolean);
     
     
   /**
     Function: get_environment
-      See <ADC_UTIL.get_environment>
+      Method to populate an instance of <environment_rec> with actual information.
+      
+    Returns:
+      Instance of <environment_rec>
    */
   function get_environment
-    return environment_rec
-  as
-    l_rec environment_rec;
-  begin
-    l_rec.app_id := utl_apex.get_application_id;
-    l_rec.page_id := utl_apex.get_page_id;
-    select crg_id
-      into l_rec.crg_id
-      from adc_rule_groups
-     where crg_app_id = l_rec.app_id
-       and crg_page_id = l_rec.page_id;
-       
-    return l_rec;
-  exception
-    when NO_DATA_FOUND then 
-      return null;
-  end get_environment;
-  
+    return environment_rec;
+    
 end adc_util;
 /

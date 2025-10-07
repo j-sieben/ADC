@@ -1,5 +1,6 @@
 create or replace package body adc_admin
 as
+  pragma SERIALLY_REUSABLE;
 
   /**
     Package: ADC_ADMIN Body
@@ -162,22 +163,44 @@ as
       p_key := adc_seq.nextval;
     end if;
   end get_key;
+  
+  
+  /**
+    Procedure: reset_page_item_status
+      Method to reset all page items of a given CRG_ID to an initial state.
+
+    Parameter:
+      p_crg_id - Rule group ID
+   */
+  procedure reset_page_item_status(
+    p_crg_id in adc_rule_groups.crg_id%type)
+  as
+  begin
+    pit.enter_optional('reset_page_item_status');
+    -- Initialize
+    update adc_page_items
+       set cpi_is_required = adc_util.C_FALSE,
+           cpi_has_error = adc_util.C_TRUE,
+           cpi_validation_method = null
+     where cpi_crg_id = p_crg_id;
+    pit.leave_optional;
+  end reset_page_item_status;
 
 
   /**
-    Procedure: mark_number_date_required_fields
+    Procedure: mark_required_fields
       Mark any item with a conversion or mandatory as required to enable ADC to dynamically validate the format.
       Mark any item with a required label as mandatory to dynamically check for NOT NULL.
 
-    Parameters:
+    Parameter:
       p_crg_id - Rule group ID
    */
-  procedure mark_number_date_required_fields(
+  procedure mark_required_fields(
     p_crg_id in adc_rule_groups.crg_id%type)
   as
     l_cpi_id adc_page_items.cpi_id%type;
   begin
-    pit.enter_detailed('mark_number_date_required_fields');
+    pit.enter_detailed('mark_required_fields');
     
     g_crg_id := p_crg_id;
 
@@ -196,8 +219,7 @@ as
                   cpi_may_have_value,
                   cpi_form_region_id
              from adc_bl_page_targets
-            where cpi_crg_id = p_crg_id
-              and cpi_id is not null) s
+            where cpi_id is not null) s
        on (t.cpi_id = s.cpi_id and t.cpi_crg_id = s.cpi_crg_id)
      when matched then update set
           t.cpi_cpit_id = s.cpi_cpit_id,
@@ -232,7 +254,7 @@ as
       having count(*) > 1;
     g_crg_id := null;
     pit.raise_error(msg.ADC_NON_UNIQUE_STATIC_ID, msg_args(to_char(p_crg_id), l_cpi_id));
-  end mark_number_date_required_fields;
+  end mark_required_fields;
 
 
   /**
@@ -320,9 +342,9 @@ as
 
   /**
     Procedure: maintain_additional_items
-      Method checks additional fields against required fields. If a n additional
+      Method checks additional fields against required fields. If an additional
       field is marked as required, it is removed from the additional fields set.
-      If the additional fields rule action has no field to add, it gets removed from the rule
+      If the additional fields rule action has no field to add, it gets removed from the rule.
 
     Parameters:
       p_crg_id - Rule group ID
@@ -387,7 +409,7 @@ as
     p_crg_id in adc_rule_groups.crg_id%type)
   as
   begin
-    pit.enter_detailed('remove_irrelelvant_fields');
+    pit.enter_detailed('remove_irrelevant_fields');
 
       delete from adc_page_items
        where cpi_crg_id = p_crg_id
@@ -475,14 +497,9 @@ as
       p_params => msg_params(
                     msg_param('p_crg_id', p_crg_id)));
 
-    -- Initialize
-    update adc_page_items
-       set cpi_is_required = adc_util.C_FALSE,
-           cpi_has_error = adc_util.C_TRUE,
-           cpi_validation_method = null
-     where cpi_crg_id = p_crg_id;
+    reset_page_item_status(p_crg_id);
 
-    mark_number_date_required_fields(p_crg_id);
+    mark_required_fields(p_crg_id);
 
     mark_rule_condition_items(p_crg_id, p_new_condition);
 
@@ -886,8 +903,8 @@ as
   
 
   /**
-    Function: map_id
-      See <ADC_ADMIN.map_id>
+    Function: get_crg_id
+      See <ADC_ADMIN.get_crg_id>
    */
   function get_crg_id
     return adc_rule_groups.crg_id%type

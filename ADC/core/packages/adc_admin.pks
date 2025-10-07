@@ -1,6 +1,7 @@
 create or replace package adc_admin
   authid definer
 as
+  pragma SERIALLY_REUSABLE;
 
   /**
     Package: ADC_ADMIN
