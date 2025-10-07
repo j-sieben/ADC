@@ -1,6 +1,7 @@
 create or replace package adc_apex_action
   authid definer
 as
+  pragma SERIALLY_REUSABLE;
 
   /**
     Package: ADC_APEX_ACTIONS
@@ -20,6 +21,35 @@ as
    */
   procedure action_init(
     p_action_name in adc_apex_actions_v.caa_name%type);
+
+
+  /**
+    Procedure: add_script
+      Method to add a script that has to be executed after the settings for the actions have taken place.
+                 
+    Parameter:
+      p_script  JavaScript-chunk (without javascript:-Prefix) that shall be executed
+   */
+  procedure add_script(
+    p_script in varchar2);
+
+
+  /**
+    Procedure: execute_immediate
+      Method to execute the action, either immediately or after setting all attributes first.
+      
+      Use this method to execute the action you're working on directly.
+      When calling this method with <p_inline> = TRUE it is possible to execute the action and
+      adjust action settings directly afterwards, e.g. disabling the action.
+   
+    Parameter:
+      p_inline - Optional flag to indicate whether the command to execute the action shall be
+      
+                 - TRUE: included directly when this method is called or
+                 - FALSE (Default): after all action settings, before the additional JavaScript code
+   */
+  procedure execute_immediate(
+    p_inline in boolean default false);
 
 
   /**
@@ -55,19 +85,6 @@ as
 
 
   /**
-    Procedure: set_href
-      Method to set the HREF param in an ACTION type APEX-Action and resets the
-      ACTION attribute to NULL. It is meant to overwrite the globally defined
-      link but can be used to change an action parameter to an href parameter as well.
-   
-    Parameter:
-      p_href  Link that is set within the action
-   */
-  procedure set_href(
-    p_href in adc_apex_actions_v.caa_href%type);
-
-
-  /**
     Procedure: set_action
       Method to set the ACTION param in an ACTION type APEX-Action and resets the
       HREF attribute to NULL. It is meant to overwrite the globally defined action
@@ -81,64 +98,6 @@ as
    */
   procedure set_action(
     p_action in adc_apex_actions_v.caa_action%type);
-
-
-  /**
-    Procedure: set_shortcut
-      Method to set the SHORTCUT param in an ACTION type APEX-Action. It is meant to change
-      a given shortcut defined at the ADC designer UI (attribute shortcut) but can also be
-      used to create a new shortcut for an action that didn't have a shortcut before.
-      It will call the decorateApexAction method to adjust title and underlining features.
-   
-    Parameter:
-      p_shortcut - Shortcut to execute the action
-   */
-  procedure set_shortcut(
-    p_shortcut in adc_apex_actions_v.caa_shortcut%type);
-
-
-  /**
-    Procedure: execute_immediate
-      Method to execute the action, either immediately or after setting all attributes first.
-      
-      Use this method to execute the action you're working on directly.
-      When calling this method with <p_inline> = TRUE it is possible to execute the action and
-      adjust action settings directly afterwards, e.g. disabling the action.
-   
-    Parameter:
-      p_inline - Optional flag to indicate whether the command to execute the action shall be
-      
-                 - TRUE: included directly when this method is called or
-                 - FALSE (Default): after all action settings, before the additional JavaScript code
-   */
-  procedure execute_immediate(
-    p_inline in boolean default false);
-
-
-  /**
-    Procedure: set_label
-      Method to adjust the action label.
-                
-    Parameter:
-      p_label - Label that is to be set for this action
-      p_is_key - Flag to distinguish plain label text (false) from reference to APEX_MESSAGE (true). Defaults to true.
-   */
-  procedure set_label(
-    p_label in adc_apex_actions_v.caa_label%type,
-    p_is_key in boolean default false);
-
-
-  /**
-    Procedure: set_title
-      Method to adjust the action title.
-
-    Parameters:
-      p_title - Title that is to be set for this action
-      p_is_key - Flag to distinguish plain label text (false) from reference to APEX_MESSAGE (true). Defaults to true.
-   */
-  procedure set_title(
-    p_title in adc_apex_actions_v.caa_title%type,
-    p_is_key in boolean default false);
 
 
   /**
@@ -156,6 +115,59 @@ as
 
 
   /**
+    Procedure: set_href
+      Method to set the HREF param in an ACTION type APEX-Action and resets the
+      ACTION attribute to NULL. It is meant to overwrite the globally defined
+      link but can be used to change an action parameter to an href parameter as well.
+   
+    Parameter:
+      p_href  Link that is set within the action
+   */
+  procedure set_href(
+    p_href in adc_apex_actions_v.caa_href%type);
+
+
+  /**
+    Procedure: set_label
+      Method to adjust the action label.
+                
+    Parameter:
+      p_label - Label that is to be set for this action
+      p_is_key - Flag to distinguish plain label text (false) from reference to APEX_MESSAGE (true). Defaults to true.
+   */
+  procedure set_label(
+    p_label in adc_apex_actions_v.caa_label%type,
+    p_is_key in boolean default false);
+
+
+  /**
+    Procedure: set_shortcut
+      Method to set the SHORTCUT param in an ACTION type APEX-Action. It is meant to change
+      a given shortcut defined at the ADC designer UI (attribute shortcut) but can also be
+      used to create a new shortcut for an action that didn't have a shortcut before.
+      It will call the decorateApexAction method to adjust title and underlining features.
+   
+    Parameter:
+      p_shortcut - Shortcut to execute the action
+   */
+  procedure set_shortcut(
+    p_shortcut in adc_apex_actions_v.caa_shortcut%type);
+
+
+  /**
+    Procedure: set_title
+      Method to adjust the action title.
+
+    Parameters:
+      p_title - Title that is to be set for this action
+      p_is_key - Flag to distinguish plain label text (false) from reference to APEX_MESSAGE (true). Defaults to true.
+   */
+  procedure set_title(
+    p_title in adc_apex_actions_v.caa_title%type,
+    p_is_key in boolean default false);
+
+
+  /**
     Procedure: set_visible
       Method to control the visibility of the UI-elements attached to the action.
    
@@ -167,17 +179,6 @@ as
    */
   procedure set_visible(
     p_visible in boolean);
-
-
-  /**
-    Procedure: add_script
-      Method to add a script that has to be executed after the settings for the actions have taken place.
-                 
-    Parameter:
-      p_script  JavaScript-chunk (without javascript:-Prefix) that shall be executed
-   */
-  procedure add_script(
-    p_script in varchar2);
 
 end adc_apex_action;
 /
