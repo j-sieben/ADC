@@ -1,7 +1,6 @@
 create or replace package adc_apex_action
   authid definer
 as
-  pragma SERIALLY_REUSABLE;
 
   /**
     Package: ADC_APEX_ACTIONS

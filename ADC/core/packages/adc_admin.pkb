@@ -1,6 +1,5 @@
 create or replace package body adc_admin
 as
-  pragma SERIALLY_REUSABLE;
 
   /**
     Package: ADC_ADMIN Body

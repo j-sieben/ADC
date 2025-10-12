@@ -1,6 +1,5 @@
 create or replace package body adc_apex_action
 as
-  pragma SERIALLY_REUSABLE;
   
   /**
     Package: ADC_APEX_ACTIONS Body

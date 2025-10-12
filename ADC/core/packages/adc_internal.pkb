@@ -1,6 +1,5 @@
 create or replace package body adc_internal
 as
-  pragma SERIALLY_REUSABLE;
 
   /**
     Package: ADC_INTERNAL Body
