@@ -6,12 +6,12 @@ as object (
     Type: ADC_BASIC
       Implements the public interface of ADC and a wrapper around ADC_API.EXECUTE_ACTION for system defined action types.
       Is called by ADC dynamic pages declaratively and directly from PL/SQL.
-      
+
       This type wraps the action type which are delivered with ADC and which are callable by PL/SQL.
-      
+
       They are not called from this type directly but by means of type ADC which inherits from this type. This way, it is
       easy to extend ADC with custom functionality by adding these methods to type ADC and implement them in type body ADC.
-      
+
       If a new version of ADC ships, it is save to create this package and all system delivered action types are accessible
       through type ADC due to the inheritance without overwriting the custom extensions.
 
@@ -20,32 +20,40 @@ as object (
    */
 
   foo char(1 byte),
-     
+
   /**
-    Group: Public constants 
+    Group: Public constants
       Implemented as function to be available for SQL
-      
+
       C_HIDE - Status to hide a page item
       C_SHOW_ENABLE - Status to show and enable a page item
       C_SHOW_DISABLE - Status to show and disable a page item
+      C_DOCUMENT - 'DOCUMENT' as a constant
+      C_NO_FIRING_ITEM - Alias for C_DOCUMENT
    */
   static function C_HIDE
   return varchar2,
-  
+
   static function C_SHOW_ENABLE
   return varchar2,
-  
+
   static function C_SHOW_DISABLE
   return varchar2,
-  
-  
+
+  static function C_DOCUMENT
+  return varchar2,
+
+  static function C_NO_FIRING_ITEM
+  return varchar2,
+
+
   /**
     Group: Public methods
    */
   /**
     Procedure: add_javascript
-      Registers JavaScript code for execution. 
-      Is used if PL/SQL code that is part of the application logic needs to register JavaScript for execution. 
+      Registers JavaScript code for execution.
+      Is used if PL/SQL code that is part of the application logic needs to register JavaScript for execution.
       In that case, EXECUTE_JAVASCRIPT may not be as elegant to use.
 
     Parameters:
@@ -53,41 +61,55 @@ as object (
    */
   static procedure add_javascript(
     p_javascript in varchar2),
-    
-    
+
+
   /**
     Procedure: clear_page_state
       Method to clear the ADC page state for the actual page
    */
   static procedure clear_page_state,
-  
-  
+
+
   /**
-    Procedure: confirm_click
-      Registers a confirmation message prior to raising the click event.
+    Procedure: close_modal_dialog
+      Method to closes a modal dialog
+
+    Parameters:
+      p_action - Optional action to execute after closing the dialog
+      p_key - Optional key for event data
+      p_messsage - Optional message text for event data
+   */
+  static procedure close_modal_dialog(
+    p_action in varchar2 default null,
+    p_key in varchar2 default 'message',
+    p_message in varchar2 default null),
+
+  /**
+    Procedure: confirm_command
+      Registers a confirmation message prior to raising a command.
 
     Parameters:
       p_javascript - JavaScript to execute on page
    */
-  static procedure confirm_click(
-    p_button_id in varchar2,
+  static procedure confirm_command(
+    p_focus_item in varchar2,
+    p_command in varchar2,
     p_message_name in varchar2,
-    p_msg_args in msg_args default null,
-    p_dialog_title in varchar2 default null),
+    p_msg_args in msg_args default null),
 
 
-  /** 
+  /**
     Procedure: exclusive_or
       Method to assure that exactly one or at most one page item of a selection of page items contains a value.
       Is used to assert that at least one page item of a list of items contains a value. If an error is raised, this
       can be used to proceed with an exception handler within the ADC rule.
-                 
+
     Parameters:
       p_cpi_id - Page item ID that is selected to show the error message
       p_value_list - List of page item IDs to check
       p_message - Optional PIT message name to show if the method throws an error. Defaults to 'ASSERTION_FAILED'
       p_error_on_null - Optional flag to indicate whether an error has to be thrown if all page items are NULL. Defaults to C_FALSE
-      
+
     Errors:
       ASSERTION_FAILED_ERR - more than one page item is NOT NULL or all page items are NULL and P_ERROR_ON_NULL is set to C_TRUE
       MSG.<P_MESSAGE>_ERR - same as before, but here the custom message passed in as a parameter is thrown
@@ -95,46 +117,30 @@ as object (
   static procedure exclusive_or(
     p_cpi_id in varchar2,
     p_value_list in varchar2,
-    p_message in varchar2 default 'ASSERTION_FAILED',
-    p_error_on_null in boolean default true),
+    p_message in varchar2 default null,
+    p_error_on_null in varchar2 default 1),
 
 
-  /** Function: exclusive_or
-        Function overload. Is used to be able to utilize EXCLUSIVE_OR within an ADC rule condition (used in SQL)
-                
-    Parameters: 
-      p_value_list - colon-separated list of page item IDs to check
-      
-    Returns:
-    - adc_util.C_TRUE if rule is satisfied
-    - adc_util.C_FALSE if rule is not satisfied
-    - NULL if all page item values are null
-   */
-  static function exclusive_or(
-    p_value_list in varchar2)
-    return varchar2,
-    
-    
   /**
     Function: firing_item_has_class
       Method returns adc_util.C_TRUE, if the firing item has class <p_class>.
-      
-      Is used to bind an observer to more than one item based on a CSS class attached to a 
+
+      Is used to bind an observer to more than one item based on a CSS class attached to a
       group of page items. This method allows to detect whether the actual firing item is part
       of that group. This method is used within technical conditions.
    */
   static function firing_item_has_class(
     p_class in varchar2)
     return varchar2,
-    
-  
+
+
   /**
     Function: get_date
       Retrieves the actual item value from the page state
-      
+
     Parameters:
       p_cpi_id - Page item ID that is selected to show the error message
-      
+
     Returns:
       Actual value from the page state
    */
@@ -143,7 +149,7 @@ as object (
     return varchar2,
 
 
-  /** 
+  /**
     Function: get_event
       Method to retrieve the name of the event that has caused ADC to execute.
 
@@ -157,7 +163,7 @@ as object (
     return varchar2,
 
 
-  /** 
+  /**
     Function: get_event_data
       Is called to retrieve additional event data information such as returned data from a modal dialog
 
@@ -190,42 +196,27 @@ as object (
    */
   static function get_firing_item
     return varchar2,
-    
-  
-  /**
-    Function: get_flag
-      Retrieves the actual item value from the page state as instance of PIT_UTIL.FLAG_TYPE
-      
-    Parameters:
-      p_cpi_id - Page item ID that is selected to show the error message
-      
-    Returns:
-      Actual value from the page state
-   */
-  static function get_flag(
-    p_cpi_id in varchar2)
-    return boolean,
-    
-  
+
+
   /**
     Function: get_number
       Retrieves the actual item value from the page state
-      
+
     Parameters:
       p_cpi_id - Page item ID that is selected to show the error message
-      
+
     Returns:
       Actual value from the page state
    */
   static function get_number(
     p_cpi_id in varchar2)
     return varchar2,
-    
-  
-  /** 
+
+
+  /**
     Procedure: get_report_selection
       Registers an event handler on a region to report if the selection of the region changes
-      
+
     Parameters:
       p_region_id - ID of the region to observe
       p_page_item - Optional page item to store the selected node id at. If NULL, the selected node is reported
@@ -238,15 +229,15 @@ as object (
     p_region_id in varchar2,
     p_page_item in varchar2 default null,
     p_ordinal_nr in binary_integer default null),
-    
-  
+
+
   /**
     Function: get_string
       Retrieves the actual item value from the page state
-      
+
     Parameters:
       p_cpi_id - Page item ID that is selected to show the error message
-      
+
     Returns:
       Actual value from the page state
    */
@@ -254,11 +245,11 @@ as object (
     p_cpi_id in varchar2)
     return varchar2,
 
-  
-  /** 
+
+  /**
     Procedure: handle_bulk_errors
       Method to encapsulate PIT collection mode error treatment
-      
+
       Is used to retrieve the collection of messages collected during validation of a use case in PIT collect mode.
       The method retrieves the messages and maps the error codes to page items passed in via <P_MAPPING>.
       If found, it shows the exception inline with field and notification to those items, otherwise it shows the
@@ -266,8 +257,8 @@ as object (
       Supports #LABEL# replacement, page item name may be passed in with or without page prefix.
       Similar to UTL_APEX.HANDLE_BULK_ERRORS, but uses ADC to show the messages dynamically as opposed to UTL_APEX
       that encapsulates the messages in the validation life cycle step of APEX.
-                 
-     Parameter: 
+
+     Parameter:
        p_mapping - CHAR_TABLE instance with error code - page item names couples, according to DECODE function
        p_filter_list - Optional list of items to filter the message collection. If NOT NULL, it reduces the
                        error output to those items which are both on the p_mapping list and the p_filter_list.
@@ -280,35 +271,35 @@ as object (
   static procedure handle_bulk_errors(
     p_mapping in char_table default null,
     p_filter_list in varchar2 default null),
-    
-    
-  /** 
+
+
+  /**
     Procedure: initialize_form_region
       Method to initialize a form region with data
       Is used to dynamically initialize the values of a form region.
       It requires
-      
+
       - An ID for the form region, as it is possible to have more than one form region on a page
       - At least one page item that is flagged as the primary key column
       - Flag EDITABLE of the form region set to true
-                
+
     Parameter:
       p_static_id - ID of the form region to initialize
    */
   static procedure initialize_form_region(
     p_static_id in varchar2),
-    
 
-  /** 
+
+  /**
     Procedure: not_null
       Method to assure that at least on page item of a list of page items contains a value.
       Is used to make sure that at least one page item of a list of page items contains a value.
-                 
+
     Parameters:
       p_cpi_id - Page item ID that is selected to show the error message
       p_value_list - List of page item IDs to check
       p_message - Optional PIT message name to show if the method throws an error
-      
+
     Errors:
       msg.ASSERTION_FAILED_ERR - if all page item values are NULL
       <P_MESSAGE>_ERR - if all page item values are NULL and <P_MESSAGE> is set
@@ -319,13 +310,13 @@ as object (
     p_message in varchar2 default 'ASSERTION_FAILED'),
 
 
-  /** 
+  /**
     Function: not_null
       Overload as function. Is used to be able to utilize NOT_NULL within an ADC rule condition (used in SQL)
-                
+
     Parameters:
       p_value_list - List of page item IDs to check
-      
+
     Returns:
       - <adc_util.C_TRUE> if rule is satisfied
       - <adc_util.C_FALSE> if rule is not satisfied
@@ -334,8 +325,8 @@ as object (
   static function not_null(
     p_value_list in varchar2)
     return varchar2,
-    
-  
+
+
   /**
     Procedure: register_additional_item
       Register the item passed in as an additional page item, meaning that it reports
@@ -343,26 +334,26 @@ as object (
       on this item.
       Is used to make sure that item values are present in the page state which are
       required for computations but which don't have rules attached to them.
-  
+
     Parameter:
       p_cpi_id - Item to be added
    */
   static procedure register_additional_item(
     p_cpi_id in varchar2),
-    
-    
-  /** 
+
+
+  /**
     Procedure: remember_page_state
       Persists the value of the actually visible or explicitly requested input fields for later comparison.
-      
+
       Is used to persist the actual page status of selected page items in an ADC internal MAP.
       After having persited the status, everal action types react if they detect changes
       between the persisted and actual page state.
-      
+
       In contrast to the built in option of APEX, this method can be called at any time and will
       persist the actual status for later comparison. This is useful in dynamic forms if the content
       of the form is changed by ADC.
-   
+
     Parameters:
       p_page_items - Optional JSON array containing a list of page item IDs that are to be persisted
       p_message - Message text to show if there are unsaved changes
@@ -371,8 +362,8 @@ as object (
   static procedure remember_page_state(
     p_cpi_id in varchar2 default null,
     p_page_items in varchar2 default null),
-    
-    
+
+
   /**
     Procedure: remove_all_errors
       Method to remove all errors from the actual page.
@@ -380,31 +371,55 @@ as object (
   static procedure remove_all_errors,
 
 
-  /** 
+  /**
     Procedure: refresh_item
       Updates an element and sets the session state.
-      
+
       Is used to refresh a page item. In addition to the refresh methods, this method allows
       to set a page item to a defined value according to P_ITEM_VAL after refresh.
       Is usable for page items and refreshable regions
-   
+
     Parameters:
       p_cpi_id - Page item to be updated
       p_item_value - Value of the element in the following format:
-                     - constant in quotation marks or 
-                     - JavaScript expression, which is calculated at runtime or 
+                     - constant in quotation marks or
+                     - JavaScript expression, which is calculated at runtime or
                      - NULL In this case the value of the session state is used (this can be calculated in advance)
+      p_set_focus - Optional flag to indicate whether to focus the page item
+      p_prevent_change - Optional flag to indicate whether to prevent a change event from happening
    */
   static procedure refresh_item(
+    p_cpi_id in varchar2,
+    p_item_value in varchar2 default null,
+    p_set_focus in varchar2 default 0,
+    p_prevent_change in varchar2 default 0),
+
+
+  /**
+    Procedure: refresh_and_set_item
+      Updates an element and sets the session state.
+
+      Is used to refresh a page item. In addition to the refresh methods, this method allows
+      to set a page item to a defined value according to P_ITEM_VAL after refresh.
+      Is usable for page items and refreshable regions
+
+    Parameters:
+      p_cpi_id - Page item to be updated
+      p_item_value - Value of the element in the following format:
+                     - constant in quotation marks or
+                     - JavaScript expression, which is calculated at runtime or
+                     - NULL In this case the value of the session state is used (this can be calculated in advance)
+   */
+  static procedure refresh_and_set_item(
     p_cpi_id in varchar2,
     p_item_value in varchar2 default null),
 
 
-  /** 
+  /**
     Procedure: register_error
-      Method to register an error. Is called to register an error onto the error stack. 
+      Method to register an error. Is called to register an error onto the error stack.
       May be called from PL/SQL directly or implicitly as the consequence of an internal error.
-                 
+
     Parameters:
       p_cpi_id - ID of the page item that is referenced by the error (or DOCUMENT)
       p_error_msg - Error message to register
@@ -418,9 +433,9 @@ as object (
 
   /**
     Procedure: register_error
-      Overload to allow for PIT messages to be used. Is called to register an error onto the error stack. 
+      Overload to allow for PIT messages to be used. Is called to register an error onto the error stack.
       May be called from PL/SQL directly or implicitly as the consequence of an internal error.
-                 
+
     Parameters:
       p_cpi_id - ID of the page item that is referenced by the error (or DOCUMENT)
       p_message_name - PIT message name to register
@@ -432,11 +447,11 @@ as object (
     p_msg_args in msg_args default null),
 
 
-  /** 
+  /**
     Procedure: select_region_entry
       Selects a selectable in a region such as in an interactive grid, interactive report, classic report or tree region.
       Is used to select a selectable entry in a region that supports selection. As of now, interactive grid and tree are supported.
-                
+
     Parameters:
       p_region_id - ID of the region you want to set a selectable at
       p_entry_id - ID of the entry to select
@@ -448,10 +463,10 @@ as object (
     p_notify in varchar2 default 1),
 
 
-  /** 
+  /**
     Procedure: select_tab
       Selects a tab of a tabular region.
-                
+
     Parameters:
       p_region_id - ID of the tabular region that contains the tab
       p_tab_id - ID of the tab to select
@@ -459,12 +474,12 @@ as object (
   static procedure select_tab(
     p_region_id in varchar2,
     p_tab_id in varchar2),
-    
 
-  /** 
+
+  /**
     Procedure: set_focus
       Sets the focus to the element defined in <p_cpi_id>
-                 
+
     Parameter:
       p_cpi_id - element to focus on
    */
@@ -472,45 +487,50 @@ as object (
     p_cpi_id in varchar2),
 
 
-  /** 
+  /**
     Procedure: set_item
       Sets the referenced page element to the value passed as parameter.
       Is used to set the value of a page item in session state. Overloaded versions to cater for String, Number and Date values.
-      
+
       Parameter <p_allow_recursion> is used to surpress recursive execution of rules based on the page item.
       Default is to not surpress recursion, but in difficult rule situations, it may be necessary to set it to FALSE
-   
+
     Parameters:
       p_cpi_id - Optional element ID to be set, defaults to 'DOCUMENT' if <p_jquery_selector> is set
       p_item_value - Value of the element in quotation marks or function that returns value. Overloaded versions for String, Number or Date
       p_jquery_selector - Optional jQuery expression to edit multiple elements. (Defaults to NULL, if <p_cpi_id> is set)
       p_allow_recursion - Optional flag indicating whether a Change Event should be triggered. (Defaults to adc_util.C_TRUE, event is triggered)
+      p_visual_state - Optional indicator for the visual state. Is evaluated only if the new value is NULL
+                       or the visual state is HIDE. In these cases any error for this item is removed from the page.
    */
   static procedure set_item(
     p_cpi_id in varchar2 default 'DOCUMENT',
     p_item_value in varchar2 default null,
     p_jquery_selector in varchar2 default null,
-    p_allow_recursion in varchar2 default 1),
-    
-  
+    p_allow_recursion in varchar2 default 1,
+    p_visual_state in varchar2 default null),
+
+
   static procedure set_number_item(
     p_cpi_id in varchar2 default 'DOCUMENT',
     p_item_value in number,
     p_jquery_selector in varchar2 default null,
-    p_allow_recursion in varchar2 default 1),
-    
-    
+    p_allow_recursion in varchar2 default 1,
+    p_visual_state in varchar2 default null),
+
+
   static procedure set_date_item(
     p_cpi_id in varchar2 default 'DOCUMENT',
     p_item_value in date,
     p_jquery_selector in varchar2 default null,
-    p_allow_recursion in varchar2 default 1),
- 
+    p_allow_recursion in varchar2 default 1,
+    p_visual_state in varchar2 default null),
 
-  /** 
+
+  /**
     Procedure: set_item_label
       Sets a field label to the transferred value
-                 
+
     Parameters:
       p_cpi_id - Optional element ID to be set (defaults to 'DOCUMENT', if <p_jquery_selector> is set)
       p_item_label - Label of the element in quotation marks or function that returns value.
@@ -522,19 +542,19 @@ as object (
     p_jquery_selector in varchar2 default null),
 
 
-  /** 
+  /**
     Procedure: set_items_from_stmt
       static procedure to set the session state, based on an SQL statement.
       Is used to set one or more item values based on a SQL query.
       Two operation modes:
-      
+
       - P_CPI_ID is set to a page item ID
         In this case the SQL query must return a scalar value
       - P_CPI_ID ist DOCUMENT oder NULL
         In this mode the query is allowed to return more than one column but one row only.
-        The column names must match page item column source names. 
+        The column names must match page item column source names.
         If a match is found, the respective element is set to the column value
-   
+
     Parameters:
       p_cpi_id - Optional ID of the page item. If NULL, the item ID is taken from the column names of <p_stmt>
       p_statement - SELECT statement to retrieve the new page item value or values
@@ -544,14 +564,14 @@ as object (
     p_statement in varchar2),
 
 
-  /** 
+  /**
     Procedure: set_items_from_cursor
       static procedure to set the session state, based on an SQL statement.
-      
+
       The query is allowed to return more than one column but one row only.
-      The column names must match page item column source names. 
+      The column names must match page item column source names.
       If a match is found, the respective element is set to the column value
-   
+
     Parameters:
       p_cursor - Opened cursor with the respective column names and values
    */
@@ -559,10 +579,10 @@ as object (
     p_cursor in out nocopy sys_refcursor),
 
 
-  /** 
+  /**
     Procedure: set_mandatory
       Makes a page element a mandatory element and activates mandatory field validation.
-                 
+
     Parameters:
       p_cpi_id - Optional element ID to be set (defaults to 'DOCUMENT', if <p_jquery_selector> is set)
       p_msg_text - Optional message text in quotation marks or function that returns a value (default NULL, then standard text)
@@ -574,40 +594,49 @@ as object (
     p_jquery_selector in varchar2 default null),
 
 
-  /** 
+  /**
     Procedure: set_optional
       Makes a page element an optional element and suspends mandatory field validation.
-                 
+
     Parameters:
       p_cpi_id - Optional element ID to be set (defaults to 'DOCUMENT', if <p_jquery_selector> is set)
       p_jquery_selector - Optional jQuery expression to edit multiple elements. (Defaults to NULL, if <p_cpi_id> is set)
-      p_visual_state - Optional state indicator for optional fields. If NULL, the actual visual state does not change
    */
   static procedure set_optional(
     p_cpi_id in varchar2 default 'DOCUMENT',
-    p_jquery_selector in varchar2 default null,
-    p_visual_state in varchar2 default null),
+    p_jquery_selector in varchar2 default null),
+
+
+  /**
+    Procedure: set_modal_dialog_title
+      Sets the title of a modal dialog.
+
+    Parameters:
+      p_cpi_id - Optional element ID to be set (defaults to 'DOCUMENT'
+      p_title - new title of the modal dialog
+   */
+  static procedure set_modal_dialog_title(
+    p_cpi_id in varchar2 default 'DOCUMENT',
+    p_title in varchar2),
+
+
   /**
     Procedure: set_region_content
       Sets the HTML content of a page region
 
     Parameters:
       p_region_id - ID of the page region
-      p_header - Optional header for the region
       p_html_code - HTML code of the region. Must not be escaped, this will be done within this method
-      p_css_class - Optional header accent class
    */
   static procedure set_region_content(
     p_region_id in varchar2,
-    p_header in varchar2 default null,
-    p_html_code in varchar2 default null,
-    p_css_class in varchar2 default null),
+    p_html_code in varchar2),
 
 
-  /** 
+  /**
     Procedure: set_visual_state
       Controls the visibility of a page item
-   
+
     Parameters:
       p_cpi_id - Optional element ID to be set (defaults to 'DOCUMENT', if <p_jquery_selector> is set)
       p_visual_state - One of the visual state constants <C_SHOW_ENABLE>, <SHOW_DISABLE>, <HIDE>
@@ -619,10 +648,10 @@ as object (
     p_jquery_selector in varchar2 default null),
 
 
-  /** 
+  /**
     Procedure: show_hide_item
       Shows the element(s) from P_JQUERY_SEL_SHOW and hides the element(s) from P_JQUERY_SEL_HIDE
-   
+
     Parameters:
       p_jquery_sel_show - jQuery expression to display multiple elements
       p_jquery_sel_hide - jQuery expression to hide multiple elements
@@ -632,13 +661,16 @@ as object (
     p_jquery_sel_hide in varchar2),
 
 
-  /** 
+  /**
     Procedure: show_notification
       Shows a success or failure dialog
-   
+
     Parameters:
+      p_message_type - Type of the message. Supported types: ALERT|SUCCESS|INFO|WARNING
       p_message_name - Name of the message. Must be an existing PIT message name
       p_msg_args - Optional message arguments
+      p_title - Optional Title of the message box. Defaults to a standard value based on P_MESSAGE_TYPE
+      p_focus_item - Optional name of the page item to focus after the message is closed
    */
   static procedure show_notification(
     p_message_type in varchar2,
@@ -646,12 +678,12 @@ as object (
     p_msg_args in msg_args default null,
     p_title in varchar2 default null,
     p_focus_item in varchar2 default null),
-    
-    
-  /** 
+
+
+  /**
     Procedure: submit_page
                  Method to submit the actual page. Allows ADC to determine on whether the actual page has to be processed or not
-   
+
     Parameter:
       p_submit_type - Optional flag to indicate whether all validations should be performed. Defaults to VALIDATE_AND_SUBMIT.
                       Allowed values are taken from ADC_PARAM_LOV_SUBMIT_TYPE
@@ -664,7 +696,7 @@ as object (
     p_msg_name in varchar2 default null),
 
 
-  /** 
+  /**
     Procedure: stop
       Method to stop further execution of the active rule and report an internal and official message.
    */
@@ -676,7 +708,7 @@ as object (
     p_affected_ids in msg_params default null),
 
 
-  /** 
+  /**
     Procedure: stop_rule
       Method to stop further execution of the active rule. Is used to stop the execution of an ADC rule if an error occured.
    */
