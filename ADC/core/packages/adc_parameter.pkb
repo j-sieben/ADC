@@ -363,7 +363,7 @@ end;~';
       into l_pms_name
       from pit_message_v
      where pms_name = replace(upper(p_value), 'MSG.');
-    l_message := pit.get_message_text(l_pms_name);
+    l_message := pit.get_message_text(l_pms_name, msg_args());
   end validate_is_pit_message;
 
 
