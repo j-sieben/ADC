@@ -630,7 +630,9 @@ as object (
    */
   static procedure set_region_content(
     p_region_id in varchar2,
-    p_html_code in varchar2),
+    p_header in varchar2 default null,
+    p_html_code in varchar2 default null,
+    p_css_class in varchar2 default null),
 
 
   /**
