@@ -36,6 +36,29 @@ as
   C_ITEM_STATUS constant adc_action_param_types.capt_id%type := 'ITEM_STATUS';
   C_SUBMIT_TYPE constant adc_action_param_types.capt_id%type := 'SUBMIT_TYPE';
   C_SWITCH constant adc_action_param_types.capt_id%type := 'SWITCH';
+  
+  
+  C_ORA_TYPE_VARCHAR2 constant binary_integer := 1;
+  C_ORA_TYPE_NUMBER constant binary_integer := 2;
+  C_ORA_TYPE_LONG constant binary_integer := 8;
+  C_ORA_TYPE_DATE constant binary_integer := 12;
+  C_ORA_TYPE_TIMESTAMP constant binary_integer := 180;
+  C_ORA_TYPE_TIMESTAMP_TZ constant binary_integer := 181;
+  C_ORA_TYPE_TIMESTAMP_LTZ constant binary_integer := 231;
+  C_ORA_TYPE_INTERVAL_YM constant binary_integer := 182;
+  C_ORA_TYPE_INTERVAL_DS constant binary_integer := 183;
+  C_ORA_TYPE_RAW constant binary_integer := 23;
+  C_ORA_TYPE_LONG_RAW constant binary_integer := 24;
+  C_ORA_TYPE_ROWID constant binary_integer := 69;
+  C_ORA_TYPE_UROWID constant binary_integer := 208;
+  C_ORA_TYPE_CLOB constant binary_integer := 112;
+  C_ORA_TYPE_BLOB constant binary_integer := 113;
+  C_ORA_TYPE_BFILE constant binary_integer := 114;
+  C_ORA_TYPE_UDT constant binary_integer := 109;
+    
+  type number_table is table of number;
+  type oracle_data_types is table of utl_apex.ora_name_type index by binary_integer;
+  g_data_type_mapping oracle_data_types;
 
   /**
     Group: Helper Methods
@@ -72,6 +95,23 @@ as
       pit.leave_detailed;
       pit.raise_error(msg.ADC_PARAM_VALIDATION_FAILED, p_error_code => msg.ADC_INVALID_SEQUENCE);
   end validate_is_simple_sql_name;
+  
+  
+  /**
+    Procedure: close_cursor
+      Method securely closes a DBMS_SQL-cursor if it is yet open
+    
+    Parameter:
+      p_ctx - ID of the cursor to close
+   */
+  procedure close_cursor(
+    p_ctx in out nocopy binary_integer)
+  as
+  begin
+    if dbms_sql.is_open(p_ctx) then
+      dbms_sql.close_cursor(p_ctx);
+    end if;
+  end close_cursor;
 
 
   /**
@@ -80,31 +120,63 @@ as
 
     Parameter:
       p_stmt - Statement to parse.
+      p_column_count - Optional column count check
+      p_column_type_check - Number table with a list of number paiers
+                            in the logical form <column_index>, <column_data_type>
 
-    Errors:
-      SQL_ERROR - if parsing fails.
+    Throws:
+      ADC_INVALID_SQL - if parsing fails
+      ADC_INVALID_COLUMN_COUNT - If a column count check was ordered and failed
+      ADC_INVALID_COLUMN_TYPE - If a list of column indexes and data types was provided and the data type does not match
    */
   procedure parse(
-    p_stmt in varchar2)
+    p_stmt in varchar2,
+    p_column_count in binary_integer default null,
+    p_column_type_check in number_table default null)
   as
     l_ctx binary_integer;
+    l_column_count binary_integer;
+    l_columns dbms_sql.desc_tab2;
+    l_column_type binary_integer;
+    l_column_idx binary_integer;
   begin
     pit.enter_detailed('parse',
       p_params => msg_params(msg_param('p_stmt', p_stmt)));
 
     l_ctx := dbms_sql.open_cursor;
     dbms_sql.parse(l_ctx, p_stmt, dbms_sql.NATIVE);
-    dbms_sql.close_cursor(l_ctx);
-
+    dbms_sql.describe_columns2(l_ctx, l_column_count, l_columns);
+    close_cursor(l_ctx);
+    
+    if p_column_count is not null then
+      pit.assert(
+        p_condition => p_column_count = l_column_count, 
+        p_message_name => msg.ADC_INVALID_COLUMN_COUNT, 
+        p_msg_args => msg_args(to_char(p_column_count), to_char(l_column_count)));
+    end if;
+    
+    if p_column_type_check is not null then
+      for i in 1 .. p_column_type_check.count loop
+        if mod(i, 2) > 0 then
+          l_column_idx := p_column_type_check(i);
+          l_column_type := l_columns(l_column_idx).col_type;
+          pit.assert(
+            p_condition => l_column_type = p_column_type_check(i+1), 
+            p_message_name => msg.ADC_INVALID_COLUMN_TYPE,
+            p_msg_args => msg_args(to_char(l_column_idx), g_data_type_mapping(i+1), g_data_type_mapping(l_column_type)));
+        end if;
+      end loop;
+    end if;
+    
     pit.leave_detailed;
   exception
     when msg.ORA_SQL_ACCESS_DENIED_ERR then
-      dbms_sql.close_cursor(l_ctx);
+      close_cursor(l_ctx);
       pit.leave_detailed;
     when others then
-      dbms_sql.close_cursor(l_ctx);
+      close_cursor(l_ctx);
       pit.leave_detailed;
-      raise;
+      pit.raise_error(msg.ADC_INVALID_SQL);
   end parse;
 
 
@@ -235,7 +307,7 @@ end;~';
       p_params => msg_params(msg_param('p_value', p_value)));
       
     open l_cur for
-      select null
+      select ''
         from adc_apex_actions
        where caa_name = p_value
           or caa_id = p_value;
@@ -779,6 +851,33 @@ end;~';
     when others then
       return p_function;
   end execute_function;
+  
+  
+  /**
+    Procedure: initialize
+   */
+  procedure initialize
+  as
+  begin
+    g_data_type_mapping := oracle_data_types(
+      C_ORA_TYPE_VARCHAR2 => 'VARCHAR2',
+      C_ORA_TYPE_NUMBER => 'NUMBER',
+      C_ORA_TYPE_LONG => 'LONG',
+      C_ORA_TYPE_DATE => 'DATE',
+      C_ORA_TYPE_TIMESTAMP => 'TIMESTAMP',
+      C_ORA_TYPE_TIMESTAMP_TZ => 'TIMESTAMP WITH TIME ZONE',
+      C_ORA_TYPE_TIMESTAMP_LTZ => 'TIMESTAMP WITH LOCAL TIME ZONE',
+      C_ORA_TYPE_INTERVAL_YM => 'INTERVAL YEAR TO MONTH',
+      C_ORA_TYPE_INTERVAL_DS => 'INTERVAL DAY TO SECOND',
+      C_ORA_TYPE_RAW => 'RAW',
+      C_ORA_TYPE_LONG_RAW => 'LONG RAW',
+      C_ORA_TYPE_ROWID => 'ROWID',
+      C_ORA_TYPE_UROWID => 'UROWID',
+      C_ORA_TYPE_CLOB => 'CLOB',
+      C_ORA_TYPE_BLOB => 'BLOB',
+      C_ORA_TYPE_BFILE => 'BFILE',
+      C_ORA_TYPE_UDT => 'UDT');
+  end initialize;
 
 
   /**
@@ -789,33 +888,26 @@ end;~';
       See <ADC_PARAMETER.validate_param_lov>
    */
   procedure validate_param_lov(
-    p_capt_id in adc_action_param_types.capt_id%type,
-    p_capt_capvt_id in adc_action_param_types.capt_capvt_id%type)
+    p_capt_select_list_query in adc_action_param_types.capt_select_list_query%type)
   as
-    C_SELECT_LIST constant utl_apex.ora_name_type := 'SELECT_LIST';
-    C_VIEW_PATTERN constant utl_apex.ora_name_type := 'ADC_PARAM_LOV_';
-    C_COLUMN_LIST constant char_table := char_table('D', 'R', 'CRG_ID');
-
-    l_view_exists number;
-    l_column_count number;
   begin
     pit.enter_optional(
       p_params => msg_params(
-                    msg_param('p_capt_id', p_capt_id),
-                    msg_param('p_sp_capt_capvt_idpt_id', p_capt_capvt_id)));
+                    msg_param('p_capt_select_list_query', p_capt_select_list_query)));
 
-    if p_capt_capvt_id = C_SELECT_LIST then
-      select count(distinct table_name) view_exists, count(*) column_count
-        into l_view_exists, l_column_count
-        from user_tab_columns
-       where table_name = C_VIEW_PATTERN || p_capt_id
-         and column_name member of C_COLUMN_LIST;
+    pit.assert_not_null(p_capt_select_list_query, msg.ADC_PARAM_MISSING, p_error_code => 'CAPVT_VIEW_STATEMENT_MISSING');
 
-      pit.assert(l_view_exists = 1, msg.ADC_PARAM_LOV_MISSING);
-      pit.assert(l_column_count = 3, msg.ADC_PARAM_LOV_INCORRECT);
-    end if;
+    parse(
+      p_stmt => p_capt_select_list_query, 
+      p_column_count => 3,
+      p_column_type_check => number_table(
+                               1, C_ORA_TYPE_VARCHAR2, 
+                               3, C_ORA_TYPE_NUMBER));
 
     pit.leave_optional;
+  exception
+    when msg.ADC_INVALID_SQL_ERR then
+      pit.raise_error(msg.ADC_INVALID_LOV_SQL);
   end validate_param_lov;
   
   
@@ -1090,5 +1182,7 @@ end;~';
     return l_value;
   end evaluate_parameter;
 
+begin
+  initialize;
 end adc_parameter;
 /

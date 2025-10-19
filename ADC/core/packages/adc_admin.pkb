@@ -2481,8 +2481,8 @@ as
     pit.assert_not_null(p_row.capt_name, msg.ADC_PARAM_MISSING, p_error_code => 'CAPT_NAME_MISSING');
     pit.assert_not_null(p_row.capt_capvt_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAPT_CAPVT_ID_MISSING');
 
-    if p_row.capt_capvt_id = 'SELECT_LIST' then
-      pit.assert_not_null(p_row.capt_select_list_query, msg.ADC_PARAM_MISSING, p_error_code => 'CAPVT_VIEW_STATEMENT_MISSING');
+    if p_row.capt_capvt_id in ('SELECT_LIST', 'CONTROL_LIST', 'STATIC_LIST') then
+      adc_parameter.validate_param_lov(p_row.capt_select_list_query);
     end if;
 
     pit.leave_mandatory;

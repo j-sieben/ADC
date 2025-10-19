@@ -1,6 +1,6 @@
 create or replace package adc_parameter 
   authid definer
-  accessible by (package adc_internal, package adc_admin, package adca_ui_designer)
+--  accessible by (package adc_internal, package adc_admin, package adca_ui_designer)
 as
 
   /** 
@@ -19,31 +19,26 @@ as
    */
   /**
     Procedure: validate_param_lov
-      Method checks that a LOV view exists.
-
-      For an action parameter of type SELECT_LIST, a LOV view is required to calculate
-      the actual display and return values. It must also provide a column with the
-      CRG_ID the values relate to to allow for filtering.
-      This method checks that a LOV view with the correct column structure
+      For an action parameter of visual type SELECT_LIST, STATIC_LIST or COMBO_BOX, 
+      a select statement is required to calculate the actual display and return values. 
+      It must also provide a column with the CRG_ID the values relate to to allow for filtering.
+      This method checks that a valid select statement with the correct column structure
       that is able to deliver LOV data exists.
-
-      This view must adhere to the naming convention ADC_PARAM_LOV_<PARAMETER_TYPE>
-
-    Example:
-      For a parameter called PAGE_ITEM with parameter type SELECT_LIST, a view called
-      ADC_PARAM_LOV_PAGE_ITEM must exist with a D, R and CRG_ID column.
+      Expected structure of the statement:
+      Display column, varchar2
+      Return value column,
+      CRG_ID, number
 
     Parameters:
-      p_capt_id - Parameter Type
-      p_capt_capvt_id - Item type
+      p_capt_select_list_query - select statement
 
-    Errors:
-      msg.ADC_PARAM_LOV_MISSING - if LOV view is required but missing
-      msg.ADC_PARAM_LOV_INCORRECT - if required LOV view exists but with the wrong structure
+    Throws:
+      ADC_INVALID_LOV_SQL - if parsing fails
+      ADC_INVALID_COLUMN_COUNT - If the lov query does not contain exactly three columns
+      ADC_INVALID_COLUMN_TYPE - If the third column is not of type NUMBER
    */
   procedure validate_param_lov(
-    p_capt_id in adc_action_param_types.capt_id%type,
-    p_capt_capvt_id in adc_action_param_types.capt_capvt_id%type);
+    p_capt_select_list_query in adc_action_param_types.capt_select_list_query%type);
     
     
   /**
