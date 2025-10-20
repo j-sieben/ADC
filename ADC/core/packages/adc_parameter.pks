@@ -1,6 +1,6 @@
 create or replace package adc_parameter 
   authid definer
---  accessible by (package adc_internal, package adc_admin, package adca_ui_designer)
+  accessible by (package adc_internal, package adc_admin, package adca_ui_designer)
 as
 
   /** 

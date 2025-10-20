@@ -170,7 +170,7 @@ as
     
     pit.leave_detailed;
   exception
-    when msg.ORA_SQL_ACCESS_DENIED_ERR then
+    when msg.ORA_SQL_ACCESS_DENIED_ERR or NO_DATA_FOUND then
       close_cursor(l_ctx);
       pit.leave_detailed;
     when others then
