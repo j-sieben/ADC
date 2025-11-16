@@ -42,7 +42,6 @@ as
   C_ITEM_CRU_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRU_ID';
   C_ITEM_CRA_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRA_ID';
   C_ITEM_CAA_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CAA_ID';
-  C_ITEM_DIAGRAM_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'DIAGRAM_ID';
   C_ITEM_CRA_CRU_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRA_CRU_ID';
   C_ITEM_CRA_CAT_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRA_CAT_ID';
   C_ITEM_CRA_CPI_ID constant adc_util.ora_name_type := C_PAGE_PREFIX || 'CRA_CPI_ID';
@@ -63,7 +62,6 @@ as
   C_REGION_CRU_FORM constant adc_util.ora_name_type := C_REGION_PREFIX || 'CRU_FORM';
   C_REGION_CRA_FORM constant adc_util.ora_name_type := C_REGION_PREFIX || 'CRA_FORM';
   C_REGION_CAA_FORM constant adc_util.ora_name_type := C_REGION_PREFIX || 'CAA_FORM';
-  C_REGION_FLS_FORM constant adc_util.ora_name_type := C_REGION_PREFIX || 'FLS_FORM';
   C_CENTRAL_TAB_REGION constant adc_util.ora_name_type := C_REGION_PREFIX || 'CENTRAL';
   C_TAB_RULES constant adc_util.ora_name_type := 'SR_' || C_REGION_PREFIX || 'RULES';
 
@@ -238,8 +236,8 @@ as
       p_environment.cru_row.cru_sort_seq := adc.get_number('cru_sort_seq');
       p_environment.cru_row.cru_name := adc.get_string('cru_name');
       p_environment.cru_row.cru_condition := adc.get_string('cru_condition');
-      p_environment.cru_row.cru_fire_on_page_load := coalesce(adc_util.bool_to_flag(adc.get_flag('cru_fire_on_page_load')), adc_util.C_FALSE);
-      p_environment.cru_row.cru_active := coalesce(adc_util.bool_to_flag(adc.get_flag('cru_active')), adc_util.C_TRUE);
+      p_environment.cru_row.cru_fire_on_page_load := coalesce(adc.get_string('cru_fire_on_page_load'), adc_util.C_FALSE);
+      p_environment.cru_row.cru_active := coalesce(adc.get_string('cru_active'), adc_util.C_TRUE);
     end if;
 
     pit.leave_detailed;
@@ -254,7 +252,7 @@ as
     l_param_name_3 adc_util.ora_name_type;
   begin
     pit.enter_detailed('copy_rule_action');
-
+    
     if p_environment.cra_row.cra_id is null then
       p_environment.cra_row.cra_id := utl_apex.get_number('cra_id');
       p_environment.cra_row.cra_crg_id := coalesce(utl_apex.get_number('cra_crg_id'), p_environment.crg_id);
@@ -388,11 +386,12 @@ as
      */
     C_DATA_TEMPLATE constant adc_util.max_char :=
       '{"command":"#COMMAND#","targetMode":"#TARGET_MODE#","actionMode":"#ACTION_MODE#","id":"#NODE_ID#","additionalPageItems":#PAGE_ITEM_LIST#,"monitorChanges":#MONITOR_CHANGES#}';
-    C_ACTION_TEMPLATE constant adc_util.max_char := 'de.condes.plugin.adc.actions.executeCommand(#DATA#);';
-    C_CONFIRM_TEMPLATE constant adc_util.max_char := 'de.condes.plugin.adc.actions.confirmCommand("#CONFIRM_MESSAGE#", #DATA#);';
+    C_ACTION_TEMPLATE constant adc_util.max_char := 'de.condes.plugin.adc.actions.executeCommand(#DATA#, "#MODE#");';
+    C_CONFIRM_TEMPLATE constant adc_util.max_char := 'de.condes.plugin.adc.actions.confirmCommand("#CONFIRM_MESSAGE#", #DATA#, "#MODE#");';
     l_action adc_util.max_char;
     l_target_mode adc_util.ora_name_type;
     l_action_mode adc_util.ora_name_type;
+    l_process_mode adc_util.ora_name_type;
     l_node_id adc_util.ora_name_type;
     l_page_items adc_util.max_char := '[]';
     l_monitor_changes adc_util.ora_name_type;
@@ -409,9 +408,9 @@ as
     -- calculate page_item values, modes and id based on action type
     case p_action
       when C_ACTION_CREATE then
-        l_monitor_changes := 'true';
         l_page_items := get_form_items(p_row.amda_form_id);
         l_target_mode := p_row.amda_create_target_mode;
+        l_process_mode := 'A_SAVE';
         l_node_id := null;
       when C_ACTION_UPDATE then
         l_page_items := get_form_items(p_row.amda_form_id);
@@ -421,10 +420,11 @@ as
         l_template := C_CONFIRM_TEMPLATE;
         l_target_mode := p_row.amda_delete_target_mode;
         l_action_mode := p_row.amda_delete_mode;
+        l_process_mode := 'B_DELETE';
         l_node_id := p_row.amda_delete_value;
       when C_ACTION_CANCEL then
-        l_monitor_changes := 'true';
         l_target_mode := p_row.amda_cancel_target_mode;
+        l_process_mode := 'C_CANCEL';
         l_node_id := p_row.amda_cancel_value;
       else
         l_target_mode := p_row.amda_actual_mode;
@@ -441,6 +441,7 @@ as
                   '#MONITOR_CHANGES#', l_monitor_changes));
     l_action := adc_util.bulk_replace(l_template, adc_util.string_table(
                   '#DATA#', l_action,
+                  '#MODE#', l_process_mode),
                   '#CONFIRM_MESSAGE#', p_row.amda_delete_confirm_message));
 
     pit.leave_optional;
@@ -451,6 +452,12 @@ as
   /**
     Function: get_cra_sort_seq
       Calculates the next Rule Action sort sequence for a given Rule ID.
+      
+    Parameter:
+      p_cru_id - ID of the rule to calculate the CRA sort sequence for.
+      
+    Returns:
+      Sort sequence for a new rule action
    */
   function get_cra_sort_seq(
     p_cru_id in adc_rules.cru_id%type)
@@ -476,6 +483,12 @@ as
   /**
     Function: get_cru_sort_seq
       Calculates the next Rule sort sequence for a given Rule Group ID.
+      
+    Parameter:
+      p_crg_id - ID of the rule to calculate the CRU sort sequence for.
+      
+    Returns:
+      Sort sequence for a new rule
    */
   function get_cru_sort_seq(
     p_crg_id in adc_rule_groups.crg_id%type)
@@ -537,7 +550,7 @@ as
 
     Parameters:
       p_cat_id - Action type
-      p_param_index - Index of the parameter within the action type
+      p_cap_sort_seq - Index of the parameter within the action type
 
     Returns:
       Type of the parameter.
@@ -617,11 +630,6 @@ as
       l_cru_id := coalesce(adc.get_number(C_ITEM_CRU_ID), 0);
       p_environment.crg_changed := l_crg_id != coalesce(p_environment.crg_id, 0);
       p_environment.cru_changed := l_cru_id != coalesce(p_environment.cru_id, 0);
-
-      if p_environment.crg_changed then
-        -- Make sure that the rule group is based on actual application data
-        adc_admin.propagate_rule_change(p_environment.crg_id);
-      end if;
     else
       adc.set_item(
         p_cpi_id => C_ITEM_CRG_ID,
@@ -632,6 +640,9 @@ as
     end if;
 
     pit.leave_optional;
+  exception
+    when msg.PIT_BULK_ERROR_ERR then
+      adc.handle_bulk_errors(char_table());
   end set_crg_and_cru_id;
 
 
@@ -671,6 +682,7 @@ as
 
     -- Compare CRG_ID with session state. If changed, refresh rule report
     if p_environment.crg_changed then
+      -- control page
       adc.set_item(
         p_cpi_id => C_ITEM_CRG_ID,
         p_item_value => p_environment.crg_id);
@@ -766,11 +778,16 @@ as
        where coalesce(cra_id, 0) = coalesce(p_cra_id, 0)
          and cat_id = p_cat_id
        order by cap_sort_seq;
+
+    l_mandatory_message adc_util.max_char;
   begin
     pit.enter_optional('set_cra_param_settings',
       p_params => msg_params(
                     msg_param('p_cra_id', p_cra_id),
                     msg_param('p_cat_id', p_cat_id)));
+
+    -- Initialize
+    l_mandatory_message := pit.get_message_text(msg.ADC_ITEM_IS_MANDATORY);
 
     -- Hide all parameter regions
     adc.set_visual_state(
@@ -791,11 +808,7 @@ as
       if param.cap_mandatory = adc_util.C_TRUE then
         adc.set_mandatory(
            p_cpi_id => param.cap_page_item,
-           p_msg_text => replace(
-                           pit.get_message_text(
-                             p_message_name => msg.ADC_ITEM_IS_MANDATORY,
-                             p_msg_args => null), 
-                           '#LABEL#', param.capt_name));
+           p_msg_text => replace(l_mandatory_message, '#LABEL#', param.capt_name));
       else
         adc.set_optional(
           p_cpi_id => param.cap_page_item,
@@ -1414,13 +1427,15 @@ select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
             null;
         end case;
 
-        -- Transaction control, because the action is called via AJAX
         adc.show_notification(
           p_message_type => C_NOTIFICATION_SUCCESS,
-          p_message_name => msg.ADCA_CHANGES_SAVED);
+          p_message_name => msg.ADCA_CHANGES_SAVED,
+          p_focus_item => 'B13_SAVE');
         adc.set_item(
           p_cpi_id => C_ITEM_SELECTED_NODE,
           p_item_value => l_selected_id);
+
+        -- Transaction control, because the action is called via AJAX
         commit;
       when C_ACTION_DELETE then
         pit.raise_info(msg.ADCA_ACTION_REQUESTED, msg_args(C_ACTION_DELETE, p_environment.action_mode));
@@ -1550,6 +1565,8 @@ select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
         adc.refresh_item(
           p_cpi_id => C_REGION_RULES,
           p_item_value => enquote(p_environment.selected_node));
+        adc.refresh_item(
+          p_cpi_id => C_REGION_FINDINGS);
       when p_environment.cru_changed then
         if p_environment.firing_item = C_REGION_RULES then
           l_target_region := C_REGION_HIERARCHY;
@@ -1569,8 +1586,6 @@ select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
                         p_amda_actual_mode => p_environment.target_mode,
                         p_amda_actual_id => p_environment.action)
     loop
-      pit.assert_not_null(page_state.amda_actual_mode, p_msg_args => msg_args('Actual page mode'));
-
       maintain_dml_actions(page_state);
 
       case page_state.amda_actual_mode
@@ -1620,7 +1635,6 @@ select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
     g_form_item_list('R13_CAA_FORM') := '["P13_CAA_ACTION","P13_CAA_CAAI_LIST","P13_CAA_CAAT_ID","P13_CAA_CHOICES","P13_CAA_CONFIRM_MESSAGE_NAME","P13_CAA_CONTEXT_LABEL","P13_CAA_CRG_ID","P13_CAA_GET","P13_CAA_HREF","P13_CAA_ICON","P13_CAA_ICON_TYPE","P13_CAA_ID","P13_CAA_INITIALLY_DISABLED","P13_CAA_INITIALLY_HIDDEN","P13_CAA_ITEM_WRAP_CLASS","P13_CAA_LABEL","P13_CAA_LABEL_CLASSES","P13_CAA_LABEL_END_CLASSES","P13_CAA_LABEL_START_CLASSES","P13_CAA_NAME","P13_CAA_OFF_LABEL","P13_CAA_ON_LABEL","P13_CAA_SET","P13_CAA_SHORTCUT","P13_CAA_TITLE"]';
     g_form_item_list('R13_CRA_FORM') := '["P13_CRA_ACTIVE","P13_CRA_CAT_ID","P13_CRA_COMMENT","P13_CRA_CPI_ID","P13_CRA_CRG_ID","P13_CRA_CRU_ID","P13_CRA_ID","P13_CRA_ON_ERROR","P13_CRA_PARAM_1","P13_CRA_PARAM_2","P13_CRA_PARAM_3","P13_CRA_PARAM_4","P13_CRA_PARAM_5","P13_CRA_PARAM_AREA_1","P13_CRA_PARAM_AREA_2","P13_CRA_PARAM_AREA_3","P13_CRA_PARAM_AREA_4","P13_CRA_PARAM_AREA_5","P13_CRA_PARAM_CB_1","P13_CRA_PARAM_CB_2","P13_CRA_PARAM_CB_3","P13_CRA_PARAM_CB_4","P13_CRA_PARAM_CB_5","P13_CRA_PARAM_LOV_1","P13_CRA_PARAM_LOV_2","P13_CRA_PARAM_LOV_3","P13_CRA_PARAM_LOV_4","P13_CRA_PARAM_LOV_5","P13_CRA_PARAM_SWITCH_1","P13_CRA_PARAM_SWITCH_2","P13_CRA_PARAM_SWITCH_3","P13_CRA_PARAM_SWITCH_4","P13_CRA_PARAM_SWITCH_5","P13_CRA_RAISE_ON_VALIDATION","P13_CRA_RAISE_RECURSIVE","P13_CRA_SORT_SEQ"]';
     g_form_item_list('R13_CRU_FORM') := '["P13_CRU_ACTIVE","P13_CRU_CONDITION","P13_CRU_CRG_ID","P13_CRU_FIRE_ON_PAGE_LOAD","P13_CRU_ID","P13_CRU_NAME","P13_CRU_SORT_SEQ"]';
-    g_form_item_list('R13_FLS_FORM') := '["P13_DIAGRAM_CATEGORY","P13_DIAGRAM_ID","P13_DIAGRAM_NAME","P13_DIAGRAM_STATUS_ID","P13_DIAGRAM_VERSION"]';
 
     /*
       to update this item list, execute this SQL and paste the result:
@@ -1727,7 +1741,8 @@ select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
     Function: validate_rule_condition
       See <ADCA_UI_DESIGNER.validate_rule_condition>
    */
-  procedure validate_rule_condition
+  procedure validate_rule_condition(
+    p_has_refreshed boolean default false)
   as
     l_environment environment_rec;
   begin
@@ -1743,10 +1758,16 @@ select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
     pit.leave_mandatory;
   exception
     when msg.PIT_BULK_ERROR_ERR or msg.PIT_BULK_FATAL_ERR then
-      adc.handle_bulk_errors(char_table(
-        'SQL_ERROR', 'CRU_CONDITION',
-        'ADC_INVALID_SQL', 'CRU_CONDITION',
-        'CRU_CONDITION_MISSING', 'CRU_CONDITION'));
+      if not p_has_refreshed then
+        -- Page items may be out of sync with APEX metadata, synchronize and retry
+        adc_admin.propagate_rule_change(l_environment.crg_id);
+        validate_rule_condition(true);
+      else
+        adc.handle_bulk_errors(char_table(
+          'SQL_ERROR', 'CRU_CONDITION',
+          'ADC_INVALID_SQL', 'CRU_CONDITION',
+          'CRU_CONDITION_MISSING', 'CRU_CONDITION'));
+      end if;
     pit.leave_mandatory;
   end validate_rule_condition;
 
@@ -1777,6 +1798,7 @@ select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
 
     pit.leave_mandatory;
   end check_parameter_value;
+
 
 begin
   initialize;
