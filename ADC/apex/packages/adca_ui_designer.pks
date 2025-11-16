@@ -86,7 +86,8 @@ as
       Is used to validate only the rule condition dynamically if it is changed by the user
       
     Parameter:
-      p_has_refreshed - Flag to indicate whether a new rule group has been selected
+      p_has_refreshed - Flag to indicate whether the apex page items have been refreshed.
+                        For internal use only
    */
   procedure validate_rule_condition(
     p_has_refreshed boolean default false);
