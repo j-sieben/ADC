@@ -385,6 +385,11 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     props.triggeringElement.data = pEventData;
     props.triggeringElement.isClick = false; // reset status to known default
 
+    // Remove _input from ID in case of a webcomponent
+    if (typeof pEvent.target.id != 'undefined'){
+        pEvent.target.id = pEvent.target.id.replace(/_input/, '');
+    }
+
     if (typeof pEvent.target != 'undefined') {
       switch (props.triggeringElement.event) {
         case C_APEX_AFTER_CLOSE_DIALOG:
@@ -560,13 +565,18 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   ctl.bindConfirmationHandler = function(pTarget, pOptions, pIdItem){
     const innerCallback = changeCallback;
     const targetId = pTarget.attr('id');
+    const message = pOptions.message;
     
     const callback = function(pEvent) {
+      // persists message as a fallback solution if the event handler is called several times
+      // and the status of pIdItem changes inbetween.
       if(adc.utils.isNotEmpty(pIdItem) && adc.utils.isEmpty(apex.item(pIdItem).getValue())){
         pOptions.message = pOptions.noDataMessage;
         pOptions.title = adc.controller.getStandardMessage(`CSM_DIALOG_TYPE_INFO`);
         adc.renderer.showDialog('INFO', pOptions, targetId);
       } else {
+        pOptions.message = message;
+        pOptions.title = adc.controller.getStandardMessage(`CSM_DIALOG_TYPE_WARNING`);
         adc.renderer.confirmRequest(pEvent, innerCallback, targetId);
       };
    };
@@ -678,7 +688,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
    
     props.pageState.itemMap.forEach(function(itemValue, item, map){
       apex.debug.info(`${C_FILE_NAME} - Comparing ${item}`);
-      if (itemValue != apex.item(item).getValue()){
+      if (itemValue != adc.utils.getValueAsString(item)){
         isDifferent = true;
         return true;
       };

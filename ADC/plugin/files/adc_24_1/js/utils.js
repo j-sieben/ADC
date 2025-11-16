@@ -48,7 +48,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     Returns:
       Converted String
    */
-    util.hexToChar = function (pRawString) {
+    util.hexToChar = function(pRawString){
     var code = '';
     var hexString;
 
@@ -60,5 +60,20 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     }
     return code;
   }; // hexToChar
+
+
+  /**
+    Function: getValueAsString
+      Method to cast an APEX page item value to string. If the item allows for multiple values, they are delivered
+      as an array. In this case, the Array is stringified.
+      This method is used to allow for value change detection.
+   */
+  util.getValueAsString = function(pItem){
+    let itemValue = apex.item(pItem).getValue();
+    if(typeof itemValue == 'Array'){
+        itemValue = itemValue.toString();
+    }
+    return itemValue;
+  }
 
 }(de.condes.plugin.adc));

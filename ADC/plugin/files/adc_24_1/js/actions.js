@@ -563,6 +563,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
             apex.debug.info(`${C_FILE_NAME} - ${C_DOUBLE_CLICK_EVENT} detected`);
             $(this).find('a')[0].click();
           })
+/* auskommentiert, da keine Lösung - das Markieren einer geänderten Zeile funktioniert hierdurch nicht
           .on(C_FOCUS_EVENT, C_REGION_IR_FIRST_ROW_SELECTOR, function(e){
             // erforderlich zur Ermittlung der ID, wenn vorwaerts in den Bericht getabbt wird
             // Achtung: nicht $(this).click(); aufrufen, da diese Funktion den Fokus setzt und eine Endlosschleife ausloest
@@ -571,6 +572,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
             pSetFocus = false;
             callback(pkValue);
           })
+*/
           .on(C_FOCUS_EVENT, C_REGION_IR_LAST_ROW_SELECTOR, function(e){
             // erforderlich zur Ermittlung der ID, wenn rueckwaerts in den Bericht getabbt wird
             // Achtung: nicht $(this).click(); aufrufen, da diese Funktion den Fokus setzt und eine Endlosschleife ausloest
@@ -769,7 +771,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
         if(item.id){
           item = item.id;
         };
-        itemValue = apex.item(item).getValue();
+        itemValue = adc.utils.getValueAsString(item);
         pageState.itemMap.set(item, itemValue);
         apex.debug.info(`${C_FILE_NAME} - Saving ${item} with value ${itemValue}`);
       }

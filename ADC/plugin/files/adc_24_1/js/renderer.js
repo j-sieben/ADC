@@ -255,8 +255,17 @@ de.condes.plugin.adc.apex_theme_42 = {};
             else if (($item.hasClass("radio_group")) || ($item.hasClass("checkbox_group"))){
                 // einzelne Radiobuttons von Bearbeitung mit Tastatur ausschliessen
                 $(`#${pItemId} input`).attr('disabled', '');
+            }
+
+            else if ($item.is("a-autocomplete")){
+                $(`#${pItemId} input`).addClass(C_APEX_DISABLED);
+            }
+            
+            else if ($item.is("a-date-picker")){
+                $(`#${pItemId} input`).addClass(C_APEX_DISABLED);
+                $item.parent().find("button").prop(C_DISABLED_PROP, true);
             };
-        }
+        };
     }; // disableElement
 
   
@@ -292,17 +301,16 @@ de.condes.plugin.adc.apex_theme_42 = {};
         apex.item(pItemId).show();
         apex.item(pItemId).enable();
 
-        // if page item is a date picker, enable button as well
-        if ($item.hasClass("hasDatepicker") || $item.hasClass("color_picker") || $item.hasClass("popup_lov")) {
+        // if page item has a button, enable button as well
+        if ($item.hasClass("hasDatepicker") || $item.hasClass("color_picker")) {
             $item.parent().find("button")
             .prop(C_DISABLED_PROP, false)
             .removeClass(C_ADC_DISABLED)
             .removeAttr('tabindex');
         }
-
-        // if page item is a colour picker, enable button as well
+        
         else if ($item.hasClass("color_picker")) {
-            $('#' + pItemId + '_fieldset')
+            $(`#${pItemId}_fieldset`)
             .prop(C_READONLY_PROP, false)
             .removeClass(C_ADC_DISABLED)
             .removeAttr('tabindex');
@@ -310,9 +318,14 @@ de.condes.plugin.adc.apex_theme_42 = {};
 
         // if page item is a popup list, enable button as well
         else if ($item.hasClass("popup_lov")) {
-            $item.closest('#' + pItemId + '_fieldset')
+            $item.closest(`#${pItemId}_fieldset`)
             .find(C_POPUP_LOV_SELECTOR)
             .prop(C_READONLY_PROP, false)
+            .removeClass(C_ADC_DISABLED)
+            .removeAttr('tabindex');
+            
+            $item.parent().find("button")
+            .prop(C_DISABLED_PROP, false)
             .removeClass(C_ADC_DISABLED)
             .removeAttr('tabindex');
         }
@@ -326,7 +339,26 @@ de.condes.plugin.adc.apex_theme_42 = {};
             // einzelne Radiobuttons zur Bearbeitung mit Tastatur freigeben
             $(`#${pItemId} input`).removeAttr('disabled');
             $(`#${pItemId}`).removeClass(C_APEX_DISABLED);
+        }
+        
+        else if ($item.is('a-autocomplete')){
+            // fokussierbar machen
+            $(`#${pItemId} input`).removeAttr('tabindex');
+            $(`#${pItemId} input`).removeClass(C_APEX_DISABLED);
+        }
+
+        else if ($item.is("a-date-picker")){
+            // fokussierbar machen
+            $(`#${pItemId} input`).removeAttr('tabindex');
+            $(`#${pItemId} input`).removeClass(C_APEX_DISABLED);
+            // button behind
+            $item.parent().find("button")
+            .prop(C_DISABLED_PROP, false)
+            .removeClass(C_ADC_DISABLED)
+            .removeAttr('tabindex');
         };
+
+;
     }; // enableElement
   
 
@@ -531,8 +563,7 @@ de.condes.plugin.adc.apex_theme_42 = {};
         pIsMandatory - Flag to set a page item mandatory (true) or optional (false)
     */
     renderer.setItemMandatory = function(pItemId, pIsMandatory){
-
-        var $mandatoryItem = $(`#${pItemId}_CONTAINER`);
+        var $mandatoryItem = $(`#${pItemId}`);
 
         if ($mandatoryItem.length){
             $mandatoryItem.removeClass(C_REQUIRED_CLASS);
