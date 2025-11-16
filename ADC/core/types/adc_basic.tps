@@ -199,6 +199,21 @@ as object (
 
 
   /**
+    Function: get_flag
+      Retrieves the actual item value from the page state as a boolean value
+
+    Parameters:
+      p_cpi_id - Page item ID that is selected to show the error message
+
+    Returns:
+      Actual value from the page state
+   */
+  static function get_flag(
+    p_cpi_id in varchar2)
+    return boolean,
+
+
+  /**
     Function: get_number
       Retrieves the actual item value from the page state
 
@@ -601,10 +616,12 @@ as object (
     Parameters:
       p_cpi_id - Optional element ID to be set (defaults to 'DOCUMENT', if <p_jquery_selector> is set)
       p_jquery_selector - Optional jQuery expression to edit multiple elements. (Defaults to NULL, if <p_cpi_id> is set)
+      p_visual_state - Optional visual state of the item. One of the C_HIDE, C_SHOW_ENABLE or C_SHOW_DISABLE. Defaults to C_SHOW_ENABLE
    */
   static procedure set_optional(
     p_cpi_id in varchar2 default 'DOCUMENT',
-    p_jquery_selector in varchar2 default null),
+    p_jquery_selector in varchar2 default null,
+    p_visual_state in varchar2 default C_SHOW_ENABLE),
 
 
   /**

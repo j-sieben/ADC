@@ -181,6 +181,15 @@ as
   end get_firing_item;
 
 
+  static function get_flag(
+    p_cpi_id in varchar2)
+    return boolean
+  as
+  begin
+    return adc_api.get_string(p_cpi_id) = adc_util.C_TRUE;
+  end get_flag;
+
+
   static function get_number(
     p_cpi_id in varchar2)
     return varchar2
@@ -646,18 +655,21 @@ as
 
   static procedure set_optional(
     p_cpi_id in varchar2 default 'DOCUMENT',
-    p_jquery_selector in varchar2 default null)
+    p_jquery_selector in varchar2 default null,
+    p_visual_state in varchar2 default C_SHOW_ENABLE)
   as
   begin
     pit.enter_optional(
       p_params => msg_params(
                     msg_param('p_cpi_id', p_cpi_id),
-                    msg_param('p_jquery_selector', p_jquery_selector)));
+                    msg_param('p_jquery_selector', p_jquery_selector),
+                    msg_param('p_visual_state', p_visual_state)));
 
     adc_api.execute_action(
       p_cat_id => 'IS_OPTIONAL',
       p_cpi_id => p_cpi_id,
-      p_param_2 => p_jquery_selector);
+      p_param_2 => p_jquery_selector,
+      p_param_3 => p_visual_state);
 
     pit.leave_optional;
   end set_optional;
