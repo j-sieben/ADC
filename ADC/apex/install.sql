@@ -34,6 +34,7 @@ prompt &h3.Create views
 @&tool_dir.create_view adca_ui_lov_page_item_type_group
 @&tool_dir.create_view adca_ui_lov_page_items_p11
 @&tool_dir.create_view adca_ui_lov_page_items
+@&tool_dir.create_view adca_ui_lov_pit_message
 @&tool_dir.create_view adca_ui_lov_yes_no
 @&tool_dir.create_view adca_ui_admin_cat
 @&tool_dir.create_view adca_ui_admin_caif
