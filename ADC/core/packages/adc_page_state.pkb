@@ -1,6 +1,5 @@
 create or replace package body adc_page_state
 as
-  pragma SERIALLY_REUSABLE;
   
   /** 
     Package: ADC_PAGE_STATE Body
@@ -475,11 +474,15 @@ as
     cursor required_item_cur(
       p_crg_id in adc_rule_groups.crg_id%type)
       is
+        with params as (
+               select /*+ no_merge */ adc_util.C_TRUE C_TRUE
+                 from dual)
         select cpi_id, cpi_conversion
           from adc_page_items
-         where cpi_is_required = 1
-           and cpi_may_have_value = 1
-           and cpi_crg_id = p_crg_id;
+          join params
+            on cpi_is_required = C_TRUE
+           and cpi_may_have_value = C_TRUE
+         where cpi_crg_id = p_crg_id;
   begin
     pit.enter_optional('initialize_page_state');
     

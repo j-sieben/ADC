@@ -1166,6 +1166,51 @@ q'{     and pti_id like 'SUBMIT_TYPE_%'}',
 
 
   adc_admin.merge_action_type(
+    p_cat_id => 'INIT_SSE',
+    p_cat_catg_id => 'JAVA_SCRIPT',
+    p_cat_caif_id => 'DOCUMENT',
+    p_cat_cato_id => 'ADC',
+    p_cat_name => 'Server-Events aktivieren',
+    p_cat_display_name => q'{<p><strong>aktiviere Server-Ereignisse</strong> für diese Seite</p>}',
+    p_cat_description => q'{<p>Stellt eine Verbindung zu einem Server her, um zu ermöglichen, dass der Server Events an diese Anwendungsseite schicken kann.</p>}',
+    p_cat_pl_sql => q'{}',
+    p_cat_js => q'{a.initServerSentEvents('#PARAM_1#', '#PARAM_2#'#PARAM_3|, ||#);}',
+    p_cat_is_editable => adc_util.C_FALSE,
+    p_cat_active => adc_util.C_TRUE,
+    p_cat_raise_recursive => adc_util.C_FALSE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'INIT_SSE',
+    p_cap_capt_id => 'STRING',
+    p_cap_sort_seq => 1,
+    p_cap_default => q'{}',
+    p_cap_description => q'{<p>Definiert einen Raum, der dazu verwendet wird, Benachrichtigungen zu filtern.</p><p>Nur Nachrichten, die für diesen Raum vorgesehen sind, werden weitergeleitet. Eine Ausnahme sind Nachrichten ohne Raumbezug, die als “Broadcast” zu allen Anwendungsseiten geschickt werden, die eine Verbindung zum Serbver halten.</p><p>Der Raum wird als Zeichenkette ohne Anführungsstrichen übergeben. Sollen mehrere Räume überwacht werden, ist dies als Doppelpunkt-separierte Liste zu formatieren.}',
+    p_cap_display_name => 'Raum',
+    p_cap_mandatory => adc_util.C_TRUE,
+    p_cap_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'INIT_SSE',
+    p_cap_capt_id => 'STRING_OR_FUNCTION',
+    p_cap_sort_seq => 2,
+    p_cap_default => q'{param.get_string('PIT_WEB_SOCKET_SERVER', 'PIT')}',
+    p_cap_description => q'{<p>Optionale URL des Servers, zu dem eine Verbindung hergestellt werden soll. Wird im Regelfall nicht benötigt, falls der Server durch PIT bereitgestellt wird, da dessen URL aus einem Datenbankparameter von PIT abgeleitet werden kann.</p><p>Ist dies nicht der Fall, muss hier der Endpunkt eingetragen werden, unter dem sich die Anwendungsseite an den Server anmelden kann.</p>}',
+    p_cap_display_name => 'URL',
+    p_cap_mandatory => adc_util.C_FALSE,
+    p_cap_active => adc_util.C_TRUE);
+
+  adc_admin.merge_action_parameter(
+    p_cap_cat_id => 'INIT_SSE',
+    p_cap_capt_id => 'STRING_OR_JAVASCRIPT',
+    p_cap_sort_seq => 3,
+    p_cap_default => q'{}',
+    p_cap_description => q'{<p>Der Parameter kann leer gelassen werden, falls als Reaktion auf eine Benachrichtigung ADC informiert und die Nachricht als Eventdaten gesendet werden sollen.&nbsp;</p><p>Als Sonderfall kann hier eine JavaScript-Methode referenziert werden, die für die Verarbeitung der Daten clientseitig sorgt. Dies kann sinnvoll sein, wenn sehr leichtgewichtige Änderungen durchgeführt werden sollen. Der Methode wird die Meldung als JSON-Instanz übergeben.</p><p>Im Regelfall kann hier über das Meldungsattribut <i>event</i> unterschieden werden, welche Aktion konkret ausgeführt werden soll. Als Fallbacklösung kann anschließend die Verarbeitung durch ADC angefordert werden, indem in der Methode der Aufruf <i>a.handleNotification</i> erfolgt, der die Meldung als Parameter übergeben wird.</p>}',
+    p_cap_display_name => 'Aktion',
+    p_cap_mandatory => adc_util.C_FALSE,
+    p_cap_active => adc_util.C_TRUE);
+
+
+  adc_admin.merge_action_type(
     p_cat_id => 'IS_MANDATORY',
     p_cat_catg_id => 'PAGE_ITEM',
     p_cat_caif_id => 'PAGE_ITEM_OR_DOCUMENT',
