@@ -84,8 +84,12 @@ as
       Method to check a technical rule condition
       
       Is used to validate only the rule condition dynamically if it is changed by the user
+      
+    Parameter:
+      p_has_refreshed - Flag to indicate whether a new rule group has been selected
    */
-  procedure validate_rule_condition;
+  procedure validate_rule_condition(
+    p_has_refreshed boolean default false);
   
   
   /**

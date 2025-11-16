@@ -441,7 +441,7 @@ as
                   '#MONITOR_CHANGES#', l_monitor_changes));
     l_action := adc_util.bulk_replace(l_template, adc_util.string_table(
                   '#DATA#', l_action,
-                  '#MODE#', l_process_mode),
+                  '#MODE#', l_process_mode,
                   '#CONFIRM_MESSAGE#', p_row.amda_delete_confirm_message));
 
     pit.leave_optional;
@@ -787,7 +787,7 @@ as
                     msg_param('p_cat_id', p_cat_id)));
 
     -- Initialize
-    l_mandatory_message := pit.get_message_text(msg.ADC_ITEM_IS_MANDATORY);
+    l_mandatory_message := pit.get_message_text(msg.ADC_ITEM_IS_MANDATORY, msg_args());
 
     -- Hide all parameter regions
     adc.set_visual_state(
