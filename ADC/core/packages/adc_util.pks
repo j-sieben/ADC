@@ -293,6 +293,18 @@ as
   
   
   /**
+    Procedure: close_cursor
+      Method to savely close a cursor
+      The method checks whether the cursor is still open and closes it in this case.
+      
+    Parameter:
+      p_ctx - Ctx pointing to an opened cursor in DBMS_SQL
+   */
+  procedure close_cursor(
+    p_ctx in out nocopy binary_integer);
+  
+  
+  /**
     Procedure: monitor_loop
       Method to monitor that loops can't go into infinite loop mode.
       If the parameters are NULL, a new monitor is instantiated. Within the 

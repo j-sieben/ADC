@@ -298,6 +298,24 @@ as
 
   
   /**
+    Function: close_cursor
+      See <ADC_UTIL.close_cursor>
+   */
+  procedure close_cursor(
+    p_ctx in out nocopy binary_integer)
+  as
+  begin
+    pit.enter_detailed('close_cursor');
+    
+    if dbms_sql.is_open(p_ctx) then
+      dbms_sql.close_cursor(p_ctx);
+    end if;
+    
+    pit.leave_detailed;
+  end close_cursor;
+
+  
+  /**
     Procedure: monitor_loop
       See <ADC_UTIL.monitor_loop>
    */

@@ -1670,12 +1670,10 @@ as
     begin
       l_ctx := dbms_sql.open_cursor;
       dbms_sql.parse(l_ctx, l_stmt, dbms_sql.native);
-      dbms_sql.close_cursor(l_ctx);
+      adc_util.close_cursor(l_ctx);
     exception
       when others then
-        if dbms_sql.is_open(l_ctx) then
-          dbms_sql.close_cursor(l_ctx);
-        end if;
+        adc_util.close_cursor(l_ctx);
         pit.raise_error(msg.ADC_INVALID_SQL, msg_args(substr(sqlerrm, 12)));
     end;
 

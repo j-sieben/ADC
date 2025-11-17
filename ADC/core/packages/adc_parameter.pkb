@@ -95,23 +95,6 @@ as
       pit.leave_detailed;
       pit.raise_error(msg.ADC_PARAM_VALIDATION_FAILED, p_error_code => msg.ADC_INVALID_SEQUENCE);
   end validate_is_simple_sql_name;
-  
-  
-  /**
-    Procedure: close_cursor
-      Method securely closes a DBMS_SQL-cursor if it is yet open
-    
-    Parameter:
-      p_ctx - ID of the cursor to close
-   */
-  procedure close_cursor(
-    p_ctx in out nocopy binary_integer)
-  as
-  begin
-    if dbms_sql.is_open(p_ctx) then
-      dbms_sql.close_cursor(p_ctx);
-    end if;
-  end close_cursor;
 
 
   /**
@@ -146,7 +129,7 @@ as
     l_ctx := dbms_sql.open_cursor;
     dbms_sql.parse(l_ctx, p_stmt, dbms_sql.NATIVE);
     dbms_sql.describe_columns2(l_ctx, l_column_count, l_columns);
-    close_cursor(l_ctx);
+    adc_util.close_cursor(l_ctx);
     
     if p_column_count is not null then
       pit.assert(
@@ -171,10 +154,10 @@ as
     pit.leave_detailed;
   exception
     when msg.ORA_SQL_ACCESS_DENIED_ERR or NO_DATA_FOUND then
-      close_cursor(l_ctx);
+      adc_util.close_cursor(l_ctx);
       pit.leave_detailed;
     when others then
-      close_cursor(l_ctx);
+      adc_util.close_cursor(l_ctx);
       pit.leave_detailed;
       pit.raise_error(msg.ADC_INVALID_SQL);
   end parse;
@@ -277,12 +260,12 @@ end;~';
       
     l_ctx := dbms_sql.open_cursor;
     dbms_sql.parse(l_ctx, l_stmt, dbms_sql.NATIVE);
-    dbms_sql.close_cursor(l_ctx);
+    adc_util.close_cursor(l_ctx);
 
     pit.leave_detailed;
   exception
     when others then
-      dbms_sql.close_cursor(l_ctx);
+      adc_util.close_cursor(l_ctx);
       pit.leave_detailed;
       pit.raise_error(
         p_message_name => msg.ADC_PARAM_VALIDATION_FAILED,

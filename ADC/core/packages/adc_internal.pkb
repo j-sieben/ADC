@@ -1586,7 +1586,7 @@ as
     c_stmt constant varchar2(200) := 'select * from (#STMT#) where rownum = 1';
     l_stmt adc_util.max_char;
     l_result varchar2(4000);
-    l_cur integer;
+    l_ctx binary_integer;
     l_cnt integer;
     l_col_cnt integer;
     l_desc_tab DBMS_SQL.DESC_TAB2;
@@ -1599,20 +1599,20 @@ as
 
     if p_cpi_id = adc_util.c_no_firing_item or p_cpi_id is null then
       -- If no element is specified, the elements are set according to the column name
-      l_cur := dbms_sql.open_cursor;
+      l_ctx := dbms_sql.open_cursor;
       -- Parse SQL to determine column names
-      dbms_sql.parse(l_cur, l_stmt, dbms_sql.native);
-      dbms_sql.describe_columns2(l_cur, l_col_cnt, l_desc_tab);
+      dbms_sql.parse(l_ctx, l_stmt, dbms_sql.native);
+      dbms_sql.describe_columns2(l_ctx, l_col_cnt, l_desc_tab);
       pit.raise_debug(msg.ADC_COLUMNS_FOUND, msg_args(to_char(l_col_cnt)));
       for i in 1 .. l_col_cnt loop
-        dbms_sql.define_column(l_cur, i, l_result, 4000);
+        dbms_sql.define_column(l_ctx, i, l_result, 4000);
       end loop;
 
       -- Execute SQL and load the first row
-      l_cnt := dbms_sql.execute_and_fetch(l_cur);
+      l_cnt := dbms_sql.execute_and_fetch(l_ctx);
       -- Copy column values into item named after the column names
       for i in 1 .. l_col_cnt loop
-        dbms_sql.column_value(l_cur, i, l_result);
+        dbms_sql.column_value(l_ctx, i, l_result);
         -- Copy value to session status
         set_session_state(
           p_cpi_id => l_desc_tab(i).col_name,
@@ -1620,7 +1620,7 @@ as
           p_allow_recursion => p_allow_recursion);
         apex_json.write(l_desc_tab(i).col_name);
       end loop;
-      dbms_sql.close_cursor(l_cur);
+      adc_util.close_cursor(l_ctx);
     else
       -- Concrete element requested, according to convention only one column is included
       execute immediate l_stmt into l_result;
@@ -1656,25 +1656,25 @@ as
     p_cursor in out nocopy sys_refcursor)
   as
     l_result varchar2(4000);
-    l_cur binary_integer;
+    l_ctx binary_integer;
     l_cnt integer;
     l_col_cnt integer;
     l_desc_tab DBMS_SQL.DESC_TAB2;
   begin
     -- Tracing done in ADC_API
 
-    l_cur := dbms_sql.to_cursor_number(p_cursor);
+    l_ctx := dbms_sql.to_cursor_number(p_cursor);
     -- Parse SQL to get column identifiers
-    dbms_sql.describe_columns2(l_cur, l_col_cnt, l_desc_tab);
+    dbms_sql.describe_columns2(l_ctx, l_col_cnt, l_desc_tab);
     for i in 1 .. l_col_cnt loop
-      dbms_sql.define_column(l_cur, i, l_result, 4000);
+      dbms_sql.define_column(l_ctx, i, l_result, 4000);
     end loop;
 
     -- Execute SQL and load the first row
-    l_cnt := dbms_sql.execute_and_fetch(l_cur);
+    l_cnt := dbms_sql.execute_and_fetch(l_ctx);
     -- Copy all column values to page elements with corresponding column name
     for i in 1 .. l_col_cnt loop
-      dbms_sql.column_value(l_cur, i, l_result);
+      dbms_sql.column_value(l_ctx, i, l_result);
       -- Wert in Sessionstatus kopieren
       set_session_state(
         p_cpi_id => l_desc_tab(i).col_name,
@@ -1682,7 +1682,7 @@ as
         p_allow_recursion => adc_util.C_FALSE);
     end loop;
 
-    dbms_sql.close_cursor(l_cur);
+    adc_util.close_cursor(l_ctx);
   end set_value_from_cursor;
 
 
