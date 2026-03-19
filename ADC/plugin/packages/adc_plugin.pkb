@@ -122,7 +122,8 @@ as
     return l_result;
   exception
     when msg.ADC_INITIALIZE_SCRIPT_TOO_LONG_ERR then
-      utl_apex.register_error(
+      utl_apex.set_error(
+        p_page_item => 'DOCUMENT',
         p_message => msg.ADC_INITIALIZE_SCRIPT_TOO_LONG);
       pit.leave_mandatory;
       return l_result;
