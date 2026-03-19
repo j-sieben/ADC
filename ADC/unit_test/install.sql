@@ -16,6 +16,9 @@ prompt &s1.Type UT_ADC_ROW
 prompt &s1.Type UT_ADC_LIST
 @&TYPE_DIR.ut_adc_list.tps
 
+prompt &s1.Type UT_ADC_PARAM
+@&TYPE_DIR.ut_adc_param.tps
+
 prompt &s1.Type UT_ADC_RESULT
 @&TYPE_DIR.ut_adc_result.tps
 

@@ -89,7 +89,7 @@ pit_admin.merge_message(
   pit_admin.merge_message(
     p_pms_name => 'ADC_CONFIRM_HAS_CHANGES',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^There are changes on the page. Please confirm that you still wish to cancel ^',
+    p_pms_text => q'^There are changes on the page. Please confirm that you still want to cancel.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 70,
     p_pms_pml_name => 'AMERICAN',
@@ -98,7 +98,7 @@ pit_admin.merge_message(
   pit_admin.merge_message(
     p_pms_name => 'ADC_CONFIRM_NO_CHANGES',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^There are no changes on the page, the save is not executed',
+    p_pms_text => q'^There are no changes on the page. Save is not executed.^',
     p_pms_description => q'^^',
     p_pms_pse_id => 70,
     p_pms_pml_name => 'AMERICAN',

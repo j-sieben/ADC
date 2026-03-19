@@ -4,6 +4,7 @@ de.condes.plugin = de.condes.plugin ||{};
 de.condes.plugin.adc = de.condes.plugin.adc ||{};
 
 (function(adc){
+    "use strict";
 
     adc.utils = adc.utils ||{};
     let util = adc.utils;
@@ -34,46 +35,96 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
         return pValues;
     } // colaesce
 
-
-    /**
-    Function: hexToChar
-      Method to cast a hex-string representation created with UTL_RAW.CAST_TO_RAW back to String.
-      
-      ADC submits its response as a hex string to circumvent escaping issues between JSON, JavaScript and JavaScript containing JSON.
-      As a consequence, the hex string must be converted back to a normal string in order to append it to the page.
-      
-    Parameter:
-      pRawString - Hex-encoded string to convert back to a normal string.
-      
-    Returns:
-      Converted String
+  /**
+   * Decode a base64-encoded UTF-8 ADC response back to a normal string.
+   *
+   * @param {string} pRawString Base64-encoded UTF-8 string.
+   * @returns {string} Decoded string.
    */
-    util.hexToChar = function(pRawString){
-    var code = '';
-    var hexString;
+  util.base64ToUtf8 = function(pRawString){
+    let binaryString;
+    let bytes;
 
-    if (pRawString) {
-      hexString = pRawString.toString();
-      for (let i = 0; i < hexString.length; i += 2) {
-        code += String.fromCharCode(parseInt(hexString.substr(i, 2), 16));
-      }
+    if (!pRawString){
+      return '';
     }
-    return code;
-  }; // hexToChar
 
+    binaryString = window.atob(pRawString.toString());
+    bytes = Uint8Array.from(binaryString, function(pChar) {
+      return pChar.charCodeAt(0);
+    });
+
+    if (typeof TextDecoder !== 'undefined'){
+      return new TextDecoder('utf-8').decode(bytes);
+    }
+
+    return decodeURIComponent(Array.prototype.map.call(bytes, function(pByte) {
+      return `%${pByte.toString(16).padStart(2, '0')}`;
+    }).join(''));
+  }; // base64ToUtf8
 
   /**
-    Function: getValueAsString
-      Method to cast an APEX page item value to string. If the item allows for multiple values, they are delivered
-      as an array. In this case, the Array is stringified.
-      This method is used to allow for value change detection.
+   * Read an APEX item value and normalize array values to a string.
+   *
+   * @param {string} pItem APEX item ID.
+   * @returns {string|*} Item value normalized for comparison.
    */
   util.getValueAsString = function(pItem){
     let itemValue = apex.item(pItem).getValue();
-    if(typeof itemValue == 'Array'){
+    if(Array.isArray(itemValue)){
         itemValue = itemValue.toString();
     }
     return itemValue;
-  }
+  };
+
+  /**
+   * Resolve a dot-separated namespace path against a root object.
+   *
+   * @param {string} pPath Namespace path.
+   * @param {Object} [pRoot] Root object, defaults to `window`.
+   * @returns {*|null} Resolved object or `null`.
+   */
+  util.resolveNamespace = function(pPath, pRoot){
+    const path = (pPath || '').trim();
+    let context = pRoot || window;
+
+    if (util.isEmpty(path)){
+      return null;
+    }
+
+    return path.split('.').reduce(function(pResult, pSegment){
+      if (pResult && pSegment in pResult){
+        return pResult[pSegment];
+      }
+      return null;
+    }, context);
+  };
+
+  /**
+   * Resolve the configured ADC renderer namespace.
+   *
+   * @param {string} pPath Renderer namespace path.
+   * @returns {Object} Renderer object.
+   * @throws {Error} If the namespace cannot be resolved.
+   */
+  util.resolveRenderer = function(pPath){
+    const renderer = util.resolveNamespace(pPath, window);
+
+    if (!renderer){
+      throw new Error(`ADC renderer namespace not found: ${pPath}`);
+    }
+
+    return renderer;
+  };
+
+  /**
+   * Read a localized standard message from ADC state.
+   *
+   * @param {string} pMessageId Message key.
+   * @returns {string|undefined}
+   */
+  util.getStandardMessage = function(pMessageId){
+    return adc.state.standardMessages[pMessageId];
+  };
 
 }(de.condes.plugin.adc));

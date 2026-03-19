@@ -3,32 +3,22 @@ var de = de || {};
 de.condes = de.condes || {};
 de.condes.plugin = de.condes.plugin || {};
 de.condes.plugin.adc = de.condes.plugin.adc || {};
-de.condes.plugin.adc.apex_theme_42 = {};
+de.condes.plugin.adc.base_renderer = de.condes.plugin.adc.base_renderer || {};
+de.condes.plugin.adc.apex_theme_42 = Object.create(de.condes.plugin.adc.base_renderer);
 
 /**
-  Function: ADC Theme adapter
-    Interface between the ADC plugin actions and the APEX user interface for Theme 42 in Version 20.2
-
-    ADC needs to interact with the APEX UI to achieve the visual effects requested by the page rules. APEX on the other hand
-    comes in different versions and themes, making it difficult for generic code to take care of all the different strategies
-    used to display content.
-    
-    ADC caters for this by delegating the UI specific methods into a separate renderer, implementing the visual code for a specific
-    combination of APEX version and theme. The required renderer is selected by a component parameter of the plugin where 
-    the namespace of the required renderer code implementation can be set.
-    
-    This file implements the visual effects of version 20.2, Theme 42. If you use the same version but a different template or
-    if you extended your theme by addressing specific needs for your company, you may have to add or overwrite functionality of this object.
-    
-    To provide your own version, it is recommended to create a new object that inherits from this object and overwrites the functionality you need.
- 
-    For a description of the structure of the objects passed in see the documentation of adc.js
-
-  Parameters:
-    adc - Namespace object to adopt ADC to the given APEX version and theme
-    msg - Message object provided by APEX, instance of apex.message
+ * ADC base renderer plus Theme 42 specializations.
+ *
+ * `baseRenderer` contains the stable renderer contract shared by all concrete
+ * renderers. `renderer` inherits from it and overrides Theme- and
+ * APEX-version-specific behavior only.
+ *
+ * @param {Object} adc ADC namespace.
+ * @param {Object} baseRenderer Shared renderer defaults.
+ * @param {Object} renderer Renderer namespace object.
+ * @param {Object} msg `apex.message` facade.
  */
-(function(adc, renderer, msg){
+(function(adc, baseRenderer, renderer, msg){
   const C_FILE_NAME = 'adc.js.renderer.js';
 
   const C_APEX_ERROR_CLASS_SEL = 'div.a-Notification--error';
@@ -70,12 +60,10 @@ de.condes.plugin.adc.apex_theme_42 = {};
   const C_REPORT_LAST_REFRESH_TIME_CLASS_SELECTOR = `.${C_REPORT_LAST_REFRESH_TIME_CLASS}`;
 
 
-    /** 
-      Function: setFocus
-        Local method to securely set the focus to a requested item
-
-      Parameter:
-        pSelector - Selector to set the focus to
+    /**
+     * Set focus to a selector or item ID if it exists.
+     *
+     * @param {string} pSelector Selector or item ID.
      */
     setFocus = function(pSelector){
         const anchors = ['.', '#'];
@@ -88,28 +76,28 @@ de.condes.plugin.adc.apex_theme_42 = {};
     }; //setFocus
 
     /**
-    Function: alignReportVerticalTop
-        Method adjusts report cells vertically to top
-
-    Parameter:
-        pReportId - Static ID of the report to adjust
-    */
-    renderer.alignReportVerticalTop = function(pReportId){
+     * Keep report cells vertically aligned to the top.
+     *
+     * @param {string} pReportId Report region ID.
+     */
+    baseRenderer.alignReportVerticalTop = function(pReportId){
         var $report = $(`#${pReportId}`);
         if ($report.length > 0){
             $report.find('td').addClass('u-alignTop');
             // also add function call after refresh to keep the state
-            $report.on(C_APEX_AFTER_REFRESH), function(){
-                alignReportVerticalTop(pReportId);
-            }
+            $report.on(C_APEX_AFTER_REFRESH, function(){
+                renderer.alignReportVerticalTop(pReportId);
+            });
         }
     }; // alignReportVerticalTop
     
     
     /**
-      Function: getOptions
-        extracts the options object
-    */
+     * Extract a dialog options object from a raw options object or event wrapper.
+     *
+     * @param {Object} pOptions Options object or event wrapper.
+     * @returns {Object}
+     */
     function getOptions(pOptions){
       let options;
       if (adc.utils.isNotEmpty(pOptions.data)){
@@ -120,37 +108,68 @@ de.condes.plugin.adc.apex_theme_42 = {};
       return options;
     }
 
+    /**
+     * Determine the supported ADC region type for a region container.
+     *
+     * This logic is APEX- and DOM-specific and therefore belongs in the
+     * renderer layer rather than the action facade.
+     *
+     * @param {string} pRegionId Region ID.
+     * @returns {string|undefined} One of the supported region type constants.
+     */
+    renderer.getRegionType = function(pRegionId){
+        const $report = $(`#${pRegionId}`);
+        const crSelector = `#report_table_${pRegionId}`;
+        const irSelector = `#${pRegionId}_ir`;
+        const igSelector = `#${pRegionId}_ig`;
+        const treeSelector = `#${pRegionId}_tree`;
+        const tabSelector = `#SR_${pRegionId}`;
+        let reportType;
+
+        if($report.find(igSelector).length > 0){
+            reportType = C_REGION_IG;
+        }
+        else if($report.find(irSelector).length > 0){
+            reportType = C_REGION_IR;
+        }
+        else if($report.find(crSelector).length > 0){
+            reportType = C_REGION_CR;
+        }
+        else if($report.find(treeSelector).length > 0){
+            reportType = C_REGION_TREE;
+        }
+        else if($report.parent(tabSelector).length > 0){
+            reportType = C_REGION_TAB;
+        }
+
+        return reportType;
+    };
+
 
     /**
-    Function: clearErrors
-        Removes all messages in the notification region
-    */
-    renderer.clearErrors = function(){
-        gErrors = [];
-        gWarnings = [];
+     * Clear all renderer-visible ADC and APEX error markup.
+     */
+    baseRenderer.clearErrors = function(){
         msg.clearErrors();
     }; //clearErrors
 
 
     /**
-    Function: clearNotification
-        Removes all messages in the notification region
-    */
-    renderer.clearNotification = function(){
+     * Clear page-level success notifications.
+     */
+    baseRenderer.clearNotification = function(){
         msg.hidePageSuccess();
     }; // clearNotification
 
 
     /**
-    Function: confirmRequest
-        Shows a confirmation dialog to the user before calling the intended functionality.
-
-    Parameters:
-        pEvent - Event object with options containing the message, title and other
-        pCallback - Method to be called if the user confirmes this dialog
-        pFocusItem - Item to set the focus to if no confirmation is given
-    */
-    renderer.confirmRequest = function(pEvent, pCallback, pFocusItem){
+     * Show a confirmation dialog before executing a callback.
+     *
+     * @param {Object} pEvent Event or options wrapper.
+     * @param {function} pCallback Callback executed on confirmation.
+     * @param {string} pFocusItem Item to focus if the dialog is cancelled.
+     */
+    baseRenderer.confirmRequest = function(pEvent, pCallback, pFocusItem){
       const options = getOptions(pEvent);
 
       apex.message.confirm(options.message, function (pAnswer) {
@@ -166,14 +185,12 @@ de.condes.plugin.adc.apex_theme_42 = {};
 
 
     /**
-      Function: decorateApexAction
-        Decorates a button or other UI control that is maintained by an apex.action
-
-      Parameter
-        pAction - APEX action object as defined by apex.actions interface
-        pArgs - Optional arguments passed in by APEX
-    */
-    renderer.decorateApexAction = function (pAction, pArgs){
+     * Decorate UI controls maintained by `apex.actions`.
+     *
+     * @param {Object} pAction APEX action object.
+     * @param {*} pArgs Optional arguments from APEX.
+     */
+    baseRenderer.decorateApexAction = function (pAction, pArgs){
         let $buttons, accesskey, shortcuts, shortcut;
 
         // decorate button access key
@@ -199,17 +216,11 @@ de.condes.plugin.adc.apex_theme_42 = {};
 
 
     /**
-    Function: disableElement
-        Disables a page item. Handles deactivation of 
-
-        - page items with values to allow to include them in a submit
-        - select lists
-        - buttons
-
-    Parameter
-        pItemId - ID of the page item to disable
-    */
-    renderer.disableElement = function (pItemId){
+     * Disable a page item while keeping its value available for submission.
+     *
+     * @param {string} pItemId Page item ID.
+     */
+    baseRenderer.disableElement = function (pItemId){
         const $item = $(`#${pItemId}`);
         const $container = $(`#${pItemId}_CONTAINER`);
 
@@ -270,17 +281,11 @@ de.condes.plugin.adc.apex_theme_42 = {};
 
   
     /**
-    Function: enableElement
-        Enables a page item. Handles activation of 
-
-        - page items with values to allow to include them in a submit
-        - select lists
-        - buttons
-
-    Parameter:
-        pItemId - ID of the page item to disable
-    */
-    renderer.enableElement = function (pItemId){
+     * Re-enable a previously disabled page item.
+     *
+     * @param {string} pItemId Page item ID.
+     */
+    baseRenderer.enableElement = function (pItemId){
         var $item = $(`#${pItemId}`);
         const $container = $(`#${pItemId}_CONTAINER`);
 
@@ -363,13 +368,11 @@ de.condes.plugin.adc.apex_theme_42 = {};
   
 
     /**
-    Function: hideReportFilterPanel
-        Removes filter area from interactive report or interactive grid.
-
-    Parameters:
-        pRegionId - Static id of the interactive report or grid
-        pRegionType - Type of the report
-    */
+     * Hide filter UI for supported report types.
+     *
+     * @param {string} pRegionId Region ID.
+     * @param {string} pRegionType Region type.
+     */
     renderer.hideReportFilterPanel = function(pRegionId, pRegionType){
         switch(pRegionType){
             case C_REGION_IR:
@@ -387,22 +390,21 @@ de.condes.plugin.adc.apex_theme_42 = {};
 
 
     /**
-    Function: highlightButtonAccessKey
-        Makes a shortcut of a button visible
-
-    Parameters:
-        pButton - jQuery instance of the button to change
-        pShortcut - Shortcut letter to highlight
-    */
+     * Visually highlight an action shortcut inside a button label.
+     *
+     * @param {jQuery} pButton Button element.
+     * @param {string} pShortcut Shortcut key.
+     */
     function highlightButtonAccessKey(pButton, pShortcut){
         const C_SHORTCUT_CLASS = 'adc-accesskey',
               C_BUTTON_LABEL_CLASS = 't-Button-label';
 
         let label, accesskey, re;
-        const $label = pButton.find(`.${C_BUTTON_LABEL_CLASS}`);
+        let $label = pButton.find(`.${C_BUTTON_LABEL_CLASS}`);
 
-        if(!pButton.find(`.${C_BUTTON_LABEL_CLASS}`)[0]){
-            pButton.html(`<span class='${C_BUTTON_LABEL_CLASS}'>${$this.html()}</span>`);
+        if(!$label[0]){
+            pButton.html(`<span class='${C_BUTTON_LABEL_CLASS}'>${pButton.html()}</span>`);
+            $label = pButton.find(`.${C_BUTTON_LABEL_CLASS}`);
         }
 
         label = $label.text();
@@ -425,15 +427,13 @@ de.condes.plugin.adc.apex_theme_42 = {};
     
 
     /**
-    Function: highlightRow
-        Method to optically select a row in a report
-        
-    Parameters:
-        pRegionId - ID of the region to select an entry in
-        pRow - jQuery object pointing to the data row to highlight
-        pSetFocus - Flag to indicate whether the row has to be focussed
-    */
-    renderer.highlightRow = function(pRegionId, pRow, pSetFocus){
+     * Highlight a selected report row and optionally move focus to it.
+     *
+     * @param {string} pRegionId Region ID.
+     * @param {jQuery} pRow Selected row.
+     * @param {boolean} pSetFocus Whether focus should move to the row.
+     */
+    baseRenderer.highlightRow = function(pRegionId, pRow, pSetFocus){
         if (pRow.length){
             pRow.siblings().removeClass("adc-selected-row");
             pRow.addClass("adc-selected-row");
@@ -462,23 +462,18 @@ de.condes.plugin.adc.apex_theme_42 = {};
     
     
     /**
-    Fucntion: informUnchanged
-      Determines whether an unchanged notification is shown in the vicinity of a modal dialog or not.
-      If a modal dialog is present, a confirmation is shown and the dialog is closed if not cancelled.
-      It a normal page is shown, a dialog message is shown and nothing happens after confirmation.
-      
-    Parameters:
-      pEventOrMessage - Event to extract the message text from or a plain message
-      pCallback - Method to be called if the user confirmes this dialog
-      pFocusItem - Item to set the focus to if no confirmation is given
-    */
-    renderer.informUnchanged = function (pOptions, pFocusItem){
+     * Show an unchanged-data notification in modal and non-modal contexts.
+     *
+     * @param {Object} pOptions Event or options wrapper.
+     * @param {string} pFocusItem Item to focus afterwards.
+     */
+    baseRenderer.informUnchanged = function (pOptions, pFocusItem){
         const isModalDialog = parent.$('.ui-dialog').length > 0;
         const options = getOptions(pOptions);
         let message  = options.message;
         if(isModalDialog){
-            if(!message.includes(adc.controller.getStandardMessage('CSM_CLOSE_MODAL_DIALOG'))){
-                options.message = message + adc.controller.getStandardMessage('CSM_CLOSE_MODAL_DIALOG');
+            if(!message.includes(adc.utils.getStandardMessage('CSM_CLOSE_MODAL_DIALOG'))){
+                options.message = message + adc.utils.getStandardMessage('CSM_CLOSE_MODAL_DIALOG');
             };
             const callback = function(){apex.navigation.dialog.cancel(true);};
             renderer.confirmRequest(pOptions, callback, pFocusItem);
@@ -488,14 +483,12 @@ de.condes.plugin.adc.apex_theme_42 = {};
     }; // informUnchanged
 
 
-    /** 
-    Function: maintainButtonAccessTitle
-        Shows the access key in the title of a button, adds consistency to the APEX behaviour
-
-    Parameters:
-        pButton - jQuery instance of the button to change
-        pShortcut - Shortcut letter to highlight
-    */
+    /**
+     * Add shortcut information to a button title attribute.
+     *
+     * @param {jQuery} pButton Button element.
+     * @param {string} pShortcut Shortcut key.
+     */
     function maintainButtonAccessTitle(pButton, pShortcut){
         // initially, set a data-title attribute to the title without any shortcut information
         if (adc.utils.isEmpty(pButton.attr('data-title'))){
@@ -511,13 +504,11 @@ de.condes.plugin.adc.apex_theme_42 = {};
 
   
     /**
-    Function: showErrors
-        Maintains the error list on the page.
-
-    Parameter:
-        pErrors - Array of errors, instances of <error>
-    */
-    renderer.showErrors = function(pErrors){
+     * Render the current ADC error list using APEX error markup.
+     *
+     * @param {Object[]} pErrors Error entries.
+     */
+    baseRenderer.showErrors = function(pErrors){
         
         msg.clearErrors();
         // Remove warning markup
@@ -540,14 +531,12 @@ de.condes.plugin.adc.apex_theme_42 = {};
 
   
     /**
-    Function: setItemLabel
-        Sets the label of a page item.
-
-    Parameters:
-        pItemId - ID of the page item to set the label of
-        pItemLabel - New item label
-    */
-    renderer.setItemLabel = function(pItemId, pItemLabel){
+     * Set the label text of a page item.
+     *
+     * @param {string} pItemId Page item ID.
+     * @param {string} pItemLabel New label text.
+     */
+    baseRenderer.setItemLabel = function(pItemId, pItemLabel){
         if (adc.utils.isNotEmpty(pItemId)){
             $(`#${pItemId}_LABEL`).text(pItemLabel);
         };
@@ -555,14 +544,12 @@ de.condes.plugin.adc.apex_theme_42 = {};
 
     
     /**
-    Function: setItemMandatory
-        Controls the mandatory status of a page item.
-
-    Parameters:
-        pItemId - Page item ID of the item to set mandatory or optional
-        pIsMandatory - Flag to set a page item mandatory (true) or optional (false)
-    */
-    renderer.setItemMandatory = function(pItemId, pIsMandatory){
+     * Toggle the mandatory styling of a page item.
+     *
+     * @param {string} pItemId Page item ID.
+     * @param {boolean} pIsMandatory Whether the item is mandatory.
+     */
+    baseRenderer.setItemMandatory = function(pItemId, pIsMandatory){
         var $mandatoryItem = $(`#${pItemId}`);
 
         if ($mandatoryItem.length){
@@ -576,27 +563,23 @@ de.condes.plugin.adc.apex_theme_42 = {};
 
 
     /**
-    Function: setModalDialogTitle
-        Sets the title of a modal dialog window.
-
-    Parameter:
-        pItemLabel - New item label
-    */
-    renderer.setModalDialogTitle = function(pTitle){
+     * Set the title of the current modal dialog.
+     *
+     * @param {string} pTitle Dialog title.
+     */
+    baseRenderer.setModalDialogTitle = function(pTitle){
         parent.$(C_MODAL_DIALOG_TITLE_SELECTOR).last().html(pTitle);
     }; // setModalDialogTitle
 
 
     /**
-    Function: showDialog
-        Shows a message on the page
-
-    Parameter:
-        pStyle - One of the predefined styles information|warning|sucess|error
-        pOptions - Option object for the dialog
-        pFocusItem - Flag to indicate whether this dialog is a confirmation dialog
-    */
-    renderer.showDialog = function(pStyle, pOptions, pFocusItem){
+     * Show a renderer-managed dialog or page success message.
+     *
+     * @param {string} pStyle Dialog style.
+     * @param {Object} pOptions Dialog options.
+     * @param {string} pFocusItem Item to focus after closing.
+     */
+    baseRenderer.showDialog = function(pStyle, pOptions, pFocusItem){
       let options = getOptions(pOptions);
       
       if (adc.utils.isEmpty(pFocusItem)){
@@ -633,27 +616,23 @@ de.condes.plugin.adc.apex_theme_42 = {};
 
 
     /**
-    Function: showSuccess
-        Shows a success message on the page
-
-    Parameter:
-        pMessage - Message to display
-    */
-    renderer.showSuccess = function(pMessage){
+     * Show a page-level success message.
+     *
+     * @param {string} pMessage Success message.
+     */
+    baseRenderer.showSuccess = function(pMessage){
         msg.showPageSuccess(pMessage);
     }; // showSuccess
 
 
     /**
-    Function setRegionContent
-        Method to set the content of a static region
-
-    Parameter:
-        pRegionId - Static ID of the region to set the context of
-        pContent - Content of the region
-        pHeader - Header of the region
-        pCSS - Accents for the header region
-    */
+     * Replace the content and accent styling of a static region.
+     *
+     * @param {string} pRegionId Region ID.
+     * @param {string} pContent Region content.
+     * @param {string} pHeader Region header.
+     * @param {string} pCSS Accent class.
+     */
     renderer.setRegionContent = function(pRegionId, pContent, pHeader, pCSS){
         const $region = $(`#${pRegionId}`);
 
@@ -669,14 +648,12 @@ de.condes.plugin.adc.apex_theme_42 = {};
   
   
     /**
-    Function: setRegionHeader
-        Method to adjust the region header. Works with normal regions and tab regions.
-        
-    Parameters:
-        pRegionId - ID of the region
-        pHeader - Header of the region
-        pRegionType - Type of the Region (Tab- or plain region)
-    */
+     * Update the header of a plain or tab region.
+     *
+     * @param {string} pRegionId Region ID.
+     * @param {string} pHeader Header text.
+     * @param {string} pRegionType Region type.
+     */
     renderer.setRegionHeader = function(pRegionId, pHeader, pRegionType){
     switch(pRegionType){
         case C_REGION_TAB:
@@ -690,13 +667,11 @@ de.condes.plugin.adc.apex_theme_42 = {};
 
 
     /**
-    Function: showWaitSpinner
-        Shows a wait spinner on the page
-
-    Parameter:
-        pFlag - Flag to indicate whether to show (true) a wait spinner or not (false)
-    */
-    renderer.showWaitSpinner = function(pFlag){
+     * Show or hide the APEX wait spinner.
+     *
+     * @param {boolean} pFlag Whether the spinner should be visible.
+     */
+    baseRenderer.showWaitSpinner = function(pFlag){
         if(pFlag){
             apex.util.showSpinner();
         }
@@ -707,15 +682,13 @@ de.condes.plugin.adc.apex_theme_42 = {};
     }; // showWaitSpinner
 
 
-    /** 
-    Function: submitPage
-        Method submits page with the given request if no errors are on the page.
-
-    Parameters:
-        pRequest - Request for the server
-        pMessage - Alert message warning the user if submit couldn't be executed due to errors on page
-    */
-    renderer.submitPage = function(pRequest, pMessage){
+    /**
+     * Submit the page if no blocking errors are present.
+     *
+     * @param {string} pRequest Request value.
+     * @param {string} pMessage Alert message shown if submission is blocked.
+     */
+    baseRenderer.submitPage = function(pRequest, pMessage){
         if ($(C_APEX_ERROR_CLASS_SEL).length == 0 && adc.utils.isEmpty(pMessage)) {
             apex.page.submit({
                 "request" : pRequest,
@@ -727,4 +700,4 @@ de.condes.plugin.adc.apex_theme_42 = {};
         }
     }; // submitPage
 
-})(de.condes.plugin.adc, de.condes.plugin.adc.apex_theme_42, apex.message);
+})(de.condes.plugin.adc, de.condes.plugin.adc.base_renderer, de.condes.plugin.adc.apex_theme_42, apex.message);

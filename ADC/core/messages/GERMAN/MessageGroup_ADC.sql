@@ -175,7 +175,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_ERROR_HANDLING',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Fehler in Rekursion #1#, Regel #2# (#3#), Auslösendes Element: "#4#" aufgetreten, fuehre Fehlerbehandlung aus^',
+    p_pms_text => q'^Fehler in Rekursion #1#, Regel #2# (#3#), auslösendes Element: "#4#". Fehlerbehandlung wird ausgeführt.^',
     p_pms_description => q'^^',
     p_pms_pse_id => pit.LEVEL_WARN,
     p_pms_pml_name => 'GERMAN',
@@ -220,7 +220,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_HARMONIZE_CPI_STEP_1',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Schritt 1: Entferne die REQUIRED-Flags und markiere Sie jedes Element als fehlerhaft, dies wird später korrigiert.^',
+    p_pms_text => q'^Schritt 1: Entferne die REQUIRED-Flags und markiere jedes Element als fehlerhaft. Dies wird später korrigiert.^',
     p_pms_description => q'^^',
     p_pms_pse_id => pit.LEVEL_INFO,
     p_pms_pml_name => 'GERMAN',
@@ -247,7 +247,7 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADC_HARMONIZE_CPI_STEP_4',
     p_pms_pmg_name => 'ADC',
-    p_pms_text => q'^Schritt 4: Entfernen von Elementen, die irrelevant, fehlerhaft oder nicht referenziert sind^',
+    p_pms_text => q'^Schritt 4: Entferne Elemente, die irrelevant, fehlerhaft oder nicht referenziert sind.^',
     p_pms_description => q'^^',
     p_pms_pse_id => pit.LEVEL_INFO,
     p_pms_pml_name => 'GERMAN',

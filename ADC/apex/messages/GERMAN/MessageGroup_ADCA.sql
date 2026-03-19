@@ -18,15 +18,15 @@ begin
     p_pms_name => 'ADCA_CONFIRM_DELETE',
     p_pms_pmg_name => 'ADCA',
     p_pms_text => q'^Bitte bestätigen Sie, dass die Daten gelöscht werden sollen.^',
-    p_pms_description => q'^Wird ausgelöst, wenn eine Löschoperation ausgelöst wird, um umgewolltes Löschen zu vermeiden.^',
+    p_pms_description => q'^Wird ausgelöst, um unbeabsichtigtes Löschen zu vermeiden.^',
     p_pms_pse_id => pit.level_warn,
     p_pms_pml_name => 'GERMAN');
 
   pit_admin.merge_message(
     p_pms_name => 'ADCA_ACTION_REQUESTED',
     p_pms_pmg_name => 'ADCA',
-    p_pms_text => q'^#1#-Aktion für #2# angefordert.^',
-    p_pms_description => q'^Information über die Aktion die durch die Logik ermittelt wurde.^',
+    p_pms_text => q'^Aktion #1# für #2# angefordert.^',
+    p_pms_description => q'^Information über die Aktion, die durch die Logik ermittelt wurde.^',
     p_pms_pse_id => pit.level_info,
     p_pms_pml_name => 'GERMAN');
 
@@ -65,8 +65,8 @@ begin
   pit_admin.merge_message(
     p_pms_name => 'ADCA_CHK_DEPRECATED',
     p_pms_pmg_name => 'ADCA',
-    p_pms_text => q'^Die Aktion #1# ist deprecated und sollte durch ein anderes Verfahren ersetzt werden.^',
-    p_pms_description => q'^Bitte folgen Sie den Anweisungen im Hilfetext des Aktionstyps.^',
+    p_pms_text => q'^Die Aktion #1# ist veraltet und sollte durch ein anderes Verfahren ersetzt werden.^',
+    p_pms_description => q'^Bitte folgen Sie den Hinweisen im Hilfetext des Aktionstyps.^',
     p_pms_pse_id => pit.level_warn,
     p_pms_pml_name => 'GERMAN');
 

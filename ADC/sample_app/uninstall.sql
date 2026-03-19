@@ -14,10 +14,10 @@ declare
             from user_objects
            where (object_name in (
                  '', -- Typen
-                 'BL_DEP', 'BL_EMP', -- Packages
-                 'SADC_LOV_DEPARTMENT', 'SADC_LOV_JOB', 'SADCA_UI_ADACT', 'SADCA_UI_ADPTI', 'EMP_DETAILS_VW', 
-                 'SADCA_UI_ADSTA', 'SADCA_UI_EDEMP', 'SADCA_UI_HOME', 'SADCA_UI_ADREP', 'SADCA_UI_DOC', 'SADCA_UI_MENU_CAT', 'SADCA_UI_TUTORIAL', 
-                 'HR_EMP_DETAILS', -- Views
+                 'BL_DEP', 'BL_EMP', 'SADC_UI', -- Packages
+                 'SADC_LOV_DEPARTMENT', 'SADC_LOV_JOB', 'SADC_UI_ADACT', 'SADC_UI_ADPTI', 'SADC_UI_ADREP',
+                 'SADC_UI_ADSTA', 'SADC_UI_DOC', 'SADC_UI_EDEMP', 'SADC_UI_HOME', 'SADC_UI_MENU_CAT',
+                 'SADC_UI_MENU_CAT_ITEMS', 'SADC_UI_SAMPLE', 'SADC_UI_TUTORIAL', -- Views
                  '', 'HR_EMPLOYEES', 'HR_JOBS', 'HR_DEPARTMENTS', 'HR_LOCATIONS', 'HR_REGIONS', 'HR_COUNTRIES',   -- Tabellen
                  '',  -- Synonyme
                  'HR_LOCATIONS_SEQ', 'HR_DEPARTMENTS_SEQ', 'HR_EMPLOYEES_SEQ' -- Sequenzen

@@ -366,27 +366,5 @@ as
   end remember_page_state;
   
   
-  /**
-    Procedure: set_event_data
-      See <ADC_API.set_event_data>
-   */
-  procedure set_event_data(
-    p_cpi_id in varchar2,
-    p_event_type in varchar2,
-    p_message_name in varchar2,
-    p_msg_args in msg_args default null)
-  as
-  begin
-    pit.enter_mandatory(
-      p_params => msg_params(
-                    msg_param('p_cpi_id', p_cpi_id),
-                    msg_param('p_event_type', p_event_type),
-                    msg_param('p_message_name', p_message_name)));
-                    
-    -- TODO Implementierung erforderlich
-                    
-    pit.leave_mandatory;
-  end set_event_data;
-  
 end adc_actions;
 /

@@ -28,7 +28,7 @@ begin
 
   pit_admin.merge_message(
     p_pms_name => 'SADC_EMAIL_IN_USE',
-    p_pms_text => 'Die Email-Adresse #1# wird bereits verwendet.',
+    p_pms_text => 'Die E-Mail-Adresse #1# wird bereits verwendet.',
     p_pms_pse_id => pit.level_error,
     p_pms_description => null,
     p_pms_pmg_name => 'SADC',

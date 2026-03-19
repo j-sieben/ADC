@@ -17,6 +17,7 @@ prompt &h3.Create views
 @&tool_dir.create_view sadc_ui_home
 @&tool_dir.create_view sadc_ui_menu_cat
 @&tool_dir.create_view sadc_ui_menu_cat_items
+@&tool_dir.create_view sadc_ui_sample
 @&tool_dir.create_view sadc_ui_tutorial
 
 prompt &h2.Create Translatable items

@@ -450,29 +450,6 @@ as
   end remove_error_for_item;
 
 
-  procedure set_event_data(
-    p_cpi_id in varchar2,
-    p_event_type in varchar2,
-    p_message_name in varchar2,
-    p_msg_args in msg_args default null)
-  as
-  begin
-    pit.enter_mandatory(
-      p_params => msg_params(
-                    msg_param('p_cpi_id', p_cpi_id),
-                    msg_param('p_event_type', p_event_type),
-                    msg_param('p_message_name', p_message_name)));
-
-    adc_actions.set_event_data(
-      p_cpi_id => p_cpi_id,
-      p_event_type => p_event_type,
-      p_message_name => p_message_name,
-      p_msg_args => p_msg_args);
-
-    pit.leave_mandatory;
-  end set_event_data;
-
-
   procedure set_session_state(
     p_cpi_id in adc_page_items.cpi_id%type,
     p_value in varchar2 default null,

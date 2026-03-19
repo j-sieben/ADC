@@ -3,7 +3,7 @@ echo -n "Enter APEX workspace schema for ADC [ENTER] "
 read OWNER
 
 
-read -s -p "Enter password for ${OWNER} [ENTER] " PWD
+read -s -p "Enter password for ${OWNER} [ENTER] " OWNER_PWD
 echo 
 
 echo -n "Enter service name for the database or PDB [ENTER] "
@@ -18,6 +18,6 @@ read APP_ID
 NLS_LANG=GERMAN_GERMANY.AL32UTF8
 export NLS_LANG
 
-sqlplus ${OWNER}/${PWD}@${SERVICE} @install_scripts/install_core.sql ${WORKSPACE}
+sqlplus ${OWNER}/${OWNER_PWD}@${SERVICE} @install_scripts/install_core.sql ${WORKSPACE}
 
-sqlplus ${OWNER}/${PWD}@${SERVICE} @install_scripts/install_apex.sql ${WORKSPACE} ${APP_ID}
+sqlplus ${OWNER}/${OWNER_PWD}@${SERVICE} @install_scripts/install_apex.sql ${WORKSPACE} ${APP_ID}

@@ -77,8 +77,12 @@ Then it runs:
 - Core PL/SQL packages include `adc_internal`, `adc_api`, `adc_admin`, `adc_page_state`, `adc_response`, and others.
 - Core API exposure appears intentionally split between internal packages and extensible object types `adc_basic` and `adc`.
 - Plugin static assets exist for at least APEX `20.2` and `24.1`.
-- The plugin file set for `24.1` includes `utils.js`, which is absent in the `20.2` file set.
-- Documentation in `DOC/` is substantial and already explains the architecture in enough detail to onboard quickly.
+- The current `24.1` JavaScript file set is intentionally compact: `utils.js`, `renderer.js`, `controller.js`, `actions.js`, plus minified variants.
+- Shared runtime state and callback registration currently live inside `controller.js`; there are no standalone `state.js` or `callbacks.js` files anymore.
+- Documentation in `DOC/` is split deliberately:
+  - handwritten docs remain at the root of `DOC`
+  - generated Natural Docs API output now lives in `DOC/api-doc`
+  - developer-facing architecture notes now live in `DOC/developer`
 
 ## Working assumptions for future sessions
 

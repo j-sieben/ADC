@@ -535,23 +535,6 @@ as
     
     
   /** 
-    Procedure: set_event_data
-      Method to create a JSON event data instance with a predefined form
-
-    Parameters:
-      p_cpi_id - page item that stores the create event data
-      p_event_type - page item to set
-      p_message_name - Name of a PIT message
-      p_msg_args - Optional message arguments
-   */
-  procedure set_event_data(
-    p_cpi_id in varchar2,
-    p_event_type in varchar2,
-    p_message_name in varchar2,
-    p_msg_args in msg_args default null);
-    
-    
-  /** 
     Procedure: set_session_state
       Wrapper around apex_util to set a value in the session state.
       

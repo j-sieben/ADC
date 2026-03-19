@@ -96,15 +96,5 @@ as
     p_page_items in varchar2 default null);
   
   
-  /**
-    Procedure: set_event_data
-      See <ADC_API.set_event_data>
-   */
-  procedure set_event_data(
-    p_cpi_id in varchar2,
-    p_event_type in varchar2,
-    p_message_name in varchar2,
-    p_msg_args in msg_args default null);
-    
 end adc_actions;
 /

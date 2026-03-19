@@ -64,7 +64,7 @@ select lower(data_type) ||
 
 begin
   if '&APEX_PATH.' is null then
-    raise_application_error(-20000, 'APEX 20.2 or higher is required to install APC');
+    raise_application_error(-20000, 'APEX 20.2 or higher is required to install ADC');
   end if;
 end;
 /

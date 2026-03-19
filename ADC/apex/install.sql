@@ -34,7 +34,7 @@ prompt &h3.Create views
 @&tool_dir.create_view adca_ui_lov_page_item_type_group
 @&tool_dir.create_view adca_ui_lov_page_items_p11
 @&tool_dir.create_view adca_ui_lov_page_items
-@&tool_dir.create_view adca_ui_lov_pit_message
+@&tool_dir.create_lov_view adca_ui_lov_pit_message
 @&tool_dir.create_view adca_ui_lov_yes_no
 @&tool_dir.create_view adca_ui_admin_cat
 @&tool_dir.create_view adca_ui_admin_caif
@@ -55,6 +55,7 @@ prompt &h3.Create views
 @&tool_dir.create_view adca_ui_edit_capt_static_list
 @&tool_dir.create_view adca_ui_edit_csm
 @&tool_dir.create_view adca_ui_list_action_type
+@&tool_dir.create_view adca_ui_list_page_items
 
 prompt &h3.Create ADCA messages
 @&msg_dir.MessageGroup_ADCA.sql
@@ -78,8 +79,6 @@ prompt &h2.Scripts
 @&tool_dir.run_script adca_lu_designer_actions
 @&tool_dir.run_script adca_map_designer_actions
 --@&tool_dir.run_script splitter_plugin
-
-define script_dir=apex/apex_20_2/scripts/
 
 prompt &h2.Version specific installation
 @&apex_version_dir.install.sql

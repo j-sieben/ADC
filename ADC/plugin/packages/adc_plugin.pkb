@@ -10,7 +10,7 @@ as
       Juergen Sieben, ConDeS GmbH
    */
   /**  Package constants */
-  C_CS_ISO constant adc_util.ora_name_type := 'WE8ISO8859P1';
+  C_CS_UTF8 constant adc_util.ora_name_type := 'AL32UTF8';
   C_EVENT_INITIALIZE constant adc_util.ora_name_type := 'initialize';
   C_JS_FUNCTION constant varchar2(50 byte) := 'de_condes_plugin_adc';
   
@@ -43,26 +43,32 @@ as
   
   
   /**
-    Function: get_database_character_set (result_cache)
-      
-    Returns: Character set of the database
+    Function: encode_clob_utf8_base64
+      Convert a CLOB into an AL32UTF8 byte stream and base64-encode it for safe
+      transport inside plugin attributes.
+
+    Parameter:
+      p_clob - CLOB to encode
+
+    Returns:
+      Base64 encoded UTF-8 representation of p_clob
    */
-  function get_database_character_set
-    return adc_util.ora_name_type
-    result_cache
+  function encode_clob_utf8_base64(
+    p_clob in clob)
+    return clob
   as
-    l_cs adc_util.ora_name_type;
+    l_encoded clob;
+    l_length binary_integer;
   begin
-    select value nls_charset
-      into l_cs
-      from nls_database_parameters 
-     where parameter='NLS_CHARACTERSET';
-    return l_cs;
-  exception
-    when NO_DATA_FOUND then
-      -- character set is UTF8 already, no need to convert
-      return null;
-  end get_database_character_set;
+    pit.enter_detailed('encode_clob_utf8_base64');
+
+    l_encoded := utl_text.clob_to_base64(p_clob);
+    l_length := dbms_lob.getlength(l_encoded);
+    pit.assert(l_length <= 32000, msg.ADC_INITIALIZE_SCRIPT_TOO_LONG);
+
+    pit.leave_detailed;
+    return l_encoded;
+  end encode_clob_utf8_base64;
   
   
   /**
@@ -75,6 +81,7 @@ as
     return apex_plugin.t_dynamic_action_render_result
   as
     l_result apex_plugin.t_dynamic_action_render_result;
+    l_encoded_script clob;
     l_java_script adc_util.max_char;
   begin
     pit.enter_mandatory;
@@ -91,14 +98,12 @@ as
          p_event => coalesce(apex_application.g_x02, C_EVENT_INITIALIZE),
          p_event_data => apex_application.g_x03) then
     
-      -- Process initialization rules of ADC for that page. 
-      -- Response is a JavaScript that is executed on the page, converted to C_CS_ISO if necessary.
-      -- The response gets converted to a hex representation to circumvent JSON formatting problems
+      -- Process initialization rules of ADC for that page.
+      -- Response is JavaScript executed on the page and transported as
+      -- AL32UTF8 base64 to avoid JSON and character set issues.
       l_java_script := adc_internal.process_request;
-      if get_database_character_set != C_CS_ISO then
-        l_java_script := convert(l_java_script, C_CS_ISO);
-      end if;
-      l_java_script := utl_raw.cast_to_raw(l_java_script);
+      l_java_script := encode_clob_utf8_base64(l_java_script);
+
       
       -- Compose Javascript for plugin instantiation on the page
       l_result.javascript_function := C_JS_FUNCTION;
@@ -115,6 +120,12 @@ as
     
     pit.leave_mandatory;
     return l_result;
+  exception
+    when msg.ADC_INITIALIZE_SCRIPT_TOO_LONG_ERR then
+      utl_apex.register_error(
+        p_message => msg.ADC_INITIALIZE_SCRIPT_TOO_LONG);
+      pit.leave_mandatory;
+      return l_result;
   end render;
   
   

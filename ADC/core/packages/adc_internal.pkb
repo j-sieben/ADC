@@ -1242,7 +1242,14 @@ as
     if l_row.cat_pl_sql is not null then
       l_pl_sql := generate_parameterized_code('PLSQL', l_row);
       l_pl_sql := replace(C_PLSQL_CODE_TEMPLATE, '#CODE#', l_pl_sql);
-      execute immediate l_pl_sql;
+      begin
+        execute immediate l_pl_sql;
+      exception
+        when others then
+          pit.handle_exception(msg.ADC_PLSQL_ERROR, msg_args(l_pl_sql));
+          register_error(l_row.cra_item, msg.ADC_PLSQL_ERROR, msg_args(apex_escape.json(l_pl_sql)));
+          stop_rule;
+      end;
     end if;
 
     if l_row.cat_js is not null then
@@ -1251,9 +1258,11 @@ as
     end if;
   exception
     when NO_DATA_FOUND then
-      register_error('DOCUMENT', msg.ADC_ACTION_DOES_NOT_EXIST, msg_args(p_cat_id));
+      register_error(adc_util.C_NO_FIRING_ITEM, msg.ADC_ACTION_DOES_NOT_EXIST, msg_args(p_cat_id));
     when others then
-      pit.handle_exception(msg.ADC_PLSQL_ERROR, msg_args(l_row.cat_pl_sql));
+      pit.handle_exception(msg.ADC_PLSQL_ERROR, msg_args(coalesce(l_pl_sql, l_row.cat_pl_sql)));
+      register_error(adc_util.C_NO_FIRING_ITEM, msg.ADC_PLSQL_ERROR, msg_args(apex_escape.json(coalesce(l_pl_sql, l_row.cat_pl_sql))));
+      stop_rule;
   end execute_action;
 
 
@@ -1636,13 +1645,13 @@ as
     apex_json.free_output;
   exception
     when NO_DATA_FOUND then
+      adc_util.close_cursor(l_ctx);
       apex_json.free_output;
       pit.leave_mandatory;
     when others then
-      adc_response.add_comment(msg.ADC_NO_DATA_FOR_ITEM, msg_args(coalesce(p_cpi_id, substr(sqlerrm, 12))));
-      set_session_state(
-        p_cpi_id => p_cpi_id,
-        p_value => '');
+      adc_util.close_cursor(l_ctx);
+      pit.handle_exception(msg.ADC_PLSQL_ERROR, msg_args(l_stmt));
+      register_error(coalesce(p_cpi_id, adc_util.C_NO_FIRING_ITEM), msg.ADC_PLSQL_ERROR, msg_args(apex_escape.json(l_stmt)));
       apex_json.free_output;
       pit.leave_mandatory;
   end set_value_from_statement;

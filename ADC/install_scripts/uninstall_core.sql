@@ -1,7 +1,7 @@
 -- Parameters:
 -- None
 
-@tools/init_apex.sql ADC
+@tools/init.sql
 clear screen
 
 prompt &h1.APEX Dynamic Controller (ADC) Deinstallation

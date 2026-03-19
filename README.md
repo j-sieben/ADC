@@ -40,3 +40,11 @@ It is meant as a showcase application only and expects ADC to be installed on th
 ## Installation
 
 To install ADC, see the instructions [here](https://github.com/j-sieben/ADC/blob/main/DOC/Installation.md).
+
+## Documentation
+
+Documentation is split into three parts:
+
+- Conceptual and installation documents in [`DOC/`](./DOC/README.md)
+- Developer-facing architecture notes in [`DOC/developer/`](./DOC/developer/Home.md)
+- Generated API reference in [`DOC/api-doc/`](./DOC/api-doc/index.html)

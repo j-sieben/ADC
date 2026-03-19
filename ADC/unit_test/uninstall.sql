@@ -12,8 +12,8 @@ declare
           select object_name name, object_type type
             from user_objects
            where object_name in (
-                 'UT_ADC_JS_REC', 'UT_ADC_JS_LIST', 'UT_ADC_RESULT', 'UT_ADC_LIST', 'UT_ADC_ROW', -- Typen
-                 'UT_ADC_ADMIN',  'UT_ADC_INTERNAL',  'UT_ADC_PAGE_STATE',  'UT_ADC_RECURSION_STAXCK',  'UT_ADC_UTIL',  'UT_ADC',  -- Packages
+                 'UT_ADC_JS_REC', 'UT_ADC_JS_LIST', 'UT_ADC_RESULT', 'UT_ADC_LIST', 'UT_ADC_PARAM', 'UT_ADC_ROW', -- Typen
+                 'UT_ADC_ADMIN',  'UT_ADC_INTERNAL',  'UT_ADC_PAGE_STATE',  'UT_ADC_RECURSION_STACK',  'UT_ADC_UTIL',  'UT_ADC',  -- Packages
                  '', -- Views
                  'UT_ADC_OUTCOME',  -- Tabellen
                  '',  -- Synonyme

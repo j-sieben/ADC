@@ -443,7 +443,7 @@ as
     l_changed_items := adc_page_state.get_changed_items_as_json;
     l_remaining_length := l_remaining_length - coalesce(length(l_changed_items), 0);
     l_firing_items := adc_recursion_stack.get_firing_items_as_json;
-    l_remaining_length := l_remaining_length - coalesce(length(l_response), 0);
+    l_remaining_length := l_remaining_length - coalesce(length(l_firing_items), 0);
     l_errors := get_errors_as_json(l_remaining_length);
     
     l_response := adc_util.bulk_replace(l_response, adc_util.string_table(

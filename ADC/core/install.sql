@@ -49,7 +49,15 @@ prompt &h3.Create views
 @&tool_dir.create_view adc_bl_bind_items
 @&tool_dir.create_view adc_bl_page_items
 @&tool_dir.create_view adc_bl_page_targets
-@&tool_dir.create_view adc_bl_page_targets
+@&tool_dir.create_lov_view adc_param_lov_event
+@&tool_dir.create_lov_view adc_param_lov_free_page_items
+@&tool_dir.create_lov_view adc_param_lov_input_fields
+@&tool_dir.create_lov_view adc_param_lov_item_status
+@&tool_dir.create_lov_view adc_param_lov_page_item
+@&tool_dir.create_lov_view adc_param_lov_pit_message
+@&tool_dir.create_lov_view adc_param_lov_sequence
+@&tool_dir.create_lov_view adc_param_lov_string_on_parameter
+@&tool_dir.create_lov_view adc_param_lov_submit_type
 
 @&tool_dir.recompile.sql
 
