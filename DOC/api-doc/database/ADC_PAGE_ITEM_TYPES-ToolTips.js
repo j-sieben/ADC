@@ -1,0 +1,1 @@
+﻿NDContentPage.OnToolTipsLoaded({262:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store page item events supported by ADC.</div></div>",270:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store page item type groups supported by ADC.</div></div>"});

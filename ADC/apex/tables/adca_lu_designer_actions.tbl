@@ -1,3 +1,13 @@
+/*
+  Table: ADCA_LU_DESIGNER_ACTIONS
+    Lookup for actions the ADC designer supports
+
+  Columns:
+    alda_id - Technical Key
+    alda_name - Display name
+    alda_active - Flag to indicate whether this action is actually in use
+*/
+
 create table adca_lu_designer_actions(
   alda_id varchar2(128 byte), 
 	alda_name varchar2(128 byte), 

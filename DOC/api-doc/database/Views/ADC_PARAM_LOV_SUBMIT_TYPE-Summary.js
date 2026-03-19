@@ -1,1 +1,0 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_PARAM_LOV_SUBMIT_TYPE","ADC_PARAM_LOV_SUBMIT_TYPE");NDSummary.OnSummaryLoaded("Database:Views.ADC_PARAM_LOV_SUBMIT_TYPE",[["SQL","SQL"]],[["Views","DatabaseView"]],[[321,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_PARAM_LOV_SUBMIT_TYPE"]]);

@@ -1,4 +1,4 @@
-﻿Format: 2.2
+﻿Format: 2.3.1
 
 # This is the main file you use to configure Natural Docs for your project.
 

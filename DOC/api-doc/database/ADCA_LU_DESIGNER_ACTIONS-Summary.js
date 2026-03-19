@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:ADCA_LU_DESIGNER_ACTIONS","ADCA_LU_DESIGNER_ACTIONS");NDSummary.OnSummaryLoaded("Database:ADCA_LU_DESIGNER_ACTIONS",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[9,0,0,"ADCA_LU_DESIGNER_ACTIONS"]]);

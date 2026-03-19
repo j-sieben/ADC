@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:ADC_EVENT_TYPES",{262:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store page item events supported by ADC.</div></div>"});

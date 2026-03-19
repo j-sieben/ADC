@@ -1,1 +1,0 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADCA_UI_LOV_ACTION_PARAM_VISUAL_TYPE",{285:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">LOV-View for ADC_ACTION_PARAM_VISUAL_TYPE</div></div>"});

@@ -288,7 +288,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     executeResponse: function (pCode) {
       var ScriptSelector;
       if (pCode) {
-        apex.debug.trace(`${C_FILE_NAME} - Response received`, pCode);
+        console.log(`${C_FILE_NAME} - Response received`, pCode);
         $(C_BODY).append(pCode);
         ScriptSelector = '#' + $(pCode).attr('id');
         $(ScriptSelector).remove();

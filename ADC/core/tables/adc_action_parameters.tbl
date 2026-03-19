@@ -1,3 +1,23 @@
+/*
+  Table: ADC_ACTION_PARAMETERS
+    Table to store ADC action parameters.
+
+  Columns:
+    cap_cat_id - Part of PK, Reference to ADC_ACTION_TYPE
+    cap_capt_id - Part of PK, Reference to ADC_ACTION_PARAM_TYPE
+    cap_sort_seq - Part of PK, Sort criterium, limits number of attributes according to check constraint. Defaults to 1
+    cap_default - Optional default value for parameter
+    cap_pti_id - Reference to PIT_TRANSLATABLE_ITEM, translatable NAME
+    cap_pmg_name - Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC
+    cap_mandatory - Flag to indicate whether action parameter is mandatory for the action type. Defaults to FALSE
+    cap_active - Flag to indicate whether action parameter is in use. Defaults to TRUE
+
+  References:
+    cap_cat_id - references <ADC_ACTION_TYPES> (cat_id)
+    cap_capt_id - references <ADC_ACTION_PARAM_TYPES> (capt_id)
+    cap_pti_id, cap_pmg_name -> PIT_TRANSLATABLE_ITEM (pti_uid, pti_upmg)
+*/
+
 create table adc_action_parameters(
   cap_cat_id varchar2(50 char) constraint c_cap_cat_id_nn not null,
   cap_capt_id varchar2(50 char) constraint c_cap_capt_id_nn not null,

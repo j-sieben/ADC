@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("File:apex/tables/adca_lu_designer_modes.tbl","adca_lu_designer_modes.tbl");NDSummary.OnSummaryLoaded("File:apex/tables/adca_lu_designer_modes.tbl",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[8,0,0,"ADCA_LU_DESIGNER_MODES","ADCA_LU_DESIGNER_MODES"]]);

@@ -1,3 +1,22 @@
+/*
+  Table: ADC_ACTION_PARAM_TYPES
+    Table to store ADC action parameter types.
+
+  Columns:
+    capt_id - PK, technical key
+    capt_pti_id - Reference to PIT_TRANSLATABLE_ITEM, translatable NAME
+    capt_pmg_name - Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC
+    capt_capvt_id - Reference to ADC_ACTION_PARAM_VISUAL_TYPES, type of visual control to use for this parameter type
+    capt_select_list_query - Optional SQL query for static or dynamic parameter types
+    capt_select_view_comment - Optional comment to explain what the select list contains
+    capt_sort_seq - Sort criteria
+    capt_active - Flag to indicate whether parameter type is in use
+
+  References:
+    capt_pti_id, capt_pmg_name -> PIT_TRANSLATABLE_ITEM (pti_uid, pti_upmg)
+    capt_capvt_id - references <ADC_ACTION_PARAM_VISUAL_TYPES> (capvt_id)
+*/
+
 create table adc_action_param_types(
   capt_id varchar2(50 char) constraint c_capt_id_nn not null,
   capt_pti_id varchar2(50 char) constraint c_capt_pti_id_nn not null,

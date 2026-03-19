@@ -1,1 +1,0 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADCA_UI_LOV_ACTION_PARAM_TYPE",{});

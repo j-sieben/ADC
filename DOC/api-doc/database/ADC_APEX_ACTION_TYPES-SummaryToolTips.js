@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:ADC_APEX_ACTION_TYPES",{266:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store the allowed APEX action types.</div></div>"});

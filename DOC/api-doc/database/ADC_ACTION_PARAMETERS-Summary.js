@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:ADC_ACTION_PARAMETERS","ADC_ACTION_PARAMETERS");NDSummary.OnSummaryLoaded("Database:ADC_ACTION_PARAMETERS",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[259,0,0,"ADC_ACTION_PARAMETERS"]]);

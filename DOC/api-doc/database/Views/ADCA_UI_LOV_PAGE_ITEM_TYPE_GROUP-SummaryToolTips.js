@@ -1,1 +1,0 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADCA_UI_LOV_PAGE_ITEM_TYPE_GROUP",{300:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">LOV-Views for page item types</div></div>"});

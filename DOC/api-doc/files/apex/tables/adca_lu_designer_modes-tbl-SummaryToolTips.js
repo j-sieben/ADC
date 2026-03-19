@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("File:apex/tables/adca_lu_designer_modes.tbl",{8:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Lookup for modes the ADC designer can be at</div></div>"});

@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("sub",["Function"],[["submit",,[[,,,,0,"File:plugin/files/adc/js/actions.js:submit"]]],["submit_page",,[[,,,,0,"File:core/types/adc_basic.tps:submit_page"]]],["submitPage",,[[,,,,0,"File:plugin/files/adc/js/renderer.js:submitPage"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("sub",["Function"],[["submit",,[[,,,,0,"File:plugin/files/adc_20_2/js/actions.js:submit"]]],["submit_page",,[[,,,,0,"File:core/types/adc_basic.tps:submit_page"]]],["submitPage",,[[,,,,0,"File:plugin/files/adc_20_2/js/renderer.js:submitPage"]]]]);

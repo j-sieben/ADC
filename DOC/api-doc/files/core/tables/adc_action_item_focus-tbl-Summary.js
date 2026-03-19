@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("File:core/tables/adc_action_item_focus.tbl","adc_action_item_focus.tbl");NDSummary.OnSummaryLoaded("File:core/tables/adc_action_item_focus.tbl",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[268,0,0,"ADC_ACTION_ITEM_FOCUS","ADC_ACTION_ITEM_FOCUS"]]);

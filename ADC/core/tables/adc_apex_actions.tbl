@@ -1,3 +1,39 @@
+/*
+  Table: ADC_APEX_ACTIONS
+    Table to store APEX actions to be maintained by ADC.
+
+  Columns:
+    caa_id - Technical key, PK
+    caa_crg_id - Part of Unique, Reference to ADC_RULE_GROUP
+    caa_caat_id - Type of the action. Reference to ADC_APEX_ACTION_TYPES
+    caa_name - Part of Unique, a unique name for the action within that ADC rule group
+    caa_pti_id - Display name of the action. Reference to PIT_TRANSLATABLE_ITEM
+    caa_pmg_name - Message group, fixed to value ADC
+    caa_confirm_message_name - Optional PIT message for confirmation
+    caa_confirm_type - Message type of the confirmation message
+    caa_icon - Icon for the action
+    caa_icon_type - Icon type, defaults to Font APEX
+    caa_shortcut - Keyboard shortcut to invoke the action
+    caa_initially_disabled - Flag to indicate whether this action is initially disabled
+    caa_initially_hidden - Flag to indicate whether this action is initially hidden
+    caa_href - URL for navigation actions
+    caa_action - JavaScript callback definition for the action
+    caa_on_label - Label when a toggle action is true
+    caa_off_label - Label when a toggle action is false
+    caa_get - Getter callback for toggle and radio group actions
+    caa_set - Setter callback for toggle and radio group actions
+    caa_choices - SQL statement to create radio group choices
+    caa_label_classes - Classes to add to all radio labels
+    caa_label_start_classes - Classes to add to the first radio label
+    caa_label_end_classes - Classes to add to the last radio label
+    caa_item_wrap_class - Classes to add to the wrapper element
+
+  References:
+    caa_crg_id - references <ADC_RULE_GROUPS> (crg_id)
+    caa_caat_id - references <ADC_APEX_ACTION_TYPES> (caat_id)
+    caa_pti_id, caa_pmg_name -> PIT_TRANSLATABLE_ITEM (pti_uid, pti_upmg)
+*/
+
 create table adc_apex_actions(
   caa_id number default on null adc_seq.nextval constraint c_caa_id_nn not null, 
   caa_crg_id number constraint c_caa_crg_id_nn not null, 

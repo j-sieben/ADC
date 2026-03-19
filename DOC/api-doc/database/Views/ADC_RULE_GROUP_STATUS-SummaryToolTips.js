@@ -1,1 +1,0 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_RULE_GROUP_STATUS",{322:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Wrapper view around the apex collection containing the list of mandatory items</div></div>"});

@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("File:apex/tables/adca_lu_designer_actions.tbl",{9:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Lookup for actions the ADC designer supports</div></div>"});

@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("File:core/tables/adc_action_type_owners.tbl",{265:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store ADC action type owners and group action types into owner schemes.</div></div>"});

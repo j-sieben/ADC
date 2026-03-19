@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:ADCA_MAP_DESIGNER_ACTIONS",{272:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Decision table for the page state of the ADC designer in response to a combination of mode and APEX action raised by the user.</div></div>"});

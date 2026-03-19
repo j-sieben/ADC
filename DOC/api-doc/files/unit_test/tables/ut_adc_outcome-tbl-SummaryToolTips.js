@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("File:unit_test/tables/ut_adc_outcome.tbl",{3:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store the outcome of ADC operations during tests.</div></div>"});

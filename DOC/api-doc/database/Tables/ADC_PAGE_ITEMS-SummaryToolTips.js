@@ -1,1 +1,0 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Tables.ADC_PAGE_ITEMS",{251:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store all page items of the referenced page</div></div>"});

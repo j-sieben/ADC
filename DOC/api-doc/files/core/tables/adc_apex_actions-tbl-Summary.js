@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("File:core/tables/adc_apex_actions.tbl","adc_apex_actions.tbl");NDSummary.OnSummaryLoaded("File:core/tables/adc_apex_actions.tbl",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[264,0,0,"ADC_APEX_ACTIONS","ADC_APEX_ACTIONS"]]);

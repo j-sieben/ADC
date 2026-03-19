@@ -1,3 +1,17 @@
+/*
+  Table: ADC_ACTION_TYPE_GROUPS
+    Table to store ADC action type groups.
+
+  Columns:
+    catg_id - PK, technical key
+    catg_pti_id - Reference to PIT_TRANSLATABLE_ITEM, translatable NAME
+    catg_pmg_name - Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC
+    catg_active - Flag to indicate whether rule group is in use
+
+  References:
+    catg_pti_id, catg_pmg_name -> PIT_TRANSLATABLE_ITEM (pti_uid, pti_upmg)
+*/
+
 create table adc_action_type_groups(
   catg_id varchar2(50 char) constraint c_catg_id_nn not null,
   catg_pti_id varchar2(50 char) constraint c_catg_pti_id_nn not null,
@@ -18,4 +32,3 @@ comment on column adc_action_type_groups.catg_id is 'PK, technical key';
 comment on column adc_action_type_groups.catg_pti_id is 'Reference to PIT_TRANSLATABLE_ITEM, translatable NAME';
 comment on column adc_action_type_groups.catg_pmg_name is 'Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC';
 comment on column adc_action_type_groups.catg_active is 'Flag to indicate whether rule group is in use';
-

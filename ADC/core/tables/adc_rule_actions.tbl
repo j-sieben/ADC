@@ -1,3 +1,30 @@
+/*
+  Table: ADC_RULE_ACTIONS
+    Table to store activities per rule.
+
+  Columns:
+    cra_id - PK
+    cra_crg_id - Unique, references ADC_RULE
+    cra_cru_id - Unique, references ADC_RULE
+    cra_cpi_id - Unique, references ADC_PAGE_ITEM
+    cra_cat_id - Unique, references ADC_ACTION_TYPE
+    cra_on_error - Flag to indicate whether the rule action shall be executed only in case of a PL/SQL error
+    cra_param_1 - Optional first parameter, passed to ACTION_TYPE
+    cra_param_2 - Optional second parameter, passed to ACTION_TYPE
+    cra_param_3 - Optional third parameter, passed to ACTION_TYPE
+    cra_comment - Optional comment to describe the action
+    cra_raise_recursive - Flag to indicate whether the rule action triggers recursive rule execution
+    cra_raise_on_validation - Flag to indicate whether this action is executed when validating a page
+    cra_sort_seq - Sorting criteria to control execution flow
+    cra_active - Flag to indicate whether RULE_ACTION is in use
+    cra_has_error - Flag to indicate whether RULE_ACTION has an error
+
+  References:
+    cra_cat_id - references <ADC_ACTION_TYPES> (cat_id)
+    cra_crg_id, cra_cpi_id - references <ADC_PAGE_ITEMS> (cpi_crg_id, cpi_id)
+    cra_cru_id - references <ADC_RULES> (cru_id)
+*/
+
 create table adc_rule_actions(
   cra_id number default on null adc_seq.nextval constraint nn_cra_id not null, 
   cra_crg_id number constraint c_cra_crg_id_nn not null, 
@@ -49,4 +76,3 @@ comment on column adc_rule_actions.cra_raise_on_validation is 'Flag to indicate 
 comment on column adc_rule_actions.cra_sort_seq is 'Sorting criteria to control execution flow. Defaults to 10';
 comment on column adc_rule_actions.cra_active is 'Flag to indicate whether RULE_ACTION is in use actually. Defaults to TRUE';
 comment on column adc_rule_actions.cra_has_error is 'Flag to indicate whether RULE_ACTION has got an error. Defaults to FALSE';
-

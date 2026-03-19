@@ -1,0 +1,1 @@
+﻿NDContentPage.OnToolTipsLoaded({263:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store all page items of the referenced page.</div></div>",264:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store APEX actions to be maintained by ADC.</div></div>"});

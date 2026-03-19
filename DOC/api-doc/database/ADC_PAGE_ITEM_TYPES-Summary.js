@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:ADC_PAGE_ITEM_TYPES","ADC_PAGE_ITEM_TYPES");NDSummary.OnSummaryLoaded("Database:ADC_PAGE_ITEM_TYPES",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[10,0,0,"ADC_PAGE_ITEM_TYPES"]]);

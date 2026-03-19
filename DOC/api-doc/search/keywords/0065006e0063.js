@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("enc",["Function"],[["encode_clob_utf8_base64",,[["ADC_PLUGIN Body",,,,0,"File:plugin/packages/adc_plugin.pkb:ADC_PLUGIN_Body.encode_clob_utf8_base64","SQLClass:ADC_PLUGIN_Body:encode_clob_utf8_base64"]]]]);

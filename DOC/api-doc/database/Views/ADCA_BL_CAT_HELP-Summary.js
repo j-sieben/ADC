@@ -1,1 +1,0 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADCA_BL_CAT_HELP","ADCA_BL_CAT_HELP");NDSummary.OnSummaryLoaded("Database:Views.ADCA_BL_CAT_HELP",[["SQL","SQL"]],[["Views","DatabaseView"]],[[264,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADCA_BL_CAT_HELP"]]);

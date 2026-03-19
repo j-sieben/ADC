@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("File:apex/tables/adca_map_form_items.tbl","adca_map_form_items.tbl");NDSummary.OnSummaryLoaded("File:apex/tables/adca_map_form_items.tbl",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[7,0,0,"ADCA_MAP_FORM_ITEMS","ADCA_MAP_FORM_ITEMS"]]);

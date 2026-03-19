@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:ADC_ACTION_TYPE_OWNERS","ADC_ACTION_TYPE_OWNERS");NDSummary.OnSummaryLoaded("Database:ADC_ACTION_TYPE_OWNERS",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[265,0,0,"ADC_ACTION_TYPE_OWNERS"]]);

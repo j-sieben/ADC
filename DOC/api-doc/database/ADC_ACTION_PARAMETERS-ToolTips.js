@@ -1,0 +1,1 @@
+﻿NDContentPage.OnToolTipsLoaded({269:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store different action types as templates for actions.</div></div>",961:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store ADC action parameter types.</div></div>"});

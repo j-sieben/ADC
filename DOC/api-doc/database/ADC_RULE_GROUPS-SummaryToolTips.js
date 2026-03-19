@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:ADC_RULE_GROUPS",{260:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store ADC rule groups.</div></div>"});

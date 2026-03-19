@@ -1,3 +1,17 @@
+/*
+  Table: ADC_APEX_ACTION_TYPES
+    Table to store the allowed APEX action types.
+
+  Columns:
+    caat_id - Primary key. One of the allowed APEX action types
+    caat_pti_id - Reference to PIT_TRANSLATABLE_ITEM, translatable NAME
+    caat_pmg_name - Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC
+    caat_active - Flag to indicate whether data is actually in use
+
+  References:
+    caat_pti_id, caat_pmg_name -> PIT_TRANSLATABLE_ITEM (pti_uid, pti_upmg)
+*/
+
 create table adc_apex_action_types(
   caat_id varchar2(50 char) constraint c_caat_id_nn not null, 
   caat_pti_id varchar2(50 char) constraint c_caat_pti_id_nn not null,

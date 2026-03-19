@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("File:core/tables/adc_rule_actions.tbl","adc_rule_actions.tbl");NDSummary.OnSummaryLoaded("File:core/tables/adc_rule_actions.tbl",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[267,0,0,"ADC_RULE_ACTIONS","ADC_RULE_ACTIONS"]]);

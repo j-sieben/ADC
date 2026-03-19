@@ -1,3 +1,29 @@
+/*
+  Table: ADC_PAGE_ITEMS
+    Table to store all page items of the referenced page.
+
+  Columns:
+    cpi_crg_id - FK, reference to ADC_RULE_GROUP
+    cpi_id - PK, technical key
+    cpi_cpit_id - FK, reference to ADC_PAGE_ITEM_TYPE
+    cpi_label - Item label
+    cpi_conversion - Conversion pattern to convert item value to required data type
+    cpi_item_default - Optional default value as entered in APEX
+    cpi_css - CSS classes per page item as entered in APEX
+    cpi_is_required - Flag to indicate whether rule conditions reference this item and therefore must be bound by ADC
+    cpi_is_mandatory - Flag to indicate whether item is mandatory and must be checked prior to submit
+    cpi_mandatory_message - Message emitted if this element is null
+    cpi_validation_method - Optional PL/SQL call to a validation method
+    cpi_may_have_value - Flag to indicate whether the page item may contain a session state value
+    cpi_form_region_id - Optional static ID of the form region a page item belongs to
+    cpi_has_error - Flag to indicate whether actions reference non-existent page items
+
+  References:
+    cpi_cpit_id - references <ADC_PAGE_ITEM_TYPES> (cpit_id)
+    cpi_crg_id - references <ADC_RULE_GROUPS> (crg_id)
+    cpi_caat_id - references <ADC_APEX_ACTION_TYPES> (caat_id)
+*/
+
 create table adc_page_items(
   cpi_crg_id number constraint c_cpi_crg_id_nn not null, 
   cpi_id varchar2(50 char) constraint c_cpi_id_nn not null, 
@@ -45,4 +71,3 @@ comment on column adc_page_items.cpi_validation_method is 'Optional PL/SQL-call 
 comment on column adc_page_items.cpi_may_have_value is 'Flag to indicate whether the page item is not hidden or display only and may contain a session state value';
 comment on column adc_page_items.cpi_form_region_id is 'Optional static ID of the form region a page item belongs to';
 comment on column adc_page_items.cpi_has_error is 'Flag to indicate whether actions reference non existent page items';
-

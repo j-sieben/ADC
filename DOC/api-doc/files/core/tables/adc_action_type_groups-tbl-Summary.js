@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("File:core/tables/adc_action_type_groups.tbl","adc_action_type_groups.tbl");NDSummary.OnSummaryLoaded("File:core/tables/adc_action_type_groups.tbl",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[257,0,0,"ADC_ACTION_TYPE_GROUPS","ADC_ACTION_TYPE_GROUPS"]]);

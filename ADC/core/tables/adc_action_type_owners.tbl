@@ -1,3 +1,13 @@
+/*
+  Table: ADC_ACTION_TYPE_OWNERS
+    Table to store ADC action type owners and group action types into owner schemes.
+
+  Columns:
+    cato_id - PK, technical key
+    cato_description - Optional technical description
+    cato_active - Flag to indicate whether rule owner is in use
+*/
+
 create table adc_action_type_owners(
   cato_id varchar2(50 char) constraint c_cato_id_nn not null,
   cato_description varchar2(200 char),
@@ -12,4 +22,3 @@ comment on table adc_action_type_owners is 'Table to store ADC Action Type Owner
 comment on column adc_action_type_owners.cato_id is 'PK, technical key';
 comment on column adc_action_type_owners.cato_description is 'Optional technical description';
 comment on column adc_action_type_owners.cato_active is 'Flag to indicate whether rule owner is in use';
-

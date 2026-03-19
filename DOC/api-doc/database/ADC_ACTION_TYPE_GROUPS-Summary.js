@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:ADC_ACTION_TYPE_GROUPS","ADC_ACTION_TYPE_GROUPS");NDSummary.OnSummaryLoaded("Database:ADC_ACTION_TYPE_GROUPS",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[257,0,0,"ADC_ACTION_TYPE_GROUPS"]]);

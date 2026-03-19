@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("File:unit_test/tables/ut_adc_outcome.tbl","ut_adc_outcome.tbl");NDSummary.OnSummaryLoaded("File:unit_test/tables/ut_adc_outcome.tbl",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[3,0,0,"UT_ADC_OUTCOME","UT_ADC_OUTCOME"]]);

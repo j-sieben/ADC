@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("File:apex/tables/adca_map_form_items.tbl",{7:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store the item list and the initialization code of the ADC Designer for performance optimization</div></div>"});

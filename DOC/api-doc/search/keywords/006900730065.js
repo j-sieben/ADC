@@ -1,1 +1,0 @@
-﻿NDSearch.OnPrefixDataLoaded("ise",["Function"],[["isEmpty",,[[,,,,0,"File:plugin/files/adc/js/utils.js:isEmpty"]]]]);

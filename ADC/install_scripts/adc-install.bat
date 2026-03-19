@@ -1,0 +1,20 @@
+@echo off
+setlocal
+
+set /p InstallUser=Enter APEX workspace schema for ADC:
+
+set "OWNER_PWD_CMD=powershell.exe -Command " ^
+$inputPass = read-host 'Enter password for %InstallUser%' -AsSecureString ; ^
+$BSTR=[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($inputPass); ^
+[System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)""
+for /f "tokens=*" %%a in ('%OWNER_PWD_CMD%') do set OWNER_PWD=%%a
+
+set /p SID=Enter service name for the database or PDB:
+set /p ApexWorkspace=Enter name of APEX workspace:
+set /p AppId=Optionally enter a new admin application ID:
+
+set nls_lang=GERMAN_GERMANY.AL32UTF8
+
+cd /d "%~dp0.."
+sqlplus %InstallUser%/%OWNER_PWD%@%SID% @install_scripts/install_core.sql %ApexWorkspace%
+sqlplus %InstallUser%/%OWNER_PWD%@%SID% @install_scripts/install_apex.sql %ApexWorkspace% %AppId%

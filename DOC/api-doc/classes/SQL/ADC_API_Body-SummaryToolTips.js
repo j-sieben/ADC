@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("SQLClass:ADC_API_Body",{949:"<div class=\"NDToolTip TClass LSQL\"><div class=\"TTSummary\">Juergen Sieben, ConDeS GmbH</div></div>"});

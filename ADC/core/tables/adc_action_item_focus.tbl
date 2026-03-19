@@ -1,3 +1,20 @@
+/*
+  Table: ADC_ACTION_ITEM_FOCUS
+    Table to store ADC Action Item focus, used to define the kind of items that may be referenced by the action.
+
+  Columns:
+    caif_id - PK, technical key
+    caif_pti_id - Reference to PIT_TRANSLATABLE_ITEM, translatable NAME
+    caif_pmg_name - Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC
+    caif_actual_page_only - Flag to indicate whether only items of the actual page should be shown
+    caif_item_types - Colon separated list of item types to show
+    caif_default - Optional default value for the item focus
+    caif_active - Flag to indicate whether rule group is in use
+
+  References:
+    caif_pti_id, caif_pmg_name -> PIT_TRANSLATABLE_ITEM (pti_uid, pti_upmg)
+*/
+
 create table adc_action_item_focus(
   caif_id varchar2(50 char) constraint c_caif_id_nn not null,
   caif_pti_id varchar2(50 char) constraint c_caif_pti_id_nn not null,

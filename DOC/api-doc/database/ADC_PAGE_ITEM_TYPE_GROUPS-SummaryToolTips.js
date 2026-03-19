@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:ADC_PAGE_ITEM_TYPE_GROUPS",{270:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store page item type groups supported by ADC.</div></div>"});

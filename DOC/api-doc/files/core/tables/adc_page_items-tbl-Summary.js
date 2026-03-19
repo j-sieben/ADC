@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("File:core/tables/adc_page_items.tbl","adc_page_items.tbl");NDSummary.OnSummaryLoaded("File:core/tables/adc_page_items.tbl",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[263,0,0,"ADC_PAGE_ITEMS","ADC_PAGE_ITEMS"]]);

@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("hex",["Function"],[["hexToChar",,[[,,,,0,"File:plugin/files/adc/js/utils.js:hexToChar"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("hex",["Function"],[["hexToChar",,[[,,,,0,"File:plugin/files/adc_20_2/js/controller.js:hexToChar"]]]]);

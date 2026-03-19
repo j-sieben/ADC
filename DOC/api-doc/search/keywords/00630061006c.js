@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("cal",["Function"],[["calculate_prev_next",,[["ADC_UI",,,,0,"File:sample_app/packages/sadc_ui.pks:ADC_UI.calculate_prev_next","SQLClass:ADC_UI:calculate_prev_next"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("cal",["Function"],[["calculate_prev_next",,[["SADC_UI",,,,0,"File:sample_app/packages/sadc_ui.pks:SADC_UI.calculate_prev_next","SQLClass:SADC_UI:calculate_prev_next"]]]]);

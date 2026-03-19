@@ -1,3 +1,22 @@
+/*
+  Table: ADC_RULES
+    Table to store a single rule.
+
+  Columns:
+    cru_id - PK, technical key
+    cru_crg_id - FK, reference to ADC_RULE_GROUP
+    cru_name - Descriptive name
+    cru_condition - Condition, syntactically in the form of a partial where clause
+    cru_sort_seq - Sort criterion defining execution order
+    cru_firing_items - List of page items referenced within cru_condition
+    cru_active - Flag indicating whether the rule should currently be used
+    cru_fire_on_page_load - Flag indicating whether this rule should fire when the page is initialized
+    cru_has_error - Flag indicating whether this rule contains an error
+
+  References:
+    cru_crg_id - references <ADC_RULE_GROUPS> (crg_id)
+*/
+
 create table adc_rules(
   cru_id number default on null adc_seq.nextval constraint nn_cru_id not null, 
   cru_crg_id number constraint c_cru_crg_id_nn not null, 
@@ -27,4 +46,3 @@ comment on column adc_rules.cru_firing_items is 'List of page items that are ref
 comment on column adc_rules.cru_active is 'Flag indicating whether the rule should be used currently. Defaults to TRUE';
 comment on column adc_rules.cru_fire_on_page_load is 'Flag indicating whether this rule should be fired when the page is initialized. Defaults to FALSE';
 comment on column adc_rules.cru_has_error is 'flag indicating whether this rule contains an error or not. Defaults to FALSE';
-

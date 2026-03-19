@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:ADC_APEX_ACTION_ITEMS","ADC_APEX_ACTION_ITEMS");NDSummary.OnSummaryLoaded("Database:ADC_APEX_ACTION_ITEMS",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[261,0,0,"ADC_APEX_ACTION_ITEMS"]]);

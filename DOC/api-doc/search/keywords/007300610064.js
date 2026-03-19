@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("sad",["Class"],[["SADC_UI",,[[,,,,0,"File:sample_app/packages/sadc_ui.pks:SADC_UI","SQLClass:SADC_UI"],[,"SADC_UI Body",,,0,"File:sample_app/packages/sadc_ui.pkb:SADC_UI_Body","SQLClass:SADC_UI_Body"]]]]);

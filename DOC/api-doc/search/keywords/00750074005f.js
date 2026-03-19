@@ -1,0 +1,1 @@
+﻿NDSearch.OnPrefixDataLoaded("ut_",["DatabaseTable"],[["UT_ADC_OUTCOME",,[[,,,,0,"File:unit_test/tables/ut_adc_outcome.tbl:UT_ADC_OUTCOME","Database:UT_ADC_OUTCOME"]]]]);

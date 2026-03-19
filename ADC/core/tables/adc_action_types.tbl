@@ -1,3 +1,26 @@
+/*
+  Table: ADC_ACTION_TYPES
+    Table to store different action types as templates for actions.
+
+  Columns:
+    cat_id - PK, alphanumeric key
+    cat_catg_id - FK, Reference to ADC_ACTION_TYPE_GROUPS, used to group action types on the UI
+    cat_caif_id - FK, Reference to ADC_ACTION_ITEM_FOCUS, used to limit the kind of items the action may reference
+    cat_pti_id - Reference to PIT_TRANSLATABLE_ITEM, translatable NAME
+    cat_pmg_name - Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC
+    cat_pl_sql - PL/SQL pattern to implement the functionality in PL/SQL
+    cat_js - JavaScript pattern to implement the functionality in JS
+    cat_is_editable - Flag to indicate whether developer is allowed to change this action type (others are required by ADC)
+    cat_raise_recursive - Flag to indicate whether action is executed if recursive level is greater than 1
+    cat_active - Flag to indicate whether data is actually in use
+
+  References:
+    cat_catg_id - references <ADC_ACTION_TYPE_GROUPS> (catg_id)
+    cat_caif_id - references <ADC_ACTION_ITEM_FOCUS> (caif_id)
+    cat_cato_id - references <ADC_ACTION_TYPE_OWNERS> (cato_id)
+    cat_pti_id, cat_pmg_name -> PIT_TRANSLATABLE_ITEM (pti_uid, pti_upmg)
+*/
+
 create table adc_action_types(
   cat_id varchar2(50 char) constraint c_cat_id_nn not null,
   cat_catg_id varchar2(50 char) constraint c_cat_catg_id_nn not null,

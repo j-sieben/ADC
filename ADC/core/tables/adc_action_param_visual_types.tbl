@@ -1,3 +1,19 @@
+/*
+  Table: ADC_ACTION_PARAM_VISUAL_TYPES
+    Table to store how a parameter type has to be displayed.
+
+  Columns:
+    capvt_id - PK, technical key
+    capvt_pti_id - Reference to PIT_TRANSLATABLE_ITEM, translatable NAME
+    capvt_pmg_name - Reference to PIT_TRANSLATABLE_ITEM, Fixed value ADC
+    capvt_param_item_extension - Extension for the parameter item on the page. Distinguishes the different types.
+    capvt_sort_seq - Sort criteria
+    capvt_active - Flag to indicate whether visual type is in use
+
+  References:
+    capvt_pti_id, capvt_pmg_name -> PIT_TRANSLATABLE_ITEM (pti_uid, pti_upmg)
+*/
+
 create table adc_action_param_visual_types(
   capvt_id varchar2(50 char) constraint c_capvt_id_nn not null,
   capvt_pti_id varchar2(50 char) constraint c_capvt_pti_id_nn not null,

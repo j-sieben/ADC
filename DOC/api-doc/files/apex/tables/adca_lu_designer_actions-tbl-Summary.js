@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("File:apex/tables/adca_lu_designer_actions.tbl","adca_lu_designer_actions.tbl");NDSummary.OnSummaryLoaded("File:apex/tables/adca_lu_designer_actions.tbl",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[9,0,0,"ADCA_LU_DESIGNER_ACTIONS","ADCA_LU_DESIGNER_ACTIONS"]]);

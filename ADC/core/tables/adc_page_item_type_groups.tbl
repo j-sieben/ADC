@@ -1,3 +1,13 @@
+/*
+  Table: ADC_PAGE_ITEM_TYPE_GROUPS
+    Table to store page item type groups supported by ADC.
+
+  Columns:
+    cpitg_id - PK, alphanumerical key
+    cpitg_has_value - Flag to indicate whether item types of this group contain a session state
+    cpitg_include_in_view - Flag to indicate whether item types of this group have to be added to the decision table regardless of whether they contain a session state value
+*/
+
 create table adc_page_item_type_groups(
   cpitg_id varchar2(50 char) constraint c_cpitg_id_nn not null, 
   cpitg_has_value &FLAG_TYPE. default on null &C_TRUE. constraint c_cpitg_has_value_nn not null, 

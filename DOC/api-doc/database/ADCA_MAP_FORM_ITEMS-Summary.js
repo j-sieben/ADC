@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:ADCA_MAP_FORM_ITEMS","ADCA_MAP_FORM_ITEMS");NDSummary.OnSummaryLoaded("Database:ADCA_MAP_FORM_ITEMS",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[7,0,0,"ADCA_MAP_FORM_ITEMS"]]);

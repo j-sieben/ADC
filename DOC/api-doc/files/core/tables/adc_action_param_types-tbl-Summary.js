@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("File:core/tables/adc_action_param_types.tbl","adc_action_param_types.tbl");NDSummary.OnSummaryLoaded("File:core/tables/adc_action_param_types.tbl",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[961,0,0,"ADC_ACTION_PARAM_TYPES","ADC_ACTION_PARAM_TYPES"]]);

@@ -1,1 +1,0 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Tables.ADCA_MAP_DESIGNER_ACTIONS","ADCA_MAP_DESIGNER_ACTIONS");NDSummary.OnSummaryLoaded("Database:Tables.ADCA_MAP_DESIGNER_ACTIONS",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[262,0,0,"<span class=\"Qualifier\">Tables.</span>&#8203;ADCA_MAP_DESIGNER_ACTIONS"]]);

@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:ADCA_LU_DESIGNER_ACTIONS",{9:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Lookup for actions the ADC designer supports</div></div>"});

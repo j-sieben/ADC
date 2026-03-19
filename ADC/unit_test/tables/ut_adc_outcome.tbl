@@ -1,3 +1,42 @@
+/*
+  Table: UT_ADC_OUTCOME
+    Table to store the outcome of ADC operations during tests.
+
+  Columns:
+    test_name - Name of the test executed
+    sort_seq - Sort criteria derived from the test number and execution step
+    cru_id - Reference to ADC_RULE, ID of the rule executed
+    cru_sort_seq - Sort criteria of the rule executed
+    cru_name - Name of the rule executed
+    cru_firing_items - List of page items ADC sees as firing
+    cru_fire_on_page_load - Flag to indicate whether this rule fires in addition to other page initialization rules
+    item - Name of the page item an action refers to
+    pl_sql - PL/SQL pattern that is executed as part of the action
+    js - JavaScript pattern that is executed as part of the action
+    cra_sort_seq - Sort criteria of the action executed
+    cra_param_1 - Optional first parameter for the action
+    cra_param_2 - Optional second parameter for the action
+    cra_param_3 - Optional third parameter for the action
+    cra_on_error - Flag to indicate whether the executed action is an exception handler
+    cru_on_error - Flag to indicate whether the executed rule has an error
+    is_first_row - Flag to indicate the first output row of a test
+    id - Name of the test executed
+    crg_id - Rule group ID
+    firing_item - Page item that actually caused the ADC activity
+    firing_event - Event that actually caused the ADC activity
+    error_dependent_items - List of page items to disable if at least one error was registered
+    bind_items - List of page items to bind event handlers to
+    firing_items - List of items that got changed during rule execution
+    error_stack - JSON instance of all exceptions that occurred during rule execution
+    recursive_stack - List of recursively called rules
+    js_action_stack - Script with all JavaScript actions to be executed in response to ADC activity
+    is_recursive - Flag to indicate whether a rule is recursive
+    level_length - Name of the test executed
+    allow_recursion - Flag that allows or disallows recursive execution of an action or rule
+    notification_stack - Additional comments on the execution of a rule
+    stop_flag - Flag that indicates that a rule execution was stopped due to an error
+*/
+
 create table ut_adc_outcome(
   test_name varchar2(255 char), 
 	sort_seq number, 

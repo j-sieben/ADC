@@ -1,1 +1,0 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADC_PARAM_LOV_ITEM_STATUS","ADC_PARAM_LOV_ITEM_STATUS");NDSummary.OnSummaryLoaded("Database:Views.ADC_PARAM_LOV_ITEM_STATUS",[["SQL","SQL"]],[["Views","DatabaseView"]],[[317,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADC_PARAM_LOV_ITEM_STATUS"]]);

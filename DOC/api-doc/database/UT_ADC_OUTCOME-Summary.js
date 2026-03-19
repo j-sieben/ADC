@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:UT_ADC_OUTCOME","UT_ADC_OUTCOME");NDSummary.OnSummaryLoaded("Database:UT_ADC_OUTCOME",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[3,0,0,"UT_ADC_OUTCOME"]]);

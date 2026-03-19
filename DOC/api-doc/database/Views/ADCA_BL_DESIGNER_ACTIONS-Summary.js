@@ -1,1 +1,0 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADCA_BL_DESIGNER_ACTIONS","ADCA_BL_DESIGNER_ACTIONS");NDSummary.OnSummaryLoaded("Database:Views.ADCA_BL_DESIGNER_ACTIONS",[["SQL","SQL"]],[["Views","DatabaseView"]],[[265,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADCA_BL_DESIGNER_ACTIONS"]]);

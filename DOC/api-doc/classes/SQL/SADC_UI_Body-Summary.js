@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("SQLClass:SADC_UI_Body","SADC_UI Body");NDSummary.OnSummaryLoaded("SQLClass:SADC_UI_Body",[["SQL","SQL"]],[["Classes","Class"],["Functions","Function"],["Groups","Group"]],[[4,0,0,"SADC_UI Body"],[5,0,2,"Functions","Functions"],[6,0,1,"copy_*app_alias*","copy_*app_alias*"]]);

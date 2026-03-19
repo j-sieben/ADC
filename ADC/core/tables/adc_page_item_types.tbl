@@ -1,3 +1,22 @@
+/*
+  Table: ADC_PAGE_ITEM_TYPES
+    Table to store page item types supported by ADC.
+
+  Columns:
+    cpit_id - PK, alphanumerical key
+    cpit_pti_id - Reference to PIT_TRANSLATABLE_ITEM, translatable NAME
+    cpit_pmg_name - Reference to PIT_TRANSLATABLE_ITEM, fixed to ADC
+    cpit_cpitg_id - Group of the page item type, reference to ADC_PAGE_ITEM_TYPE_GROUPS
+    cpit_cet_id - JavaScript event to be bound to this element type by the plugin
+    cpit_col_template - Template for creating a column in the decision table
+    cpit_init_template - Template for generating the initialization code
+
+  References:
+    cpit_pti_id, cpit_pmg_name -> PIT_TRANSLATABLE_ITEM (pti_uid, pti_upmg)
+    cpit_cpitg_id - references <ADC_PAGE_ITEM_TYPE_GROUPS> (cpitg_id)
+    cpit_cet_id - references <ADC_EVENT_TYPES> (cet_id)
+*/
+
 create table adc_page_item_types(
   cpit_id varchar2(50 char) constraint c_cpit_id_nn not null, 
   cpit_pti_id varchar2(50 char) constraint c_cpit_pti_id_nn not null,

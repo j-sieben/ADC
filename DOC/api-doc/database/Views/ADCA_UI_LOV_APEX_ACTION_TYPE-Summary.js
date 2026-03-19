@@ -1,1 +1,0 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Views.ADCA_UI_LOV_APEX_ACTION_TYPE","ADCA_UI_LOV_APEX_ACTION_TYPE");NDSummary.OnSummaryLoaded("Database:Views.ADCA_UI_LOV_APEX_ACTION_TYPE",[["SQL","SQL"]],[["Views","DatabaseView"]],[[288,0,0,"<span class=\"Qualifier\">Views.</span>&#8203;ADCA_UI_LOV_APEX_ACTION_TYPE"]]);

@@ -1,3 +1,13 @@
+/*
+  Table: ADCA_MAP_FORM_ITEMS
+    Table to store the item list and the initialization code of the ADC Designer for performance optimization
+
+  Columns:
+    amfi_id - Primary key, ID of the form region
+    amfi_create_stmt - Statement to populate a given form region for a new entry
+    amfi_edit_stmt - Statement to populate a given form region for an existing entry
+*/
+
 create table adca_map_form_items(
   amfi_id varchar2(128 byte) constraint c_amfi_id_nn not null,
   amfi_create_stmt varchar2(4000 byte) constraint c_amfi_create_stmt_nn not null,

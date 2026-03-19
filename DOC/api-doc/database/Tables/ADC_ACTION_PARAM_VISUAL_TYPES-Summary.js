@@ -1,1 +1,0 @@
-﻿NDFramePage.OnPageTitleLoaded("Database:Tables.ADC_ACTION_PARAM_VISUAL_TYPES","ADC_ACTION_PARAM_VISUAL_TYPES");NDSummary.OnSummaryLoaded("Database:Tables.ADC_ACTION_PARAM_VISUAL_TYPES",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[258,0,0,"<span class=\"Qualifier\">Tables.</span>&#8203;ADC_ACTION_PARAM_VISUAL_TYPES"]]);

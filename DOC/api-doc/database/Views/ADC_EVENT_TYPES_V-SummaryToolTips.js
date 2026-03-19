@@ -1,1 +1,0 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_EVENT_TYPES_V",{313:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Transated view on ADC_EVENT_TYPES</div></div>"});

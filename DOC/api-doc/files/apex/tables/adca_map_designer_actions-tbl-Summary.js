@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("File:apex/tables/adca_map_designer_actions.tbl","adca_map_designer_actions.tbl");NDSummary.OnSummaryLoaded("File:apex/tables/adca_map_designer_actions.tbl",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[272,0,0,"ADCA_MAP_DESIGNER_ACTIONS","ADCA_MAP_DESIGNER_ACTIONS"]]);

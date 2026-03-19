@@ -1,3 +1,13 @@
+/*
+  Table: ADCA_LU_DESIGNER_MODES
+    Lookup for modes the ADC designer can be at
+
+  Columns:
+    aldm_id - Technical Key
+    aldm_name - Display name
+    aldm_active - Flag to indicate whether this mode is actually in use
+*/
+
 create table adca_lu_designer_modes(
   aldm_id varchar2(128 byte), 
 	aldm_name varchar2(128 byte), 

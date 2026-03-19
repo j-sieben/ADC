@@ -1,1 +1,0 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Tables.ADC_RULES",{248:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store a single rule</div></div>"});

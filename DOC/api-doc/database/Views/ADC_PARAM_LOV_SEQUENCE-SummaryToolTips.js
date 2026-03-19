@@ -1,1 +1,0 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_PARAM_LOV_SEQUENCE",{320:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">List of sequences owned by the user</div></div>"});

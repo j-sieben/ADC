@@ -1,1 +1,1 @@
-﻿NDSummary.OnToolTipsLoaded("File:core/packages/adc_api.pkb",{});
+﻿NDSummary.OnToolTipsLoaded("File:core/packages/adc_api.pkb",{949:"<div class=\"NDToolTip TClass LSQL\"><div class=\"TTSummary\">Juergen Sieben, ConDeS GmbH</div></div>"});

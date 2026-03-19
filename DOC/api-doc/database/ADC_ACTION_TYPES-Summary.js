@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:ADC_ACTION_TYPES","ADC_ACTION_TYPES");NDSummary.OnSummaryLoaded("Database:ADC_ACTION_TYPES",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[269,0,0,"ADC_ACTION_TYPES"]]);

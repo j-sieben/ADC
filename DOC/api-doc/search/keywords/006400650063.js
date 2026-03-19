@@ -1,1 +1,0 @@
-﻿NDSearch.OnPrefixDataLoaded("dec",["Function"],[["decorateApexAction",,[[,,,,0,"File:plugin/files/adc/js/renderer.js:decorateApexAction"]]]]);

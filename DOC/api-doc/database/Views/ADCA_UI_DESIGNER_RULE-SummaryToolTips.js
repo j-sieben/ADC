@@ -1,1 +1,0 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADCA_UI_DESIGNER_RULE",{271:"<div class=\"NDToolTip TDatabaseView LSQL\"><div class=\"TTSummary\">Edit data for a rule</div></div>"});

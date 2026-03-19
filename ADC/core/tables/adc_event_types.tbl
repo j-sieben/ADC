@@ -1,3 +1,20 @@
+/*
+  Table: ADC_EVENT_TYPES
+    Table to store page item events supported by ADC.
+
+  Columns:
+    cet_id - PK, alphanumerical key
+    cet_pti_id - Reference to PIT_TRANSLATABLE_ITEM, translatable NAME
+    cet_pmg_name - Reference to PIT_TRANSLATABLE_ITEM, fixed to ADC
+    cet_cpitg_id - Reference to ADC_PAGE_ITEM_TYPE_GROUPS, fixed to EVENT
+    cet_column_name - Name of the event column in the decision table
+    cet_is_custom_event - Flag to indicate whether this event has to be observed explicitly by a rule action
+
+  References:
+    cet_pti_id, cet_pmg_name -> PIT_TRANSLATABLE_ITEM (pti_uid, pti_upmg)
+    cet_cpitg_id - references <ADC_PAGE_ITEM_TYPE_GROUPS> (cpitg_id)
+*/
+
 create table adc_event_types(
   cet_id varchar2(50 char) constraint c_cet_id_nn not null, 
   cet_pti_id varchar2(50 char) constraint nn_cet_pti_id not null,

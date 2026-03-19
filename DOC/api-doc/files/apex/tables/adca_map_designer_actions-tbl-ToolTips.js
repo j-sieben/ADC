@@ -1,0 +1,1 @@
+﻿NDContentPage.OnToolTipsLoaded({8:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Lookup for modes the ADC designer can be at</div></div>",9:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Lookup for actions the ADC designer supports</div></div>"});

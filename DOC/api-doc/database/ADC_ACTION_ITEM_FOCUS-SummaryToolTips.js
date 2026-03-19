@@ -1,0 +1,1 @@
+﻿NDSummary.OnToolTipsLoaded("Database:ADC_ACTION_ITEM_FOCUS",{268:"<div class=\"NDToolTip TDatabaseTable LSQL\"><div class=\"TTSummary\">Table to store ADC Action Item focus, used to define the kind of items that may be referenced by the action.</div></div>"});

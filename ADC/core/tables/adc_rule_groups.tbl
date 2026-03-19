@@ -1,3 +1,17 @@
+/*
+  Table: ADC_RULE_GROUPS
+    Table to store ADC rule groups.
+
+  Columns:
+    crg_id - PK, technical key
+    crg_app_id - ID of the APEX application the rule group refers to
+    crg_page_id - ID of the APEX page the rule group refers to
+    crg_decision_table - Decision logic to decide upon the rule to execute based on session state and event metadata
+    crg_initialization_code - Generated code to calculate the initial data of page items
+    crg_with_recursion - Flag to indicate whether the rule group allows recursive execution
+    crg_active - Flag to indicate whether the rule group is in use
+*/
+
 create table adc_rule_groups(
   crg_id number default on null adc_seq.nextval constraint nn_crg_id not null, 
   crg_app_id number constraint nn_crg_app_id not null, 
@@ -20,4 +34,3 @@ comment on column adc_rule_groups.crg_decision_table is 'Decision logic to decid
 comment on column adc_rule_groups.crg_initialization_code is 'Generated code to calculate the initial data of page items';
 comment on column adc_rule_groups.crg_with_recursion is 'Flag to indicate whether rule group allows recursive execution';
 comment on column adc_rule_groups.crg_active is 'Flag to indicate whether rule group is in use';
-

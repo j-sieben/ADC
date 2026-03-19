@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:ADC_APEX_ACTION_TYPES","ADC_APEX_ACTION_TYPES");NDSummary.OnSummaryLoaded("Database:ADC_APEX_ACTION_TYPES",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[266,0,0,"ADC_APEX_ACTION_TYPES"]]);

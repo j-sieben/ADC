@@ -1,1 +1,0 @@
-﻿NDSummary.OnToolTipsLoaded("Database:Views.ADC_ACTION_TYPE_GROUPS_V",{});

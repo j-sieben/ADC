@@ -1,3 +1,31 @@
+/*
+  Table: ADCA_MAP_DESIGNER_ACTIONS
+    Decision table for the page state of the ADC designer in response to a combination of mode and APEX action raised by the user.
+
+  Columns:
+    amda_aldm_id - Reference to ADCA_LU_DESIGNER_MODES, part of PK
+    amda_alda_id - Reference to ADCA_LU_DESIGNER_ACTIONS, part of PK
+    amda_comment - Optional comment for the mapping
+    amda_id_value - Target mode for create operations
+    amda_remember_page_state - Flag to indicate whether switching to this mode requires the actual page state to be saved
+    amda_create_button_visible - Flag to indicate whether CREATE action is visible
+    amda_create_target_mode - Mode the designer switches to after performing a CREATE
+    amda_update_button_visible - Flag to indicate whether UPDATE action is visible
+    amda_delete_button_visible - Flag to indicate whether DELETE action is visible
+    amda_delete_mode - Mode the designer uses when performing a DELETE
+    amda_delete_target_mode - Mode the designer switches to after performing a DELETE
+    amda_cancel_button_active - Flag to indicate whether CANCEL action is visible
+    amda_cancel_target_mode - Mode the designer switches to after performing a CANCEL
+
+  References:
+    amda_aldm_id - references <ADCA_LU_DESIGNER_MODES> (aldm_id)
+    amda_alda_id - references <ADCA_LU_DESIGNER_ACTIONS> (alda_id)
+    amda_create_target_mode - references <ADCA_LU_DESIGNER_MODES> (aldm_id)
+    amda_delete_mode - references <ADCA_LU_DESIGNER_MODES> (aldm_id)
+    amda_delete_target_mode - references <ADCA_LU_DESIGNER_MODES> (aldm_id)
+    amda_cancel_target_mode - references <ADCA_LU_DESIGNER_MODES> (aldm_id)
+*/
+
 create table adca_map_designer_actions(
   amda_aldm_id varchar2(3 byte), 
 	amda_alda_id varchar2(128 byte),

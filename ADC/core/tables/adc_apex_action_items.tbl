@@ -1,3 +1,18 @@
+/*
+  Table: ADC_APEX_ACTION_ITEMS
+    Table to store initial references between page items and APEX actions.
+
+  Columns:
+    caai_caa_id - Part of PK, Reference to ADC_APEX_ACTION
+    caai_cpi_crg_id - Part of PK, Reference to ADC_PAGE_ITEM
+    caai_cpi_id - Part of PK, Reference to ADC_PAGE_ITEM
+    caai_active - Flag to indicate whether page item shall be connected with this action initially
+
+  References:
+    caai_caa_id - references <ADC_APEX_ACTIONS> (caa_id)
+    caai_cpi_crg_id, caai_cpi_id - references <ADC_PAGE_ITEMS> (cpi_crg_id, cpi_id)
+*/
+
 create table adc_apex_action_items(
   caai_caa_id number constraint c_caai_caa_id_nn not null, 
   caai_cpi_crg_id number constraint c_caai_cpi_crg_id_nn not null, 
@@ -19,4 +34,3 @@ comment on column adc_apex_action_items.caai_caa_id is 'Part of PK, Refrence to 
 comment on column adc_apex_action_items.caai_cpi_crg_id is 'Part of PK, Refrence to ADC_PAGE_ITEM';
 comment on column adc_apex_action_items.caai_cpi_id is 'Part of PK, Refrence to ADC_PAGE_ITEM';
 comment on column adc_apex_action_items.caai_active is 'Flag to indicate whether page item shall be connected with this action initially';
-

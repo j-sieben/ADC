@@ -1,0 +1,1 @@
+﻿NDFramePage.OnPageTitleLoaded("Database:ADCA_LU_DESIGNER_MODES","ADCA_LU_DESIGNER_MODES");NDSummary.OnSummaryLoaded("Database:ADCA_LU_DESIGNER_MODES",[["SQL","SQL"]],[["Tables","DatabaseTable"]],[[8,0,0,"ADCA_LU_DESIGNER_MODES"]]);
