@@ -638,6 +638,19 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     }
    }; // getReportSelection
 
+   
+  /**
+    Function: handleNotification
+      Method to inform ADC about a message that was passed in. Published to be used as a fallback for client side message handling
+
+    Parameter:
+      p_Event - Message that was passed in
+   */
+  actions.handleNotification = function(pMessage){
+    adc.controller.setTriggeringElement(C_NOTIFICATION, C_NOTIFICATION_EVENT, pMessage);
+    adc.controller.execute()
+  }
+
   
   /**
     Function: hideReportFilterPanel
@@ -652,6 +665,80 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
       adc.renderer.hideReportFilterPanel(pItemId, getRegionType(pItemId));
     });
   }; // hideReportFilterPanel
+
+
+  /**
+    Function: initWebsocket
+      Method to upgrade a http connection to websocket protocol
+    
+    Parameters:
+      pRoom - Room of the page. Is used to filter messages
+      pURL - URL of the websocket server to connect to
+      pAction - Optional callback method to execute if a websocket message is retrieved. If NULL, ADC is informed and the message is passed as event data
+   */
+  actions.initWebsocket = function(pRoom, pURL, pAction){
+    const sessionId = apex.item('pInstance').getValue();
+    const params = `id=${sessionId}&rooms=${pRoom}`;
+    const socket = new WebSocket(`${pURL}?${params}`);
+    let callback;
+    
+    if (typeof(pAction) == 'function'){
+      callback = pAction;
+    } else {
+      callback = actions.handleNotification;
+    };
+
+    socket.onopen = function(pEvent){
+      apex.debug.log('Websocket connection established')
+    };
+
+    socket.onclose = function(pEvent){
+      apex.debug.log('Websocket connection terminated')
+    }
+
+    socket.onmessage = function(pEvent){
+      let message = JSON.parse(pEvent.data);
+      apex.debug.log(message);
+      callback(message);
+    }
+  }
+
+
+  /**
+    Function: initServerSentEvents
+      Method to register at a server for server sent events
+
+    Parameters:
+      pRoom - Room of the page. Is used to filter messages
+      pURL - URL of the websocket server to connect to
+      pAction - Optional callback method to execute if a websocket message is retrieved. If NULL, ADC is informed and the message is passed as event data
+   */
+  actions.initServerSentEvents = function(pRoom, pURL, pAction){
+    const sessionId = apex.item('pInstance').getValue();
+    const params = `id=${sessionId}&rooms=${pRoom}`;
+    const source = new EventSource(`${pURL}?${params}`);
+    let callback;
+    
+    if (typeof(pAction) == 'function'){
+      callback = pAction;
+    } else {
+      callback = actions.handleNotification;
+    };
+
+    source.onmessage = function (pEvent) {
+      let message = JSON.parse(pEvent.data);
+      apex.debug.log(message);
+      callback(message);
+    };
+
+    source.onerror = function (error) {
+        console.error("SSE-Error:", error);
+    };
+
+    source.onopen = function () {
+        console.log("SSE connection established");
+    };
+  }
 
 
   /**
@@ -1131,9 +1218,9 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
 
     // harmonize the session state with the page items
     $.each(pPageItems, function (){
-      if ((this.value || 'FOO') !== (apex.item(this.id).getValue() || 'FOO')){
         // third attribute surpresses the change event if set to true
         apex.item(this.id).setValue(this.value, null, true);
+      if ((this.value || 'FOO') !== (apex.item(this.id).getValue() || 'FOO')){
         apex.debug.info(`${C_FILE_NAME} - Item '${this.id}' set to '${this.value}'`);
       }
     });
