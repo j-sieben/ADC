@@ -294,8 +294,8 @@ as
       p_cru_crg_id - ID of the rule group
       p_cru_name - Name of the rule
       p_cru_condition - rule condition
-      p_cru_fire_on_page_load - Flag to indicate whether this rule is part of the page initialization
-      p_sort_seq - Sort criteria for the rule
+      p_cru_fire_on_page_load - Flag to indicate whether this rule is part of the page initialization. Defaults to ADC_UTIL.C_FALSE
+      p_sort_seq - Sort criteria for the rule. Defaults to 10
       p_cru_active - Flag to indicate whether this rule is actually executed. Defaults to ADC_UTIL.C_TRUE
    */
   procedure merge_rule(
@@ -303,8 +303,8 @@ as
     p_cru_crg_id in adc_rules.cru_crg_id%type,
     p_cru_name in adc_rules.cru_name%type,
     p_cru_condition in adc_rules.cru_condition%type,
-    p_cru_fire_on_page_load in adc_rules.cru_fire_on_page_load%type,
-    p_cru_sort_seq in adc_rules.cru_sort_seq%type,
+    p_cru_fire_on_page_load in adc_rules.cru_fire_on_page_load%type default adc_util.C_FALSE,
+    p_cru_sort_seq in adc_rules.cru_sort_seq%type default 10,
     p_cru_active in adc_rules.cru_active%type default adc_util.C_TRUE);
 
   /**
@@ -391,23 +391,23 @@ as
       p_cra_crg_id - Reference to adc_rule_groups
       p_cra_cpi_id - Reference to ADC_PAGE_ITEM
       p_cra_cat_id - Reference to ADC_ACTION_TYPE
-      p_sort_seq - Sort criteria to organize the order of execution
+      p_sort_seq - Sort criteria to organize the order of execution. Defaults to 10
       p_cra_param_1 - Optional parameter 1
       p_cra_param_2 - Optional parameter 2
       p_cra_param_3 - Optional parameter 3
       p_cra_on_error - Optional flag to indicate whether this action is executed as an error handler for that rule. Defaults to ADC_UTIL.C_FALSE
       p_cra_raise_recursive - Optional flag to indicate whether this action allows recursive executions of other rules. Defaults to ADC_UTIL.C_TRUE
-      p_cra_raise_on_validation - Optional flag to indicate whether this action has to be executed when the page is validated. Defaults to ADC_UTIL.C_TRUE
+      p_cra_raise_on_validation - Optional flag to indicate whether this action has to be executed when the page is validated. Defaults to ADC_UTIL.C_FALSE
       p_cra_active - Optional flag to indicate whether this rule action is in use. Defaults to ADC_UTIL.C_TRUE
       p_cra_comment - Optional developer comment
    */
   procedure merge_rule_action(
-    p_cra_id in adc_rule_actions.cra_id%type,
+    p_cra_id in adc_rule_actions.cra_id%type default null,
     p_cra_cru_id in adc_rule_actions.cra_cru_id%type,
     p_cra_crg_id in adc_rule_actions.cra_crg_id%type,
     p_cra_cpi_id in adc_rule_actions.cra_cpi_id%type,
     p_cra_cat_id in adc_rule_actions.cra_cat_id%type,
-    p_cra_sort_seq in adc_rule_actions.cra_sort_seq%type,
+    p_cra_sort_seq in adc_rule_actions.cra_sort_seq%type default 10,
     p_cra_param_1 in adc_rule_actions.cra_param_1%type default null,
     p_cra_param_2 in adc_rule_actions.cra_param_2%type default null,
     p_cra_param_3 in adc_rule_actions.cra_param_3%type default null,
@@ -678,7 +678,7 @@ as
     p_capt_name in adc_action_param_types_v.capt_name%type,
     p_capt_display_name in adc_action_param_types_v.capt_display_name%type default null,
     p_capt_description in adc_action_param_types_v.capt_description%type default null,
-    p_capt_capvt_id in adc_action_param_types_v.capt_capvt_id%type,
+    p_capt_capvt_id in adc_action_param_types_v.capt_capvt_id%type default 'TEXT',
     p_capt_select_list_query in adc_action_param_types_v.capt_select_list_query%type default null, 
     p_capt_select_view_comment in adc_action_param_types_v.capt_select_view_comment%type default null,
     p_capt_sort_seq in adc_action_param_types_v.capt_sort_seq%type default 10,
@@ -800,7 +800,7 @@ as
       p_cat_id - ID of the action type
       p_cat_catg_id - Reference to adc_action_type_groups
       p_cat_caif_id - Reference to ADC_ACTION_ITEM_FOCUS
-      p_cat_cato_id - Reference to ADC_ACTION_TYPE_OWNERS
+      p_cat_cato_id - Reference to ADC_ACTION_TYPE_OWNERS. Defaults to ADC
       p_cat_name - Name of the action type
       p_cat_display_name - Optional verbose name of the action type
       p_cat_description - Optional description
@@ -814,7 +814,7 @@ as
     p_cat_id in adc_action_types_v.cat_id%type,
     p_cat_catg_id in adc_action_types_v.cat_catg_id%type,
     p_cat_caif_id in adc_action_types_v.cat_caif_id%type,
-    p_cat_cato_id in adc_action_types_v.cat_cato_id%type,
+    p_cat_cato_id in adc_action_types_v.cat_cato_id%type default 'ADC',
     p_cat_name in adc_action_types_v.cat_name%type,
     p_cat_display_name in adc_action_types_v.cat_display_name%type default null,
     p_cat_description in adc_action_types_v.cat_description%type default null,
@@ -832,7 +832,7 @@ as
       p_row - Row record
    */
   procedure merge_action_type(
-    p_row in adc_action_types_v%rowtype);
+    p_row in out nocopy adc_action_types_v%rowtype);
 
   /**
     Procedure: delete_action_type
@@ -894,21 +894,21 @@ as
     Parameters:
       p_cap_cat_id - Reference to ADC_ACTION_TYPE
       p_cap_capt_id - Reference to adc_action_parameters_TYPE
-      p_cap_sort_seq - Sort order and restriction of number of parameters
+      p_cap_sort_seq - Sort order and restriction of number of parameters. Defaults to 1
       p_cap_default - Optional standard value of the parameter
       p_cap_description - Optional description
       p_cap_display_name - Optional display name of the Action Type
-      p_cap_mandatory - Flag to indicate whether this action parameter is required
+      p_cap_mandatory - Flag to indicate whether this action parameter is required. Defaults to ADC_UTIL.C_FALSE
       p_cap_active - Optional flag to indicate whether this action parameter is in use. Defaults to ADC_UTIL.C_TRUE
    */
   procedure merge_action_parameter(
     p_cap_cat_id in adc_action_parameters_v.cap_cat_id%type,
     p_cap_capt_id in adc_action_parameters_v.cap_capt_id%type,
-    p_cap_sort_seq in adc_action_parameters_v.cap_sort_seq%type,
+    p_cap_sort_seq in adc_action_parameters_v.cap_sort_seq%type default 1,
     p_cap_default in adc_action_parameters_v.cap_default%type,
     p_cap_description in adc_action_parameters_v.cap_description%type,
     p_cap_display_name in adc_action_parameters_v.cap_display_name%type,
-    p_cap_mandatory in adc_action_parameters_v.cap_mandatory%type,
+    p_cap_mandatory in adc_action_parameters_v.cap_mandatory%type default adc_util.C_FALSE,
     p_cap_active in adc_action_parameters_v.cap_active%type default adc_util.C_TRUE);
 
   /**
@@ -975,13 +975,13 @@ as
                  
     Parameters:
       p_cpitg_id - Technical ID of the item type
-      p_cpitg_has_value - Flag to indicate whether this is an item containing a session state value
-      p_cpitg_include_in_view - Flag to indicate whether this item has to be included in the session state view
+      p_cpitg_has_value - Flag to indicate whether this is an item containing a session state value. Defaults to ADC_UTIL.C_TRUE
+      p_cpitg_include_in_view - Flag to indicate whether this item has to be included in the session state view. Defaults to ADC_UTIL.C_FALSE
    */
   procedure merge_page_item_type_group(
     p_cpitg_id              in adc_page_item_type_groups.cpitg_id%type,
-    p_cpitg_has_value       in adc_page_item_type_groups.cpitg_has_value%type,
-    p_cpitg_include_in_view in adc_page_item_type_groups.cpitg_include_in_view%type);
+    p_cpitg_has_value       in adc_page_item_type_groups.cpitg_has_value%type default adc_util.C_TRUE,
+    p_cpitg_include_in_view in adc_page_item_type_groups.cpitg_include_in_view%type default adc_util.C_FALSE);
     
   /**
     Procedure: merge_page_item_type_group
@@ -1022,13 +1022,13 @@ as
       p_cet_id - Name of the event. Used as a PK. Must be written exactly as the JavaScript event name
       p_cet_name - ID of the translatable Item for that event
       p_cet_column_name - Name of the column under which the firing item for that event is accessible
-      p_cet_is_custom_event - Flag to indicate whether this event must be monitored explicitly by ADC
+      p_cet_is_custom_event - Flag to indicate whether this event must be monitored explicitly by ADC. Defaults to ADC_UTIL.C_FALSE
    */
   procedure merge_event_type(
     p_cet_id in adc_event_types_v.cet_id%type,
     p_cet_name in adc_event_types_v.cet_name%type,
     p_cet_column_name in adc_event_types_v.cet_column_name%type,
-    p_cet_is_custom_event in adc_event_types_v.cet_is_custom_event%type);
+    p_cet_is_custom_event in adc_event_types_v.cet_is_custom_event%type default adc_util.C_FALSE);
     
   /**
     Procedure: merge_event_type
@@ -1121,13 +1121,13 @@ as
       p_caat_id - Technical ID
       p_caat_display_name - Display name of the action type
       p_caat_description - Description
-      p_caat_active - Flag to indicate whether this action type is in use
+      p_caat_active - Flag to indicate whether this action type is in use. Defaults to ADC_UTIL.C_TRUE
    */
   procedure merge_apex_action_type(
     p_caat_id in adc_apex_action_types_v.caat_id%type,
     p_caat_name in adc_apex_action_types_v.caat_name%type,
     p_caat_description in adc_apex_action_types_v.caat_description%type,
-    p_caat_active in adc_apex_action_types_v.caat_active%type);
+    p_caat_active in adc_apex_action_types_v.caat_active%type default adc_util.C_TRUE);
 
   /**
     Procedure: merge_apex_action_type
@@ -1202,7 +1202,7 @@ as
       p_caa_item_wrap_class - (Type RADIO_GROUP only): CSS label classes for wrapping elements
    */
   procedure merge_apex_action(
-    p_caa_id in adc_apex_actions_v.caa_id%type,
+    p_caa_id in adc_apex_actions_v.caa_id%type default null,
     p_caa_crg_id in adc_apex_actions_v.caa_crg_id%type,
     p_caa_caat_id in adc_apex_actions_v.caa_caat_id%type,
     p_caa_name in adc_apex_actions_v.caa_name%type,
@@ -1213,8 +1213,8 @@ as
     p_caa_icon_type in adc_apex_actions_v.caa_icon_type%type default 'fa',
     p_caa_title in adc_apex_actions_v.caa_title%type default null,
     p_caa_shortcut in adc_apex_actions_v.caa_shortcut%type default null,
-    p_caa_initially_disabled in adc_apex_actions_v.caa_initially_disabled%type default 0,
-    p_caa_initially_hidden in adc_apex_actions_v.caa_initially_hidden%type default 0,
+    p_caa_initially_disabled in adc_apex_actions_v.caa_initially_disabled%type default adc_util.C_FALSE,
+    p_caa_initially_hidden in adc_apex_actions_v.caa_initially_hidden%type default adc_util.C_FALSE,
     -- ACTION
     p_caa_href in adc_apex_actions_v.caa_href%type default null,
     p_caa_action in adc_apex_actions_v.caa_action%type default null,

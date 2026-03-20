@@ -982,9 +982,6 @@ as
   begin
     pit.enter_mandatory;
 
-    p_row.crg_with_recursion := coalesce(p_row.crg_with_recursion, adc_util.C_TRUE);
-    p_row.crg_active := coalesce(p_row.crg_active, adc_util.C_TRUE);
-
     validate_rule_group(p_row);
 
     get_key(p_row.crg_id);
@@ -993,8 +990,8 @@ as
     using (select p_row.crg_id crg_id,
                   p_row.crg_app_id crg_app_id,
                   p_row.crg_page_id crg_page_id,
-                  p_row.crg_with_recursion crg_with_recursion,
-                  p_row.crg_active crg_active
+                  coalesce(p_row.crg_with_recursion, adc_util.C_TRUE) crg_with_recursion,
+                  coalesce(p_row.crg_active, adc_util.C_TRUE) crg_active
              from dual) s
        on (t.crg_id = s.crg_id and t.crg_app_id = s.crg_app_id)
      when matched then update set
@@ -1549,9 +1546,9 @@ as
                   p_row.cru_crg_id cru_crg_id,
                   p_row.cru_name cru_name,
                   p_row.cru_condition cru_condition,
-                  p_row.cru_fire_on_page_load cru_fire_on_page_load,
-                  p_row.cru_sort_seq cru_sort_seq,
-                  p_row.cru_active cru_active
+                  coalesce(p_row.cru_fire_on_page_load, adc_util.C_FALSE) cru_fire_on_page_load,
+                  coalesce(p_row.cru_sort_seq, 10) cru_sort_seq,
+                  coalesce(p_row.cru_active, adc_util.C_TRUE) cru_active
              from dual) s
        on (t.cru_id = s.cru_id
        and t.cru_crg_id = s.cru_crg_id)
@@ -1834,14 +1831,14 @@ as
                   p_row.cra_crg_id cra_crg_id,
                   p_row.cra_cpi_id cra_cpi_id,
                   p_row.cra_cat_id cra_cat_id,
-                  p_row.cra_sort_seq cra_sort_seq,
+                  coalesce(p_row.cra_sort_seq, 10) cra_sort_seq,
                   p_row.cra_param_1 cra_param_1,
                   p_row.cra_param_2 cra_param_2,
                   p_row.cra_param_3 cra_param_3,
-                  p_row.cra_on_error cra_on_error,
-                  p_row.cra_raise_recursive cra_raise_recursive,
-                  p_row.cra_raise_on_validation cra_raise_on_validation,
-                  p_row.cra_active cra_active,
+                  coalesce(p_row.cra_on_error, adc_util.C_FALSE) cra_on_error,
+                  coalesce(p_row.cra_raise_recursive, adc_util.C_TRUE) cra_raise_recursive,
+                  coalesce(p_row.cra_raise_on_validation, adc_util.C_FALSE) cra_raise_on_validation,
+                  coalesce(p_row.cra_active, adc_util.C_TRUE) cra_active,
                   p_row.cra_comment cra_comment
              from dual) s
        on (t.cra_id = s.cra_id)
@@ -2004,7 +2001,7 @@ as
     using (select p_row.catg_id catg_id,
                   l_pti_id catg_pti_id,
                   C_ADC catg_pmg_name,
-                  p_row.catg_active catg_active
+                  coalesce(p_row.catg_active, adc_util.C_TRUE) catg_active
              from dual) s
        on (t.catg_id = s.catg_id)
      when matched then update set
@@ -2115,7 +2112,7 @@ as
     merge into adc_action_type_owners t
     using (select p_row.cato_id cato_id,
                   p_row.cato_description cato_description,
-                  p_row.cato_active cato_active
+                  coalesce(p_row.cato_active, adc_util.C_TRUE) cato_active
              from dual) s
        on (t.cato_id = s.cato_id)
      when matched then update set
@@ -2250,8 +2247,8 @@ as
                   l_pti_id capvt_pti_id,
                   C_ADC capvt_pmg_name,
                   p_row.capvt_param_item_extension capvt_param_item_extension,
-                  p_row.capvt_sort_seq capvt_sort_seq,
-                  p_row.capvt_active capvt_active
+                  coalesce(p_row.capvt_sort_seq, 10) capvt_sort_seq,
+                  coalesce(p_row.capvt_active, adc_util.C_TRUE) capvt_active
              from dual) s
        on (t.capvt_id = s.capvt_id)
      when matched then update set
@@ -2398,11 +2395,11 @@ as
     using (select p_row.capt_id capt_id,
                   l_pti_id capt_pti_id,
                   C_ADC capt_pmg_name,
-                  p_row.capt_capvt_id capt_capvt_id,
+                  coalesce(p_row.capt_capvt_id, 'TEXT') capt_capvt_id,
                   l_view_stmt capt_select_list_query,
                   p_row.capt_select_view_comment capt_select_view_comment,
-                  p_row.capt_sort_seq capt_sort_seq,
-                  p_row.capt_active capt_active
+                  coalesce(p_row.capt_sort_seq, 10) capt_sort_seq,
+                  coalesce(p_row.capt_active, adc_util.C_TRUE) capt_active
              from dual) s
        on (t.capt_id = s.capt_id)
      when matched then update set
@@ -2477,9 +2474,9 @@ as
 
     pit.assert_not_null(p_row.capt_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAPT_ID_MISSING');
     pit.assert_not_null(p_row.capt_name, msg.ADC_PARAM_MISSING, p_error_code => 'CAPT_NAME_MISSING');
-    pit.assert_not_null(p_row.capt_capvt_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAPT_CAPVT_ID_MISSING');
+    pit.assert_not_null(coalesce(p_row.capt_capvt_id, 'TEXT'), msg.ADC_PARAM_MISSING, p_error_code => 'CAPT_CAPVT_ID_MISSING');
 
-    if p_row.capt_capvt_id in ('SELECT_LIST', 'CONTROL_LIST', 'STATIC_LIST') then
+    if coalesce(p_row.capt_capvt_id, 'TEXT') in ('SELECT_LIST', 'CONTROL_LIST', 'STATIC_LIST') then
       adc_parameter.validate_param_lov(p_row.capt_select_list_query);
     end if;
 
@@ -2552,10 +2549,10 @@ as
     using (select p_row.caif_id caif_id,
                   l_pti_id caif_pti_id,
                   C_ADC caif_pmg_name,
-                  p_row.caif_actual_page_only caif_actual_page_only,
+                  coalesce(p_row.caif_actual_page_only, adc_util.C_TRUE) caif_actual_page_only,
                   p_row.caif_item_types caif_item_types,
                   p_row.caif_default caif_default,
-                  p_row.caif_active caif_active
+                  coalesce(p_row.caif_active, adc_util.C_TRUE) caif_active
              from dual) s
        on (t.caif_id = s.caif_id)
      when matched then update set
@@ -2684,7 +2681,7 @@ as
       See <ADC_ADMIN.merge_action_type>
    */
   procedure merge_action_type(
-    p_row in adc_action_types_v%rowtype)
+    p_row in out nocopy adc_action_types_v%rowtype)
   as
     l_pti_id pit_translatable_item_v.pti_id%type;
   begin
@@ -2711,14 +2708,14 @@ as
     using (select p_row.cat_id cat_id,
                   p_row.cat_catg_id cat_catg_id,
                   p_row.cat_caif_id cat_caif_id,
-                  p_row.cat_cato_id cat_cato_id,
+                  coalesce(p_row.cat_cato_id, 'ADC') cat_cato_id,
                   l_pti_id cat_pti_id,
                   C_ADC cat_pmg_name,
                   p_row.cat_pl_sql cat_pl_sql,
                   p_row.cat_js cat_js,
-                  p_row.cat_is_editable cat_is_editable,
-                  p_row.cat_raise_recursive cat_raise_recursive,
-                  p_row.cat_active cat_active
+                  coalesce(p_row.cat_is_editable, adc_util.C_TRUE) cat_is_editable,
+                  coalesce(p_row.cat_raise_recursive, adc_util.C_TRUE) cat_raise_recursive,
+                  coalesce(p_row.cat_active, adc_util.C_TRUE) cat_active
              from dual) s
        on (t.cat_id = s.cat_id)
      when matched then update set
@@ -2792,7 +2789,7 @@ as
     pit.assert_not_null(p_row.cat_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAT_ID_MISSING');
     pit.assert_not_null(p_row.cat_catg_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAT_CATG_ID_MISSING');
     pit.assert_not_null(p_row.cat_caif_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAT_CAIF_ID_MISSING');
-    pit.assert_not_null(p_row.cat_cato_id, msg.ADC_PARAM_MISSING, p_error_code => 'CAT_CATO_ID_MISSING');
+    pit.assert_not_null(coalesce(p_row.cat_cato_id, 'ADC'), msg.ADC_PARAM_MISSING, p_error_code => 'CAT_CATO_ID_MISSING');
     pit.assert_not_null(p_row.cat_name, msg.ADC_PARAM_MISSING, p_error_code => 'CAT_NAME_MISSING');
 
     pit.leave_mandatory;
@@ -3057,6 +3054,10 @@ as
   begin
     pit.enter_mandatory;
 
+    p_row.cap_sort_seq := coalesce(p_row.cap_sort_seq, 1);
+    p_row.cap_mandatory := coalesce(p_row.cap_mandatory, adc_util.C_FALSE);
+    p_row.cap_active := coalesce(p_row.cap_active, adc_util.C_TRUE);
+
     validate_action_parameter(p_row);
 
     -- maintain translatable item
@@ -3201,8 +3202,8 @@ as
 
     merge into adc_page_item_type_groups t
     using (select p_row.cpitg_id cpitg_id,
-                  p_row.cpitg_has_value cpitg_has_value,
-                  p_row.cpitg_include_in_view cpitg_include_in_view
+                  coalesce(p_row.cpitg_has_value, adc_util.C_TRUE) cpitg_has_value,
+                  coalesce(p_row.cpitg_include_in_view, adc_util.C_FALSE) cpitg_include_in_view
              from dual) s
        on (t.cpitg_id = s.cpitg_id)
      when matched then update set
@@ -3301,7 +3302,7 @@ as
                   C_ADC cet_pmg_name,
                   'EVENT' cet_cpitg_id,
                   p_row.cet_column_name cet_column_name,
-                  p_row.cet_is_custom_event cet_is_custom_event
+                  coalesce(p_row.cet_is_custom_event, adc_util.C_FALSE) cet_is_custom_event
              from dual) s
        on (t.cet_id = s.cet_id)
      when matched then update set
@@ -3505,7 +3506,7 @@ as
     using (select p_row.caat_id caat_id,
                   l_pti_id caat_pti_id,
                   C_ADC caat_pmg_name,
-                  p_row.caat_active caat_active
+                  coalesce(p_row.caat_active, adc_util.C_TRUE) caat_active
              from dual) s
        on (t.caat_id = s.caat_id)
      when matched then update set
@@ -3586,8 +3587,8 @@ as
     p_caa_icon_type in adc_apex_actions_v.caa_icon_type%type default 'fa',
     p_caa_title in adc_apex_actions_v.caa_title%type default null,
     p_caa_shortcut in adc_apex_actions_v.caa_shortcut%type default null,
-    p_caa_initially_disabled in adc_apex_actions_v.caa_initially_disabled%type default 0,
-    p_caa_initially_hidden in adc_apex_actions_v.caa_initially_hidden%type default 0,
+    p_caa_initially_disabled in adc_apex_actions_v.caa_initially_disabled%type default adc_util.C_FALSE,
+    p_caa_initially_hidden in adc_apex_actions_v.caa_initially_hidden%type default adc_util.C_FALSE,
     -- ACTION
     p_caa_href in adc_apex_actions_v.caa_href%type default null,
     p_caa_action in adc_apex_actions_v.caa_action%type default null,
@@ -3699,11 +3700,11 @@ as
                   p_row.caa_caat_id caa_caat_id,
                   p_row.caa_confirm_message_name caa_confirm_message_name,
                   p_row.caa_icon caa_icon,
-                  p_row.caa_icon_type caa_icon_type,
+                  coalesce(p_row.caa_icon_type, 'fa') caa_icon_type,
                   p_row.caa_title caa_title,
                   p_row.caa_shortcut caa_shortcut,
-                  p_row.caa_initially_disabled caa_initially_disabled,
-                  p_row.caa_initially_hidden caa_initially_hidden,
+                  coalesce(p_row.caa_initially_disabled, adc_util.C_FALSE) caa_initially_disabled,
+                  coalesce(p_row.caa_initially_hidden, adc_util.C_FALSE) caa_initially_hidden,
                   p_row.caa_href caa_href,
                   p_row.caa_action caa_action,
                   p_row.caa_on_label caa_on_label,
@@ -3869,7 +3870,7 @@ as
     using (select p_row.caai_caa_id caai_caa_id,
                   p_row.caai_cpi_crg_id caai_cpi_crg_id,
                   p_row.caai_cpi_id caai_cpi_id,
-                  p_row.caai_active caai_active
+                  coalesce(p_row.caai_active, adc_util.C_TRUE) caai_active
              from dual) s
        on (t.caai_caa_id = s.caai_caa_id
        and t.caai_cpi_crg_id = s.caai_cpi_crg_id
