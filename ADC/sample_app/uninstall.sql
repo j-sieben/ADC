@@ -59,7 +59,7 @@ declare
             where alias = 'SADC');
 begin
   for r in adc_cur loop
-    adc_admin.delete_rule_group(r.crg_id);
+    adc_config.delete_rule_group(r.crg_id);
   end loop;
 exception
   when others then

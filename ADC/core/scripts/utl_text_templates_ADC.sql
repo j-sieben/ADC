@@ -10,24 +10,24 @@ q'[declare\CR\]' ||
 q'[  l_foo number;\CR\]' || 
 q'[  l_app_id number;\CR\]' || 
 q'[begin\CR\]' || 
-q'[  l_foo := adc_admin.map_id;\CR\]' || 
+q'[  l_foo := adc_config.map_id;\CR\]' || 
 q'[  l_app_id := apex_application_install.get_application_id;\CR\]' || 
 q'[\CR\]' || 
 q'[  dbms_output.put_line('Rulegroup page #CRG_PAGE_ID#');\CR\]' || 
 q'[\CR\]' || 
-q'[  adc_admin.prepare_rule_group_import(\CR\]' || 
+q'[  adc_config.prepare_rule_group_import(\CR\]' || 
 q'[    p_crg_app_id => l_app_id,\CR\]' || 
 q'[    p_crg_page_id => #CRG_PAGE_ID#);\CR\]' || 
 q'[\CR\]' || 
-q'[  adc_admin.merge_rule_group(\CR\]' || 
-q'[    p_crg_id => adc_admin.map_id(#CRG_ID#),\CR\]' || 
+q'[  adc_config.merge_rule_group(\CR\]' || 
+q'[    p_crg_id => adc_config.map_id(#CRG_ID#),\CR\]' || 
 q'[    p_crg_app_id => l_app_id,\CR\]' || 
 q'[    p_crg_page_id => #CRG_PAGE_ID#,\CR\]' || 
 q'[    p_crg_with_recursion => #CRG_WITH_RECURSION#,\CR\]' || 
 q'[    p_crg_active => #CRG_ACTIVE#);\CR\]' || 
 q'[  #RULES#\CR\]' || 
 q'[  #APEX_ACTIONS#\CR\]' || 
-q'[  adc_admin.propagate_rule_change(adc_admin.map_id(#CRG_ID#));\CR\]' || 
+q'[  adc_config.propagate_rule_change(adc_config.map_id(#CRG_ID#));\CR\]' || 
 q'[\CR\]' || 
 q'[  commit;\CR\]' || 
 q'[end;\CR\]' || 
@@ -46,17 +46,17 @@ q'[]',
 q'[  l_foo number;\CR\]' || 
 q'[  l_app_id number;\CR\]' || 
 q'[begin\CR\]' || 
-q'[  l_foo := adc_admin.map_id;\CR\]' || 
+q'[  l_foo := adc_config.map_id;\CR\]' || 
 q'[  l_app_id := wwv_flow.g_flow_id;\CR\]' || 
 q'[\CR\]' || 
 q'[  dbms_output.put_line('  -- Rulegroup #CRG_ID#, page #CRG_APP_ID#');\CR\]' || 
 q'[\CR\]' || 
-q'[  adc_admin.prepare_rule_group_import(\CR\]' || 
+q'[  adc_config.prepare_rule_group_import(\CR\]' || 
 q'[    p_crg_app_id => l_app_id,\CR\]' || 
 q'[    p_crg_page_id => #CRG_PAGE_ID#);\CR\]' || 
 q'[\CR\]' || 
-q'[  adc_admin.merge_rule_group(\CR\]' || 
-q'[    p_crg_id => adc_admin.map_id(#CRG_ID#),\CR\]' || 
+q'[  adc_config.merge_rule_group(\CR\]' || 
+q'[    p_crg_id => adc_config.map_id(#CRG_ID#),\CR\]' || 
 q'[    p_crg_app_id => l_app_id,\CR\]' || 
 q'[    p_crg_page_id => #CRG_PAGE_ID#,\CR\]' || 
 q'[    p_crg_with_recursion => #CRG_WITH_RECURSION#,\CR\]' || 
@@ -64,7 +64,7 @@ q'[    p_crg_active => #CRG_ACTIVE#);\CR\]' ||
 q'[  #RULES#\CR\]' || 
 q'[  #APEX_ACTIONS#\CR\]' || 
 q'[\CR\]' || 
-q'[  adc_admin.propagate_rule_change(adc_admin.map_id(#CRG_ID#));\CR\]' || 
+q'[  adc_config.propagate_rule_change(adc_config.map_id(#CRG_ID#));\CR\]' || 
 q'[\CR\]' || 
 q'[  commit;\CR\]' || 
 q'[end;\CR\]' || 
@@ -384,15 +384,15 @@ q'[declare\CR\]' ||
 q'[  l_foo number;\CR\]' || 
 q'[  l_app_id number;\CR\]' || 
 q'[begin\CR\]' || 
-q'[  l_foo := adc_admin.map_id;\CR\]' || 
+q'[  l_foo := adc_config.map_id;\CR\]' || 
 q'[  l_app_id := coalesce(apex_application_install.get_application_id, ^APP_ID.);\CR\]' || 
 q'[\CR\]' || 
-q'[  adc_admin.prepare_rule_group_import(\CR\]' || 
+q'[  adc_config.prepare_rule_group_import(\CR\]' || 
 q'[    p_crg_app_id => l_app_id,\CR\]' || 
 q'[    p_crg_page_id => #CRG_PAGE_ID#);\CR\]' || 
 q'[\CR\]' || 
-q'[  adc_admin.merge_rule_group(\CR\]' || 
-q'[    p_crg_id => adc_admin.map_id(#CRG_ID#),\CR\]' || 
+q'[  adc_config.merge_rule_group(\CR\]' || 
+q'[    p_crg_id => adc_config.map_id(#CRG_ID#),\CR\]' || 
 q'[    p_crg_app_id => l_app_id,\CR\]' || 
 q'[    p_crg_page_id => #CRG_PAGE_ID#,\CR\]' || 
 q'[    p_crg_with_recursion => #CRG_WITH_RECURSION#,\CR\]' || 
@@ -400,7 +400,7 @@ q'[    p_crg_active => #CRG_ACTIVE#);\CR\]' ||
 q'[  #RULES#\CR\]' || 
 q'[  #APEX_ACTIONS#\CR\]' || 
 q'[\CR\]' || 
-q'[  adc_admin.propagate_rule_change(adc_admin.map_id(#CRG_ID#));\CR\]' || 
+q'[  adc_config.propagate_rule_change(adc_config.map_id(#CRG_ID#));\CR\]' || 
 q'[\CR\]' || 
 q'[  commit;\CR\]' || 
 q'[end;\CR\]' || 
@@ -417,9 +417,9 @@ q'[]',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'RULE',
     p_uttm_text => q'[\CR\]' || 
-q'[  adc_admin.merge_rule(\CR\]' || 
-q'[    p_cru_id => adc_admin.map_id(#CRU_ID#),\CR\]' || 
-q'[    p_cru_crg_id => adc_admin.map_id(#CRU_CRG_ID#),\CR\]' || 
+q'[  adc_config.merge_rule(\CR\]' || 
+q'[    p_cru_id => adc_config.map_id(#CRU_ID#),\CR\]' || 
+q'[    p_cru_crg_id => adc_config.map_id(#CRU_CRG_ID#),\CR\]' || 
 q'[    p_cru_name => '#CRU_NAME#',\CR\]' || 
 q'[    p_cru_condition => q'|#CRU_CONDITION#|',\CR\]' || 
 q'[    p_cru_sort_seq => #CRU_SORT_SEQ#,\CR\]' || 
@@ -435,10 +435,10 @@ q'[  #RULE_ACTIONS#]',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'RULE_ACTION',
     p_uttm_text => q'[\CR\]' || 
-q'[  adc_admin.merge_rule_action(\CR\]' || 
-q'[    p_cra_id => adc_admin.map_id(#CRA_ID#),\CR\]' || 
-q'[    p_cra_cru_id => adc_admin.map_id(#CRA_CRU_ID#),\CR\]' || 
-q'[    p_cra_crg_id => adc_admin.map_id(#CRA_CRG_ID#),\CR\]' || 
+q'[  adc_config.merge_rule_action(\CR\]' || 
+q'[    p_cra_id => adc_config.map_id(#CRA_ID#),\CR\]' || 
+q'[    p_cra_cru_id => adc_config.map_id(#CRA_CRU_ID#),\CR\]' || 
+q'[    p_cra_crg_id => adc_config.map_id(#CRA_CRG_ID#),\CR\]' || 
 q'[    p_cra_cpi_id => '#CRA_CPI_ID#',\CR\]' || 
 q'[    p_cra_cat_id => '#CRA_CAT_ID#',\CR\]' || 
 q'[    p_cra_param_1 => q'|#CRA_PARAM_1#|',\CR\]' || 
@@ -458,9 +458,9 @@ q'[    p_cra_active => #CRA_ACTIVE#);]',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'APEX_ACTION_ACTION',
     p_uttm_text => q'[\CR\]' || 
-q'[  adc_admin.merge_apex_action(\CR\]' || 
-q'[    p_caa_id => adc_admin.map_id(#CAA_ID#),\CR\]' || 
-q'[    p_caa_crg_id => adc_admin.map_id(#CAA_CRG_ID#),\CR\]' || 
+q'[  adc_config.merge_apex_action(\CR\]' || 
+q'[    p_caa_id => adc_config.map_id(#CAA_ID#),\CR\]' || 
+q'[    p_caa_crg_id => adc_config.map_id(#CAA_CRG_ID#),\CR\]' || 
 q'[    p_caa_caat_id => '#CAA_CAAT_ID#',\CR\]' || 
 q'[    p_caa_name => '#CAA_NAME#',\CR\]' || 
 q'[    p_caa_confirm_message_name => '#CAA_CONFIRM_MESSAGE_NAME#',\CR\]' || 
@@ -485,9 +485,9 @@ q'[]',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'APEX_ACTION_TOGGLE',
     p_uttm_text => q'[\CR\]' || 
-q'[  adc_admin.merge_apex_action(    \CR\]' || 
-q'[    p_caa_id => adc_admin.map_id(#CAA_ID#),\CR\]' || 
-q'[    p_caa_crg_id => adc_admin.map_id(#CRG_ID#),\CR\]' || 
+q'[  adc_config.merge_apex_action(    \CR\]' || 
+q'[    p_caa_id => adc_config.map_id(#CAA_ID#),\CR\]' || 
+q'[    p_caa_crg_id => adc_config.map_id(#CRG_ID#),\CR\]' || 
 q'[    p_caa_name => '#CAA_NAME#',\CR\]' || 
 q'[    p_caa_type => '#CAA_TYPE#',\CR\]' || 
 q'[    p_caa_label => '#CAA_LABEL#',\CR\]' || 
@@ -515,9 +515,9 @@ q'[]',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'APEX_ACTION_RADIO_GROUP',
     p_uttm_text => q'[\CR\]' || 
-q'[  adc_admin.merge_apex_action(    \CR\]' || 
-q'[    p_caa_id => adc_admin.map_id(#CAA_ID#),\CR\]' || 
-q'[    p_caa_crg_id => adc_admin.map_id(#CRG_ID#),\CR\]' || 
+q'[  adc_config.merge_apex_action(    \CR\]' || 
+q'[    p_caa_id => adc_config.map_id(#CAA_ID#),\CR\]' || 
+q'[    p_caa_crg_id => adc_config.map_id(#CRG_ID#),\CR\]' || 
 q'[    p_caa_caat_id => '#CAA_CAAT_ID#',\CR\]' || 
 q'[    p_caa_name => '#CAA_NAME#',\CR\]' || 
 q'[    p_caa_label => '#CAA_LABEL#',\CR\]' || 
@@ -547,9 +547,9 @@ q'[]',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'APEX_ACTION_ITEM',
     p_uttm_text => q'[\CR\]' || 
-q'[  adc_admin.merge_apex_action_item(\CR\]' || 
-q'[    p_caai_caa_id => adc_admin.map_id(#CAAI_CAA_ID#),\CR\]' || 
-q'[    p_caai_cpi_crg_id => adc_admin.map_id(#CAAI_CPI_CRG_ID#),\CR\]' || 
+q'[  adc_config.merge_apex_action_item(\CR\]' || 
+q'[    p_caai_caa_id => adc_config.map_id(#CAAI_CAA_ID#),\CR\]' || 
+q'[    p_caai_cpi_crg_id => adc_config.map_id(#CAAI_CPI_CRG_ID#),\CR\]' || 
 q'[    p_caai_cpi_id => '#CAAI_CPI_ID#',\CR\]' || 
 q'[    p_caai_active => #CAAI_ACTIVE#);\CR\]' || 
 q'[]',

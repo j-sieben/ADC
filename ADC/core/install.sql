@@ -82,6 +82,7 @@ prompt &h2.Create PL/SQL objects
 prompt &h3.Create packages
 @&tool_dir.create_package adc_actions
 @&tool_dir.create_package adc_admin
+@&tool_dir.create_package adc_config
 @&tool_dir.create_package adc_apex_action
 @&tool_dir.create_package adc_api
 @&tool_dir.create_package adc_internal
@@ -98,6 +99,7 @@ prompt &h3.Access types
 prompt &h3.Create package bodies
 @&tool_dir.create_package_body adc_actions
 @&tool_dir.create_package_body adc_admin
+@&tool_dir.create_package_body adc_config
 @&tool_dir.create_package_body adc_apex_action
 @&tool_dir.create_package_body adc_api
 @&tool_dir.create_package_body adc_internal

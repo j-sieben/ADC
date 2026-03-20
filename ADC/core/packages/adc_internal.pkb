@@ -111,7 +111,7 @@ as
     -- create rule group entry
     l_rule_group_rec.crg_app_id := utl_apex.get_application_id;
     l_rule_group_rec.crg_page_id := utl_apex.get_page_id;
-    adc_admin.merge_rule_group(l_rule_group_rec);
+    adc_config.merge_rule_group(l_rule_group_rec);
 
     -- create intial rule
     g_param.crg_id := l_rule_group_rec.crg_id;
@@ -121,9 +121,9 @@ as
     l_rule_rec.cru_sort_seq := 10;
     l_rule_rec.cru_active := adc_util.C_TRUE;
     l_rule_rec.cru_fire_on_page_load := adc_util.C_FALSE;
-    adc_admin.merge_rule(l_rule_rec);
+    adc_config.merge_rule(l_rule_rec);
 
-    adc_admin.propagate_rule_change(l_rule_group_rec.crg_id);
+    adc_config.propagate_rule_change(l_rule_group_rec.crg_id);
 
     pit.leave_optional;
   end create_initial_rule_group_and_rule;

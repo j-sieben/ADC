@@ -317,10 +317,10 @@ as
     l_crg_app_id := utl_apex.get_number('CRG_APP_ID');
     
     if utl_apex.get_boolean('INCLUDE_APP') then
-      l_mode := adc_admin.C_APEX_APP;
+      l_mode := adc_config.C_APEX_APP;
       l_zip_file_name := replace(l_application_filename, '#APP_ID#', l_crg_app_id);
     else
-      l_mode := adc_admin.C_APP_GROUPS;
+      l_mode := adc_config.C_APP_GROUPS;
       select alias
         into l_app_alias
         from apex_applications
@@ -329,7 +329,7 @@ as
     end if;
 
     -- generate ZIP with the requested rule group files and download.
-    l_zip_file := adc_admin.export_rule_groups(
+    l_zip_file := adc_config.export_rule_groups(
                     p_crg_app_id => l_crg_app_id,
                     p_mode => l_mode);
                     
@@ -866,7 +866,7 @@ as
     l_crg_app_id := utl_apex.get_number('CRG_APP_ID');
     l_include_app := utl_apex.get_string('INCLUDE_APP');
     
-    l_action := replace(C_SUCCESS_COMMAND, '#TYPE#', case l_include_app when adc_util.C_TRUE then adc_admin.C_APEX_APP else adc_admin.C_APP_GROUPS end);
+    l_action := replace(C_SUCCESS_COMMAND, '#TYPE#', case l_include_app when adc_util.C_TRUE then adc_config.C_APEX_APP else adc_config.C_APP_GROUPS end);
     
     -- harmonize apex action
     adc_apex_action.action_init('export-rule-group');

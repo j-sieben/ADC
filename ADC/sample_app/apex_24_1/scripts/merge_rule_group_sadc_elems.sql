@@ -5,33 +5,33 @@ declare
   l_foo number;
   l_app_id number;
 begin
-  l_foo := adc_admin.map_id;
+  l_foo := adc_config.map_id;
   l_app_id := coalesce(apex_application_install.get_application_id, ^APP_ID.);
 
-  adc_admin.prepare_rule_group_import(
+  adc_config.prepare_rule_group_import(
     p_crg_app_id => l_app_id,
     p_crg_page_id => 50);
 
-  adc_admin.merge_rule_group(
-    p_crg_id => adc_admin.map_id(265),
+  adc_config.merge_rule_group(
+    p_crg_id => adc_config.map_id(265),
     p_crg_app_id => l_app_id,
     p_crg_page_id => 50,
     p_crg_with_recursion => adc_util.C_TRUE,
     p_crg_active => adc_util.C_TRUE);
   
-  adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(267),
-    p_cru_crg_id => adc_admin.map_id(265),
+  adc_config.merge_rule(
+    p_cru_id => adc_config.map_id(267),
+    p_cru_crg_id => adc_config.map_id(265),
     p_cru_name => 'Initialisierung',
     p_cru_condition => q'|initializing = c_true|',
     p_cru_sort_seq => 10,
     p_cru_fire_on_page_load => adc_util.C_FALSE,
     p_cru_active => adc_util.C_TRUE);
   
-  adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(269),
-    p_cra_cru_id => adc_admin.map_id(267),
-    p_cra_crg_id => adc_admin.map_id(265),
+  adc_config.merge_rule_action(
+    p_cra_id => adc_config.map_id(269),
+    p_cra_cru_id => adc_config.map_id(267),
+    p_cra_crg_id => adc_config.map_id(265),
     p_cra_cpi_id => 'DOCUMENT',
     p_cra_cat_id => 'SET_VISUAL_STATE',
     p_cra_param_1 => q'|SHOW_DISABLE|',
@@ -42,10 +42,10 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
-  adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(271),
-    p_cra_cru_id => adc_admin.map_id(267),
-    p_cra_crg_id => adc_admin.map_id(265),
+  adc_config.merge_rule_action(
+    p_cra_id => adc_config.map_id(271),
+    p_cra_cru_id => adc_config.map_id(267),
+    p_cra_crg_id => adc_config.map_id(265),
     p_cra_cpi_id => 'DOCUMENT',
     p_cra_cat_id => 'IS_MANDATORY',
     p_cra_param_1 => q'||',
@@ -56,10 +56,10 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
-  adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(273),
-    p_cra_cru_id => adc_admin.map_id(267),
-    p_cra_crg_id => adc_admin.map_id(265),
+  adc_config.merge_rule_action(
+    p_cra_id => adc_config.map_id(273),
+    p_cra_cru_id => adc_config.map_id(267),
+    p_cra_crg_id => adc_config.map_id(265),
     p_cra_cpi_id => 'B50_SCHALTFLAECHE_DEAKTIV',
     p_cra_cat_id => 'SET_VISUAL_STATE',
     p_cra_param_1 => q'|SHOW_DISABLE|',
@@ -70,10 +70,10 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
-  adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(275),
-    p_cra_cru_id => adc_admin.map_id(267),
-    p_cra_crg_id => adc_admin.map_id(265),
+  adc_config.merge_rule_action(
+    p_cra_id => adc_config.map_id(275),
+    p_cra_cru_id => adc_config.map_id(267),
+    p_cra_crg_id => adc_config.map_id(265),
     p_cra_cpi_id => 'P50_JA_NEIN_DEAKTIV',
     p_cra_cat_id => 'SET_ITEM',
     p_cra_param_1 => q'|'Y'|',
@@ -84,10 +84,10 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
-  adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(277),
-    p_cra_cru_id => adc_admin.map_id(267),
-    p_cra_crg_id => adc_admin.map_id(265),
+  adc_config.merge_rule_action(
+    p_cra_id => adc_config.map_id(277),
+    p_cra_cru_id => adc_config.map_id(267),
+    p_cra_crg_id => adc_config.map_id(265),
     p_cra_cpi_id => 'P50_OPTION',
     p_cra_cat_id => 'SET_ITEM',
     p_cra_param_1 => q'|'10'|',
@@ -98,10 +98,10 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
-  adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(279),
-    p_cra_cru_id => adc_admin.map_id(267),
-    p_cra_crg_id => adc_admin.map_id(265),
+  adc_config.merge_rule_action(
+    p_cra_id => adc_config.map_id(279),
+    p_cra_cru_id => adc_config.map_id(267),
+    p_cra_crg_id => adc_config.map_id(265),
     p_cra_cpi_id => 'P50_OPTION_DEAKTIV',
     p_cra_cat_id => 'SET_ITEM',
     p_cra_param_1 => q'|'20'|',
@@ -112,10 +112,10 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
-  adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(281),
-    p_cra_cru_id => adc_admin.map_id(267),
-    p_cra_crg_id => adc_admin.map_id(265),
+  adc_config.merge_rule_action(
+    p_cra_id => adc_config.map_id(281),
+    p_cra_cru_id => adc_config.map_id(267),
+    p_cra_crg_id => adc_config.map_id(265),
     p_cra_cpi_id => 'P50_TEXT',
     p_cra_cat_id => 'SET_FOCUS',
     p_cra_param_1 => q'||',
@@ -126,10 +126,10 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
-  adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(283),
-    p_cra_cru_id => adc_admin.map_id(267),
-    p_cra_crg_id => adc_admin.map_id(265),
+  adc_config.merge_rule_action(
+    p_cra_id => adc_config.map_id(283),
+    p_cra_cru_id => adc_config.map_id(267),
+    p_cra_crg_id => adc_config.map_id(265),
     p_cra_cpi_id => 'P50_TEXT_PFLICHT',
     p_cra_cat_id => 'IS_MANDATORY',
     p_cra_param_1 => q'||',
@@ -140,19 +140,19 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
-  adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(285),
-    p_cru_crg_id => adc_admin.map_id(265),
+  adc_config.merge_rule(
+    p_cru_id => adc_config.map_id(285),
+    p_cru_crg_id => adc_config.map_id(265),
     p_cru_name => 'Seite absenden',
     p_cru_condition => q'|B50_SPEICHERN = c_clicked|',
     p_cru_sort_seq => 30,
     p_cru_fire_on_page_load => adc_util.C_FALSE,
     p_cru_active => adc_util.C_TRUE);
   
-  adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(287),
-    p_cra_cru_id => adc_admin.map_id(285),
-    p_cra_crg_id => adc_admin.map_id(265),
+  adc_config.merge_rule_action(
+    p_cra_id => adc_config.map_id(287),
+    p_cra_cru_id => adc_config.map_id(285),
+    p_cra_crg_id => adc_config.map_id(265),
     p_cra_cpi_id => 'DOCUMENT',
     p_cra_cat_id => 'SEND_VALIDATE_PAGE',
     p_cra_param_1 => q'|VALIDATE_AND_SUBMIT|',
@@ -163,10 +163,10 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
-  adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(289),
-    p_cra_cru_id => adc_admin.map_id(285),
-    p_cra_crg_id => adc_admin.map_id(265),
+  adc_config.merge_rule_action(
+    p_cra_id => adc_config.map_id(289),
+    p_cra_cru_id => adc_config.map_id(285),
+    p_cra_crg_id => adc_config.map_id(265),
     p_cra_cpi_id => 'DOCUMENT',
     p_cra_cat_id => 'STOP_RULE',
     p_cra_param_1 => q'||',
@@ -177,19 +177,19 @@ begin
     p_cra_raise_recursive => adc_util.C_TRUE,
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
-  adc_admin.merge_rule(
-    p_cru_id => adc_admin.map_id(291),
-    p_cru_crg_id => adc_admin.map_id(265),
+  adc_config.merge_rule(
+    p_cru_id => adc_config.map_id(291),
+    p_cru_crg_id => adc_config.map_id(265),
     p_cru_name => 'Schaltfläche "Meldung anzeigen" auswählen',
     p_cru_condition => q'|B50_MLD = c_clicked|',
     p_cru_sort_seq => 20,
     p_cru_fire_on_page_load => adc_util.C_FALSE,
     p_cru_active => adc_util.C_TRUE);
   
-  adc_admin.merge_rule_action(
-    p_cra_id => adc_admin.map_id(293),
-    p_cra_cru_id => adc_admin.map_id(291),
-    p_cra_crg_id => adc_admin.map_id(265),
+  adc_config.merge_rule_action(
+    p_cra_id => adc_config.map_id(293),
+    p_cra_cru_id => adc_config.map_id(291),
+    p_cra_crg_id => adc_config.map_id(265),
     p_cra_cpi_id => 'B50_MLD',
     p_cra_cat_id => 'NOTIFY',
     p_cra_param_1 => q'|Das ist eine Hinweismeldung.|',
@@ -202,7 +202,7 @@ begin
     p_cra_active => adc_util.C_TRUE);
   
 
-  adc_admin.propagate_rule_change(adc_admin.map_id(265));
+  adc_config.propagate_rule_change(adc_config.map_id(265));
 
   commit;
 end;

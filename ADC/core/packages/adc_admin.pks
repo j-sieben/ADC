@@ -32,36 +32,6 @@ as
   C_EXPORT_SYSTEM constant adc_util.ora_name_type := 'CAT_EXPORT_SYSTEM';
   C_EXPORT_ALL constant adc_util.ora_name_type := 'CAT_EXPORT_ALL';
 
-  -- Group: Helper Methods
-  /**
-    Function: map_id
-      Method to map technical IDs upon import of rule groups.
-      As it is not known beforhand which ID an entry in a table will get, this method maintains a mapping table
-      that maps the original ID to the newly created IDs from a sequence.
-      
-      If the ID passed in is not found in the table, it returns the newly created ID.
-      If the ID is found in the table, the method returns the mapped ID.
-      Before an import of a rule group can take place, this method needs to be called with a NULL parameter to
-      initialize a new mapping table.
-
-    Parameter:
-      p_id - Optional ID to map to a new ID. If NULL, the mapping list is initialized
-   */
-  function map_id(
-    p_id in number default null)
-    return number;
-    
-  /**
-    Function: get_crg_id
-      Getter for the actually relevant crg_id, is used in views to speed up
-      processing
-    
-    Returns:
-      CRG_ID that is actually worked on
-   */
-  function get_crg_id
-    return adc_rule_groups.crg_id%type;
-    
   /**
     Procedure: add_translation
       Method to add translated data.
@@ -83,388 +53,6 @@ as
     p_display_name in pit_translatable_item_v.pti_display_name%type,
     p_description in pit_translatable_item_v.pti_description%type);
     
-  
-  -- Group: Rule Group Methods
-  /**
-    Procedure; merge_rule_group
-      Administration of RULE GROUPS. Is used to create a rule group.
-
-    Parameters:
-      p_crg_app_id - APEX application id
-      p_crg_page_id - APEX application page id
-      p_crg_id - Optional technical ID of the rule group. Upon script based import this parameter is used as
-                 a foreign key for rules in order to organize the relationship even if new IDs are created
-     p_crg_with_recursion - Optional flag to indicate whehter this rule allows recursive calls
-     p_crg_active - Optional flag to indicate, whether this rule group is actually used. Defaults to ADC_UTIL.C_TRUE
-   */
-  procedure merge_rule_group(
-    p_crg_app_id in adc_rule_groups.crg_app_id%type,
-    p_crg_page_id in adc_rule_groups.crg_page_id%type,
-    p_crg_id in adc_rule_groups.crg_id%type default null,
-    p_crg_with_recursion in adc_rule_groups.crg_with_recursion%type default adc_util.C_TRUE,
-    p_crg_active in adc_rule_groups.crg_active%type default adc_util.C_TRUE);
-    
-  /**
-    Procedure: merge_rule_group
-      Overlaod with a rowtype record.
-    
-    Parameter:
-      p_row - Row record
-   */
-  procedure merge_rule_group(
-    p_row in out nocopy adc_rule_groups%rowtype);
-
-
-  /**
-    Procedure: delete_rule_group
-      Is called from the ADC UI to remove a rule group
-
-    Parameter:
-      p_crg_id - Technical ID of the rule group to delete
-   */
-  procedure delete_rule_group(
-    p_crg_id in adc_rule_groups.crg_id%type);
-
-  /**
-    Procedure: delete_rule_group
-      Overlaod with a rowtype record.
-    
-    Parameter:
-      p_row - Row record
-   */
-  procedure delete_rule_group(
-    p_row in out nocopy adc_rule_groups%rowtype);
-
-  /**
-    Procedure: validate_rule_group
-      Method validates a newly created or updated rule group tupel
-    
-    Parameter:
-      p_row - Row record
-      
-    Errors:
-      CRG_APP_ID_MISSING - if Parameter CRG_APP_ID IS NULL
-      CRG_PAGE_ID_MISSING - if Parameter CRG_PAGE_ID IS NULL
-      ADC_CRG_MUST_BE_UNIQUE - if provided CRG_APP_ID/CRG_PAGE_ID combination already exists as a dynamic page
-   */
-  procedure validate_rule_group(
-    p_row in adc_rule_groups%rowtype);
-    
-  /**
-    Procedure: toggle_rule_group
-      Method to set the activity status of the rule group to its opposite state
-      
-    Parameter:
-      p_crg_id - ID of the rule group to toggle
-   */
-  procedure toggle_rule_group(
-    p_crg_id in adc_rule_groups.crg_id%type);
-
-
-  /**
-    Function: validate_rule_group
-      Method checks all rules of a rule group to find invalid rules. Is called before a rule group is exported.
-   
-    Parameter:
-      p_crg_id - Rule group ID to check
-      
-    Returns:
-      Returns an error message if any error has occurred
-   */
-  function validate_rule_group(
-    p_crg_id in adc_rule_groups.crg_id%type)
-    return varchar2;
-
-
-  /**
-    Procedure: propagate_rule_change
-      Method to propagate that a rule has changed.
-      
-      Is used to propagate any rule change after a rule has been edited.
-      Method checks whether rule group is valid, maintains the internal page item mappings and
-      recreates the rule group decision table of the rule group.
-      
-      The export script calls this method automatically after a rule group has been imported completely
-   
-    Parameter:
-      p_crg_id - ID of the rule group that has changed
-   */
-  procedure propagate_rule_change(
-    p_crg_id in adc_rule_groups.crg_id%type);
-
-
-  /** 
-    Function: export_rule_group
-      Method to export one rule group. If called, the respective rule group is exported as a CLOB instance.
-                
-    Parameters:
-      p_crg_id  Rule group ID of the rule group that is to be exported
-      p_mode - Optional information, needed to switch the frame template accordingly
-      p_ionstall_id - Optional Installation ID of the supporting install scripts. Used internally
-      
-    Returns:
-      Script to import a rule group, including all necessary information, excluding action type definitions
-   */
-  function export_rule_group(
-    p_crg_id in adc_rule_groups.crg_id%type,
-    p_mode in varchar2 default C_APP_GROUPS,
-    p_install_id in number default null)
-    return clob;
-
-
-  /** 
-    Function: export_rule_groups
-      Method to export one or many rule groups.
-      
-      Based on the parameters passed in this method will export one or more rule groups.
-      
-      - If no parameter is passed in, all existing rule groups are exported.
-      - If only parameter P_CRG_APP_ID is passed in all rule groups of the respective APEX application are exported.
-      - If parameters P_CRG_APP_ID and P_CRG_PAGE_ID is passed in only the rule group of the respecite APEX application page are exported.
-   
-    Parameters:
-      p_crg_app_id - APEX application ID 
-      p_mode - Optional flag to indicate what to export. Options include:
-                
-                - C_ALL_GROUPS: Exports all rule groups of that workspace
-                - C_APEX_APP: Exports apex application including all rule groups of that application
-                - C_APP_GROUPS: Exports all rule groups of an APEX application
-                - C_PAGE_GROUP: Exports rule group of a single APEX application page
-                
-    Returns:
-      BLOB instance of all files, separated by rule group name as a ZIP file instance
-      
-    Errors:
-      APP_ID_MISSING - if export mode is set to C_APP_GROUPS or C_PAGE_GROUPS and no application id was provided
-      PAGE_ID_MISSING - if export mode is set to C_PAGE_GROUPS and no application page id was provided
-      msg.ADC_UNKNOWN_EXPORT_MODE - if an export mode other than C_ALL_GROUPS, C_APP_GROUPS, C_PAGE_GROUPS was requested
-   */
-  function export_rule_groups(
-    p_crg_app_id in adc_rule_groups.crg_app_id%type default null,
-    p_mode in varchar2 default C_APP_GROUPS)
-    return blob;
-
-  /**
-    Procedure: preoare_rule_group_import
-      Method to prepare a rule group import.
-      This method is called before a script based import of a rule group occurs to make sur that the actual
-      application ID of the referenced application is used. This ID is taken using the application alias
-                 
-    Parameters:
-      p_workspace - Workspace name of the workspace the application is to be installed at
-      p_app_alias - Application alias, used to gather the actual application ID
-   */
-  procedure prepare_rule_group_import(
-    p_workspace in varchar2,
-    p_app_alias in varchar2);
-
-  /**
-    Procedure: prepare_rule_group_import
-      Overload, is used when no application alias is used but the ID of the application is known upon installation time
-                 
-    Parameters:
-      p_workspace - Workspace name of the workspace the application is to be installed at
-      p_app_id - Application ID
-   */
-  procedure prepare_rule_group_import(
-    p_workspace in varchar2,
-    p_app_id in adc_rule_groups.crg_app_id%type);
-
-  /**
-    Procedure: prepare_rule_group_import
-      Overload, is used when application ID and page ID is known
-                 
-    Parameters:
-      p_crg_app_id - Application ID
-      p_crg_page_id - Application Page ID
-   */
-  procedure prepare_rule_group_import(
-    p_crg_app_id in adc_rule_groups.crg_app_id%type,
-    p_crg_page_id in adc_rule_groups.crg_page_id%type);
-
-
-
-  -- Group: Rule Methods
-  /**
-    Procedure: merge_rule
-      Administration of RULES
-    
-    Parameters:
-      p_cru_id - ID of the rule
-      p_cru_crg_id - ID of the rule group
-      p_cru_name - Name of the rule
-      p_cru_condition - rule condition
-      p_cru_fire_on_page_load - Flag to indicate whether this rule is part of the page initialization. Defaults to ADC_UTIL.C_FALSE
-      p_sort_seq - Sort criteria for the rule. Defaults to 10
-      p_cru_active - Flag to indicate whether this rule is actually executed. Defaults to ADC_UTIL.C_TRUE
-   */
-  procedure merge_rule(
-    p_cru_id in adc_rules.cru_id%type default null,
-    p_cru_crg_id in adc_rules.cru_crg_id%type,
-    p_cru_name in adc_rules.cru_name%type,
-    p_cru_condition in adc_rules.cru_condition%type,
-    p_cru_fire_on_page_load in adc_rules.cru_fire_on_page_load%type default adc_util.C_FALSE,
-    p_cru_sort_seq in adc_rules.cru_sort_seq%type default 10,
-    p_cru_active in adc_rules.cru_active%type default adc_util.C_TRUE);
-
-  /**
-    Procedure: merge_rule
-      Overload with a row record
-                 
-    Parameter:
-      p_row - Row record
-   */
-  procedure merge_rule(
-    p_row in out nocopy adc_rules%rowtype);
-
-  /**
-    Procedure: delete_rule
-      Deletes a rule
-                 
-    Parameter:
-      p_cru_id - ID of the rule to delete
-   */
-  procedure delete_rule(
-    p_cru_id in adc_rules.cru_id%type);
-
-  /**
-    Procedure: delete_rule
-      Overload with a row record
-                 
-    Parameter:
-      p_row - Row record
-   */
-  procedure delete_rule(
-    p_row in adc_rules%rowtype);
-    
-  /**
-    Procedure: validate_rule_condition
-      Method to validate a rule condition. Is called from VALIDATE_RULE as well
-                 
-    Parameter:
-      p_row - Row record
-      
-    Errors:
-      msg.SQL_ERROR - if any invalid conditions are entered
-      CRU_CONDITION_MISSING - if Parameter CRU_CONDITION IS NULL
-   */
-  procedure validate_rule_condition(
-    p_row in adc_rules%rowtype);
-
-  /**
-    Procedure: validate_rule
-      Method to validate a rule
-                 
-    Parameter:
-      p_row - Row record
-      
-    Errors:
-      msg.ADC_INVALID_SQL - if any invalid conditions are entered
-      CRU_CRG_ID_MISSING - if Parameter CRU_CRG_ID IS NULL
-      CRU_NAME_MISSING - if Parameter CRU_NAME IS NULL
-      CRU_CONDITION_MISSING - if Parameter CRU_CONDITION IS NULL
-   */
-  procedure validate_rule(
-    p_row in adc_rules%rowtype);
-
-
-  /**
-    Procedure: resequence_rule
-      Helper to resequence rules and rule actions.
-      Is called automatically upon change of a rule to resequence all entries in steps of 10
-                 
-    Parameter:
-      p_cru_id - Rule group ID
-   */
-  procedure resequence_rule(
-    p_cru_id in adc_rules.cru_id%type);
-
-
-  -- Group: Rule Action Methods
-  /**
-    Procedure: merge_rule_action
-      Administration of RULE ACTIONS
-                 
-    Parameters:
-      p_cra_id - ID of the rule action
-      p_cra_cru_id - Reference to adc_rules
-      p_cra_crg_id - Reference to adc_rule_groups
-      p_cra_cpi_id - Reference to ADC_PAGE_ITEM
-      p_cra_cat_id - Reference to ADC_ACTION_TYPE
-      p_sort_seq - Sort criteria to organize the order of execution. Defaults to 10
-      p_cra_param_1 - Optional parameter 1
-      p_cra_param_2 - Optional parameter 2
-      p_cra_param_3 - Optional parameter 3
-      p_cra_on_error - Optional flag to indicate whether this action is executed as an error handler for that rule. Defaults to ADC_UTIL.C_FALSE
-      p_cra_raise_recursive - Optional flag to indicate whether this action allows recursive executions of other rules. Defaults to ADC_UTIL.C_TRUE
-      p_cra_raise_on_validation - Optional flag to indicate whether this action has to be executed when the page is validated. Defaults to ADC_UTIL.C_FALSE
-      p_cra_active - Optional flag to indicate whether this rule action is in use. Defaults to ADC_UTIL.C_TRUE
-      p_cra_comment - Optional developer comment
-   */
-  procedure merge_rule_action(
-    p_cra_id in adc_rule_actions.cra_id%type default null,
-    p_cra_cru_id in adc_rule_actions.cra_cru_id%type,
-    p_cra_crg_id in adc_rule_actions.cra_crg_id%type,
-    p_cra_cpi_id in adc_rule_actions.cra_cpi_id%type,
-    p_cra_cat_id in adc_rule_actions.cra_cat_id%type,
-    p_cra_sort_seq in adc_rule_actions.cra_sort_seq%type default 10,
-    p_cra_param_1 in adc_rule_actions.cra_param_1%type default null,
-    p_cra_param_2 in adc_rule_actions.cra_param_2%type default null,
-    p_cra_param_3 in adc_rule_actions.cra_param_3%type default null,
-    p_cra_on_error in adc_rule_actions.cra_on_error%type default adc_util.C_FALSE,
-    p_cra_raise_recursive in adc_rule_actions.cra_raise_recursive%type default adc_util.C_TRUE,
-    p_cra_raise_on_validation in adc_rule_actions.cra_raise_on_validation%type default adc_util.C_FALSE,
-    p_cra_active in adc_rule_actions.cra_active%type default adc_util.C_TRUE,
-    p_cra_comment in adc_rule_actions.cra_comment%type default null);
-
-  /**
-    Procedure: merge_rule_action
-      Overload with a row record.
-                 
-    Parameter:
-      p_row - Row record
-   */
-  procedure merge_rule_action(
-    p_row in out nocopy adc_rule_actions%rowtype);
-
-  /**
-    Procedure: delete_rule_action
-      Deletes a Rule Action
-                 
-    Parameter:
-      p_cra_id - ID of the rule action to delete
-   */
-  procedure delete_rule_action(
-    p_cra_id in adc_rule_actions.cra_id%type);
-
-  /**
-    Procedure: delete_rule_action
-      Overload with a row record.
-                 
-    Parameter:
-      p_row - Row record
-   */
-  procedure delete_rule_action(
-    p_row in adc_rule_actions%rowtype);
-
-  /** 
-    Procedure: validate_rule_action
-      Method to validate a rule action
-                 
-    Parameter:
-      p_row - Row record
-    
-    Errors
-      CRA_CRU_ID_MISSING - if Parameter CRA_CRU_ID IS NULL
-      CRA_CRG_ID_MISSING - if Parameter CRA_CRG_ID IS NULL
-      CRA_CPI_ID_MISSING - if Parameter CRA_CPI_ID IS NULL
-      CRA_CAT_ID_MISSING - if Parameter CRA_CAT_ID IS NULL
-      ADC_RULE_ACTION_EXISTS - if combination of attributes CRA_CRG_ID, CRA_CRU_ID, CRA_CPI_ID, CRA_CAT_ID and CRA_ON_ERROR already exists for this rule.
-   */
-  procedure validate_rule_action(
-    p_row in adc_rule_actions%rowtype);
-
-
   -- Group: Action Type Methods
   /**
     Procedure: merge_action_type_group
@@ -1169,168 +757,6 @@ as
   procedure validate_apex_action_type(
     p_row in adc_apex_action_types_v%rowtype);
 
-
-  /**
-    Procedure: merge_apex_action
-      Administration of APEX ACTIONS
-                 
-    Parameters:
-      p_caa_crg_id - Reference to a rule group
-      p_caa_name - APEX action name as referenced by apex.actions as data-<name> attribute.
-      p_caa_caat_id - Type of Action (ACTION|TOGGLE|RADIO_GROUP),
-      p_caa_confirm_message_name - optional name of a PIT message used to confirm whether the action is executed
-      p_caa_label - Display name,
-      p_caa_context_label - Extended name, is used in select list or on the UI
-      p_caa_icon - Icon of the action
-      p_caa_icon_type - Icontype. Standard: fa
-      p_caa_title - Tooltip of the action
-      p_caa_shortcut - Shortcut as defined in apex.actions, fi. ALT-A
-      p_caa_href - (Type ACTION only): HREF attribute of the action. Only one of HREF or ACTION allowed
-      p_caa_action - (Type ACTION only): JavaScript function that is executed if the action is invoked. Only one of HREF or ACTION allowed
-      p_caa_on_label - (Type TOGGLE only): Label if apex action is enabled
-      p_caa_off_label - (Type TOGGLE only): Label if apex action is disabled
-      p_caa_get] - (Type TOGGLE and RADIO_GROUP only):
-                   If TOGGLE: Method that returns true or false
-                   If RADIO_GROUP: Method that returns the actual value of the item
-      p_caa_set - (Type TOGGLE and RADIO_GROUP only):
-                  If TOGGLE: Method that sets the value to TRUE|FALSE
-                  If RADIO_GROUP: Method that sets the item value
-      p_caa_choices - (Type RADIO_GROUP only): List of options
-      p_caa_label_classes - (Type RADIO_GROUP only): CSS label classes for all entries
-      p_caa_label_start_classes - (Type RADIO_GROUP only): CSS label classes for first entry
-      p_caa_label_end_classes - (Type RADIO_GROUP only): CSS label classes for last entry
-      p_caa_item_wrap_class - (Type RADIO_GROUP only): CSS label classes for wrapping elements
-   */
-  procedure merge_apex_action(
-    p_caa_id in adc_apex_actions_v.caa_id%type default null,
-    p_caa_crg_id in adc_apex_actions_v.caa_crg_id%type,
-    p_caa_caat_id in adc_apex_actions_v.caa_caat_id%type,
-    p_caa_name in adc_apex_actions_v.caa_name%type,
-    p_caa_confirm_message_name in adc_apex_actions_v.caa_confirm_message_name%type,
-    p_caa_label in adc_apex_actions_v.caa_label%type,
-    p_caa_context_label in adc_apex_actions_v.caa_context_label%type default null,
-    p_caa_icon in adc_apex_actions_v.caa_icon%type default null,
-    p_caa_icon_type in adc_apex_actions_v.caa_icon_type%type default 'fa',
-    p_caa_title in adc_apex_actions_v.caa_title%type default null,
-    p_caa_shortcut in adc_apex_actions_v.caa_shortcut%type default null,
-    p_caa_initially_disabled in adc_apex_actions_v.caa_initially_disabled%type default adc_util.C_FALSE,
-    p_caa_initially_hidden in adc_apex_actions_v.caa_initially_hidden%type default adc_util.C_FALSE,
-    -- ACTION
-    p_caa_href in adc_apex_actions_v.caa_href%type default null,
-    p_caa_action in adc_apex_actions_v.caa_action%type default null,
-    -- TOGGLE
-    p_caa_on_label in adc_apex_actions_v.caa_on_label%type default null,
-    p_caa_off_label in adc_apex_actions_v.caa_off_label%type default null,
-    -- TOGGLE | RADIO_GROUP
-    p_caa_get in adc_apex_actions_v.caa_get%type default null,
-    p_caa_set in adc_apex_actions_v.caa_set%type default null,
-    -- RADIO_GROUP
-    p_caa_choices in adc_apex_actions_v.caa_choices%type default null,
-    p_caa_label_classes in adc_apex_actions_v.caa_label_classes%type default null,
-    p_caa_label_start_classes in adc_apex_actions_v.caa_label_start_classes%type default null,
-    p_caa_label_end_classes in adc_apex_actions_v.caa_label_end_classes%type default null,
-    p_caa_item_wrap_class in adc_apex_actions_v.caa_item_wrap_class%type default null);
-
-  /**
-    Procedure: merge_apex_action
-      Overload with a row record
-                 
-    Parameter:
-      p_row - Row record
-      p_caa_caai_list - Optionasl list of page item an APEX action has to be attached to (such as buttons)
-   */
-  procedure merge_apex_action(
-    p_row in out nocopy adc_apex_actions_v%rowtype,
-    p_caa_caai_list in char_table default null);
-
-  /**
-    Procedure: delete_apex_action
-      Deletes an APEX Action
-                 
-    Parameter:
-      p_caa_id - ID of the APEX Action to delete
-   */
-  procedure delete_apex_action(
-    p_caa_id in adc_apex_actions_v.caa_id%type);
-
-  /**
-    Procedure: delete_apex_action
-      Overload with a row record.
-                 
-    Parameter:
-      p_row - Row record
-   */
-  procedure delete_apex_action(
-    p_row in adc_apex_actions_v%rowtype);
-
-  /**
-    Procedure: validate_apex_action
-      Validates an APEX Action Type
-                 
-    Parameter:
-      p_row - Row record
-   */
-  procedure validate_apex_action(
-    p_row in adc_apex_actions_v%rowtype);
-    
-
-  /** 
-    Procedure: merge_apex_action_item
-      Administration of APEX ACTION ITEMS
-                 
-    Parameters:
-      p_caai_caa_id - Reference to a adc_apex_actions
-      p_caai_cpi_crg_id - ID of the rule group, Reference to ADC_PAGE_ITEM
-      p_caai_cpi_id - Page item, Reference to ADC_PAGE_ITEM
-      p_caai_active - Optional flag to indicate whether this apex action item is actually used. Defaults to ADC_UTIL.C_TRUE
-   */
-  procedure merge_apex_action_item(
-    p_caai_caa_id in adc_apex_action_items.caai_caa_id%type,
-    p_caai_cpi_crg_id in adc_apex_action_items.caai_cpi_crg_id%type,
-    p_caai_cpi_id in adc_apex_action_items.caai_cpi_id%type,
-    p_caai_active in adc_apex_action_items.caai_active%type default adc_util.C_TRUE);
-
-  /**
-    Procedure: merge_apex_action_item
-      Overload with a row record.
-                 
-    Parameter:
-      p_row - Row record
-   */
-  procedure merge_apex_action_item(
-    p_row in out nocopy adc_apex_action_items%rowtype);
-
-  /**
-    Procedure: delete_apex_action_item
-      Deletes an APEX Action Item
-                 
-    Parameter:
-      p_caai_caa_id - ID of the APEX Action Item to delete
-   */
-  procedure delete_apex_action_item(
-    p_caai_caa_id in adc_apex_action_items.caai_caa_id%type);
-
-  /**
-    Procedure: delete_apex_action_item
-      Overload with a row record.
-                 
-    Parameter:
-      p_row - Row record
-   */
-  procedure delete_apex_action_item(
-    p_row in adc_apex_action_items%rowtype);
-
-  /**
-    Procedure: validate_apex_action_item
-      Validates an APEX Action Item
-                 
-    Parameter:
-      p_row - Row record
-   */
-  procedure validate_apex_action_item(
-    p_row in adc_apex_action_items%rowtype);
-    
-
   /** 
     Procedure: merge_standard_message
       Administration of ADC standard messages
@@ -1384,6 +810,120 @@ as
    */
   procedure validate_standard_message(
     p_row in adc_standard_messages_v%rowtype);
+
+  -- Group: Deprecated Config Wrappers
+  /**
+    These wrappers exist only for compatibility with previously exported
+    movement-data scripts. New code must use ADC_CONFIG directly.
+    For documentation of the methods and parameters, please refer to ADC_CONFIG.
+   */
+   
+  function map_id(
+    p_id in number default null)
+    return number;
+  pragma deprecate(map_id, 'Use ADC_CONFIG.MAP_ID instead.');
+
+
+  procedure merge_rule_group(
+    p_crg_app_id in adc_rule_groups.crg_app_id%type,
+    p_crg_page_id in adc_rule_groups.crg_page_id%type,
+    p_crg_id in adc_rule_groups.crg_id%type default null,
+    p_crg_with_recursion in adc_rule_groups.crg_with_recursion%type default adc_util.C_TRUE,
+    p_crg_active in adc_rule_groups.crg_active%type default adc_util.C_TRUE);
+  pragma deprecate(merge_rule_group, 'Use ADC_CONFIG.MERGE_RULE_GROUP instead.');
+
+
+  procedure delete_rule_group(
+    p_crg_id in adc_rule_groups.crg_id%type);
+  pragma deprecate(delete_rule_group, 'Use ADC_CONFIG.DELETE_RULE_GROUP instead.');
+
+
+  procedure propagate_rule_change(
+    p_crg_id in adc_rule_groups.crg_id%type);
+  pragma deprecate(propagate_rule_change, 'Use ADC_CONFIG.PROPAGATE_RULE_CHANGE instead.');
+
+
+  procedure prepare_rule_group_import(
+    p_workspace in varchar2,
+    p_app_alias in varchar2);
+  pragma deprecate(prepare_rule_group_import, 'Use ADC_CONFIG.PREPARE_RULE_GROUP_IMPORT instead.');
+
+
+  procedure prepare_rule_group_import(
+    p_workspace in varchar2,
+    p_app_id in adc_rule_groups.crg_app_id%type);
+  pragma deprecate(prepare_rule_group_import, 'Use ADC_CONFIG.PREPARE_RULE_GROUP_IMPORT instead.');
+
+
+  procedure prepare_rule_group_import(
+    p_crg_app_id in adc_rule_groups.crg_app_id%type,
+    p_crg_page_id in adc_rule_groups.crg_page_id%type);
+  pragma deprecate(prepare_rule_group_import, 'Use ADC_CONFIG.PREPARE_RULE_GROUP_IMPORT instead.');
+
+
+  procedure merge_rule(
+    p_cru_id in adc_rules.cru_id%type default null,
+    p_cru_crg_id in adc_rules.cru_crg_id%type,
+    p_cru_name in adc_rules.cru_name%type,
+    p_cru_condition in adc_rules.cru_condition%type,
+    p_cru_fire_on_page_load in adc_rules.cru_fire_on_page_load%type default adc_util.C_FALSE,
+    p_cru_sort_seq in adc_rules.cru_sort_seq%type default 10,
+    p_cru_active in adc_rules.cru_active%type default adc_util.C_TRUE);
+  pragma deprecate(merge_rule, 'Use ADC_CONFIG.MERGE_RULE instead.');
+
+
+  procedure merge_rule_action(
+    p_cra_id in adc_rule_actions.cra_id%type default null,
+    p_cra_cru_id in adc_rule_actions.cra_cru_id%type,
+    p_cra_crg_id in adc_rule_actions.cra_crg_id%type,
+    p_cra_cpi_id in adc_rule_actions.cra_cpi_id%type,
+    p_cra_cat_id in adc_rule_actions.cra_cat_id%type,
+    p_cra_sort_seq in adc_rule_actions.cra_sort_seq%type default 10,
+    p_cra_param_1 in adc_rule_actions.cra_param_1%type default null,
+    p_cra_param_2 in adc_rule_actions.cra_param_2%type default null,
+    p_cra_param_3 in adc_rule_actions.cra_param_3%type default null,
+    p_cra_on_error in adc_rule_actions.cra_on_error%type default adc_util.C_FALSE,
+    p_cra_raise_recursive in adc_rule_actions.cra_raise_recursive%type default adc_util.C_TRUE,
+    p_cra_raise_on_validation in adc_rule_actions.cra_raise_on_validation%type default adc_util.C_FALSE,
+    p_cra_active in adc_rule_actions.cra_active%type default adc_util.C_TRUE,
+    p_cra_comment in adc_rule_actions.cra_comment%type default null);
+  pragma deprecate(merge_rule_action, 'Use ADC_CONFIG.MERGE_RULE_ACTION instead.');
+
+
+  procedure merge_apex_action(
+    p_caa_id in adc_apex_actions_v.caa_id%type default null,
+    p_caa_crg_id in adc_apex_actions_v.caa_crg_id%type,
+    p_caa_caat_id in adc_apex_actions_v.caa_caat_id%type,
+    p_caa_name in adc_apex_actions_v.caa_name%type,
+    p_caa_confirm_message_name in adc_apex_actions_v.caa_confirm_message_name%type,
+    p_caa_label in adc_apex_actions_v.caa_label%type,
+    p_caa_context_label in adc_apex_actions_v.caa_context_label%type default null,
+    p_caa_icon in adc_apex_actions_v.caa_icon%type default null,
+    p_caa_icon_type in adc_apex_actions_v.caa_icon_type%type default 'fa',
+    p_caa_title in adc_apex_actions_v.caa_title%type default null,
+    p_caa_shortcut in adc_apex_actions_v.caa_shortcut%type default null,
+    p_caa_initially_disabled in adc_apex_actions_v.caa_initially_disabled%type default adc_util.C_FALSE,
+    p_caa_initially_hidden in adc_apex_actions_v.caa_initially_hidden%type default adc_util.C_FALSE,
+    p_caa_href in adc_apex_actions_v.caa_href%type default null,
+    p_caa_action in adc_apex_actions_v.caa_action%type default null,
+    p_caa_on_label in adc_apex_actions_v.caa_on_label%type default null,
+    p_caa_off_label in adc_apex_actions_v.caa_off_label%type default null,
+    p_caa_get in adc_apex_actions_v.caa_get%type default null,
+    p_caa_set in adc_apex_actions_v.caa_set%type default null,
+    p_caa_choices in adc_apex_actions_v.caa_choices%type default null,
+    p_caa_label_classes in adc_apex_actions_v.caa_label_classes%type default null,
+    p_caa_label_start_classes in adc_apex_actions_v.caa_label_start_classes%type default null,
+    p_caa_label_end_classes in adc_apex_actions_v.caa_label_end_classes%type default null,
+    p_caa_item_wrap_class in adc_apex_actions_v.caa_item_wrap_class%type default null);
+  pragma deprecate(merge_apex_action, 'Use ADC_CONFIG.MERGE_APEX_ACTION instead.');
+
+
+  procedure merge_apex_action_item(
+    p_caai_caa_id in adc_apex_action_items.caai_caa_id%type,
+    p_caai_cpi_crg_id in adc_apex_action_items.caai_cpi_crg_id%type,
+    p_caai_cpi_id in adc_apex_action_items.caai_cpi_id%type,
+    p_caai_active in adc_apex_action_items.caai_active%type default adc_util.C_TRUE);
+  pragma deprecate(merge_apex_action_item, 'Use ADC_CONFIG.MERGE_APEX_ACTION_ITEM instead.');
 
 end adc_admin;
 /

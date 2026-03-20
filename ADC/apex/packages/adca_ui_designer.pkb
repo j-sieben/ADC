@@ -1335,17 +1335,17 @@ select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
       when C_MODE_CRU then
         copy_rule(p_environment);
         pit.start_message_collection;
-        adc_admin.validate_rule(p_environment.cru_row);
+        adc_config.validate_rule(p_environment.cru_row);
         pit.stop_message_collection;
       when C_MODE_CRA then
         copy_rule_action(p_environment);
         pit.start_message_collection;
-        adc_admin.validate_rule_action(p_environment.cra_row);
+        adc_config.validate_rule_action(p_environment.cra_row);
         pit.stop_message_collection;
       when C_MODE_CAA then
         copy_apex_action(p_environment, l_caai_list);
         pit.start_message_collection;
-        adc_admin.validate_apex_action(p_environment.caa_row);
+        adc_config.validate_apex_action(p_environment.caa_row);
         pit.stop_message_collection;
       else
         null;
@@ -1406,19 +1406,19 @@ select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
         pit.raise_info(msg.ADCA_ACTION_REQUESTED, msg_args(C_ACTION_UPDATE, p_environment.target_mode));
         case p_environment.target_mode
           when C_MODE_CRU then
-            adc_admin.merge_rule(p_environment.cru_row);
+            adc_config.merge_rule(p_environment.cru_row);
             adc.set_item(
               p_cpi_id => C_ITEM_CRU_ID,
               p_item_value => p_environment.cru_row.cru_id);
             l_selected_id := C_MODE_CRU || '_' || p_environment.cru_row.cru_id;
           when C_MODE_CRA then
-            adc_admin.merge_rule_action(p_environment.cra_row);
+            adc_config.merge_rule_action(p_environment.cra_row);
             adc.set_item(
               p_cpi_id => C_ITEM_CRA_ID,
               p_item_value => p_environment.cra_row.cra_id);
             l_selected_id := C_MODE_CRA || '_' || p_environment.cra_row.cra_id;
           when C_MODE_CAA then
-            adc_admin.merge_apex_action(p_environment.caa_row, l_caai_list);
+            adc_config.merge_apex_action(p_environment.caa_row, l_caai_list);
             adc.set_item(
               p_cpi_id => C_ITEM_CAA_ID,
               p_item_value => p_environment.caa_row.caa_id);
@@ -1441,13 +1441,13 @@ select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
         pit.raise_info(msg.ADCA_ACTION_REQUESTED, msg_args(C_ACTION_DELETE, p_environment.action_mode));
         case p_environment.action_mode
           when C_MODE_CRG then
-            adc_admin.delete_rule_group(l_rule_group_row);
+            adc_config.delete_rule_group(l_rule_group_row);
           when C_MODE_CRU then
-            adc_admin.delete_rule(p_environment.cru_row);
+            adc_config.delete_rule(p_environment.cru_row);
           when C_MODE_CRA then
-            adc_admin.delete_rule_action(p_environment.cra_row);
+            adc_config.delete_rule_action(p_environment.cra_row);
           when C_MODE_CAA then
-            adc_admin.delete_apex_action(p_environment.caa_row);
+            adc_config.delete_apex_action(p_environment.caa_row);
           else
             null;
         end case;
@@ -1469,7 +1469,7 @@ select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
 
     -- in any case, propagate rule change to reflect changes
     begin
-      adc_admin.propagate_rule_change(l_crg_id);
+      adc_config.propagate_rule_change(l_crg_id);
     exception
       when others then
         -- ignore any errors here as these can occur if the page has changed
@@ -1730,7 +1730,7 @@ select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
 
     l_environment := read_environment;
 
-    adc_admin.toggle_rule_group(l_environment.crg_id);
+    adc_config.toggle_rule_group(l_environment.crg_id);
     commit;
 
     pit.leave_mandatory;
@@ -1752,7 +1752,7 @@ select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
     copy_rule(l_environment);
 
     pit.start_message_collection;
-    adc_admin.validate_rule_condition(l_environment.cru_row);
+    adc_config.validate_rule_condition(l_environment.cru_row);
     pit.stop_message_collection;
 
     pit.leave_mandatory;
@@ -1760,7 +1760,7 @@ select null #PRE#CRU_ID, '#CRG_ID#' #PRE#CRU_CRG_ID, '#SORT_SEQ#' #PRE#CRU_SORT_
     when msg.PIT_BULK_ERROR_ERR or msg.PIT_BULK_FATAL_ERR then
       if not p_has_refreshed then
         -- Page items may be out of sync with APEX metadata, synchronize and retry
-        adc_admin.propagate_rule_change(l_environment.crg_id);
+        adc_config.propagate_rule_change(l_environment.crg_id);
         validate_rule_condition(true);
       else
         adc.handle_bulk_errors(char_table(

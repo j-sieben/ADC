@@ -74,7 +74,7 @@ begin
     open l_cur for c_stmt;
     fetch l_cur into l_crg_id;
     while l_cur%found loop
-      adc_admin.delete_rule_group(l_crg_id);
+      adc_config.delete_rule_group(l_crg_id);
       fetch l_cur into l_crg_id;
     end loop;
   end if;

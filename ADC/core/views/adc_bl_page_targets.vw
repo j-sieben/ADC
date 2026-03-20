@@ -3,7 +3,7 @@ as
 with rule_groups as (
        select crg_id, crg_app_id, crg_page_id
          from adc_rule_groups
-        where crg_id = (select adc_admin.get_crg_id from dual))
+        where crg_id = (select adc_config.get_crg_id from dual))
 select crg_id cpi_crg_id,
        item_name cpi_id,
        case 
