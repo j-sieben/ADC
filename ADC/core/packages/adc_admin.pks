@@ -4,7 +4,9 @@ as
 
   /**
     Package: ADC_ADMIN
-      Main package to administer ADC rules and related metadata.
+      Main package to administer ADC metadata.
+      Legacy wrapper methods for exported movement-data scripts remain for
+      backward compatibility.
 
     Author::
       Juergen Sieben, ConDeS GmbH

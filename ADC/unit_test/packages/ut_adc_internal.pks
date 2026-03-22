@@ -5,6 +5,9 @@ as
   --%suite(ADC_INTERNAL Tests)
   --%suitepath(ut_adc_internal)
   --%rollback(manual)
+  --
+  -- Technical helper tests for ADC_INTERNAL.
+  -- Runtime integration tests for process_request are covered in UT_ADC_RUNTIME.
   
   procedure execute_ut_scenario;
 
@@ -80,31 +83,6 @@ as
   
   --%test (... returns the items which have been touched by rules)
   procedure get_page_items;
-  
-  --%endcontext
-  
-  --%context(When checking the firing item)
-  
-  --%test (... proceeds normally if the firing item is C_NO_FIRING_ITEM)
-  procedure process_request_initialize;
-  
-  --%test (... proceeds normally if the firing item is a mandatory item with a value)
-  procedure process_request_mandatory;
-  
-  --%test (... proceeds normally if the firing item is a number item with a number value)
-  procedure process_request_number;
-  
-  --%test (... proceeds normally if the firing item is a date item with a date value)
-  procedure process_request_date;
-  
-  --%test (... registers an exception if the firing item is a mandatory item but is NULL)
-  procedure process_request_mandatory_null;
-  
-  --%test (... registers an exception if the firing item is a number item with an invalid number)
-  procedure process_request_invalid_number;
-  
-  --%test (... registers an exception if the firing item is a date item with an invalid date)
-  procedure process_request_invalid_date;
   
   --%endcontext
   

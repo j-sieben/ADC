@@ -11,7 +11,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.map_id;
+      -- adc_config.map_id;
 
       -- populate expected
       -- ...
@@ -28,7 +28,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.merge_rule_group;
+      -- adc_config.merge_rule_group;
 
       -- populate expected
       -- ...
@@ -45,7 +45,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.delete_rule_group;
+      -- adc_config.delete_rule_group;
 
       -- populate expected
       -- ...
@@ -62,7 +62,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.validate_rule_group;
+      -- adc_config.validate_rule_group;
 
       -- populate expected
       -- ...
@@ -79,7 +79,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.propagate_rule_change;
+      -- adc_config.propagate_rule_change;
 
       -- populate expected
       -- ...
@@ -96,7 +96,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.export_rule_group;
+      -- adc_config.export_rule_group;
 
       -- populate expected
       -- ...
@@ -113,7 +113,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.export_rule_groups;
+      -- adc_config.export_rule_groups;
 
       -- populate expected
       -- ...
@@ -130,7 +130,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.prepare_rule_group_import;
+      -- adc_config.prepare_rule_group_import;
 
       -- populate expected
       -- ...
@@ -198,7 +198,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.merge_apex_action;
+      -- adc_config.merge_apex_action;
 
       -- populate expected
       -- ...
@@ -215,7 +215,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.delete_apex_action;
+      -- adc_config.delete_apex_action;
 
       -- populate expected
       -- ...
@@ -232,7 +232,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.validate_apex_action;
+      -- adc_config.validate_apex_action;
 
       -- populate expected
       -- ...
@@ -249,7 +249,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.merge_apex_action_item;
+      -- adc_config.merge_apex_action_item;
 
       -- populate expected
       -- ...
@@ -266,7 +266,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.delete_apex_action_item;
+      -- adc_config.delete_apex_action_item;
 
       -- populate expected
       -- ...
@@ -283,7 +283,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.validate_apex_action_item;
+      -- adc_config.validate_apex_action_item;
 
       -- populate expected
       -- ...
@@ -300,7 +300,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.merge_rule;
+      -- adc_config.merge_rule;
 
       -- populate expected
       -- ...
@@ -317,7 +317,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.delete_rule;
+      -- adc_config.delete_rule;
 
       -- populate expected
       -- ...
@@ -334,7 +334,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.validate_rule;
+      -- adc_config.validate_rule;
 
       -- populate expected
       -- ...
@@ -351,7 +351,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.resequence_rule;
+      -- adc_config.resequence_rule;
 
       -- populate expected
       -- ...
@@ -640,7 +640,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.merge_rule_action;
+      -- adc_config.merge_rule_action;
 
       -- populate expected
       -- ...
@@ -657,7 +657,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.delete_rule_action;
+      -- adc_config.delete_rule_action;
 
       -- populate expected
       -- ...
@@ -674,7 +674,7 @@ as
       l_expected integer := 1;
    begin
       -- populate actual
-      -- adc_admin.validate_rule_action;
+      -- adc_config.validate_rule_action;
 
       -- populate expected
       -- ...

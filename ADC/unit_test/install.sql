@@ -40,6 +40,9 @@ prompt &s1.Package UT_ADC_ADMIN
 prompt &s1.Package UT_ADC_INTERNAL
 @&PKG_DIR.ut_adc_internal.pks
 
+prompt &s1.Package UT_ADC_RUNTIME
+@&PKG_DIR.ut_adc_runtime.pks
+
 prompt &s1.Package UT_ADC_PAGE_STATE
 @&PKG_DIR.ut_adc_page_state.pks
 
@@ -58,6 +61,9 @@ prompt &s1.Package Body UT_ADC_ADMIN
 
 prompt &s1.Package Body UT_ADC_INTERNAL
 @&PKG_DIR.ut_adc_internal.pkb
+
+prompt &s1.Package Body UT_ADC_RUNTIME
+@&PKG_DIR.ut_adc_runtime.pkb
 
 prompt &s1.Package Body UT_ADC_PAGE_STATE
 @&PKG_DIR.ut_adc_page_state.pkb
