@@ -1,20 +1,20 @@
 # ADC Documentation
 
-This folder contains both handwritten documentation and generated API reference.
+This folder contains the handwritten project documentation for ADC as well as the generated API reference.
 
 ## Overview
 
-- [`Installation.md`](./Installation.md)
-  Installation notes and prerequisites.
-- [`technical_description.md`](./technical_description.md)
-  Technical and architectural overview of ADC.
 - [`how_it_works.md`](./how_it_works.md)
-  Conceptual explanation and motivation.
+  Conceptual introduction to ADC, the problem it addresses, and the mental model behind dynamic pages.
+- [`technical_description.md`](./technical_description.md)
+  Technical overview of the current ADC architecture and runtime behavior.
+- [`Installation.md`](./Installation.md)
+  Installation prerequisites, installation modes, and deployment notes.
 
 ## Developer docs
 
 - [`developer/Home.md`](./developer/Home.md)
-  Developer-facing documentation vault for the current JavaScript architecture and refactoring state.
+  Developer-facing notes for the current JavaScript architecture, runtime flow, and refactoring state.
 
 ## API reference
 

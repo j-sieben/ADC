@@ -1,45 +1,101 @@
 # Installation
 
-ADC is planned to be installed into the APEX workspace schema directly, as all dependencies are to APEX only. It can be installed either completely or in a runtime only manner. If you install the runtime version, no ADC administration application is installed.
+ADC is intended to be installed into the APEX workspace schema. It can be installed in a full development setup or in a runtime-only setup for environments where the administration application is not needed.
 
 ## Prerequisites
-Installation of ADC requires some prerequisites to be met. Make sure that all prerequisites are met before installing ADC. You may want to check those in the given order in this document.
+
+ADC depends on a small set of companion utilities. These should be installed before ADC itself.
 
 ### PIT
 
-ADC is based on PIT. You can get a copy of PIT [here](https://github.com/j-sieben/PIT). To install PIT, you can either install it directly into the APEX workspace schema or in a different utilities schema. Depending on this decision, it is either sufficient to just run `install.bat/sh` or to run this script and afterwards run `install_client.bat/sh` for each schema you want to have access to PIT. As a minimum, run this script for your APEX workspace schema.
+ADC uses PIT for logging, messaging, and parts of the runtime infrastructure.
 
-Please make a decision on the datatype for boolean flags you want to use. As per default, this will be `char (1 byte)` with the values `Y|N`. You may change that in file `PIT/PIT/init/settings.sql`. Just apply these settings according to your taste, they will be passed to all other utilities.
+Repository:
+[https://github.com/j-sieben/PIT](https://github.com/j-sieben/PIT)
+
+PIT can be installed directly into the workspace schema or into a shared utility schema. If it is installed outside the workspace schema, the required client installation for the workspace schema must also be executed.
 
 ### UTL_TEXT
 
-ADC makes heavy use of the code generator inside UTL_TEXT. You can get a copy of UTL_TEXT [here](https://github.com/j-sieben/UTL_TEXT). To install UTL_TEXT, you can either install it directly into the APEX workspace schema or in a different utilities schema. Depending on this decision, it is either sufficient to just run `install.bat/sh` or to run this script and afterwards run `install_client.bat/sh` for each schema you want to have access to UTL_TEXT. As a minimum, run this script for your APEX workspace schema.
+ADC uses `UTL_TEXT` for text generation tasks, including response and export generation.
+
+Repository:
+[https://github.com/j-sieben/UTL_TEXT](https://github.com/j-sieben/UTL_TEXT)
+
+As with PIT, `UTL_TEXT` may live in the workspace schema or in a shared utility schema, provided the workspace schema has the required client-side access.
 
 ### UTL_APEX
 
-UTL_APEX is a collection of common APEX utilities I utilize in my projects. You can get a copy of UTL_APEX [here](https://github.com/j-sieben/UTL_APEX). As it is an APEX only utility, it is installed into the APEX Workspace schema directly, just as ADC.
+ADC uses `UTL_APEX` for APEX-specific helper functionality.
 
-## Full Installation of ADC
+Repository:
+[https://github.com/j-sieben/UTL_APEX](https://github.com/j-sieben/UTL_APEX)
 
-If you have installed the required utilities, installing ADC is as simple as calling `adc.bat install` or `./adc.sh install`. This command installs all necessary database objects and the ADC administration application into the workspace you specify.
+`UTL_APEX` is an APEX-focused utility and is normally installed into the workspace schema directly.
 
-## Runtime Only Installation of ADC
+## Installation modes
 
-In a production environment, there is no need for an administrative ADC application. Therefore it is advised to run `adc.bat runtime` or `./adc.sh runtime` on those machines. This installs the runtime objects only and omits the APEX administration application and its supporting database objects.
+### Full installation
 
-Any rules you create will be exported and imported using a built in scripting mechanism. So you create the business rules on the development machine, export them using the ADC application and run the resulting scripts on the production machine after having installed the target APEX application.
+Use the full installation on development systems.
 
-## Installing the ADC sample application
+This installs:
 
-To install the sample application, run `adc.bat sample` or `./adc.sh sample`.
+- the ADC database objects
+- the Dynamic Action plugin
+- the ADC administration application
 
-## Installing unit tests
+Run:
 
-To install the unit tests, run `adc.bat ut` or `./adc.sh ut`.
+- `adc.bat install`
+- `./adc.sh install`
 
-## Removing ADC
+### Runtime-only installation
 
-To uninstall ADC, run `adc.bat uninstall` or `./adc.sh uninstall`.
+Use the runtime installation on systems where rules are executed but not maintained, for example test or production environments.
+
+This installs the runtime objects and plugin, but omits the ADC administration application and its supporting APEX-side maintenance objects.
+
+Run:
+
+- `adc.bat runtime`
+- `./adc.sh runtime`
+
+## Rule deployment
+
+Rules are typically maintained in a development environment and then transported to downstream environments.
+
+ADC supports two deployment styles:
+
+- rule groups can be exported as dedicated SQL scripts
+- rule groups can be embedded into the exported APEX application as supporting objects
+
+Which style is preferred depends on the delivery process of the project. ADC supports both, so teams can choose the variant that fits their release model best.
+
+## Optional installations
+
+### Sample application
+
+The sample application is intended as a walkthrough and showcase for ADC usage.
+
+Run:
+
+- `adc.bat sample`
+- `./adc.sh sample`
+
+### Unit tests
+
+Run:
+
+- `adc.bat ut`
+- `./adc.sh ut`
+
+## Uninstall
+
+Run:
+
+- `adc.bat uninstall`
+- `./adc.sh uninstall`
 
 ## Command overview
 
