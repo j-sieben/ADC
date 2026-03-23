@@ -1,1 +1,0 @@
-﻿NDSearch.OnPrefixDataLoaded("ent",["Function"],[["enterCallback",,[[,,,,0,"File:plugin/files/adc_20_2/js/controller.js:enterCallback"]]]]);

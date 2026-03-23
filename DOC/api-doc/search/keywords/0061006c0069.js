@@ -1,1 +1,0 @@
-﻿NDSearch.OnPrefixDataLoaded("ali",["Function"],[["alignReportVerticalTop",,[[,,,,0,"File:plugin/files/adc_20_2/js/actions.js:alignReportVerticalTop"]]]]);

@@ -1,1 +1,0 @@
-﻿NDSearch.OnPrefixDataLoaded("pau",["Function"],[["pauseChangeEventDuringRefresh",,[[,,,,0,"File:plugin/files/adc_20_2/js/controller.js:pauseChangeEventDuringRefresh"]]]]);

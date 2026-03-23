@@ -1,1 +1,0 @@
-﻿NDSearch.OnPrefixDataLoaded("the",["Function"],[["Theme",,[[,"ADC Theme adapter",,,0,"File:plugin/files/adc_20_2/js/renderer.js:ADC_Theme_adapter"]]]]);

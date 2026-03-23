@@ -1,1 +1,1 @@
-﻿NDSearch.OnPrefixDataLoaded("map",["Function"],[["map_id",,[["ADC_ADMIN Body",,,,0,"File:core/packages/adc_admin.pkb:ADC_ADMIN_Body.map_id","SQLClass:ADC_ADMIN_Body:map_id"],["ADC_ADMIN",,,,0,"File:core/packages/adc_admin.pks:ADC_ADMIN.map_id","SQLClass:ADC_ADMIN:map_id"]]]]);
+﻿NDSearch.OnPrefixDataLoaded("map",["Function"],[["map_id",,[["ADC_CONFIG",,,,0,"File:core/packages/adc_config.pks:ADC_CONFIG.map_id","SQLClass:ADC_CONFIG:map_id"]]]]);
