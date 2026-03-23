@@ -2,7 +2,6 @@ declare
   l_exists binary_integer;
   l_missing_privs varchar2(1000 byte);
 begin
-  
   -- PIT must be available
   select count(*)
     into l_exists
@@ -41,7 +40,7 @@ begin
   if l_exists = 0 then
     raise_application_error(-20000, 'UTL_APEX is required to install ADC.');
   end if;
-  
+
   dbms_output.put_line('&s1.Checked.');
 end;
 /

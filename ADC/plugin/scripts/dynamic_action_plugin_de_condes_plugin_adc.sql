@@ -93,14 +93,14 @@ wwv_flow_imp_shared.create_plugin_attribute(
 ,p_prompt=>'ADC-Apexfunktionen'
 ,p_attribute_type=>'TEXT'
 ,p_is_required=>false
-,p_default_value=>'de.condes.plugin.adc.apex_42_20_2'
+,p_default_value=>'de.condes.plugin.adc.apex_theme_42'
 ,p_display_length=>40
 ,p_is_translatable=>false
 ,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<h2>ADC-APEX-Funktionen</h2>',
 '<p>Dieser Parameter definiert den Namensraum der ',
 unistr('JavaScript-Funktionalit\00E4t, die f\00FCr das ADC ben\00F6tigt wird.</p>'),
-unistr('<p>Standardm\00E4\00DFig wird de.condes.plugin.adc.apex verwendet und '),
+unistr('<p>Standardm\00E4\00DFig wird de.condes.plugin.adc.apex_theme_42 verwendet und '),
 'mitgeliefert. Wenn diese Funktionen zum eingesetzten Theme nicht passen, ',
 unistr('k\00F6nnen Sie eine eigene Kopie dieser Datei erstellen und anpassen.<br/> '),
 unistr('Stellen Sie sicher, dass die in der mitgelieferten Datei ADCApex.js implementierten, \00F6ffentlichen Funktionen auch in '),

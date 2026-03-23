@@ -23,7 +23,6 @@ define plugin_dir=plugin/
 select pit.get_default_language default_language,       
        case 
          when utl_apex.get_apex_version >= 24.1 then 'apex_24_1'
-         when utl_apex.get_apex_version >= 20.2 then 'apex_20_2'
        end apex_path
   from dual;
   
@@ -32,13 +31,20 @@ select pit.get_default_language default_language,
 declare
   l_version number;
   x_old_Version exception;
+  x_old_apex_version exception;
 begin
-  -- Dynamic PL/SQL to avoid compilation errors
-  execute immediate 'begin :x := pit.version; end' using out l_version;
-  if l_version < 1.2 then
-   raise x_old_version;
+  if '&APEX_PATH.' is not null then
+    -- Dynamic PL/SQL to avoid compilation errors
+    execute immediate 'begin :x := pit.version; end' using out l_version;
+    if l_version < 1.2 then
+     raise x_old_version;
+    end if;
+  else
+    raise x_old_apex_version;
   end if;
 exception
+  when x_old_apex_version then
+    raise_application_error(-20000, 'APEX 24.1 or higher is required to install ADC');
   when others then
     raise_application_error(-20000, 'PIT in version 1.2 or greater is required to install ADC');
 end;

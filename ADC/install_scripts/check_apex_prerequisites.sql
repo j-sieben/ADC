@@ -54,7 +54,7 @@ begin
   if l_exists = 0 then
     raise_application_error(-20000, 'UTL_APEX is required to install ADC.');
   end if;
-  
+
   dbms_output.put_line('&s1.Checked.');
 end;
 /

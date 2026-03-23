@@ -32,8 +32,7 @@ select upper('&1.') apex_ws,
        coalesce((select application_id from apex_applications where alias = '&3.'), &2.) app_id,
        pit.get_default_language default_language,
        case 
-         when utl_apex.get_apex_version >= 24.1 then 'apex_24_1'
-         when utl_apex.get_apex_version >= 20.2 then 'apex_20_2'
+         when utl_apex.get_apex_version >= 24.1 then 'apex_24_1' 
        end apex_path
   from dual;
 
@@ -62,10 +61,15 @@ select lower(data_type) ||
  where table_name = 'PARAMETER_LOCAL'
    and column_name = 'PAL_BOOLEAN_VALUE';
 
+declare
+  x_old_apex_version exception;
 begin
   if '&APEX_PATH.' is null then
-    raise_application_error(-20000, 'APEX 20.2 or higher is required to install ADC');
+    raise x_old_apex_version;
   end if;
+exception
+  when x_old_apex_version then
+    raise_application_error(-20000, 'APEX 24.1 or higher is required to install ADC');
 end;
 /
 

@@ -633,7 +633,7 @@ wwv_flow_imp_shared.create_plugin_setting(
  p_id=>wwv_flow_imp.id(4039665831032493)
 ,p_plugin_type=>'DYNAMIC ACTION'
 ,p_plugin=>'PLUGIN_DE.CONDES.PLUGIN.ADC'
-,p_attribute_01=>'de.condes.plugin.adc.apex_42_20_2'
+,p_attribute_01=>'de.condes.plugin.adc.apex_theme_42'
 );
 end;
 /
@@ -12765,7 +12765,7 @@ wwv_flow_imp_shared.create_plugin_attribute(
 ,p_prompt=>'ADC-Apexfunktionen'
 ,p_attribute_type=>'TEXT'
 ,p_is_required=>false
-,p_default_value=>'de.condes.plugin.adc.apex_42_20_2'
+,p_default_value=>'de.condes.plugin.adc.apex_theme_42'
 ,p_display_length=>40
 ,p_is_translatable=>false
 ,p_help_text=>wwv_flow_string.join(wwv_flow_t_varchar2(
