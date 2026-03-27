@@ -546,3 +546,5 @@ as
   procedure validate_apex_action_item(
     p_row in adc_apex_action_items%rowtype);
 end adc_config;
+/
+
