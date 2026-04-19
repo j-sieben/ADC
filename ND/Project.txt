@@ -163,7 +163,7 @@ Source Folder: ..\ADC
 # Generated Documentation
 # ------------------------------------------------------------------------
 
-HTML Output Folder: ..\DOC\api-doc
+HTML Output Folder: ..\Docs\api_doc
 
 
 # This is where you tell Natural Docs what kind of documentation you want
