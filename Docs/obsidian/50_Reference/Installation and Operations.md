@@ -1,10 +1,16 @@
-# Installation
+# Installation and Operations
 
-ADC is intended to be installed into the APEX workspace schema. It can be installed in a full development setup or in a runtime-only setup for environments where the administration application is not needed.
+ADC is intended to be installed into the APEX workspace schema.
 
 ## Prerequisites
 
-ADC depends on a small set of companion utilities. These should be installed before ADC itself.
+ADC depends on these companion utilities:
+
+- `PIT`
+- `UTL_TEXT`
+- `UTL_APEX`
+
+The install scripts under `ADC/install_scripts` check these prerequisites before installation.
 
 ### PIT
 
@@ -33,35 +39,42 @@ Repository:
 
 `UTL_APEX` is an APEX-focused utility and is normally installed into the workspace schema directly.
 
-## Installation modes
+## Main Commands
 
-### Full installation
+Run these commands from the `ADC/` directory:
 
-Use the full installation on development systems.
+- `./adc.sh install`
+- `./adc.sh runtime`
+- `./adc.sh sample`
+- `./adc.sh ut`
+- `./adc.sh uninstall`
 
-This installs:
-
-- the ADC database objects
-- the Dynamic Action plugin
-- the ADC administration application
-
-Run:
+Windows equivalents:
 
 - `adc.bat install`
-- `./adc.sh install`
-
-### Runtime-only installation
-
-Use the runtime installation on systems where rules are executed but not maintained, for example test or production environments.
-
-This installs the runtime objects and plugin, but omits the ADC administration application and its supporting APEX-side maintenance objects.
-
-Run:
-
 - `adc.bat runtime`
-- `./adc.sh runtime`
+- `adc.bat sample`
+- `adc.bat ut`
+- `adc.bat uninstall`
 
-## Rule deployment
+## Installation Modes
+
+`install`
+Installs core objects, plugin, and ADC administration application.
+
+`runtime`
+Installs core objects and plugin, but omits the administration application. Rules can be imported but not generated. This is useful for production environments.
+
+`sample`
+Installs the sample application.
+
+`ut`
+Installs unit-test objects.
+
+`uninstall`
+Removes ADC, including the administration application.
+
+## Rule Deployment
 
 Rules are typically maintained in a development environment and then transported to downstream environments.
 
@@ -72,35 +85,24 @@ ADC supports two deployment styles:
 
 Which style is preferred depends on the delivery process of the project. ADC supports both, so teams can choose the variant that fits their release model best.
 
-## Optional installations
+## Optional Installations
 
-### Sample application
+### Sample Application
 
 The sample application is intended as a walkthrough and showcase for ADC usage.
 
-Run:
+### Unit Tests
 
-- `adc.bat sample`
-- `./adc.sh sample`
+The `ut` installation path installs the database unit-test objects used for verification work.
 
-### Unit tests
+## Operational Guidance
 
-Run:
+- Maintain rules in development first.
+- Transport rules through dedicated SQL export files or supporting objects in APEX exports.
+- Treat generated API documentation under `Docs/api_doc` as build output.
 
-- `adc.bat ut`
-- `./adc.sh ut`
+## Continue Reading
 
-## Uninstall
-
-Run:
-
-- `adc.bat uninstall`
-- `./adc.sh uninstall`
-
-## Command overview
-
-- `adc.bat install` / `./adc.sh install`
-- `adc.bat runtime` / `./adc.sh runtime`
-- `adc.bat sample` / `./adc.sh sample`
-- `adc.bat ut` / `./adc.sh ut`
-- `adc.bat uninstall` / `./adc.sh uninstall`
+- [[Glossary]]
+- [[../20_Users/First Steps on a Page|First Steps on a Page]]
+- [[../30_Developers/Getting Started|Getting Started]]

@@ -31,8 +31,8 @@ ADC implements a metadata-driven dynamic controller for APEX pages:
   Orchestration scripts for core/runtime/sample/unit test installation and uninstall.
 - `ADC/tools`
   Reusable SQL*Plus helper scripts for object creation, recompilation, environment setup, and script execution.
-- `DOC`
-  Generated and handwritten documentation, including Natural Docs output and conceptual markdown files.
+- `Docs`
+  Handwritten project documentation in Obsidian structure plus generated Natural Docs API output.
 - `ND`
   Natural Docs working data.
 
@@ -79,15 +79,14 @@ Then it runs:
 - Plugin static assets exist for at least APEX `20.2` and `24.1`.
 - The current `24.1` JavaScript file set is intentionally compact: `utils.js`, `renderer.js`, `controller.js`, `actions.js`, plus minified variants.
 - Shared runtime state and callback registration currently live inside `controller.js`; there are no standalone `state.js` or `callbacks.js` files anymore.
-- Documentation in `DOC/` is split deliberately:
-  - handwritten docs remain at the root of `DOC`
-  - generated Natural Docs API output now lives in `DOC/api-doc`
-  - developer-facing architecture notes now live in `DOC/developer`
+- Documentation in `Docs/` is split deliberately:
+  - handwritten docs live in `Docs/obsidian`
+  - generated Natural Docs API output lives in `Docs/api_doc`
 
 ## Working assumptions for future sessions
 
 - Changes should be treated as database-source-first changes unless a task explicitly targets generated docs.
-- `DOC/` likely contains generated output and concept docs; changes there should be deliberate.
+- `Docs/` contains both handwritten documentation and generated API output; changes there should be deliberate.
 - Existing local modifications were already present before analysis:
   - `ADC/core/views/adc_action_param_types_v.vw`
   - `ADC/plugin/files/adc_24_1/js/actions.js`

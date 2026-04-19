@@ -146,7 +146,7 @@ Shared helper layer.
 
 ## Documentation layout
 
-- `DOC/api-doc`
+- `Docs/api_doc`
   Generated Natural Docs API reference.
-- `DOC/developer`
+- `Docs/obsidian`
   Handwritten developer-facing architecture notes and onboarding material.

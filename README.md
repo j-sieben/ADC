@@ -58,15 +58,14 @@ The renderer isolates APEX- and theme-specific behavior. The controller owns run
 
 ## Documentation
 
-Documentation is split into three parts:
+Documentation is split into two parts:
 
-- Conceptual and installation documents in [`DOC/`](./DOC/README.md)
-- Developer-facing architecture notes in [`DOC/developer/`](./DOC/developer/Home.md)
-- Generated API reference in [`DOC/api-doc/`](./DOC/api-doc/index.html)
+- Audience-oriented project documentation in [`Docs/obsidian/`](./Docs/obsidian/00_Start/Home.md)
+- Generated API reference in [`Docs/api_doc/`](./Docs/api_doc/index.html)
 
 ## Installation
 
-Installation notes and prerequisites are documented in [`DOC/Installation.md`](./DOC/Installation.md).
+Installation notes and prerequisites are documented in [`Docs/obsidian/50_Reference/Installation and Operations.md`](./Docs/obsidian/50_Reference/Installation%20and%20Operations.md).
 
 ## Sample application
 

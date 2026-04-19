@@ -1,6 +1,6 @@
 # JavaScript Modules
 
-Last updated: 2026-03-19
+This page describes the current JavaScript module split of the ADC plugin runtime.
 
 ## `utils.js`
 
@@ -67,3 +67,8 @@ Current hotspot:
 
 Some report-selection and focus logic still contains APEX-specific selectors and widget calls. This is workable, but it is the main remaining place where the separation is not yet as clean as the target architecture wants it to be.
 
+## Related
+
+- [[JavaScript Runtime]]
+- [[Renderer Model]]
+- [[JavaScript Risks and Follow-ups]]

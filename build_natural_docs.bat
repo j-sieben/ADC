@@ -2,7 +2,7 @@
 setlocal
 
 set "PROJECT_DIR=%~dp0ND"
-set "OUTPUT_DIR=%~dp0DOC\api-doc"
+set "OUTPUT_DIR=%~dp0Docs\api_doc"
 
 if exist "%ProgramFiles%\Natural Docs\NaturalDocs.exe" (
   set "ND_CMD=%ProgramFiles%\Natural Docs\NaturalDocs.exe"

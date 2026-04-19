@@ -1,24 +1,24 @@
 {
   "main": {
-    "id": "537ba419cba24e83",
+    "id": "a610a462e1304447",
     "type": "split",
     "children": [
       {
-        "id": "79b687b3bce36685",
+        "id": "27b62f94bd7d5592",
         "type": "tabs",
         "children": [
           {
-            "id": "ba002ea9a699d0ca",
+            "id": "54849184a1c2fa6a",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "JavaScript Risks and Follow-ups.md",
+                "file": "30_Developers/Repository Map.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "JavaScript Risks and Follow-ups"
+              "title": "Repository Map"
             }
           }
         ]
@@ -27,15 +27,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "b92db3cb70a63622",
+    "id": "6058c3c9d267f6db",
     "type": "split",
     "children": [
       {
-        "id": "9d6606133c726780",
+        "id": "406d3e1932617ef8",
         "type": "tabs",
         "children": [
           {
-            "id": "cce3f0494e611ee7",
+            "id": "9d4f18400ff2963c",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -48,7 +48,7 @@
             }
           },
           {
-            "id": "be0055b3ffcd43c0",
+            "id": "bc18efbbcd6f5980",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -65,7 +65,7 @@
             }
           },
           {
-            "id": "5c01c9e4154e852b",
+            "id": "fd0fff6b63ed4114",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -81,20 +81,20 @@
     "width": 300
   },
   "right": {
-    "id": "be84b30176aaad95",
+    "id": "e70a2ebde1448653",
     "type": "split",
     "children": [
       {
-        "id": "4b39f3dd5afc4753",
+        "id": "b4bc24bb163bdbcb",
         "type": "tabs",
         "children": [
           {
-            "id": "0d15322683ee108b",
+            "id": "ae265104a97b781f",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "JavaScript Risks and Follow-ups.md",
+                "file": "30_Developers/Repository Map.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,25 +104,25 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Rückverweise auf JavaScript Risks and Follow-ups"
+              "title": "Rückverweise auf Repository Map"
             }
           },
           {
-            "id": "fe50f10af471f31f",
+            "id": "a7b3f96009c39805",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "JavaScript Risks and Follow-ups.md",
+                "file": "30_Developers/Repository Map.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Ausgehende Links von JavaScript Risks and Follow-ups öffnen"
+              "title": "Ausgehende Links von Repository Map öffnen"
             }
           },
           {
-            "id": "c45aac4b279f4dd4",
+            "id": "410dd56d4d65d515",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -137,7 +137,7 @@
             }
           },
           {
-            "id": "d73dd6d1a4b282bf",
+            "id": "3d38111fd432bd70",
             "type": "leaf",
             "state": {
               "type": "all-properties",
@@ -151,18 +151,18 @@
             }
           },
           {
-            "id": "14986f0c2db87d69",
+            "id": "f14b674e9a3b1341",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
-                "file": "JavaScript Risks and Follow-ups.md",
+                "file": "30_Developers/Repository Map.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Gliederung von JavaScript Risks and Follow-ups"
+              "title": "Gliederung von Repository Map"
             }
           }
         ]
@@ -183,11 +183,34 @@
       "bases:Neue Base erstellen": false
     }
   },
-  "active": "ba002ea9a699d0ca",
+  "active": "54849184a1c2fa6a",
   "lastOpenFiles": [
-    "JavaScript Modules.md",
-    "JavaScript Extension Guide.md",
-    "JavaScript Architecture.md",
-    "Home.md"
+    "30_Developers/JavaScript Risks and Follow-ups.md",
+    "30_Developers/Renderer Model.md",
+    "30_Developers/JavaScript Modules.md",
+    "30_Developers/Getting Started.md",
+    "50_Reference/Installation and Operations.md",
+    "50_Reference/Glossary.md",
+    "40_Architecture/Request and Response Flow.md",
+    "40_Architecture/System Overview.md",
+    "40_Architecture/How Decision Tables Work.md",
+    "50_Reference/glossary/Rule Group.md",
+    "50_Reference/glossary/Page State.md",
+    "50_Reference/glossary/Use Case.md",
+    "50_Reference/glossary/Rule.md",
+    "50_Reference/glossary/Renderer.md",
+    "50_Reference/glossary/Administration Application.md",
+    "50_Reference/glossary/Action Type.md",
+    "50_Reference/glossary/ADC.md",
+    "50_Reference/glossary",
+    "20_Users/First Steps on a Page.md",
+    "20_Users/Working With ADC.md",
+    "20_Users/Example Use Case - Commission Eligibility.md",
+    "00_Start/Home.md",
+    "10_Overview/Why ADC Exists.md",
+    "10_Overview/What Is ADC.md",
+    "00_Start/For Users.md",
+    "00_Start/For Interested Readers.md",
+    "00_Start/For Developers.md"
   ]
 }

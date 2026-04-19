@@ -1,23 +1,23 @@
 # Renderer Model
 
-Last updated: 2026-03-19
+This page explains the renderer abstraction used by the ADC JavaScript runtime.
 
-## Why a renderer exists
+## Why a Renderer Exists
 
 ADC wants to let developers declare dynamic behavior without tying that behavior directly to one APEX markup version.
 
 That is why renderer behavior is selected by namespace and not hard-coded into the controller.
 
-## Current selection mechanism
+## Current Selection Mechanism
 
 The current flow is:
 
-1. `adc_plugin.render` writes the configured renderer namespace into the plugin configuration object
-2. `controller.js` reads `pAction.attribute03`
-3. `adc.utils.resolveRenderer(...)` resolves the namespace object
-4. `adc.renderer` points to the resolved renderer implementation
+1. `adc_plugin.render` writes the configured renderer namespace into the plugin configuration object.
+2. `controller.js` reads the configured renderer namespace.
+3. `adc.utils.resolveRenderer(...)` resolves the namespace object.
+4. `adc.renderer` points to the resolved renderer implementation.
 
-## Base renderer pattern
+## Base Renderer Pattern
 
 The current implementation uses a base renderer plus a concrete renderer:
 
@@ -33,7 +33,7 @@ This gives:
 - no additional build model
 - no need for class hierarchies
 
-## What belongs in the base renderer
+## What Belongs in the Base Renderer
 
 Good base-renderer candidates:
 
@@ -43,17 +43,17 @@ Good base-renderer candidates:
 - common wait spinner behavior
 - common message handling
 
-## What belongs in a concrete renderer
+## What Belongs in a Concrete Renderer
 
 Good override candidates:
 
 - region-type detection
 - APEX-markup-specific selectors
 - report filter panel handling
-- region header/content DOM manipulation
+- region header and content DOM manipulation
 - widget-specific focus behavior
 
-## Short guide: supporting a new APEX version
+## Supporting a New APEX Version
 
 If ADC needs to support a new APEX version, use this sequence:
 
@@ -65,7 +65,7 @@ If ADC needs to support a new APEX version, use this sequence:
 6. Configure the plugin to use the new renderer namespace.
 7. Keep action semantics in `actions.js` unchanged unless the change is not renderer-related.
 
-## Checklist for a new renderer
+## Checklist for a New Renderer
 
 - Check region detection in `getRegionType(...)`.
 - Check report selection behavior for Classic Report, Interactive Report, Interactive Grid, and Tree.
@@ -74,10 +74,16 @@ If ADC needs to support a new APEX version, use this sequence:
 - Check item enable/disable behavior.
 - Check error rendering and warning styling.
 - Check dialog rendering and focus return behavior.
-- Check any selectors that refer to Theme 42 markup directly.
+- Check selectors that refer to Theme 42 markup directly.
 
-## Rule of thumb
+## Rule of Thumb
 
 If the breakage is caused by changed APEX markup or widget behavior, fix it in the concrete renderer.
 
 If the breakage is caused by ADC runtime behavior, request transport, event handling, or shared state, fix it in `controller.js` or `actions.js` instead.
+
+## Related
+
+- [[JavaScript Runtime]]
+- [[JavaScript Modules]]
+- [[Extending ADC]]
