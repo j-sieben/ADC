@@ -6,6 +6,19 @@ The central idea is simple: keep the decision logic close to the data. Instead o
 
 This makes ADC especially useful for complex forms where visibility, mandatory state, validation, refresh behavior, and follow-up actions depend on the current state of several page items at once.
 
+## Usage Levels
+
+ADC can be used at different levels of sophistication:
+
+- Basic Use
+  Declarative rules determine dynamic behavior that is primarily executed on the client side through JavaScript.
+- Advanced Use
+  Declarative rules still drive the behavior, but actions may be executed both in the database and on the client side.
+- Professional Use
+  Rules identify broader situations, while the detailed use-case implementation is handled in PL/SQL packages using the public ADC type interface built around `ADC` and `ADC_BASIC`.
+- Extensibility
+  ADC can be extended with custom action types and project-specific PL/SQL methods.
+
 ## What ADC does
 
 ADC is delivered as a Dynamic Action plugin. Once the plugin is present on a page, ADC can:
@@ -16,6 +29,12 @@ ADC is delivered as a Dynamic Action plugin. Once the plugin is present on a pag
 - execute the resulting client-side actions on the page
 
 Rules are maintained declaratively in the ADC administration application. A rule describes when a certain use case applies and which actions should follow from it.
+
+That use case may be implemented in different ways:
+
+- directly as declarative UI behavior
+- as a mix of server-side and client-side actions
+- by delegating complex decision logic to PL/SQL and then determining the resulting dynamic behavior through ADC
 
 Typical examples are:
 

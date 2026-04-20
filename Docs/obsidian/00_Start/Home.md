@@ -2,6 +2,10 @@
 
 This vault is the handwritten project documentation for ADC.
 
+ADC can be approached at different levels of abstraction, from straightforward declarative page behavior to PL/SQL-backed use-case implementations and custom action types.
+
+For that decision path, see [[../10_Overview/Choosing the Right ADC Level|Choosing the Right ADC Level]].
+
 Use one of these entry points depending on your role:
 
 - [[For Developers]]

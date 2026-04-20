@@ -30,8 +30,9 @@ If behavior is an externally visible client action, it should enter through `act
 ## Continue Reading
 
 - [[Extending ADC]]
+- [[Home|JavaScript Development]]
 - [[JavaScript Modules]]
 - [[Renderer Model]]
 - [[JavaScript Risks and Follow-ups]]
-- [[../40_Architecture/Request and Response Flow|Request and Response Flow]]
-- [[../50_Reference/Glossary|Glossary]]
+- [[../../40_Architecture/Request and Response Flow|Request and Response Flow]]
+- [[../../50_Reference/Glossary|Glossary]]

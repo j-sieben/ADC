@@ -1,6 +1,6 @@
 # ADC Code Architecture Notes
 
-Last updated: 2026-03-19
+Last updated: 2026-04-20
 
 ## Runtime chain
 
@@ -21,8 +21,23 @@ Last updated: 2026-03-19
    - `pageItems` current page item list
 5. PL/SQL plugin code delegates into `adc_internal.read_settings(...)` and then `adc_internal.process_request`.
 6. `adc_internal.process_request` loads `adc_rule_groups.crg_decision_table` and recursively evaluates matching rules.
+   - relevant observed items are derived from technical conditions and related metadata rather than configured separately on the page
+   - when multiple rules match, rule priority is determined by sort sequence
 7. Each rule action may execute parameterized PL/SQL immediately and/or collect parameterized JavaScript into `adc_response`.
 8. The final response is emitted as a `<script>` block and appended to the DOM by `executeCode(...)`, which executes and then removes it.
+
+## Usage model
+
+ADC supports several usage levels that all share the same runtime chain:
+
+- Basic Use
+  Declarative rules evaluate against page state and mostly produce browser-side behavior.
+- Advanced Use
+  Declarative rules still drive the flow, but action execution can span both database-side and client-side work.
+- Professional Use
+  Rules can intentionally be broader entry points, while PL/SQL implements the detailed case distinction and uses the ADC type interface to determine the resulting dynamic behavior.
+- Extensibility
+  Projects can extend ADC with custom action types and project-specific methods on top of the shipped type hierarchy.
 
 ## Main PL/SQL responsibilities
 
@@ -38,6 +53,7 @@ Central request orchestrator.
 - Handles recursive re-evaluation via `adc_recursion_stack`
 - Builds parameterized PL/SQL and JavaScript from action templates
 - Registers APEX errors via `adc_response`
+- Uses technical conditions and metadata context to determine which page-state columns and observed items are relevant
 
 Important implementation detail:
 
@@ -64,6 +80,40 @@ JavaScript response builder.
 - Collects and serializes APEX errors
 - Emits initialization and runtime response payloads
 - Can reduce comment/debug output to stay under response size limits
+- Registers recursion origin and timing information
+- Can embed trace comments that identify rule origin, recursion depth, sort sequence, rule name, and firing item
+
+Important implementation detail:
+
+- The response is also a debugging surface, not just an execution payload
+- Depending on debug level and size limits, it can expose selected rule chain information directly in the returned script
+
+## PL/SQL integration and type layering
+
+ADC is not only a plugin plus internal packages. It also exposes a deliberate PL/SQL extension seam.
+
+- application code should typically call methods on type `adc`
+- `adc` inherits from `adc_basic`
+- `adc_basic` contains the shipped object-type implementation
+- `adc_basic` delegates its work to `adc_api`
+- `adc_api` is the technical package interface over `adc_internal`
+
+This matters because ADC can be used in two ways from PL/SQL:
+
+- action types can execute predefined database-side behavior through metadata
+- application packages can compute more complex procedural outcomes and then call ADC through the type interface
+
+That second path is what the documentation now treats as "Professional Use".
+
+## Action type model
+
+Action types are primarily a database metadata concept.
+
+- `adc_action_types` stores action-type identity plus executable PL/SQL and JavaScript templates
+- parameter metadata defines input semantics, validation, and designer rendering
+- runtime packages resolve those templates into concrete behavior during rule execution
+
+Not every action type produces JavaScript. Some are effectively database-only actions that execute PL/SQL and contribute no browser-side code.
 
 ## Main JavaScript responsibilities
 
@@ -84,6 +134,7 @@ Important implementation detail:
 
 - The server response is executed by appending raw HTML `<script>` to `body`
 - The script node is removed immediately after execution
+- The response can be inspected directly in browser developer tools, which is a key part of ADC observability
 
 ### `actions.js`
 
@@ -124,6 +175,23 @@ Shared helper layer.
 - Recursive rule evaluation is implemented explicitly and not hidden in side effects
 - There is an intentional extension seam through object types `adc_basic` and `adc`
 - The current renderer model now supports a base object with targeted version-specific overrides
+- Technical conditions serve two roles:
+  - they express decision logic
+  - they indirectly define which items ADC must observe at runtime
+- The system supports multiple abstraction levels without forcing all behavior to remain purely declarative
+
+## Observability and debugging
+
+ADC has explicit observability hooks on both runtime sides.
+
+- browser-side logging uses `apex.debug`
+- database-side logging uses PIT instrumentation
+- PIT, not ADC itself, detects the effective APEX debug context on the database side through its session adapter and adjusts PIT logging accordingly
+- the response builder can include rule-origin and recursion trace information
+- recursive processing is visible via recursion counters and rule-origin markers
+- developers can correlate browser network traffic, returned script payloads, and server-side logs
+
+This means the system is designed to be debugged through normal APEX/browser workflows rather than through a separate tracing subsystem.
 
 ## Notable technical risks / maintenance hotspots
 

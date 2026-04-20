@@ -22,6 +22,10 @@ The sample application implements the decision with a helper function in `SADC_U
 
 The helper function is documented in [`ADC/sample_app/packages/sadc_ui.pks`](../../../ADC/sample_app/packages/sadc_ui.pks) as checking whether the supplied job is eligible for `commission_pct`.
 
+An important aspect of this example is that the decision is made inside the database and can therefore be based directly on database data. In many real use cases, that is exactly what is required: the dynamic behavior depends not only on the current page items, but also on business data and logic that already live in the database.
+
+This is where ADC differs fundamentally from a solution based on standard APEX Dynamic Actions. Dynamic Actions can react to browser-side events, but they do not offer the same natural way to evaluate declarative rule conditions directly against database-side data and logic as part of one coherent rule mechanism.
+
 This is an important ADC pattern:
 
 - the business rule stays readable
@@ -32,11 +36,11 @@ This is an important ADC pattern:
 
 The same use case can be expressed as a decision table.
 
-| Situation | Technical condition | Reaction |
-| --- | --- | --- |
-| Page opens | `initializing = c_true` | Initialize mandatory markers and raise an item event for `P19_EMP_JOB_ID` so the actual commission rule is evaluated immediately |
-| Job is commission-eligible | `sadc_ui.is_comm_eligible(P19_EMP_JOB_ID) = C_TRUE` | Mark `P19_EMP_COMMISSION_PCT` as mandatory |
-| Job is not commission-eligible | `sadc_ui.is_comm_eligible(P19_EMP_JOB_ID) = C_FALSE` | Mark `P19_EMP_COMMISSION_PCT` as optional and reset its active value/state |
+| Situation                      | Technical condition                                  | Reaction                                                                                                                         |
+| ------------------------------ | ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Page opens                     | `initializing = c_true`                              | Initialize mandatory markers and raise an item event for `P19_EMP_JOB_ID` so the actual commission rule is evaluated immediately |
+| Job is commission-eligible     | `sadc_ui.is_comm_eligible(P19_EMP_JOB_ID) = C_TRUE`  | Mark `P19_EMP_COMMISSION_PCT` as mandatory                                                                                       |
+| Job is not commission-eligible | `sadc_ui.is_comm_eligible(P19_EMP_JOB_ID) = C_FALSE` | Mark `P19_EMP_COMMISSION_PCT` as optional and reset its active value/state                                                       |
 
 This is often the clearest bridge between business language and ADC implementation. The decision table makes it obvious that the free-text use case becomes one or more explicit rules.
 
@@ -106,6 +110,43 @@ Purpose:
 
 If the selected job does not allow commission, the field is downgraded from required input and its active content is synchronized back to a non-required state.
 
+## Professional Use Variant
+
+The same use case could also be modeled at a higher level of abstraction.
+
+Instead of two separate declarative rules based on:
+
+- `sadc_ui.is_comm_eligible(P19_EMP_JOB_ID) = C_TRUE`
+- `sadc_ui.is_comm_eligible(P19_EMP_JOB_ID) = C_FALSE`
+
+the rule entry point could be reduced to the event itself:
+
+```sql
+p_firing_item = 'P19_EMP_JOB_ID'
+```
+
+That rule would then call a PL/SQL package method. Inside that method, the application would determine whether the selected job is commission-eligible and would use ADC through the public type interface to trigger the resulting actions that are declarative in the sample version.
+
+In other words, the use case would still start in ADC, but the detailed case distinction would be implemented procedurally in PL/SQL instead of being expressed as two explicit rule rows.
+
+Typical outcome logic inside that PL/SQL method would be:
+
+- if the job is commission-eligible, mark `P19_EMP_COMMISSION_PCT` as mandatory
+- otherwise, mark `P19_EMP_COMMISSION_PCT` as optional and clear or reset it
+
+This is a good example of ADC's more professional usage model:
+
+- the rule remains the stable entry point
+- PL/SQL performs the deeper case distinction
+- ADC is still used to calculate and emit the resulting dynamic behavior
+
+The tradeoff is clear:
+
+- advantage: the implementation can become more compact and can absorb more complex decision logic cleanly
+- disadvantage: the rule set becomes less self-explanatory because part of the behavior is no longer visible directly in the decision table
+
+This is one of ADC's core strengths. It supports different levels of abstraction. It does not force every use case to remain fully declarative, but it allows fully declarative modeling wherever that is the clearer option.
+
 ## Why This Example Works Well
 
 This sample demonstrates four useful ADC ideas at once:
@@ -115,7 +156,7 @@ This sample demonstrates four useful ADC ideas at once:
 - the rule logic is transparent as a decision table
 - the outcome is modeled declaratively through explicit reactions instead of chained page-local Dynamic Actions
 
-Compared with an implementation based on standard APEX Dynamic Actions, this approach is more direct because the condition is evaluated where the relevant data already lives: in the database. The result of that evaluation then drives the resulting page behavior declaratively. ADC also allows an item to switch between mandatory and optional states, which is not available as a built-in capability in standard APEX Dynamic Actions.
+Compared with an implementation based on standard APEX Dynamic Actions, the ADC approach is therefore more direct because the condition is evaluated where the relevant data already lives. The result of that evaluation then drives the resulting page behavior declaratively. ADC also allows an item to switch between mandatory and optional states, which is not available as a built-in capability in standard APEX Dynamic Actions.
 
 ## Practical Reading Pattern
 

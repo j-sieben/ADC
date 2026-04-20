@@ -7,6 +7,7 @@ ADC addresses that situation by introducing a dynamic controller with a clearer 
 - the browser observes events and renders results
 - the database evaluates the rules
 - ADC metadata defines which behavior belongs to which use case
+- PL/SQL may refine or determine the final behavior for more complex use cases
 
 This does not remove complexity from complex forms. It gives that complexity a more coherent place to live.
 

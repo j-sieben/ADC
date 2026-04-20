@@ -1,6 +1,6 @@
 # ADC Project Overview
 
-Last updated: 2026-03-19
+Last updated: 2026-04-20
 
 ## What this repository is
 
@@ -12,8 +12,20 @@ ADC implements a metadata-driven dynamic controller for APEX pages:
 - A Dynamic Action plugin integrates ADC into APEX pages.
 - JavaScript on the client captures relevant page events and sends page state to the database.
 - PL/SQL packages evaluate rules ("use cases") and return client-side actions.
+- Actions are not limited to browser behavior; ADC can execute database-side work and client-side work within the same rule flow.
 - An APEX admin/designer application is included to maintain those rules declaratively.
 - A sample application and unit test objects are included as optional components.
+
+ADC supports multiple abstraction levels:
+
+- Basic Use
+  Declarative rules produce dynamic client-side behavior through JavaScript.
+- Advanced Use
+  Declarative rules remain central, but resulting actions may execute both in the database and on the page.
+- Professional Use
+  Rules can act as broader entry points while detailed case logic is implemented procedurally in PL/SQL through the public ADC type interface.
+- Extensibility
+  Projects can define their own action types and add project-specific PL/SQL methods.
 
 ## Top-level structure
 
@@ -75,13 +87,28 @@ Then it runs:
 
 - The repository is SQL*Plus-driven. Installation and object creation are assembled from many smaller scripts in `ADC/tools`.
 - Core PL/SQL packages include `adc_internal`, `adc_api`, `adc_admin`, `adc_page_state`, `adc_response`, and others.
-- Core API exposure appears intentionally split between internal packages and extensible object types `adc_basic` and `adc`.
+- Core API exposure is intentionally layered:
+  - application PL/SQL typically works through type `adc`
+  - `adc` inherits from `adc_basic`
+  - `adc_basic` implements its methods through `adc_api`
+  - `adc_api` wraps `adc_internal` and forms the technical package boundary
 - Plugin static assets exist for at least APEX `20.2` and `24.1`.
 - The current `24.1` JavaScript file set is intentionally compact: `utils.js`, `renderer.js`, `controller.js`, `actions.js`, plus minified variants.
 - Shared runtime state and callback registration currently live inside `controller.js`; there are no standalone `state.js` or `callbacks.js` files anymore.
+- Action types are a database metadata feature, not just a JavaScript feature:
+  - `adc_action_types` stores executable PL/SQL and JavaScript templates
+  - parameter metadata controls configuration and validation
+  - some action types are database-only and use no JavaScript at all
+- ADC extracts observed page items from technical conditions and related metadata, so rule configuration indirectly defines which items are watched at runtime.
 - Documentation in `Docs/` is split deliberately:
   - handwritten docs live in `Docs/obsidian`
   - generated Natural Docs API output lives in `Docs/api_doc`
+- Observability is a first-class runtime concern:
+  - the browser can inspect ADC request/response payloads directly
+  - the response may include rule origin, recursion depth, firing item, and timing data
+  - database-side instrumentation uses PIT
+  - PIT's own session adapter determines whether APEX debug is active and switches PIT output accordingly
+  - client-side instrumentation uses `apex.debug`
 
 ## Working assumptions for future sessions
 
@@ -97,6 +124,9 @@ Then it runs:
 - `ADC/core/packages/adc_internal.pkb`
 - `ADC/core/packages/adc_page_state.pkb`
 - `ADC/core/packages/adc_response.pkb`
+- `ADC/core/packages/adc_api.pkb`
+- `ADC/core/types/adc_basic.tpb`
+- `ADC/core/types/adc.tpb`
 - `ADC/plugin/files/adc_24_1/js/controller.js`
 - `ADC/plugin/files/adc_24_1/js/actions.js`
 - `ADC/apex/apex_24_1/install.sql`

@@ -36,5 +36,6 @@ This page gives developers a fast orientation across the repository.
 ## Continue Reading
 
 - [[Getting Started]]
-- [[JavaScript Runtime]]
+- [[Database/Home|Database Development]]
+- [[JavaScript/Home|JavaScript Development]]
 - [[../40_Architecture/System Overview|System Overview]]

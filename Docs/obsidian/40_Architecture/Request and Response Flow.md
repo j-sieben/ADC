@@ -58,9 +58,12 @@ The client runtime injects the returned script into the DOM, executes it, and re
 
 This means the browser does not decide locally which UI changes should happen next. The database computes the response, and the client executes that response.
 
+For developers, this is also an important observation point. The response can be inspected directly in the browser developer tools, which makes it possible to see both the generated JavaScript and the trace information ADC embeds for debugging.
+
 ## Continue Reading
 
 - [[How Decision Tables Work]]
 - [[System Overview]]
-- [[../30_Developers/JavaScript Runtime|JavaScript Runtime]]
+- [[../30_Developers/Debugging and Observability|Debugging and Observability]]
+- [[../30_Developers/JavaScript/JavaScript Runtime|JavaScript Runtime]]
 - [[../50_Reference/Glossary|Glossary]]

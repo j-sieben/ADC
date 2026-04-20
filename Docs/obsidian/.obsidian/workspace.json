@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "30_Developers/Renderer Model.md",
+                "file": "20_Users/Working With ADC.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Renderer Model"
+              "title": "Working With ADC"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "30_Developers/Renderer Model.md",
+                "file": "20_Users/Working With ADC.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Rückverweise auf Renderer Model"
+              "title": "Rückverweise auf Working With ADC"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "30_Developers/Renderer Model.md",
+                "file": "20_Users/Working With ADC.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Ausgehende Links von Renderer Model öffnen"
+              "title": "Ausgehende Links von Working With ADC öffnen"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "30_Developers/Renderer Model.md",
+                "file": "20_Users/Working With ADC.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Gliederung von Renderer Model"
+              "title": "Gliederung von Working With ADC"
             }
           }
         ]
@@ -185,32 +185,34 @@
   },
   "active": "54849184a1c2fa6a",
   "lastOpenFiles": [
-    "30_Developers/Repository Map.md",
-    "30_Developers/JavaScript Risks and Follow-ups.md",
-    "30_Developers/Renderer Model.md",
-    "30_Developers/JavaScript Modules.md",
-    "30_Developers/Getting Started.md",
-    "50_Reference/Installation and Operations.md",
-    "50_Reference/Glossary.md",
-    "40_Architecture/Request and Response Flow.md",
-    "40_Architecture/System Overview.md",
+    "00_Start/For Users.md",
+    "00_Start/Home.md",
     "40_Architecture/How Decision Tables Work.md",
     "50_Reference/glossary/Rule Group.md",
-    "50_Reference/glossary/Page State.md",
-    "50_Reference/glossary/Use Case.md",
     "50_Reference/glossary/Rule.md",
-    "50_Reference/glossary/Renderer.md",
-    "50_Reference/glossary/Administration Application.md",
-    "50_Reference/glossary/Action Type.md",
-    "50_Reference/glossary/ADC.md",
-    "50_Reference/glossary",
-    "20_Users/First Steps on a Page.md",
-    "20_Users/Working With ADC.md",
-    "20_Users/Example Use Case - Commission Eligibility.md",
-    "00_Start/Home.md",
+    "50_Reference/Glossary.md",
+    "00_Start/For Interested Readers.md",
+    "30_Developers/Action Type Extensibility.md",
+    "40_Architecture/System Overview.md",
     "10_Overview/Why ADC Exists.md",
     "10_Overview/What Is ADC.md",
-    "00_Start/For Users.md",
-    "00_Start/For Interested Readers.md"
+    "10_Overview/Choosing the Right ADC Level.md",
+    "30_Developers/Debugging and Observability.md",
+    "30_Developers/How to Debug an ADC Use Case End-to-End.md",
+    "20_Users/Declarative vs PL-SQL Tradeoffs.md",
+    "20_Users/Example Use Case - Commission Eligibility.md",
+    "30_Developers/Database/Action Type Runtime Resolution.md",
+    "30_Developers/Database/Action Type Metadata.md",
+    "30_Developers/Database/Home.md",
+    "40_Architecture/Request and Response Flow.md",
+    "30_Developers/JavaScript/Extending ADC.md",
+    "30_Developers/JavaScript/JavaScript Risks and Follow-ups.md",
+    "30_Developers/JavaScript/Renderer Model.md",
+    "30_Developers/JavaScript/JavaScript Modules.md",
+    "30_Developers/JavaScript/JavaScript Runtime.md",
+    "30_Developers/JavaScript/Home.md",
+    "30_Developers/JavaScript",
+    "30_Developers/Database",
+    "50_Reference/glossary"
   ]
 }

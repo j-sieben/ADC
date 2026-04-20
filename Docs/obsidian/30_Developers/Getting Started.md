@@ -19,11 +19,14 @@ ADC combines:
 1. [[Repository Map]]
 2. [[../40_Architecture/System Overview|System Overview]]
 3. [[../40_Architecture/Request and Response Flow|Request and Response Flow]]
-4. [[JavaScript Runtime]]
-5. [[JavaScript Modules]]
-6. [[Renderer Model]]
-7. [[../50_Reference/Installation and Operations|Installation and Operations]]
-8. [[../50_Reference/Glossary|Glossary]]
+4. [[Database/Home|Database Development]]
+5. [[Action Type Extensibility]]
+6. [[JavaScript/Home|JavaScript Development]]
+7. [[JavaScript/JavaScript Runtime|JavaScript Runtime]]
+8. [[Debugging and Observability]]
+9. [[How to Debug an ADC Use Case End-to-End]]
+10. [[../50_Reference/Installation and Operations|Installation and Operations]]
+11. [[../50_Reference/Glossary|Glossary]]
 
 ## Important Entry Points
 

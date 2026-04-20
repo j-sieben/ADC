@@ -29,5 +29,5 @@ Prefer a new concrete renderer namespace that inherits from the base renderer an
 ## Continue Reading
 
 - [[JavaScript Runtime]]
-- [[../40_Architecture/System Overview|System Overview]]
-- [[../50_Reference/Glossary|Glossary]]
+- [[../../40_Architecture/System Overview|System Overview]]
+- [[../../50_Reference/Glossary|Glossary]]

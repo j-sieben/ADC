@@ -21,6 +21,13 @@ That means:
 - decisions are evaluated against the current page state in the database
 - the resulting actions are rendered back on the page
 
+## Levels of Use
+
+ADC supports different levels of use, but the detailed decision guidance lives on a separate page:
+
+- [[../10_Overview/Choosing the Right ADC Level|Choosing the Right ADC Level]]
+- [[Declarative vs PL-SQL Tradeoffs|Declarative vs PL/SQL: Tradeoffs]]
+
 ## Good Fits for ADC
 
 - forms with many interdependent items
@@ -36,5 +43,7 @@ That means:
 
 - [[First Steps on a Page]]
 - [[Example Use Case - Commission Eligibility]]
+- [[Declarative vs PL-SQL Tradeoffs|Declarative vs PL/SQL: Tradeoffs]]
+- [[../10_Overview/Choosing the Right ADC Level|Choosing the Right ADC Level]]
 - [[../50_Reference/Installation and Operations|Installation and Operations]]
 - [[../50_Reference/Glossary|Glossary]]
