@@ -766,6 +766,24 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     }
   }
 
+  /**
+   * Helper to persist a locally unique identifier across APEX sessions
+   */
+  function getClientId() {
+    const CLIENT_ID= "adc.client.id";
+    let clientId = localStorage.getItem(CLIENT_ID);
+
+    if (!clientId) {
+        clientId = "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c => (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16));
+        localStorage.setItem(CLIENT_ID, clientId);
+
+        console.log("client id generated:", clientId);
+    } else {
+        console.log("client id found:", clientId);
+    }
+
+    return clientId;
+  }
 
   /**
    * Subscribe to a server-sent events endpoint.
@@ -775,7 +793,7 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
    * @param {function} [pAction] Optional message callback.
    */
   actions.initServerSentEvents = function(pRoom, pURL, pAction){
-    const sessionId = apex.item('pInstance').getValue();
+    const sessionId = getClientId();
     const params = `id=${sessionId}&rooms=${pRoom}`;
     const source = new EventSource(`${pURL}?${params}`);
     let callback;
