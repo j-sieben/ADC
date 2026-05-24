@@ -950,7 +950,7 @@ begin
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Zeichenkette oder PL/SQL-Funktion^',
     p_pti_display_name => q'^^',
-    p_pti_description => q'^Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein PL/SQL-Funktionsaufruf, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>^'
+    p_pti_description => q'^Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein PL/SQL-Funktionsaufruf, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im PageState verwendet (dieser kann vorab berechnet werden)</li></ul>^'
   );
 
   pit_admin.merge_translatable_item(
@@ -959,7 +959,7 @@ begin
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Zeichenkette oder JS-Ausdruck^',
     p_pti_display_name => q'^^',
-    p_pti_description => q'^Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein JavaScript-Ausdruck, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im Sessionstatus verwendet (dieser kann vorab berechnet werden)</li></ul>^'
+    p_pti_description => q'^Kann folgende Werte enthalten:</p><ul><li>Eine Konstante. Die Angabe muss mit Hochkommata erfolgen oder eine Zahl sein</li><li>Ein JavaScript-Ausdruck, der zur Laufzeit berechnet wird</li><li>Zeichenkette ITEM_VALUE, ohne Hochkommata. In diesem Fall wird der Wert von ITEM im PageState verwendet (dieser kann vorab berechnet werden)</li></ul>^'
   );
 
   pit_admin.merge_translatable_item(
@@ -1354,8 +1354,8 @@ begin
     p_pti_pml_name => q'^GERMAN^',
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Feld aktualisieren und Wert setzen^',
-    p_pti_display_name => q'^<p><strong>aktualisiere</strong> Feld “#ITEM#” und <strong>setze Feldwert </strong>auf #PARAM_1|Wert “|”|aktuellen Sessionstatus#</p>^',
-    p_pti_description => q'^<p>Aktualisiert ein Seitenelement und setzt das Feld auf den Sessionstatus</p>^'
+    p_pti_display_name => q'^<p><strong>aktualisiere</strong> Feld “#ITEM#” und <strong>setze Feldwert </strong>auf #PARAM_1|Wert “|”|aktuellen PageState#</p>^',
+    p_pti_description => q'^<p>Aktualisiert ein Seitenelement und setzt das Feld auf den PageState</p>^'
   );
 
   pit_admin.merge_translatable_item(
@@ -1373,7 +1373,7 @@ begin
     p_pti_pmg_name => q'^ADC^',
     p_pti_name => q'^Feld beobachten^',
     p_pti_display_name => q'^<p><strong>beobachte Feld </strong>“#ITEM#”</p>^',
-    p_pti_description => q'^<p>Beobachtet ein Feld, auch wenn kein Anwendungsfall es in der technischen Bedingung referenziert. So wird dessen aktueller Wert in den Session State übernommen.</p>^'
+    p_pti_description => q'^<p>Beobachtet ein Feld, auch wenn kein Anwendungsfall es in der technischen Bedingung referenziert. So wird dessen aktueller Wert in den PageState übernommen.</p>^'
   );
 
   pit_admin.merge_translatable_item(

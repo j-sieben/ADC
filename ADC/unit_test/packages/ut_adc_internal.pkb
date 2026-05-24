@@ -213,7 +213,7 @@ as
           p_cpi_mandatory_message => 'FOO',
           p_is_mandatory => adc_util.C_TRUE,
           p_jquery_selector => null);
-        adc_internal.set_session_state(
+        adc_internal.set_page_state(
           p_cpi_id => C_OPTIONAL_ITEM,
           p_value => null,
           p_allow_recursion => adc_util.C_TRUE);
@@ -234,7 +234,7 @@ as
           p_cpi_mandatory_message => 'FOO',
           p_is_mandatory => adc_util.C_FALSE,
           p_jquery_selector => null);
-        adc_internal.set_session_state(
+        adc_internal.set_page_state(
           p_cpi_id => C_OPTIONAL_ITEM,
           p_value => null,
           p_allow_recursion => adc_util.C_TRUE);

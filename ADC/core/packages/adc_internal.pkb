@@ -780,10 +780,8 @@ as
     pit.enter_optional('check_firing_item');
 
     if g_param.firing_item != adc_util.C_NO_FIRING_ITEM then
-      adc_page_state.set_value(
-        p_cpi_id => g_param.firing_item,
-        p_value => adc_page_state.C_FROM_SESSION_STATE,
-        p_throw_error => adc_util.C_TRUE);
+      adc_page_state.validate_firing_item(
+        p_cpi_id => g_param.firing_item);
 
       adc_page_state.dynamically_validate_value(
         p_cpi_id => g_param.firing_item);
@@ -1441,10 +1439,10 @@ as
 
 
   /**
-    Procedure: set_session_state
-      See <ADC_API.set_session_state>
+    Procedure: set_page_state
+      See <ADC_API.set_page_state>
    */
-  procedure set_session_state(
+  procedure set_page_state(
     p_cpi_id in adc_page_items.cpi_id%type,
     p_value in varchar2 default null,
     p_number_value in number default null,
@@ -1460,9 +1458,9 @@ as
 
     if p_cpi_id = adc_util.C_NO_FIRING_ITEM and p_jquery_selector is not null then
       l_item_list := get_items_by_selector(p_cpi_id, p_jquery_selector);
-      -- recursively call SET_SESSION_STATE for each found item
+      -- recursively call SET_PAGE_STATE for each found item
       for i in 1 .. l_item_list.count loop
-        set_session_state(
+        set_page_state(
           p_cpi_id => l_item_list(i),
           p_value => p_value,
           p_number_value => p_number_value,
@@ -1481,6 +1479,7 @@ as
         p_number_value => p_number_value,
         p_date_value => p_date_value,
         p_throw_error => p_allow_recursion);
+      adc_recursion_stack.register_touched_item(p_cpi_id);
 
       if p_allow_recursion = adc_util.C_TRUE then
         adc_recursion_stack.push_firing_item(
@@ -1515,7 +1514,7 @@ as
       pit.leave_mandatory;
     when others then
       pit.handle_exception(msg.ADC_SET_SESSION_STATE, msg_args(p_cpi_id, p_value));
-  end set_session_state;
+  end set_page_state;
 
 
   /**
@@ -1535,7 +1534,7 @@ as
     -- Tracing done in ADC_API
     if p_cpi_id = adc_util.C_NO_FIRING_ITEM and p_jquery_selector is not null then
       l_item_list := get_items_by_selector(p_cpi_id, p_jquery_selector);
-      -- recursively call SET_SESSION_STATE for each found item
+      -- recursively call RESET_MANDATORY_ITEM for each found item
       for i in 1 .. l_item_list.count loop
         reset_mandatory_item(
           p_cpi_id => l_item_list(i),
@@ -1622,8 +1621,8 @@ as
       -- Copy column values into item named after the column names
       for i in 1 .. l_col_cnt loop
         dbms_sql.column_value(l_ctx, i, l_result);
-        -- Copy value to session status
-        set_session_state(
+        -- Copy value to page state
+        set_page_state(
           p_cpi_id => l_desc_tab(i).col_name,
           p_value => l_result,
           p_allow_recursion => p_allow_recursion);
@@ -1633,7 +1632,7 @@ as
     else
       -- Concrete element requested, according to convention only one column is included
       execute immediate l_stmt into l_result;
-      set_session_state(
+      set_page_state(
         p_cpi_id => p_cpi_id,
         p_value => l_result,
         p_allow_recursion => p_allow_recursion);
@@ -1684,8 +1683,8 @@ as
     -- Copy all column values to page elements with corresponding column name
     for i in 1 .. l_col_cnt loop
       dbms_sql.column_value(l_ctx, i, l_result);
-      -- Wert in Sessionstatus kopieren
-      set_session_state(
+      -- Wert in PageState kopieren
+      set_page_state(
         p_cpi_id => l_desc_tab(i).col_name,
         p_value => l_result,
         p_allow_recursion => adc_util.C_FALSE);

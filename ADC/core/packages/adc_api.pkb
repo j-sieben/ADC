@@ -450,7 +450,7 @@ as
   end remove_error_for_item;
 
 
-  procedure set_session_state(
+  procedure set_page_state(
     p_cpi_id in adc_page_items.cpi_id%type,
     p_value in varchar2 default null,
     p_number_value in number default null,
@@ -470,7 +470,7 @@ as
                     msg_param('p_jquery_selector', p_jquery_selector),
                     msg_param('p_visual_state', p_visual_state)));
 
-    adc_internal.set_session_state(
+    adc_internal.set_page_state(
       p_cpi_id => p_cpi_id,
       p_value => p_value,
       p_number_value => p_number_value,
@@ -480,6 +480,27 @@ as
       p_visual_state => p_visual_state);
 
     pit.leave_mandatory;
+  end set_page_state;
+
+
+  procedure set_session_state(
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_value in varchar2 default null,
+    p_number_value in number default null,
+    p_date_value in date default null,
+    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE,
+    p_jquery_selector in adc_rule_actions.cra_param_1%type default null,
+    p_visual_state in varchar2 default null)
+  as
+  begin
+    set_page_state(
+      p_cpi_id => p_cpi_id,
+      p_value => p_value,
+      p_number_value => p_number_value,
+      p_date_value => p_date_value,
+      p_allow_recursion => p_allow_recursion,
+      p_jquery_selector => p_jquery_selector,
+      p_visual_state => p_visual_state);
   end set_session_state;
 
 

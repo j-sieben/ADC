@@ -924,7 +924,7 @@ q'[#RULE_ACTION_PARAMS|||#\CR\]',
     p_uttm_name => 'INITIALIZE_CODE',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'VALUE',
-    p_uttm_text => q'[adc_api.set_session_state('#ITEM#', #ITEM_SOURCE#);]',
+    p_uttm_text => q'[adc_api.set_page_state('#ITEM#', #ITEM_SOURCE#);]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );

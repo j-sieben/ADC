@@ -337,10 +337,10 @@ as
 
 
   /**
-    Procedure: set_session_state
-      See <adc_api.set_session_state>
+    Procedure: set_page_state
+      See <adc_api.set_page_state>
    */
-  procedure set_session_state(
+  procedure set_page_state(
     p_cpi_id in adc_page_items.cpi_id%type,
     p_value in varchar2 default null,
     p_number_value in number default null,

@@ -129,6 +129,17 @@ as
     p_throw_error in adc_util.flag_type default adc_util.C_FALSE);
     
   
+  /**
+    Procedure: validate_firing_item
+      Validates the firing item against the already initialized page state cache.
+      
+    Parameters:
+      p_cpi_id - ID of the firing item to validate
+   */
+  procedure validate_firing_item(
+    p_cpi_id in adc_page_items.cpi_id%type);
+    
+  
   /** 
     Function: get_string
       Getter method to retrieve a page state value as string.

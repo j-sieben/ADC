@@ -535,10 +535,10 @@ as
     
     
   /** 
-    Procedure: set_session_state
-      Wrapper around apex_util to set a value in the session state.
+    Procedure: set_page_state
+      Sets a value in the ADC page state.
       
-      Is used to set a session state value. In extension to apex_util, setting a value using this method
+      Is used to set a page state value. Setting a value using this method
       leads to recursive rule execution for the changed page items if allowed an it gives the possibility
       to set the value of many items using a jQuery selector.
 
@@ -553,6 +553,20 @@ as
       p_visual_state - Optional indicator for the visual state. Is evaluated only if the new value is NULL
                        or the visual state is HIDE. In these cases any error for this item is removed from the page.
    */
+  procedure set_page_state(
+    p_cpi_id in adc_page_items.cpi_id%type,
+    p_value in varchar2 default null,
+    p_number_value in number default null,
+    p_date_value in date default null,
+    p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE,
+    p_jquery_selector in adc_rule_actions.cra_param_1%type default null,
+    p_visual_state in varchar2 default null);
+    
+    
+  /** 
+    Procedure: set_session_state
+      Deprecated compatibility wrapper for <set_page_state>.
+   */
   procedure set_session_state(
     p_cpi_id in adc_page_items.cpi_id%type,
     p_value in varchar2 default null,
@@ -561,6 +575,7 @@ as
     p_allow_recursion in adc_util.flag_type default adc_util.C_TRUE,
     p_jquery_selector in adc_rule_actions.cra_param_1%type default null,
     p_visual_state in varchar2 default null);
+  pragma deprecate(set_session_state, 'Use SET_PAGE_STATE instead.');
     
     
   /** 

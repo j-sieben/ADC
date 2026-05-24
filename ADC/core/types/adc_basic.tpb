@@ -513,7 +513,7 @@ as
                     msg_param('p_allow_recursion', p_allow_recursion),
                     msg_param('p_visual_state', p_visual_state)));
 
-    adc_api.set_session_state(
+    adc_api.set_page_state(
       p_cpi_id => p_cpi_id,
       p_value => p_item_value,
       p_jquery_selector => p_jquery_selector,
@@ -540,7 +540,7 @@ as
                     msg_param('p_allow_recursion', p_allow_recursion),
                     msg_param('p_visual_state', p_visual_state)));
 
-    adc_api.set_session_state(
+    adc_api.set_page_state(
       p_cpi_id => p_cpi_id,
       p_number_value => p_item_value,
       p_jquery_selector => p_jquery_selector,
@@ -567,7 +567,7 @@ as
                     msg_param('p_allow_recursion', p_allow_recursion),
                     msg_param('p_visual_state', p_visual_state)));
 
-    adc_api.set_session_state(
+    adc_api.set_page_state(
       p_cpi_id => p_cpi_id,
       p_date_value => p_item_value,
       p_jquery_selector => p_jquery_selector,
