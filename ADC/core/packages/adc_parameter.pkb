@@ -23,6 +23,9 @@ as
   C_JAVA_SCRIPT_FUNCTION constant adc_action_param_types.capt_id%type := 'JAVA_SCRIPT_FUNCTION';
   C_JQUERY_SELECTOR constant adc_action_param_types.capt_id%type := 'JQUERY_SELECTOR';
   C_PAGE_ITEM constant adc_action_param_types.capt_id%type := 'PAGE_ITEM';
+  C_FREE_PAGE_ITEMS constant adc_action_param_types.capt_id%type := 'FREE_PAGE_ITEMS';
+  C_INPUT_FIELDS constant adc_action_param_types.capt_id%type := 'INPUT_FIELDS';
+  C_PAGE_REGIONS constant adc_action_param_types.capt_id%type := 'PAGE_REGIONS';
   C_PIT_MESSAGE constant adc_action_param_types.capt_id%type := 'PIT_MESSAGE';
   C_PROCEDURE constant adc_action_param_types.capt_id%type := 'PROCEDURE';
   C_SEQUENCE constant adc_action_param_types.capt_id%type := 'SEQUENCE';
@@ -32,8 +35,10 @@ as
   C_STRING_OR_JAVASCRIPT constant adc_action_param_types.capt_id%type := 'STRING_OR_JAVASCRIPT';
   C_STRING_OR_PIT_MESSAGE constant adc_action_param_types.capt_id%type := 'STRING_OR_PIT_MESSAGE';
   C_STRING_ON_PARAMETER constant adc_action_param_types.capt_id%type := 'STRING_ON_PARAMETER';
+  C_DIALOG_TYPE constant adc_action_param_types.capt_id%type := 'DIALOG_TYPE';
   C_EVENT constant adc_action_param_types.capt_id%type := 'EVENT';
   C_ITEM_STATUS constant adc_action_param_types.capt_id%type := 'ITEM_STATUS';
+  C_SUBMIT_MODE constant adc_action_param_types.capt_id%type := 'SUBMIT_MODE';
   C_SUBMIT_TYPE constant adc_action_param_types.capt_id%type := 'SUBMIT_TYPE';
   C_SWITCH constant adc_action_param_types.capt_id%type := 'SWITCH';
   
@@ -330,8 +335,37 @@ end;~';
     p_value in out nocopy varchar2,
     p_target in varchar2)
   as
+    l_event_list char_table;
+    l_event adc_event_types.cet_id%type;
+    l_count binary_integer;
   begin
-    pit.assert_exists('select null from adc_event_types where cet_id = ''' || p_value || '''');
+    pit.enter_optional('validate_is_event',
+      p_params => msg_params(
+                    msg_param('p_value', p_value),
+                    msg_param('p_target', p_target)));
+
+    p_value := trim(p_value);
+
+    if p_value is not null then
+      utl_text.string_to_table(p_value, l_event_list);
+
+      for i in 1 .. l_event_list.count loop
+        l_event := trim(l_event_list(i));
+
+        if l_event is not null then
+          select count(*)
+            into l_count
+            from adc_event_types
+           where cet_id = l_event;
+
+          if l_count = 0 then
+            pit.raise_error(msg.ADC_PARAM_VALIDATION_FAILED, msg_args(l_event));
+          end if;
+        end if;
+      end loop;
+    end if;
+
+    pit.leave_optional;
   end validate_is_event;
 
 
@@ -350,6 +384,30 @@ end;~';
   begin
     parse_method(p_value);
   end validate_is_function;
+
+
+  /**
+    Procedure: validate_is_javascript_function
+      Validate that p_value can be used as JavaScript function reference or expression.
+
+    Parameters:
+      p_value - Value to check.
+      p_target - Page item to link the exception to
+   */
+  procedure validate_is_javascript_function(
+    p_value in out nocopy varchar2,
+    p_target in varchar2)
+  as
+  begin
+    pit.enter_detailed('validate_is_javascript_function',
+      p_params => msg_params(
+                    msg_param('p_value', p_value),
+                    msg_param('p_target', p_target)));
+
+    p_value := trim(p_value);
+
+    pit.leave_detailed;
+  end validate_is_javascript_function;
 
 
   /**
@@ -547,6 +605,163 @@ end;~';
     when NO_DATA_FOUND then
       pit.raise_error(msg.ADC_INVALID_JQUERY, p_error_code => msg.ADC_INVALID_PAGE_ITEM);
   end validate_is_page_item;
+
+
+  /**
+    Procedure: validate_is_lov_value
+      Validate that p_value is included in the LOV return values of p_capt_id.
+
+    Parameters:
+      p_value - Value to check.
+      p_capt_id - Parameter type to check against
+      p_target - Page item to link the exception to
+   */
+  procedure validate_is_lov_value(
+    p_value in out nocopy varchar2,
+    p_capt_id in adc_action_param_types.capt_id%type,
+    p_target in varchar2)
+  as
+    l_environment adc_util.environment_rec;
+    l_row adc_action_param_types_v%rowtype;
+    l_stmt adc_util.max_char;
+    l_count binary_integer;
+  begin
+    pit.enter_optional('validate_is_lov_value',
+      p_params => msg_params(
+                    msg_param('p_value', p_value),
+                    msg_param('p_capt_id', p_capt_id),
+                    msg_param('p_target', p_target)));
+
+    p_value := trim(p_value);
+
+    if p_value is not null then
+      l_environment := adc_util.get_environment;
+
+      select *
+        into l_row
+        from adc_action_param_types_v
+       where capt_id = p_capt_id;
+
+      l_stmt := get_param_lov_query(l_row);
+
+      if l_stmt is not null then
+        execute immediate
+          'select count(*) from (' || rtrim(l_stmt, ';') || ') where r = :value and (crg_id is null or crg_id = :crg_id)'
+          into l_count
+          using p_value, l_environment.crg_id;
+
+        if l_count = 0 then
+          pit.raise_error(msg.ADC_PARAM_VALIDATION_FAILED, msg_args(p_value));
+        end if;
+      end if;
+    end if;
+
+    pit.leave_optional;
+  exception
+    when NO_DATA_FOUND then
+      pit.leave_optional;
+      pit.raise_error(msg.ADC_PARAM_VALIDATION_FAILED, msg_args(p_value));
+  end validate_is_lov_value;
+
+
+  /**
+    Procedure: validate_is_submit_mode
+      Validate that p_value is a known client side submit confirmation mode.
+
+    Parameters:
+      p_value - Value to check.
+   */
+  procedure validate_is_submit_mode(
+    p_value in out nocopy varchar2)
+  as
+  begin
+    pit.enter_optional('validate_is_submit_mode',
+      p_params => msg_params(msg_param('p_value', p_value)));
+
+    p_value := trim(p_value);
+    if p_value is not null and p_value not in ('A_SAVE', 'B_DELETE', 'C_CANCEL') then
+      pit.raise_error(msg.ADC_PARAM_VALIDATION_FAILED, msg_args(p_value));
+    end if;
+
+    pit.leave_optional;
+  end validate_is_submit_mode;
+
+
+  /**
+    Procedure: validate_is_page_item_list
+      Validate page item lists against ADC_PAGE_ITEMS.
+
+    Parameters:
+      p_value - Delimited page item list
+      p_capt_id - Parameter type to check against
+      p_target - Page item to link the exception to
+   */
+  procedure validate_is_page_item_list(
+    p_value in out nocopy varchar2,
+    p_capt_id in adc_action_param_types.capt_id%type,
+    p_target in varchar2)
+  as
+    l_environment adc_util.environment_rec;
+    l_item_list char_table;
+    l_count binary_integer;
+    l_item adc_page_items.cpi_id%type;
+  begin
+    pit.enter_optional('validate_is_page_item_list',
+      p_params => msg_params(
+                    msg_param('p_value', p_value),
+                    msg_param('p_capt_id', p_capt_id),
+                    msg_param('p_target', p_target)));
+
+    p_value := trim(p_value);
+
+    if p_value is not null then
+      l_environment := adc_util.get_environment;
+      utl_text.string_to_table(p_value, l_item_list);
+
+      for i in 1 .. l_item_list.count loop
+        l_item := trim(l_item_list(i));
+
+        if l_item is not null then
+          case p_capt_id
+            when C_FREE_PAGE_ITEMS then
+              select count(*)
+                into l_count
+                from adc_page_items
+               where cpi_crg_id = l_environment.crg_id
+                 and cpi_id = upper(l_item)
+                 and cpi_cpit_id in ('DATE_ITEM', 'ITEM', 'NUMBER_ITEM')
+                 and cpi_is_required = adc_util.C_FALSE;
+            when C_INPUT_FIELDS then
+              select count(*)
+                into l_count
+                from adc_page_items
+                join adc_page_item_types
+                  on cpi_cpit_id = cpit_id
+               where cpi_crg_id = l_environment.crg_id
+                 and cpi_id = upper(l_item)
+                 and cpit_cpitg_id = 'ITEM'
+                 and cpi_cpit_id not in ('APP_ITEM')
+                 and cpi_may_have_value = adc_util.C_TRUE;
+            when C_PAGE_REGIONS then
+              select count(*)
+                into l_count
+                from adc_page_items
+               where cpi_crg_id = l_environment.crg_id
+                 and cpi_id = upper(l_item)
+                 and cpi_cpit_id in ('INTERACTIVE_GRID_REGION', 'INTERACTIVE_REPORT_REGION', 'REGION', 'REPORT_REGION', 'TREE_REGION');
+            else
+              l_count := 1;
+          end case;
+
+          if l_count = 0 then
+            pit.raise_error(msg.ADC_PARAM_VALIDATION_FAILED, msg_args(l_item));
+          end if;
+        end if;
+      end loop;
+    end if;
+
+    pit.leave_optional;
+  end validate_is_page_item_list;
 
 
   /**
@@ -789,7 +1004,7 @@ end;~';
       when p_param = adc_util.C_PARAM_EVENT_DATA then
         l_result := adc_api.get_event_data(null);
       when instr(p_param, adc_util.C_PARAM_EVENT_DATA) > 0 then
-        l_result := replace(p_param, adc_util.C_PARAM_ITEM_VALUE, adc_api.get_event_data(null));
+        l_result := replace(p_param, adc_util.C_PARAM_EVENT_DATA, adc_api.get_event_data(null));
       else
         l_result := p_param;
     end case;
@@ -915,6 +1130,8 @@ end;~';
     case p_capt_id
       when C_APEX_ACTION then
         validate_is_apex_action(p_value);
+      when C_DIALOG_TYPE then
+        validate_is_lov_value(p_value, p_capt_id, p_cpi_id);
       when C_FUNCTION then
         begin
           validate_is_function(p_value, p_cpi_id);
@@ -922,12 +1139,20 @@ end;~';
           when msg.ADC_PARAM_VALIDATION_FAILED_ERR then
             validate_is_bool_function(p_value, p_cpi_id);
         end;
+      when C_FREE_PAGE_ITEMS then
+        validate_is_page_item_list(p_value, p_capt_id, p_cpi_id);
+      when C_INPUT_FIELDS then
+        validate_is_page_item_list(p_value, p_capt_id, p_cpi_id);
+      when C_ITEM_STATUS then
+        validate_is_lov_value(p_value, p_capt_id, p_cpi_id);
       when C_JAVA_SCRIPT_FUNCTION then
-        validate_is_function(p_value, p_cpi_id);
+        validate_is_javascript_function(p_value, p_cpi_id);
       when C_JQUERY_SELECTOR then
         validate_is_selector(p_value, p_cpi_id);
       when C_PAGE_ITEM then
         validate_is_page_item(p_value, p_cpi_id);
+      when C_PAGE_REGIONS then
+        validate_is_page_item_list(p_value, p_capt_id, p_cpi_id);
       when C_PIT_MESSAGE then
         validate_is_pit_message(p_value, p_cpi_id);
       when C_PROCEDURE then
@@ -944,6 +1169,10 @@ end;~';
         null;
       when C_STRING_OR_PIT_MESSAGE then
         validate_is_string_or_message(p_value, p_cpi_id);
+      when C_SUBMIT_MODE then
+        validate_is_submit_mode(p_value);
+      when C_SUBMIT_TYPE then
+        validate_is_lov_value(p_value, p_capt_id, p_cpi_id);
       when C_EVENT then
         validate_is_event(p_value, p_cpi_id);
       else
@@ -981,7 +1210,10 @@ end;~';
             p_message_name => msg.ADC_METHOD_PARSE_EXCEPTION,
             p_msg_args => msg_args(substr(sqlerrm, 12)));
       else
-        null;
+        adc_api.register_error(
+          p_cpi_id => p_cpi_id,
+          p_message_name => msg.ADC_PARAM_VALIDATION_FAILED,
+          p_msg_args => msg_args(p_value));
       end case;
     when msg.PIT_MSG_NOT_EXISTING_ERR then
       adc_api.register_error(
