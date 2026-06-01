@@ -508,16 +508,14 @@ de.condes.plugin.adc.apex_theme_42 = Object.create(de.condes.plugin.adc.base_ren
      *
      * @param {Object[]} pErrors Error entries.
      */
-    function clearWarningMarkup(){
-        $('.apex-page-item-warning').removeClass('apex-page-item-warning');
-        $('.t-Form-warning').removeClass('t-Form-warning');
-    }
-
-
     baseRenderer.showErrors = function(pErrors){
         
         msg.clearErrors();
-        clearWarningMarkup();
+        // Remove warning markup
+        $('.t-Form-warning')
+        .removeClass('apex-page-item-warning')
+        .parents('.t-Form-inputContainer').find('.t-Form-warning')
+        .removeClass('t-Form-warning');
             
         msg.showErrors(pErrors);
         // Change markup of warnings
