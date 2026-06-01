@@ -741,31 +741,13 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
    * @param {function} [pAction] Optional message callback.
    */
   actions.initWebsocket = function(pRoom, pURL, pAction){
-    const sessionId = apex.item('pInstance').getValue();
-    const params = `id=${sessionId}&rooms=${pRoom}`;
-    const socket = new WebSocket(`${pURL}?${params}`);
-    let callback;
-    
-    if (typeof(pAction) == 'function'){
-      callback = pAction;
-    } else {
-      callback = actions.handleNotification;
-    };
-
-    socket.onopen = function(pEvent){
-      apex.debug.log(`${C_FILE_NAME} - Websocket connection established`)
-    };
-
-    socket.onclose = function(pEvent){
-      apex.debug.log(`${C_FILE_NAME} - Websocket connection terminated`)
-    }
-
-    socket.onmessage = function(pEvent){
-      let message = JSON.parse(pEvent.data);
-      apex.debug.log(message);
-      callback(message);
-    }
-  }
+    return adc.handler.initWebsocket({
+      room: pRoom,
+      url: pURL,
+      clientId: function(){ return apex.item('pInstance').getValue(); },
+      callback: typeof pAction === 'function' ? pAction : actions.handleNotification
+    });
+  };
 
 
   /**
@@ -776,31 +758,13 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
    * @param {function} [pAction] Optional message callback.
    */
   actions.initServerSentEvents = function(pRoom, pURL, pAction){
-    const clientId = adc.controller.getClientId();
-    const params = `id=${clientId}&rooms=${pRoom}`;
-    const eventSource = new EventSource(`${pURL}?${params}`);
-    let callback;
-    
-    if (typeof(pAction) == 'function'){
-      callback = pAction;
-    } else {
-      callback = actions.handleNotification;
-    };
-
-    eventSource.onmessage = function (pEvent) {
-      let message = JSON.parse(pEvent.data);
-      apex.debug.log(message);
-      callback(message);
-    };
-
-    eventSource.onerror = function (error) {
-      apex.debug.error(`${C_FILE_NAME} - SSE error`, error);
-    };
-
-    eventSource.onopen = function () {
-      apex.debug.log(`${C_FILE_NAME} - SSE connection established`);
-    };
-  }
+    return adc.handler.initServerSentEvents({
+      room: pRoom,
+      url: pURL,
+      clientId: adc.controller.getClientId,
+      callback: typeof pAction === 'function' ? pAction : actions.handleNotification
+    });
+  };
 
 
   /**
