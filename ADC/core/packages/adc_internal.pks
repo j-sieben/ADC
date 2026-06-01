@@ -99,6 +99,17 @@ as
   function get_event_data(
      p_key in varchar2)
      return varchar2;
+
+
+  /**
+    Function: get_client_id
+      Getter to retrieve the persistent client identifier passed by the browser.
+
+    Returns:
+      Client ID passed with the current ADC request.
+   */
+  function get_client_id
+    return varchar2;
      
 
   /* 
@@ -237,7 +248,8 @@ as
   function read_settings(
     p_firing_item in varchar2,
     p_event in varchar2,
-    p_event_data in varchar2)
+    p_event_data in varchar2,
+    p_client_id in varchar2 default null)
     return boolean;
   
   

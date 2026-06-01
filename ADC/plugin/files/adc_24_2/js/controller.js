@@ -90,6 +90,8 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   const C_BUTTON = 'button';
   const C_APEX_BUTTON = 't-Button';
   const C_INPUT_SELECTOR = ':input:visible:not(button)';
+  const C_CLIENT_ID_STORAGE_KEY = 'adc.client.id';
+  const C_CLIENT_ID_TEMPLATE = '10000000-1000-4000-8000-100000000000';
 
   /**
    * Controller-local configuration and binding metadata.
@@ -128,8 +130,10 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   var state = adc.state;
   var props = {
     "ajaxIdentifier":"",
-    "bindItems":[]
+    "bindItems":[],
+    "clientId":""
   };
+  let warnedCryptoUnavailable = false;
 
   /**
    * Public callback registry used by ADC event bindings.
@@ -310,6 +314,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
           "x01": state.currentEvent.id,
           "x02": state.currentEvent.event,
           "x03": JSON.stringify(state.currentEvent.data),
+          "x04": ctl.getClientId(),
           "pageItems": requestPageItems
         },
         {
@@ -471,6 +476,19 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   const addPageItem = function (pItemId) {
     eventRegistry.addPageItem(pItemId);
   }; // addPageItem
+
+  const getRandomHexDigit = function() {
+    if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
+      return window.crypto.getRandomValues(new Uint8Array(1))[0] & 15;
+    }
+
+    if (!warnedCryptoUnavailable) {
+      apex.debug.warn(`${C_FILE_NAME} - Crypto API unavailable, client id uses Math.random fallback`);
+      warnedCryptoUnavailable = true;
+    }
+
+    return Math.floor(Math.random() * 16);
+  };
   
 
   /**
@@ -707,20 +725,42 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
    * Helper to persist a locally unique identifier across APEX sessions
    */
   ctl.getClientId = function (){
-    const CLIENT_ID= "adc.client.id";
-    let clientId = localStorage.getItem(CLIENT_ID);
+    let clientId = props.clientId;
+
+    if (clientId) {
+      return clientId;
+    }
 
     if (!clientId) {
-        clientId = "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c => (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16));
-        localStorage.setItem(CLIENT_ID, clientId);
-
-        console.log("client id generated:", clientId);
-    } else {
-        console.log("client id found:", clientId);
+      try {
+        clientId = localStorage.getItem(C_CLIENT_ID_STORAGE_KEY);
+      }
+      catch (error) {
+        apex.debug.warn(`${C_FILE_NAME} - Client id could not be read from local storage`, error);
+      }
     }
-    state.pageState.itemMap.set(CLIENT_ID, clientId);
+
+    if (!clientId) {
+      clientId = C_CLIENT_ID_TEMPLATE.replace(/[018]/g, function(pChar) {
+        return (+pChar ^ getRandomHexDigit() >> +pChar / 4).toString(16);
+      });
+
+      try {
+        localStorage.setItem(C_CLIENT_ID_STORAGE_KEY, clientId);
+      }
+      catch (error) {
+        apex.debug.warn(`${C_FILE_NAME} - Client id could not be persisted in local storage`, error);
+      }
+
+      apex.debug.info(`${C_FILE_NAME} - Client id generated: ${clientId}`);
+    }
+    else {
+      apex.debug.info(`${C_FILE_NAME} - Client id found: ${clientId}`);
+    }
+
+    props.clientId = clientId;
     return clientId;
-  }
+  };
 
 
   /**

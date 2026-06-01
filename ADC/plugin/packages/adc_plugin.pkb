@@ -154,7 +154,8 @@ as
     if adc_internal.read_settings(
       p_firing_item => apex_application.g_x01,
       p_event => apex_application.g_x02,
-      p_event_data => apex_application.g_x03) then
+      p_event_data => apex_application.g_x03,
+      p_client_id => apex_application.g_x04) then
     
       -- Process best matching rule of ADC for the actual page state. Response is a JavaScript that is executed on the page
       l_java_script := adc_internal.process_request;

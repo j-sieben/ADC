@@ -69,6 +69,7 @@ as
       firing_event adc_page_item_types.cpit_cet_id%type - actual firing event (normally change or click, but can be any event)
       initialize_mode boolean - Flag to indicate whether automatic mandatory checks should be paused
       event_data adc_util.max_char - optional event data that is returned from modal dialog pages etc.
+      client_id adc_util.max_char - persistent browser client identifier.
       bind_event_items char_table - List of items for which ADC binds event handlers
       additional_items char_table - List of items for which ADC maintains page state in addition to
       stop_flag adc_util.flag_type - Flag to indicate that all rule execution has to be stopped
@@ -82,6 +83,7 @@ as
     firing_event adc_page_item_types.cpit_cet_id%type,
     initialize_mode boolean,
     event_data adc_util.max_char,
+    client_id adc_util.ora_name_type,
     bind_event_items char_table,
     additional_items char_table,
     stop_flag adc_util.flag_type,
@@ -883,6 +885,18 @@ as
 
 
   /**
+    Function: get_client_id
+      See <ADC_INTERNAL.get_client_id>
+   */
+  function get_client_id
+    return varchar2
+  as
+  begin
+    return g_param.client_id;
+  end get_client_id;
+
+
+  /**
     Function: get_error_flag
       See <ADC_INTERNAL.get_error_flag>
    */
@@ -1094,7 +1108,8 @@ as
   function read_settings(
     p_firing_item in varchar2,
     p_event in varchar2,
-    p_event_data in varchar2)
+    p_event_data in varchar2,
+    p_client_id in varchar2 default null)
     return boolean
   as
     l_rule_rec adc_rules%rowtype;
@@ -1105,7 +1120,8 @@ as
       p_params => msg_params(
                     msg_param('p_firing_item', p_firing_item),
                     msg_param('p_event', p_event),
-                    msg_param('p_event_data', p_event_data)));
+                    msg_param('p_event_data', p_event_data),
+                    msg_param('p_client_id', p_client_id)));
 
     g_param.crg_id := get_crg_id;
     pit.assert_not_null(g_param.crg_id);
@@ -1120,6 +1136,7 @@ as
       g_param.initialize_mode := g_param.firing_item = adc_util.C_NO_FIRING_ITEM;
       g_param.firing_event := p_event;
       g_param.event_data := analyze_event_data(p_event_data);
+      g_param.client_id := p_client_id;
       g_param.stop_flag := adc_util.C_FALSE;
       g_param.has_errors := false;
       g_param.rule_counter := 0;

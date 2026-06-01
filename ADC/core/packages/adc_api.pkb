@@ -191,6 +191,14 @@ as
   end get_event_data;
 
 
+  function get_client_id
+    return varchar2
+  as
+  begin
+    return adc_internal.get_client_id;
+  end get_client_id;
+
+
   function get_firing_item
     return varchar2
   as

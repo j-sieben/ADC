@@ -173,6 +173,14 @@ as
   end get_event_data;
 
 
+  static function get_client_id
+    return varchar2
+  as
+  begin
+    return adc_api.get_client_id;
+  end get_client_id;
+
+
   static function get_firing_item
     return varchar2
   as

@@ -182,6 +182,17 @@ as object (
 
 
   /**
+    Function: get_client_id
+      Method to retrieve the persistent client identifier passed by the browser.
+
+    Returns:
+      Client ID passed with the current ADC request.
+   */
+  static function get_client_id
+    return varchar2,
+
+
+  /**
     Function: get_firing_item
       Method to get the page item id of the item that has fired ADC processing.
 
