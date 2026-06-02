@@ -13,15 +13,15 @@ begin
     p_crg_page_id => 12);
 
   adc_config.merge_rule_group(
-    p_crg_id => adc_config.map_id(3527),
+    p_crg_id => adc_config.map_id(16149),
     p_crg_app_id => l_app_id,
     p_crg_page_id => 12,
     p_crg_with_recursion => adc_util.C_TRUE,
     p_crg_active => adc_util.C_TRUE);
   
   adc_config.merge_rule(
-    p_cru_id => adc_config.map_id(3529),
-    p_cru_crg_id => adc_config.map_id(3527),
+    p_cru_id => adc_config.map_id(16151),
+    p_cru_crg_id => adc_config.map_id(16149),
     p_cru_name => 'die Seite öffnet',
     p_cru_condition => q'|initializing = C_TRUE|',
     p_cru_sort_seq => 10,
@@ -29,9 +29,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_config.merge_rule_action(
-    p_cra_id => adc_config.map_id(3531),
-    p_cra_cru_id => adc_config.map_id(3529),
-    p_cra_crg_id => adc_config.map_id(3527),
+    p_cra_id => adc_config.map_id(16153),
+    p_cra_cru_id => adc_config.map_id(16151),
+    p_cra_crg_id => adc_config.map_id(16149),
     p_cra_cpi_id => 'P12_EXPORT_TYPE',
     p_cra_cat_id => 'SET_ITEM',
     p_cra_param_1 => q'|'CAT_EXPORT_USER'|',
@@ -43,9 +43,9 @@ begin
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
   adc_config.merge_rule_action(
-    p_cra_id => adc_config.map_id(3533),
-    p_cra_cru_id => adc_config.map_id(3529),
-    p_cra_crg_id => adc_config.map_id(3527),
+    p_cra_id => adc_config.map_id(16155),
+    p_cra_cru_id => adc_config.map_id(16151),
+    p_cra_crg_id => adc_config.map_id(16149),
     p_cra_cpi_id => 'B12_EXPORT',
     p_cra_cat_id => 'SET_VISUAL_STATE',
     p_cra_param_1 => q'|SHOW_DISABLE|',
@@ -57,8 +57,8 @@ begin
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
   adc_config.merge_rule(
-    p_cru_id => adc_config.map_id(3535),
-    p_cru_crg_id => adc_config.map_id(3527),
+    p_cru_id => adc_config.map_id(16157),
+    p_cru_crg_id => adc_config.map_id(16149),
     p_cru_name => 'keine Exportoption wählt',
     p_cru_condition => q'|P12_EXPORT_TYPE is null|',
     p_cru_sort_seq => 20,
@@ -66,9 +66,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_config.merge_rule_action(
-    p_cra_id => adc_config.map_id(3537),
-    p_cra_cru_id => adc_config.map_id(3535),
-    p_cra_crg_id => adc_config.map_id(3527),
+    p_cra_id => adc_config.map_id(16159),
+    p_cra_cru_id => adc_config.map_id(16157),
+    p_cra_crg_id => adc_config.map_id(16149),
     p_cra_cpi_id => 'B12_EXPORT',
     p_cra_cat_id => 'SET_VISUAL_STATE',
     p_cra_param_1 => q'|SHOW_DISABLE|',
@@ -80,8 +80,8 @@ begin
     p_cra_raise_on_validation => adc_util.C_FALSE,
     p_cra_active => adc_util.C_TRUE);
   adc_config.merge_rule(
-    p_cru_id => adc_config.map_id(3539),
-    p_cru_crg_id => adc_config.map_id(3527),
+    p_cru_id => adc_config.map_id(16161),
+    p_cru_crg_id => adc_config.map_id(16149),
     p_cru_name => 'eine Exportauswahl trifft',
     p_cru_condition => q'|P12_EXPORT_TYPE is not null|',
     p_cru_sort_seq => 30,
@@ -89,9 +89,9 @@ begin
     p_cru_active => adc_util.C_TRUE);
   
   adc_config.merge_rule_action(
-    p_cra_id => adc_config.map_id(3541),
-    p_cra_cru_id => adc_config.map_id(3539),
-    p_cra_crg_id => adc_config.map_id(3527),
+    p_cra_id => adc_config.map_id(16163),
+    p_cra_cru_id => adc_config.map_id(16161),
+    p_cra_crg_id => adc_config.map_id(16149),
     p_cra_cpi_id => 'B12_EXPORT',
     p_cra_cat_id => 'SET_VISUAL_STATE',
     p_cra_param_1 => q'|SHOW_ENABLE|',
@@ -104,7 +104,7 @@ begin
     p_cra_active => adc_util.C_TRUE);
   
 
-  adc_config.propagate_rule_change(adc_config.map_id(3527));
+  adc_config.propagate_rule_change(adc_config.map_id(16149));
 
   commit;
 end;
