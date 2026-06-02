@@ -192,33 +192,33 @@ as
     pit.enter_detailed('copy_apex_action');
 
     if p_environment.caa_row.caa_id is null then
-      p_environment.caa_row.caa_id := utl_apex.get_number('caa_id');
-      p_environment.caa_row.caa_crg_id := utl_apex.get_number('caa_crg_id');
-      p_environment.caa_row.caa_caat_id := utl_apex.get_string('caa_caat_id');
-      p_environment.caa_row.caa_name := utl_apex.get_string('caa_name');
-      p_environment.caa_row.caa_confirm_message_name := utl_apex.get_string('caa_confirm_message_name');
-      p_environment.caa_row.caa_label := utl_apex.get_string('caa_label');
-      p_environment.caa_row.caa_context_label := utl_apex.get_string('caa_context_label');
-      p_environment.caa_row.caa_icon := utl_apex.get_string('caa_icon');
-      p_environment.caa_row.caa_icon_type := utl_apex.get_string('caa_icon_type');
-      p_environment.caa_row.caa_title := utl_apex.get_string('caa_title');
-      p_environment.caa_row.caa_shortcut := utl_apex.get_string('caa_shortcut');
-      p_environment.caa_row.caa_initially_disabled := utl_apex.get_string('caa_initially_disabled');
-      p_environment.caa_row.caa_initially_hidden := utl_apex.get_string('caa_initially_hidden');
-      p_environment.caa_row.caa_href := utl_apex.get_string('caa_href');
-      p_environment.caa_row.caa_action := utl_apex.get_string('caa_action');
-      p_environment.caa_row.caa_on_label := utl_apex.get_string('caa_on_label');
-      p_environment.caa_row.caa_off_label := utl_apex.get_string('caa_off_label');
-      p_environment.caa_row.caa_get := utl_apex.get_string('caa_get');
-      p_environment.caa_row.caa_set := utl_apex.get_string('caa_set');
-      p_environment.caa_row.caa_choices := utl_apex.get_string('caa_choices');
-      p_environment.caa_row.caa_label_classes := utl_apex.get_string('caa_label_classes');
-      p_environment.caa_row.caa_label_start_classes := utl_apex.get_string('caa_label_start_classes');
-      p_environment.caa_row.caa_label_end_classes := utl_apex.get_string('caa_label_end_classes');
-      p_environment.caa_row.caa_item_wrap_class := utl_apex.get_string('caa_item_wrap_class');
+      p_environment.caa_row.caa_id := adc.get_number('caa_id');
+      p_environment.caa_row.caa_crg_id := adc.get_number('caa_crg_id');
+      p_environment.caa_row.caa_caat_id := adc.get_string('caa_caat_id');
+      p_environment.caa_row.caa_name := adc.get_string('caa_name');
+      p_environment.caa_row.caa_confirm_message_name := adc.get_string('caa_confirm_message_name');
+      p_environment.caa_row.caa_label := adc.get_string('caa_label');
+      p_environment.caa_row.caa_context_label := adc.get_string('caa_context_label');
+      p_environment.caa_row.caa_icon := adc.get_string('caa_icon');
+      p_environment.caa_row.caa_icon_type := adc.get_string('caa_icon_type');
+      p_environment.caa_row.caa_title := adc.get_string('caa_title');
+      p_environment.caa_row.caa_shortcut := adc.get_string('caa_shortcut');
+      p_environment.caa_row.caa_initially_disabled := adc.get_string('caa_initially_disabled');
+      p_environment.caa_row.caa_initially_hidden := adc.get_string('caa_initially_hidden');
+      p_environment.caa_row.caa_href := adc.get_string('caa_href');
+      p_environment.caa_row.caa_action := adc.get_string('caa_action');
+      p_environment.caa_row.caa_on_label := adc.get_string('caa_on_label');
+      p_environment.caa_row.caa_off_label := adc.get_string('caa_off_label');
+      p_environment.caa_row.caa_get := adc.get_string('caa_get');
+      p_environment.caa_row.caa_set := adc.get_string('caa_set');
+      p_environment.caa_row.caa_choices := adc.get_string('caa_choices');
+      p_environment.caa_row.caa_label_classes := adc.get_string('caa_label_classes');
+      p_environment.caa_row.caa_label_start_classes := adc.get_string('caa_label_start_classes');
+      p_environment.caa_row.caa_label_end_classes := adc.get_string('caa_label_end_classes');
+      p_environment.caa_row.caa_item_wrap_class := adc.get_string('caa_item_wrap_class');
     end if;
 
-    utl_text.string_to_table(utl_apex.get_string('caa_caai_list'), p_caai_list);
+    utl_text.string_to_table(adc.get_string('caa_caai_list'), p_caai_list);
 
     pit.leave_detailed;
   end copy_apex_action;
@@ -254,17 +254,17 @@ as
     pit.enter_detailed('copy_rule_action');
     
     if p_environment.cra_row.cra_id is null then
-      p_environment.cra_row.cra_id := utl_apex.get_number('cra_id');
-      p_environment.cra_row.cra_crg_id := coalesce(utl_apex.get_number('cra_crg_id'), p_environment.crg_id);
-      p_environment.cra_row.cra_cru_id := utl_apex.get_number('cra_cru_id');
-      p_environment.cra_row.cra_sort_seq := utl_apex.get_number('cra_sort_seq');
-      p_environment.cra_row.cra_cpi_id := utl_apex.get_string('cra_cpi_id');
-      p_environment.cra_row.cra_cat_id := utl_apex.get_string('cra_cat_id');
-      p_environment.cra_row.cra_active := utl_apex.get_string('cra_active');
-      p_environment.cra_row.cra_on_error := utl_apex.get_string('cra_on_error');
-      p_environment.cra_row.cra_raise_recursive := utl_apex.get_string('cra_raise_recursive');
-      p_environment.cra_row.cra_raise_on_validation := utl_apex.get_string('cra_raise_on_validation');
-      p_environment.cra_row.cra_comment := utl_apex.get_string('cra_comment');
+      p_environment.cra_row.cra_id := adc.get_number('cra_id');
+      p_environment.cra_row.cra_crg_id := coalesce(adc.get_number('cra_crg_id'), p_environment.crg_id);
+      p_environment.cra_row.cra_cru_id := adc.get_number('cra_cru_id');
+      p_environment.cra_row.cra_sort_seq := adc.get_number('cra_sort_seq');
+      p_environment.cra_row.cra_cpi_id := adc.get_string('cra_cpi_id');
+      p_environment.cra_row.cra_cat_id := adc.get_string('cra_cat_id');
+      p_environment.cra_row.cra_active := adc.get_string('cra_active');
+      p_environment.cra_row.cra_on_error := adc.get_string('cra_on_error');
+      p_environment.cra_row.cra_raise_recursive := adc.get_string('cra_raise_recursive');
+      p_environment.cra_row.cra_raise_on_validation := adc.get_string('cra_raise_on_validation');
+      p_environment.cra_row.cra_comment := adc.get_string('cra_comment');
 
       -- Get the required parameter field
       begin
@@ -288,9 +288,9 @@ as
           null; -- No parameter for action type, ignore
       end;
 
-      p_environment.cra_row.cra_param_1 := case when l_param_name_1 is not null then utl_apex.get_string(l_param_name_1) end;
-      p_environment.cra_row.cra_param_2 := case when l_param_name_2 is not null then utl_apex.get_string(l_param_name_2) end;
-      p_environment.cra_row.cra_param_3 := case when l_param_name_3 is not null then utl_apex.get_string(l_param_name_3) end;
+      p_environment.cra_row.cra_param_1 := case when l_param_name_1 is not null then adc.get_string(l_param_name_1) end;
+      p_environment.cra_row.cra_param_2 := case when l_param_name_2 is not null then adc.get_string(l_param_name_2) end;
+      p_environment.cra_row.cra_param_3 := case when l_param_name_3 is not null then adc.get_string(l_param_name_3) end;
     end if;
 
     pit.leave_detailed;
@@ -1010,7 +1010,8 @@ as
                         p_page => C_EXPORT_PAGE,
                         p_param_items => C_EXPORT_PAGE_PREFIX || 'CRG_APP_ID',
                         p_value_list => l_crg_app_id,
-                        p_triggering_element => C_BUTTON_PREFIX || C_EXPORT_PAGE);
+                        p_triggering_element => C_BUTTON_PREFIX || C_EXPORT_PAGE,
+                        p_for_javascript => true);
       maintain_action(
         p_name => C_EXPORT_CRG,
         p_active => adc_util.C_TRUE,
@@ -1128,7 +1129,7 @@ select null #PRE#caa_id, '#CRG_ID#' #PRE#caa_crg_id, 'ACTION' #PRE#caa_caat_id, 
     adc.show_hide_item('.adc-caa-' || lower(adc.get_string(C_ITEM_CAA_CAAT_ID)), '.adc-caa-hide');
     adc.refresh_item(
       p_cpi_id => C_ITEM_CAA_CAAI_LIST,
-      p_item_value => enquote(utl_apex.get_string(C_ITEM_CAA_CAAI_LIST)));
+      p_item_value => enquote(adc.get_string(C_ITEM_CAA_CAAI_LIST)));
     adc.set_region_content(
       p_region_id => C_REGION_HELP,
       p_html_code => pit.get_trans_item_description(C_PTI_PMG, 'CAA_HELP'));

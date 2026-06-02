@@ -536,6 +536,10 @@ as
     l_cpi_cpit_id adc_page_items.cpi_cpit_id%type;
     l_cpi_conversion adc_page_items.cpi_conversion%type;
     l_cpi_may_have_value adc_util.flag_type;
+    l_old_string_value adc_util.max_char;
+    l_new_string_value adc_util.max_char;
+    l_value_exists boolean := false;
+    l_is_from_session_state boolean;
   begin
     pit.enter_optional('set_value',
       p_params => msg_params(
@@ -563,6 +567,16 @@ as
         g_session_values.delete(l_value.cpi_id);
       end if;
     else
+      l_is_from_session_state := p_value is not null
+                              and p_value = C_FROM_SESSION_STATE
+                              and p_number_value is null
+                              and p_date_value is null;
+
+      if g_session_values.exists(l_value.cpi_id) then
+        l_old_string_value := g_session_values(l_value.cpi_id).string_value;
+        l_value_exists := true;
+      end if;
+
       -- If requested, get the value from the session state
       if p_value = C_FROM_SESSION_STATE then
         l_value.string_value := coalesce(apex_util.get_session_state(l_value.cpi_id), get_mandatory_default_value(l_value.cpi_id));
@@ -570,12 +584,24 @@ as
         l_value.string_value := p_value;
       end if;
 
-      -- Explicitly set the value and harmonize with the session state (fi when changing a session values during rule execution)
+      -- Keep APEX session state in sync so subsequent native APEX refresh requests see ADC changes.
       convert_and_cache_value(
         p_value => l_value,
         p_cpi_cpit_id => l_cpi_cpit_id,
         p_cpi_conversion => l_cpi_conversion,
         p_throw_error => p_throw_error);
+
+      l_new_string_value := g_session_values(l_value.cpi_id).string_value;
+      if (not l_value_exists and not l_is_from_session_state)
+         or (l_value_exists and (
+              l_old_string_value != l_new_string_value
+              or (l_old_string_value is null and l_new_string_value is not null)
+              or (l_old_string_value is not null and l_new_string_value is null)))
+      then
+        apex_util.set_session_state(
+          p_name => l_value.cpi_id,
+          p_value => l_new_string_value);
+      end if;
 
     end if;
 
