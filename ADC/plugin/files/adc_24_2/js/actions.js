@@ -1243,6 +1243,16 @@ de.condes.plugin.adc = de.condes.plugin.adc ||{};
     adc.renderer.setRegionHeader(pRegionId, pHeader, adc.renderer.getRegionType(pRegionId));
   }; // setRegionHeader
 
+
+  /**
+   * Dierctly sets a session state value
+   * @param {*} pItemName Name of the item to set 
+   * @param {*} pValue Value to set the item to
+   */
+  actions.setSessionState = function(pItemName, pValue) {
+    adc.controller.setSessionState(pItemName, pValue);
+  };
+
   /**
    * Select and activate a tab in a tabs region.
    *

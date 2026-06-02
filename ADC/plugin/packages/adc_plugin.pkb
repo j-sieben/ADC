@@ -13,6 +13,7 @@ as
   C_CS_UTF8 constant adc_util.ora_name_type := 'AL32UTF8';
   C_EVENT_INITIALIZE constant adc_util.ora_name_type := 'initialize';
   C_JS_FUNCTION constant varchar2(50 byte) := 'de_condes_plugin_adc';
+  C_SET_STATE constant varchar2(50 byte) := 'set_session_state';
   
   
   /**
@@ -149,20 +150,28 @@ as
         p_dynamic_action => p_dynamic_action);
     end if;
     pit.enter_mandatory;
-    
-    -- Initialize
-    if adc_internal.read_settings(
-      p_firing_item => apex_application.g_x01,
-      p_event => apex_application.g_x02,
-      p_event_data => apex_application.g_x03,
-      p_client_id => apex_application.g_x04) then
+
+    case 
+    when apex_application.g_x02 = C_SET_STATE then
+      -- Pre-filter specific use case SET_SESSION_STATE
+      apex_util.set_session_state(
+        p_name  => apex_application.g_x01,
+        p_value => trim('"' from apex_application.g_x03));
+    when -- Initialize
+         adc_internal.read_settings(
+           p_firing_item => apex_application.g_x01,
+           p_event => apex_application.g_x02,
+           p_event_data => apex_application.g_x03,
+           p_client_id => apex_application.g_x07) then
     
       -- Process best matching rule of ADC for the actual page state. Response is a JavaScript that is executed on the page
       l_java_script := adc_internal.process_request;
       
       -- Return JavaScript response
       print_to_stream(l_java_script);
-    end if;
+    else
+      null;
+    end case;
     
     pit.leave_mandatory;
     return l_result;

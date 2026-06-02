@@ -92,6 +92,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
   const C_INPUT_SELECTOR = ':input:visible:not(button)';
   const C_CLIENT_ID_STORAGE_KEY = 'adc.client.id';
   const C_CLIENT_ID_TEMPLATE = '10000000-1000-4000-8000-100000000000';
+  const C_SET_SESSION_STATE_EVENT = 'set_session_state';
 
   /**
    * Controller-local configuration and binding metadata.
@@ -314,7 +315,7 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
           "x01": state.currentEvent.id,
           "x02": state.currentEvent.event,
           "x03": JSON.stringify(state.currentEvent.data),
-          "x04": ctl.getClientId(),
+          "x07": ctl.getClientId(),
           "pageItems": requestPageItems
         },
         {
@@ -792,6 +793,16 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
     state.pageState = pPageState;
   }; // setPageState
 
+  
+  /**
+   * Directly set a session state value
+   * @param {*} pItemName 
+   * @param {*} pValue 
+   */
+  ctl.setSessionState = function(pItemName, pValue) {
+    ctl.setTriggeringElement(pItemName, C_SET_SESSION_STATE_EVENT, pValue);
+    ctl.execute();
+  };
 
   /**
    * Add a page item to ADC state and bind its change event if needed.
