@@ -28,6 +28,7 @@ q'[    p_crg_active => #CRG_ACTIVE#);\CR\]' ||
 q'[  #RULES#\CR\]' || 
 q'[  #APEX_ACTIONS#\CR\]' || 
 q'[  adc_config.propagate_rule_change(adc_config.map_id(#CRG_ID#));\CR\]' || 
+q'[  pit_admin.harmonize_translatable_items;\CR\]' || 
 q'[\CR\]' || 
 q'[  commit;\CR\]' || 
 q'[end;\CR\]' || 
@@ -65,6 +66,7 @@ q'[  #RULES#\CR\]' ||
 q'[  #APEX_ACTIONS#\CR\]' || 
 q'[\CR\]' || 
 q'[  adc_config.propagate_rule_change(adc_config.map_id(#CRG_ID#));\CR\]' || 
+q'[  pit_admin.harmonize_translatable_items;\CR\]' || 
 q'[\CR\]' || 
 q'[  commit;\CR\]' || 
 q'[end;\CR\]' || 
@@ -401,6 +403,7 @@ q'[  #RULES#\CR\]' ||
 q'[  #APEX_ACTIONS#\CR\]' || 
 q'[\CR\]' || 
 q'[  adc_config.propagate_rule_change(adc_config.map_id(#CRG_ID#));\CR\]' || 
+q'[  pit_admin.harmonize_translatable_items;\CR\]' || 
 q'[\CR\]' || 
 q'[  commit;\CR\]' || 
 q'[end;\CR\]' || 
