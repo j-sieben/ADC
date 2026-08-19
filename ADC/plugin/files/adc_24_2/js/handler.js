@@ -294,6 +294,11 @@ de.condes.plugin.adc = de.condes.plugin.adc || {};
       apex.debug.info(`${C_FILE_NAME} - SSE connection established`);
     };
 
+    window.addEventListener('beforeunload', () => {
+      eventSource.onerror = null; // deactivate error handler
+      eventSource.close();        // close connection cleanly
+    });
+
     return eventSource;
   };
 
