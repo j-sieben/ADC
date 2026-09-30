@@ -892,7 +892,7 @@ as
     return varchar2
   as
   begin
-    return g_param.client_id;
+    return coalesce(g_param.client_id, utl_apex.get_value('APP_CLIENT_ID'));
   end get_client_id;
 
 
