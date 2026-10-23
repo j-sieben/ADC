@@ -1045,7 +1045,7 @@ q'[/\CR\]',
     p_uttm_name => 'DEFAULT_APEX_ACTION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
-    p_uttm_text => q'[function(){a.executeCommand('#CAA_NAME#');}]',
+    p_uttm_text => q'[function(event, focusElement, args){a.executeCommand(Object.assign({}, args, {command: '#CAA_NAME#'}));}]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
@@ -1054,7 +1054,7 @@ q'[/\CR\]',
     p_uttm_name => 'CONFIRM_APEX_ACTION',
     p_uttm_type => 'ADC',
     p_uttm_mode => 'FRAME',
-    p_uttm_text => q'[function(){a.confirmCommand('#CONFIRM_MESSAGE#', '#CAA_NAME#');}]',
+    p_uttm_text => q'[function(event, focusElement, args){a.confirmCommand('#CONFIRM_MESSAGE#', Object.assign({}, args, {command: '#CAA_NAME#'}));}]',
     p_uttm_log_text => q'[]',
     p_uttm_log_severity => 70
   );
