@@ -374,18 +374,22 @@ de.condes.plugin.adc.apex_theme_42 = Object.create(de.condes.plugin.adc.base_ren
      * @param {string} pRegionType Region type.
      */
     renderer.hideReportFilterPanel = function(pRegionId, pRegionType){
-        switch(pRegionType){
-            case C_REGION_IR:
-                $(`#${pRegionId}_control_panel`).hide(); // interactive report
-                break;
-            case C_REGION_IG:
-                $(`#${pRegionId} .a-MediaBlock`).hide(); // interactive grid
-                break;
-        }
+        const hidePanel = function(){
+            switch(pRegionType){
+                case C_REGION_IR:
+                    $(`#${pRegionId}_control_panel`).hide(); // interactive report
+                    break;
+                case C_REGION_IG:
+                    $(`#${pRegionId} .a-MediaBlock`).hide(); // interactive grid
+                    break;
+            }
+        };
 
-        $(`#${pRegionId}`).on(C_APEX_AFTER_REFRESH, function(){
-            renderer.hideReportFilterPanel(pRegionId, pRegionType);
-        });
+        hidePanel();
+
+        // Replace only this action's listener when the action runs again.
+        const event = `${C_APEX_AFTER_REFRESH}.adcHideReportFilterPanel`;
+        $(`#${pRegionId}`).off(event).on(event, hidePanel);
     }; // hideReportFilterPanel
 
 
