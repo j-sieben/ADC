@@ -1,3 +1,6 @@
+-- Required when installing this source: ADC_VERSION and ADC_GIT_COMMIT.
+set define on
+set scan on
 create or replace type body adc_basic
 as
 
@@ -10,6 +13,18 @@ as
       Juergen Sieben, ConDeS GmbH
    */
 
+
+  static function get_version return varchar2
+  as
+  begin
+    return '&ADC_VERSION.';
+  end get_version;
+
+  static function get_git_commit return varchar2
+  as
+  begin
+    return '&ADC_GIT_COMMIT.';
+  end get_git_commit;
 
   static function C_HIDE
   return varchar2

@@ -4,6 +4,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
+source "${SCRIPT_DIR}/version.sh"
+adc_read_version
+
 echo -n "Enter APEX workspace schema for ADC [ENTER] "
 read OWNER
 
@@ -18,9 +21,10 @@ read WORKSPACE
 
 echo -n "Optionally enter a new admin application ID [ENTER] "
 read APP_ID
+APP_ID="${APP_ID:-null}"
 
 export NLS_LANG=GERMAN_GERMANY.AL32UTF8
 
 cd "${PROJECT_DIR}"
-sqlplus "${OWNER}/${OWNER_PWD}@${SERVICE}" @install_scripts/install_core.sql "${WORKSPACE}"
-sqlplus "${OWNER}/${OWNER_PWD}@${SERVICE}" @install_scripts/install_apex.sql "${WORKSPACE}" "${APP_ID}"
+sqlplus -L "${OWNER}/${OWNER_PWD}@${SERVICE}" @install_scripts/install_core.sql "${WORKSPACE}" "${ADC_VERSION}" "${ADC_GIT_COMMIT}"
+sqlplus -L "${OWNER}/${OWNER_PWD}@${SERVICE}" @install_scripts/install_apex.sql "${WORKSPACE}" "${APP_ID}" "${ADC_VERSION}" "${ADC_GIT_COMMIT}"

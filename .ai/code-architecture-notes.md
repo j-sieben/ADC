@@ -218,3 +218,16 @@ This means the system is designed to be debugged through normal APEX/browser wor
   Generated Natural Docs API reference.
 - `Docs/obsidian`
   Handwritten developer-facing architecture notes and onboarding material.
+
+## Product version interface
+
+- `ADC_BASIC.get_version()` and `ADC_BASIC.get_git_commit()` are static SQL-callable
+  functions containing install-time literals, independently of an ADC instance.
+- Root `VERSION` stores Major.Minor; Bash/PowerShell install starters resolve one
+  full Git commit and count all reachable commits for Major.Minor.CommitCount.
+- `install_scripts/version.sql` captures and validates named substitution values
+  before nested scripts. `verify_version.sql` checks type/dependent validity and
+  both values through SQL at installation boundaries.
+- `export-release.sh` / `version.ps1 -ExportPath` archive that pinned commit and
+  add `version.properties` to the release only. Git checkouts always use Git and
+  reject dirty or incomplete sources. No version package/table is introduced.

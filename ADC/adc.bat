@@ -6,11 +6,11 @@ if /I "%~1"=="help" goto :help
 if /I "%~1"=="-h" goto :help
 if /I "%~1"=="--help" goto :help
 
-if /I "%~1"=="install" call "%~dp0install_scripts\adc-install.bat" & goto :eof
-if /I "%~1"=="runtime" call "%~dp0install_scripts\adc-runtime.bat" & goto :eof
-if /I "%~1"=="sample" call "%~dp0install_scripts\adc-sample.bat" & goto :eof
-if /I "%~1"=="ut" call "%~dp0install_scripts\adc-ut.bat" & goto :eof
-if /I "%~1"=="uninstall" call "%~dp0install_scripts\adc-uninstall.bat" & goto :eof
+if /I "%~1"=="install" goto :install
+if /I "%~1"=="runtime" goto :runtime
+if /I "%~1"=="sample" goto :sample
+if /I "%~1"=="ut" goto :ut
+if /I "%~1"=="uninstall" goto :uninstall
 
 echo Unknown command: %~1
 goto :help
@@ -26,3 +26,23 @@ echo   ut          Install unit tests
 echo   uninstall   Uninstall ADC including the admin app
 echo   help        Show this help
 exit /b 1
+
+:install
+call "%~dp0install_scripts\adc-install.bat"
+exit /b %ERRORLEVEL%
+
+:runtime
+call "%~dp0install_scripts\adc-runtime.bat"
+exit /b %ERRORLEVEL%
+
+:sample
+call "%~dp0install_scripts\adc-sample.bat"
+exit /b %ERRORLEVEL%
+
+:ut
+call "%~dp0install_scripts\adc-ut.bat"
+exit /b %ERRORLEVEL%
+
+:uninstall
+call "%~dp0install_scripts\adc-uninstall.bat"
+exit /b %ERRORLEVEL%

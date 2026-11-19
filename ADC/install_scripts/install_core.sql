@@ -1,6 +1,11 @@
 -- Parameters:
--- None
+-- 1: APEX workspace (reserved), 2: ADC version, 3: full Git commit
 -- clear screen
+
+-- Capture product data before nested scripts replace positional arguments.
+set define on
+set scan on
+@install_scripts/version.sql "&2." "&3."
 
 define tool_dir=tools/
 @&tool_dir.init.sql
@@ -31,5 +36,7 @@ prompt &h1.Optional unit test package installation
 @&tool_dir.recompile.sql
 
 prompt &h1.Finished ADC Core Installation
+
+@install_scripts/verify_version.sql
 
 exit

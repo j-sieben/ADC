@@ -1,6 +1,11 @@
 -- Parameters:
--- None
+-- 1: ADC version, 2: full Git commit
 -- clear screen
+
+-- Capture product data before nested scripts replace positional arguments.
+set define on
+set scan on
+@install_scripts/version.sql "&1." "&2."
 
 define tool_dir=tools/
 @&tool_dir.init.sql
@@ -40,5 +45,7 @@ begin
 end;
 /
 prompt &h1.Finished ADC Runtime Installation
+
+@install_scripts/verify_version.sql
 
 exit

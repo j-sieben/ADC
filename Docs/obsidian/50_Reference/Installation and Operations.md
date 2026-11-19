@@ -106,3 +106,105 @@ The `ut` installation path installs the database unit-test objects used for veri
 - [[Glossary]]
 - [[../20_Users/First Steps on a Page|First Steps on a Page]]
 - [[../30_Developers/Getting Started|Getting Started]]
+
+## Product version and provenance
+
+`ADC_BASIC` exposes two static functions, callable from SQL without an instance:
+
+```sql
+select adc_basic.get_version(), adc_basic.get_git_commit() from dual;
+```
+
+The version is `Major.Minor.CommitCount`. The root `VERSION` file contains
+the configured Major/Minor; change only those components there. The final component counts **all** commits
+reachable from the installation commit (including merged branches), and never
+resets when Major/Minor changes. The full commit hash is resolved once, then used
+for both `git show <hash>:VERSION` and `git rev-list --count <hash>`.
+
+The existing `install` and `runtime` commands, including their direct
+`install_scripts/adc-*.sh` and `.bat` starters, resolve and validate version data
+before connecting to Oracle. Bash implements this on Unix; the Windows starters
+use PowerShell, which was already used for password input. Git is required for
+checkout installations. No Python or additional database runtime dependency is
+required. Run the starters from any working directory; paths may contain spaces.
+
+A checkout must be clean, including staged changes and untracked nonignored files,
+and must have complete history. Shallow/partial clones, replacements and grafts
+are rejected. Existing ignored local settings are not counted as source changes.
+Prepared release data never overrides a Git checkout. A checkout without the root
+`VERSION` file at the selected commit fails rather than guessing a version.
+The installer prints version and commit and verifies `ADC_BASIC` and its dependent
+objects, SQL callability, and exact returned values at the end of core/runtime
+installation and after the administration application installation.
+
+### Release directories without Git
+
+The existing rule-group/APEX exports transport application metadata; they do not
+package the ADC source repository. To create a complete ADC source release from a
+clean checkout, use one of these commands (destination must not exist):
+
+```bash
+./ADC/install_scripts/export-release.sh "/path/to/ADC release"
+```
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\ADC\install_scripts\version.ps1 -ExportPath "C:\Releases\ADC release"
+```
+
+These export the pinned commit with `git archive` and write
+`ADC/install_scripts/version.properties` **inside the release directory**, leaving
+the checkout untouched. Distribute the entire directory, including root `VERSION`.
+Users then run the normal installers, without an extra build step. Prepared data
+contains `ADC_VERSION=1.0.<count>` and `ADC_GIT_COMMIT=<full hash>`; it is validated
+before SQL use. A plain GitHub source ZIP or `git archive` without this preparation
+cannot be installed: it lacks reliable commit-count metadata. Release metadata
+records provenance; it is not a cryptographic signature of the distributed files.
+
+### Direct SQL installation and individual bodies
+
+Shell starters are the automatic, provenance-checked entry points. For a direct
+SQL*Plus/SQLcl invocation, obtain validated values from `version.sh` (source it and
+call `adc_read_version`) or `version.ps1 -OutputPath <temporary-file>`. Pass those
+trusted values to SQL; do not pass arbitrary SQL fragments. From the `ADC/`
+directory, the argument contracts are:
+
+```text
+@install_scripts/install_core.sql "<workspace>" "<version>" "<full-commit>"
+@install_scripts/install_runtime.sql "<version>" "<full-commit>"
+@install_scripts/install_apex.sql "<workspace>" "<app-id-or-null>" "<version>" "<full-commit>"
+```
+
+Nested scripts reuse positional arguments, so product values are captured in
+named `ADC_VERSION` and `ADC_GIT_COMMIT` variables before any nested installation.
+SQL validates their format before DDL. Substitution is explicitly enabled before
+reading the type body. The stored body contains fixed string literals and needs
+neither Git nor metadata at runtime.
+
+To reinstall only the `ADC_BASIC` body from source, use the **same validated
+version and commit for the complete installed release** and run from `ADC/`:
+
+```sql
+@install_scripts/version.sql "<version>" "<full-commit>"
+@core/types/adc_basic.tpb
+@tools/recompile.sql
+@install_scripts/verify_version.sql
+```
+
+A plain `ALTER TYPE adc_basic COMPILE BODY` recompiles the already substituted
+stored source and needs no substitution variables. `ADC` remains the protected
+customer extension type; its source is not overwritten. New function names must
+also be checked against customer extensions when upgrading an existing database.
+Installer failures return a nonzero exit status; Oracle DDL already executed
+cannot be rolled back. No live database is changed by local repository checks.
+
+### Local verification
+
+Run `bash tests/version-installation.sh` from the repository root. The checks use
+isolated Git fixtures and a mock SQL*Plus, with PowerShell checks when `pwsh` is
+available. They cover merge history, Major/Minor changes, dirty/staged/untracked
+sources, shallow and broken histories, worktrees, stale/invalid/missing release
+metadata, both exporters, paths with spaces and installer failures. They never
+connect to Oracle. Actual Oracle compilation and SQL method invocation are checked
+by the installation scripts in an authorized target database. Preserve the CRLF
+convention of existing source files when checking whitespace:
+`git -c core.whitespace=cr-at-eol diff --check`.

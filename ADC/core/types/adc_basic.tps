@@ -22,6 +22,28 @@ as object (
   foo char(1 byte),
 
   /**
+    Group: Product version
+   */
+  /**
+    Function: get_version
+      Returns the installed ADC product version (Major.Minor.CommitCount).
+
+    Returns:
+      Product version fixed at installation time, shared by the ADC release.
+   */
+  static function get_version return varchar2,
+
+  /**
+    Function: get_git_commit
+      Returns the full Git commit hash of the installed ADC release.
+
+    Returns:
+      Full commit hash fixed at installation time.
+   */
+  static function get_git_commit return varchar2,
+
+
+  /**
     Group: Public constants
       Implemented as function to be available for SQL
 

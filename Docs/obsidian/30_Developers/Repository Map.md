@@ -39,3 +39,14 @@ This page gives developers a fast orientation across the repository.
 - [[Database/Home|Database Development]]
 - [[JavaScript/Home|JavaScript Development]]
 - [[../40_Architecture/System Overview|System Overview]]
+
+## Product version installation
+
+- Root `VERSION`: central Major.Minor source.
+- `ADC/core/types/adc_basic.tps` / `.tpb`: static product-version/commit interface.
+- `ADC/install_scripts/version.sh` / `version.ps1`: validated provenance for Unix
+  and Windows starters; no-Git releases read prepared `version.properties`.
+- `ADC/install_scripts/version.sql` / `verify_version.sql`: substitution setup
+  before source installation and final SQL verification.
+- `ADC/install_scripts/export-release.sh` and `version.ps1 -ExportPath`: prepare
+  complete source releases without modifying the checkout.

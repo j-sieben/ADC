@@ -1,3 +1,5 @@
+-- Set ADC_VERSION and ADC_GIT_COMMIT before invoking this script directly.
+@install_scripts/version.sql "&ADC_VERSION." "&ADC_GIT_COMMIT."
 @tools/set_folder core
 
 prompt &h2.Create database objects
@@ -120,4 +122,6 @@ prompt &h2.Merge initial data
 prompt &h2.Installation for specific APEX versions
 @&apex_version_dir.install.sql
 
+@&tool_dir.recompile.sql
+@install_scripts/verify_version.sql
 prompt &h1.Finished ADC Core Installation

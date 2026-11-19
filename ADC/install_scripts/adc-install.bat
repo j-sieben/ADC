@@ -1,5 +1,15 @@
 @echo off
 setlocal
+set "ADC_VERSION="
+set "ADC_GIT_COMMIT="
+
+set "ADC_VERSION_FILE=%TEMP%\adc-version-%RANDOM%-%RANDOM%.tmp"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0version.ps1" -OutputPath "%ADC_VERSION_FILE%"
+if errorlevel 1 exit /b 1
+for /f "usebackq tokens=1,* delims==" %%A in ("%ADC_VERSION_FILE%") do set "%%A=%%B"
+del "%ADC_VERSION_FILE%"
+if not defined ADC_VERSION exit /b 1
+if not defined ADC_GIT_COMMIT exit /b 1
 
 set /p InstallUser=Enter APEX workspace schema for ADC:
 
@@ -11,10 +21,14 @@ for /f "tokens=*" %%a in ('%OWNER_PWD_CMD%') do set OWNER_PWD=%%a
 
 set /p SID=Enter service name for the database or PDB:
 set /p ApexWorkspace=Enter name of APEX workspace:
+set "AppId="
 set /p AppId=Optionally enter a new admin application ID:
+if not defined AppId set "AppId=null"
 
 set nls_lang=GERMAN_GERMANY.AL32UTF8
 
 cd /d "%~dp0.."
-sqlplus %InstallUser%/%OWNER_PWD%@%SID% @install_scripts/install_core.sql %ApexWorkspace%
-sqlplus %InstallUser%/%OWNER_PWD%@%SID% @install_scripts/install_apex.sql %ApexWorkspace% %AppId%
+sqlplus -L "%InstallUser%/%OWNER_PWD%@%SID%" @install_scripts/install_core.sql "%ApexWorkspace%" "%ADC_VERSION%" "%ADC_GIT_COMMIT%"
+if errorlevel 1 exit /b 1
+sqlplus -L "%InstallUser%/%OWNER_PWD%@%SID%" @install_scripts/install_apex.sql "%ApexWorkspace%" "%AppId%" "%ADC_VERSION%" "%ADC_GIT_COMMIT%"
+exit /b %ERRORLEVEL%
